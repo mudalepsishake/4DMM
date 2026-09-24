@@ -4,7 +4,7 @@
 
 The basic idea is simple: **what if 3D Movie Maker had kept developing instead of stopping in 1995?**
 
-4DMM keeps the direct, playful workflow of the original program while extending the actual application rather than replacing it with a conventional modern DCC interface. The goal is to make substantially more capable 3D filmmaking possible without turning 3DMM into Blender, Maya, or a game engine editor.
+4DMM keeps the direct, accessible workflow of the original program while extending the actual application rather than replacing it with a conventional modern DCC interface. The goal is to make substantially more capable 3D filmmaking possible without turning 3DMM into Blender, Maya, or a game engine editor.
 
 > **Status:** active development. This repository is not a finished release. Features, file formats, UI behavior, and build requirements are still changing.
 
