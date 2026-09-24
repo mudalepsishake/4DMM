@@ -1,108 +1,113 @@
-# 3DMMEx
+# 4DMM
 
-3DMMEx is a source port of [Microsoft 3D Movie Maker](https://github.com/microsoft/Microsoft-3D-Movie-Maker) that aims to preserve the classic 3D Movie Maker experience while adding minor enhancements for an improved user experience.
+**4DMM is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
 
-3DMMEx builds upon the amazing work of the [3DMMForever](https://github.com/foone/3DMMForever) project.
+The basic idea is simple: **what if 3D Movie Maker had kept developing instead of stopping in 1995?**
 
-## Features
+4DMM keeps the direct, playful workflow of the original program while extending the actual application rather than replacing it with a conventional modern DCC interface. The goal is to make substantially more capable 3D filmmaking possible without turning 3DMM into Blender, Maya, or a game engine editor.
 
-* Cross-platform support (in progress)
-  * SDL2 graphics/input support
-  * Linux platform support
-* Portability improvements
-  * Supports compiling with Visual Studio 2022, Clang and GCC
-  * 64-bit support: supports compiling for x64 and ARM64
-  * Inline assembly language code replaced with portable C++
-  * Unit tests
-* Usability improvements
-  * Improved mouse input handling
-  * New keyboard shortcuts for scrolling in browser dialogs
-  * High-quality sound import
+> **Status:** active development. This repository is not a finished release. Features, file formats, UI behavior, and build requirements are still changing.
 
-## Build
+## Highlights
 
-### Requirements
+### Camera and animation
 
-* CMake 3.28+
-* Ninja build
-* Windows:
-  * Visual Studio 2022
-    * Desktop development with C++ workload
-    * Clang (optional)
-* Linux:
-  * GCC
-  * Development libraries for SDL2, SDL2_ttf, gstreamer, GTK3, iconv and Fontconfig
-  * Zenity (optional: used for dialog boxes)
-  * [Comic Sans MS font](https://corefonts.sourceforge.net/) (optional but strongly recommended!)
-  * gstreamer
-  * Installing dependencies:
-    * Ubuntu: `sudo apt install g++ cmake ninja-build libsdl2-dev libsdl2-ttf-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libgtk-3-dev libfontconfig-dev zenity`
+- Fully free movable camera
+- WASD + mouse free-camera control
+- Camera movement recording
+- Frame-by-frame camera positioning
+- Motion-tweened camera movement across arbitrary frame ranges
+- Improved timeline and frame insertion workflows
 
-### Building
+### Modern rendering
 
-Use CMake to build the project. The project includes a CMakePresets.json file that specifies [build presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html).
+- Modern OpenGL renderer integrated throughout the application
+- 24-bit color instead of the original 256-color rendering path
+- Per-pixel lighting/shading
+- Bilinear texture filtering
+- Anisotropic filtering
+- Improved texture rendering at oblique viewing angles
+- Modern high-resolution rendering
+- Support for arbitrary display resolutions supported by the user's monitor
+- Dynamic light controls including intensity, range/distance, and gradiency
+- Lights can be associated with scene objects
+- Multiple lighting modes selectable by scene/movie
+- Real-time shadow rendering under active development
+- Per-object shadow-casting controls
 
-#### Building on Windows
+### Scene and object editing
 
-* Open the Developer Command Prompt for Visual Studio 2022 (or use a tool such as [VCVars](https://github.com/bruxisma/VCVars) to add the build tools to your path)
-* Run `cmake --preset <preset-name>`:
-  * x86 Debug build: `x86-msvc-debug`
-    * Debug builds are recommended for local development and testing, as they have additional runtime checking that helps to identify bugs.
-  * x86 Release build: `x86-msvc-relwithdebinfo`
-  * There are additional presets for x64 builds and compiling with Clang instead of the Visual C++ compiler
-* Run `cmake --build build\<preset-name> --target install`
-  * The `--target install` is optional but recommended. This will create a directory `dist\<preset-name>` with the directory layout required for 3DMM to run.
-  * Kauai development tools (eg. Chelp, Ched) are not built by default. You can build them by building the `tools` target.
-* To run tests, run `ctest --test-dir build\<preset-name>`
-* To build a release package, run `cmake --build build\<preset-name> --target dist`
-  * A ZIP archive containing a portable install is created in the build directory.
-  * If WiX is installed, an MSI package is also created.
+- Object Groups for manipulating multiple objects together
+- Objects can be made non-selectable so background scenery stops interfering with foreground editing
+- Expanded object browsers for selecting by scene, frame, visibility, and other useful contexts
+- Modernized object selection behavior
+- 24-bit color pickers for 3D Words and shape objects
+- Fast texture browser for 3D Words
+- Larger Undo/Redo history and expanded undoable operations
+- Modern Windows load/save dialogs and improved file handling
 
-#### Building on other platforms
+### Actor Studio
 
-* Run `cmake --preset <preset-name>`
-  * The recommended preset is `sdl-debug` for local development, or `sdl-relwithdebinfo` for release.
-* Run `cmake --build build/<preset-name> --target install`
-* To run tests, run `ctest --test-dir build/<preset-name>`
-* To run 3DMM, run `dist/<preset-name>/3dmovie`
+Actor Studio has been substantially expanded beyond the original 3DMM workflow, including:
 
-## Contributing
+- BODY / Part / Part Group / Object Group / EVERYTHING-level editing
+- Reposition, vertical movement, pitch, yaw, and roll
+- Reset Rotation
+- Grow / Shrink
+- Stretch / Squish
+- Persistent At Rest state
+- Cut / Spawn behavior across hierarchy levels
+- Hierarchy-aware Undo / Redo
+- Part-group-aware selection behavior
+- Selection persistence across frames where an entity exists
+- Expanded object-group editing tools
 
-See [CONTRIBUTING.MD](CONTRIBUTING.md) for information on how to contribute to 3DMMEx.
+Actor Studio is still under active development and is expected to continue changing substantially.
 
-If you have questions, please create a GitHub issue or post in the project's [Discussions page](https://github.com/benstone/3DMMEx/discussions).
+### Asset and conversion work
 
-## Legal stuff
+4DMM retains compatibility with classic 3DMM assets while expanding what can be brought into the application. Modern OBJ / GLTF / FBX to VXP2 conversion tooling is under active development, including higher-quality texture handling and compatibility work for modern game-engine assets.
 
-The following sections have been carried over from the original 3D Movie Maker [GitHub repository](https://github.com/microsoft/Microsoft-3D-Movie-Maker) released by Microsoft in May 2022.
+## Why 4DMM?
 
-### Code cleanup
+Modern 3D applications are extraordinarily capable, but that capability often comes with a large interaction and workflow burden. Original 3D Movie Maker approached the problem from the opposite direction: grab something, move it, animate it, move the camera, add sound, and make a movie.
 
-This code was restored from the Microsoft corporate archives and cleared for release.
+4DMM is an attempt to continue that design philosophy without freezing the technology in 1995.
 
-* Developer names and aliases were removed, with the exception of current employees who worked on the
-  original release who consented to keeping their names in place
-* The archive consisted of several CDs, some of which were for alternate builds or products, and
-  have been excluded
-* The code does not build with today's engineering tools, and is released as-is.
+The project is not trying to turn 3DMM into a conventional professional DCC package. It is trying to find out how far the original interaction model can be pushed when given a modern renderer, modern editing tools, richer object manipulation, improved asset workflows, and another thirty years of available computing power.
 
-### Trademarks
+## Project lineage
 
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
-trademarks or logos is subject to and must follow
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+4DMM is derived from **3DMMEx** by Ben Stone, which itself descends from Microsoft's open-source release of the original Microsoft 3D Movie Maker source code.
 
-This repo includes a build from 1995 of BRender from Argonaut software. Approval to open source BRender as MIT was given in an email from Jez San, former CEO of Argonaut. Other versions of BRender exist at <https://github.com/foone/BRender-v1.3.2> and <https://github.com/foone/BRender-1997> Thanks to Jez and the whole BRender team for their hard work on this amazing engine. A full historical list of BRender contributors is available at <https://github.com/foone/BRender-v1.3.2/blob/main/README.md>
+- 3DMMEx: https://github.com/benstone/3dmmex
+- Microsoft 3D Movie Maker source release: https://github.com/microsoft/Microsoft-3D-Movie-Maker
 
-This repo does NOT include the SoftImage SDK "./DKIT" from 1992.
+The modern BRender work in 4DMM also builds on the broader open-source BRender preservation and modernization work performed by the BRender community.
 
-Jez also offered this interesting BRender anecdote in an email:
+## Building
 
-```
-When Sam Littlewood designed BRender, he didn’t write the code. And then document it.  
-The way most things were built at the time.
-First, he wrote the manual.  The full documentation
-That served as the spec.  Then the coding started.
-```
+4DMM is currently developed primarily on Windows and the build system is still changing.
+
+The current development branch uses:
+
+- CMake
+- MSVC
+- the `x86-msvc-modern-relwithdebinfo` preset
+- a vendored modern BRender 1.4 tree under `brender14/`
+
+Build documentation will be expanded as the project approaches a public binary release. At the moment, this repository should be treated as an active development tree rather than a polished build-it-yourself distribution.
+
+## Compatibility
+
+Preserving the original 3DMM experience and its existing movie/asset ecosystem is an important design goal. New functionality should extend the program without unnecessarily destroying compatibility with existing 3DMM content or the directness of the original workflow.
+
+## Current state
+
+A large amount of 4DMM is already functional, but the project is moving quickly. Expect unfinished features, debugging instrumentation, changing UI, experimental renderer work, and the occasional piece of 1995 code discovering a new and creative way to object to the year 2026.
+
+## License and trademarks
+
+4DMM inherits code from upstream open-source projects. **Keep the repository's existing `LICENSE`, `THIRD_PARTY_LICENSES.txt`, attribution, and other upstream legal files intact.** Individual bundled dependencies may have their own license terms.
+
+Microsoft, 3D Movie Maker, and related names/logos are trademarks of their respective owners. 4DMM is an independent community project and is not an official Microsoft product or endorsed by Microsoft.
