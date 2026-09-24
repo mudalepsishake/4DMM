@@ -1,6 +1,6 @@
 # 4DMM
 
-**4DMM is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
+**3DMM Renaissance, or 4DMM as I like to call it, is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
 
 The basic idea is simple: **what if 3D Movie Maker had kept developing instead of stopping in 1995?**
 
