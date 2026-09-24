@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -15,7 +15,7 @@ ASSERTNAME
 
 bool _FGetLwFromSzs(PSZS pszs, int32_t *plw);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main routine.  Returns non-zero iff there's an error.
 ***************************************************************************/
 int __cdecl main(int cpszs, char *prgpszs[])
@@ -33,9 +33,9 @@ int __cdecl main(int cpszs, char *prgpszs[])
 
 #ifdef UNICODE
     fprintf(stderr, "\nMicrosoft (R) Kauai Pack Utility (Unicode; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
     fprintf(stderr, "\nMicrosoft (R) Kauai Pack Utility (Ansi; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
     fprintf(stderr, "Copyright (C) Microsoft Corp 1995. All rights reserved.\n\n");
 
     floSrc.pfil = pvNil;
@@ -178,7 +178,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
         if (cfmtNil != cfmt)
             blck.FPackData(cfmt);
 
-        // write the signature
+        // 3DMMv1.0: write the signature
         if (blck.FPacked())
             lwSig = klwSigPackedFile;
         else
@@ -205,7 +205,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
     return 0;
 
 LUsage:
-    // print usage
+    // 3DMMv1.0: print usage
     fprintf(stderr, "%s", "Usage:  kpack [-d] [-c[0|1|2]] [-p <format>] <srcFile> <dstFile>\n\n");
 
 LFail:
@@ -218,7 +218,7 @@ LFail:
     return 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a long value from a string. If the string isn't a number and the
     length is <= 4, assumes the characters are to be packed into a long
     (ala CTGs and FTGs).
@@ -245,7 +245,7 @@ bool _FGetLwFromSzs(PSZS pszs, int32_t *plw)
 #ifdef DEBUG
 bool _fEnableWarnings = fTrue;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Warning proc called by Warn() macro
 ***************************************************************************/
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
@@ -261,7 +261,7 @@ void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returning true breaks into the debugger.
 ***************************************************************************/
 bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int32_t cb)
@@ -302,4 +302,4 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int3
 
     return fFalse;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,0 +1,2145 @@
+/* BRender:
+ * Copyright (c) 1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: tokenval.c 1.3 1998/05/20 15:25:02 jon Exp $
+ * $Locker: $
+ *
+ * Token/value list mangement
+ */
+#include <inttypes.h>
+#include "fw.h"
+#include "brassert.h"
+
+/* BRender:
+ * Allocate a new template structure
+ */
+br_tv_template *BR_RESIDENT_ENTRY BrTVTemplateAllocate(void *res, br_tv_template_entry *entries, int n_entries)
+{
+    br_tv_template *t;
+
+    t = BrResAllocate(res, sizeof(*t), BR_MEMORY_TOKEN_TEMPLATE);
+
+    t->res       = t;
+    t->entries   = entries;
+    t->n_entries = n_entries;
+    return t;
+}
+
+void BR_RESIDENT_ENTRY BrTVTemplateFree(br_tv_template *t)
+{
+    BrResFree(t);
+}
+
+/* BRender:
+ * Convert any token names in template into token ids.
+ */
+static void templateResolveNames(br_tv_template *template)
+{
+    br_tv_template_entry *tp;
+    int                   n;
+
+    for(n = 0, tp = template->entries; n < template->n_entries; tp++, n++) {
+
+        if(tp->name == NULL)
+            continue;
+
+        tp->token = BrTokenCreate(tp->name, BR_NULL_TOKEN);
+    }
+}
+
+/* BRender:
+ * Convert a template into a cached map
+ */
+static void templateMakeMap(br_tv_template *template)
+{
+    const br_tv_template_entry *tp;
+    char                       *map;
+    br_int_32                   min, max;
+    int                         i, n, e;
+
+    ASSERT(template);
+    ASSERT(template->n_entries > 0);
+
+    if(!template->names_resolved)
+        templateResolveNames(template);
+
+    /* BRender:
+     * Find range of tokens used
+     */
+    min = max = template->entries->token;
+
+    tp = template->entries;
+    for(n = 0; n < template->n_entries; tp++, n++) {
+
+        if(tp->token == BR_NULL_TOKEN)
+            continue;
+
+        if(tp->token < min)
+            min = tp->token;
+        if(tp->token > max)
+            max = tp->token;
+    }
+
+    n = (max - min) + 1;
+
+    /* BRender:
+     * Allocate the map
+     */
+    template->map_base      = min;
+    template->n_map_entries = n;
+
+    map = BrResAllocate(template->res, n * (sizeof(*template->map_query_entry) + sizeof(*template->map_set_entry)), BR_MEMORY_TOKEN_MAP);
+
+    template->map_query_entry = (void *)map;
+    map += n * sizeof(*template->map_query_entry);
+    template->map_set_entry = (void *)map;
+
+    for(i = 0; i < n; i++) {
+        template->map_query_entry[i] = NULL;
+        template->map_set_entry[i]   = NULL;
+    }
+
+    /* BRender:
+     * Fill in map entries
+     */
+    for(n = 0, tp = template->entries; n < template->n_entries; tp++, n++) {
+
+        if(tp->token == BR_NULL_TOKEN)
+            continue;
+        /* BRender:
+         * Check range
+         */
+        ASSERT(tp->token >= template->map_base);
+        ASSERT(tp->token < (template->map_base + template->n_map_entries));
+
+        /* BRender:
+         * Check for daft combinations of bits
+         */
+        ASSERT(!((tp->flags & BRTV_SET) && (tp->conv == BRTV_CONV_DIRECT)));
+
+        e = tp->token - template->map_base;
+
+        if(tp->flags & BRTV_QUERY)
+            template->map_query_entry[e] = tp;
+
+        if(tp->flags & BRTV_SET)
+            template->map_set_entry[e] = tp;
+    }
+}
+
+/* BRenderModern:
+ * Copy a token value to the given address.
+ * This is required for 64-bit, as not everything is 4 bytes.
+ */
+static void MemCpyToken(br_token t, void *dst, const void *src)
+{
+    br_token  type;
+    br_size_t s;
+    /* BRenderModern:
+     * Get the token type. If we're BRT_NONE, we might be
+     * something like BRT_COLOUR_RGB, which IS a token type, just use us.
+     *
+     * Then get its size.
+     */
+
+    type = BrTokenType(t);
+    if(type == BRT_NONE)
+        s = BrTokenSize(t);
+    else
+        s = BrTokenSize(type);
+
+    if(s == 0)
+        return;
+
+    BrMemCpy(dst, src, s);
+}
+
+/* BRender:
+ * Fetch one value according to template information
+ *
+ * Returns:
+ * 	BRE_OK 		if conversion suceeded
+ *  BRE_UNKNOWN	if conversion type was not recognised
+ *	BRE_OVERFLOW if extra buffer space was exhausted
+ */
+#define MEM(t)   (*(t *)(mem))
+#define MEM_P(t) ((t *)(mem))
+
+static br_error ValueQuery(br_token_value *tv,                  /* BRender: Destination for value					*/
+                           void          **pextra,              /* BRender: Buffer for additional value data			*/
+                           br_size_t *pextra_size, void *block, /* BRender: Base of block associated with template	*/
+                           const br_tv_template_entry *tep)     /* BRender: Template entry to use for conversion		*/
+{
+    void         *mem;
+    br_uintptr_t *lp;
+    br_size_t     t;
+    br_tv_custom *custp;
+
+    /* BRender:
+     * Setup memory pointer
+     */
+    if(tep->flags & BRTV_ABS)
+        mem = (char *)&tep->offset;
+    else
+        mem = (char *)block + tep->offset;
+
+    /* BRenderModern:
+     * Store the token
+     */
+    tv->t = tep->token;
+
+    switch(tep->conv) {
+        case BRTV_CONV_COPY:
+            MemCpyToken(tv->t, &tv->v, mem);
+            break;
+
+        case BRTV_CONV_DIRECT:
+            tv->v.pu = tep->conv_arg;
+            break;
+
+        case BRTV_CONV_I32_I8:
+            tv->v.i32 = MEM(br_int_8);
+            break;
+        case BRTV_CONV_I32_I16:
+            tv->v.i32 = MEM(br_int_16);
+            break;
+
+        case BRTV_CONV_I32_U8:
+            tv->v.i32 = MEM(br_uint_8);
+            break;
+        case BRTV_CONV_I32_U16:
+            tv->v.i32 = MEM(br_uint_16);
+            break;
+
+        case BRTV_CONV_BIT:
+            tv->v.i32 = (MEM(br_uint_32) & tep->conv_arg) != 0;
+            break;
+
+        case BRTV_CONV_NOT_BIT:
+            tv->v.i32 = (MEM(br_uint_32) & tep->conv_arg) == 0;
+            break;
+
+        case BRTV_CONV_FIXED_FLOAT:
+            tv->v.x = BrFloatToFixed(MEM(br_float));
+            break;
+        case BRTV_CONV_FLOAT_FIXED:
+            tv->v.f = (float)BrFixedToFloat(MEM(br_fixed_ls));
+            break;
+
+            /* BRender:
+             * XXX Assumes that vectors and matrix elements are contiguous
+             */
+        case BRTV_CONV_V2_FIXED_FLOAT:
+            if((tv->v.p = BrTVConvertFloatToFixed((br_fixed_ls **)pextra, MEM_P(br_float), 2, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V2_FLOAT_FIXED:
+            if((tv->v.p = BrTVConvertFixedToFloat((br_float **)pextra, MEM_P(br_fixed_ls), 2, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V3_FIXED_FLOAT:
+            if((tv->v.p = BrTVConvertFloatToFixed((br_fixed_ls **)pextra, MEM_P(br_float), 3, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V3_FLOAT_FIXED:
+            if((tv->v.p = BrTVConvertFixedToFloat((br_float **)pextra, MEM_P(br_fixed_ls), 3, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V4_FIXED_FLOAT:
+            if((tv->v.p = BrTVConvertFloatToFixed((br_fixed_ls **)pextra, MEM_P(br_float), 4, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V4_FLOAT_FIXED:
+            if((tv->v.p = BrTVConvertFixedToFloat((br_float **)pextra, MEM_P(br_fixed_ls), 4, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M23_FIXED_FLOAT:
+            if((tv->v.p = BrTVConvertFloatToFixed((br_fixed_ls **)pextra, MEM_P(br_float), 6, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M23_FLOAT_FIXED:
+            if((tv->v.p = BrTVConvertFixedToFloat((br_float **)pextra, MEM_P(br_fixed_ls), 6, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M4_FIXED_FLOAT:
+            if((tv->v.p = BrTVConvertFloatToFixed((br_fixed_ls **)pextra, MEM_P(br_float), 16, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M4_FLOAT_FIXED:
+            if((tv->v.p = BrTVConvertFixedToFloat((br_float **)pextra, MEM_P(br_fixed_ls), 16, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M34_FIXED_FLOAT:
+            if((tv->v.p = BrTVConvertFloatToFixed((br_fixed_ls **)pextra, MEM_P(br_float), 12, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M34_FLOAT_FIXED:
+            if((tv->v.p = BrTVConvertFixedToFloat((br_float **)pextra, MEM_P(br_fixed_ls), 12, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V2_COPY:
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM_P(br_uint_32), 2, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V3_COPY:
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM_P(br_uint_32), 3, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_V4_COPY:
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM_P(br_uint_32), 4, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M23_COPY:
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM_P(br_uint_32), 6, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M4_COPY:
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM_P(br_uint_32), 16, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_M34_COPY:
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM_P(br_uint_32), 12, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+            break;
+
+        case BRTV_CONV_STRING:
+            /* BRender:
+             * longword align the destination string (so that further data does not get
+             * out of alignment
+             */
+            t = BrStrLen(MEM(char *)) + 1;
+            t = (t + (sizeof(br_uint_32) - 1)) / sizeof(br_uint_32);
+
+            if((tv->v.p = BrTVConvertLongCopy((br_uint_32 **)pextra, MEM(br_uint_32 *), t, pextra_size)) == NULL)
+                return BRE_OVERFLOW;
+
+            break;
+
+        case BRTV_CONV_LIST:
+            /* BRender:
+             * Find number of entries in list
+             */
+            lp = MEM(br_uintptr_t *);
+
+            t = 0;
+            if(lp) {
+                while(*lp++)
+                    t++;
+
+                if((tv->v.p = BrTVConvertPtrCopy((br_uintptr_t **)pextra, MEM(br_uintptr_t *), t + 1, pextra_size)) == NULL)
+                    return BRE_OVERFLOW;
+            } else {
+                /* BRender:
+                 * Make a list with 0 entries
+                 */
+                if((tv->v.p = BrTVConvertPtrCopy((br_uintptr_t **)pextra, (br_uintptr_t *)&lp, 1, pextra_size)) == NULL)
+                    return BRE_OVERFLOW;
+            }
+            break;
+
+        case BRTV_CONV_BOOL_TOKEN:
+            tv->v.b = (MEM(br_token) != BRT_NONE);
+            break;
+
+        case BRTV_CONV_PTR:
+            tv->v.p = mem;
+            break;
+
+        case BRTV_CONV_CUSTOM:
+            /* BRender:
+             * Use 'conv_arg' as a pointer to a block of function pointers
+             */
+            custp = (br_tv_custom *)tep->conv_arg;
+            if(custp && custp->query)
+                return custp->query(&tv->v, pextra, pextra_size, block, tep);
+
+            /* BRender: FALL THROUGH */
+        default:
+            /* BRender:
+             * unrecognised operation (usually NOP)
+             */
+            return BRE_UNKNOWN;
+    }
+
+    return BRE_OK;
+}
+
+/* BRender:
+ * Set one value
+ */
+static br_error ValueSet(void                       *block, /* BRender: Destination memeory block				*/
+                         const br_token_value       *tv,    /* BRender: Source value								*/
+                         const br_tv_template_entry *tep)   /* BRender: Template entry to use for conversion		*/
+{
+    void         *mem;
+    int           i, t;
+    br_tv_custom *custp;
+
+    /* BRender:
+     * Setup pointer to memory
+     */
+    if(tep->flags & BRTV_ABS)
+        return BRE_FAIL;
+
+    mem = (char *)block + tep->offset;
+
+    switch(tep->conv) {
+        case BRTV_CONV_COPY:
+            MemCpyToken(tv->t, mem, &tv->v);
+            break;
+
+        case BRTV_CONV_I32_I8:
+            MEM(br_int_8) = (br_int_8)tv->v.i32;
+            break;
+        case BRTV_CONV_I32_I16:
+            MEM(br_int_16) = (br_int_16)tv->v.i32;
+            break;
+
+        case BRTV_CONV_I32_U8:
+            MEM(br_uint_8) = (br_uint_8)tv->v.i32;
+            break;
+        case BRTV_CONV_I32_U16:
+            MEM(br_uint_16) = (br_uint_16)tv->v.i32;
+            break;
+
+        case BRTV_CONV_BIT:
+            if(tv->v.i32)
+                MEM(br_uint_32) |= tep->conv_arg;
+            else
+                MEM(br_uint_32) &= ~(tep->conv_arg);
+            break;
+
+        case BRTV_CONV_NOT_BIT:
+            if(!tv->v.i32)
+                MEM(br_uint_32) |= tep->conv_arg;
+            else
+                MEM(br_uint_32) &= ~(tep->conv_arg);
+            break;
+
+        case BRTV_CONV_FIXED_FLOAT:
+            MEM(br_float) = (br_float)BrFixedToFloat(tv->v.x);
+            break;
+        case BRTV_CONV_FLOAT_FIXED:
+            MEM(br_fixed_ls) = BrFloatToFixed(tv->v.f);
+            break;
+
+        case BRTV_CONV_V2_FIXED_FLOAT:
+            t = 2;
+            goto convert_to_float;
+
+        case BRTV_CONV_V2_FLOAT_FIXED:
+            t = 2;
+            goto convert_to_fixed;
+
+        case BRTV_CONV_V3_FIXED_FLOAT:
+            t = 3;
+            goto convert_to_float;
+
+        case BRTV_CONV_V3_FLOAT_FIXED:
+            t = 3;
+            goto convert_to_fixed;
+
+        case BRTV_CONV_V4_FIXED_FLOAT:
+            t = 4;
+            goto convert_to_float;
+
+        case BRTV_CONV_V4_FLOAT_FIXED:
+            t = 4;
+            goto convert_to_fixed;
+
+        case BRTV_CONV_M23_FIXED_FLOAT:
+            t = 6;
+            goto convert_to_float;
+
+        case BRTV_CONV_M23_FLOAT_FIXED:
+            t = 6;
+            goto convert_to_fixed;
+
+        case BRTV_CONV_M4_FIXED_FLOAT:
+            t = 16;
+            goto convert_to_float;
+
+        case BRTV_CONV_M4_FLOAT_FIXED:
+            t = 16;
+            goto convert_to_fixed;
+
+        case BRTV_CONV_M34_FIXED_FLOAT:
+            t = 12;
+convert_to_float:
+            for(i = 0; i < t; i++)
+                MEM_P(br_float)[i] = (br_float)BrFixedToFloat(((br_fixed_ls *)(tv->v.p))[i]);
+            break;
+
+        case BRTV_CONV_M34_FLOAT_FIXED:
+            t = 12;
+convert_to_fixed:
+            for(i = 0; i < t; i++)
+                MEM_P(br_fixed_ls)[i] = BrFloatToFixed(((br_float *)(tv->v.p))[i]);
+            break;
+
+        case BRTV_CONV_V2_COPY:
+            t = 2;
+            goto copy_words;
+
+        case BRTV_CONV_V3_COPY:
+            t = 3;
+            goto copy_words;
+
+        case BRTV_CONV_V4_COPY:
+            t = 4;
+            goto copy_words;
+
+        case BRTV_CONV_M23_COPY:
+            t = 6;
+            goto copy_words;
+
+        case BRTV_CONV_M4_COPY:
+            t = 16;
+            goto copy_words;
+
+        case BRTV_CONV_M34_COPY:
+            t = 12;
+copy_words:
+            for(i = 0; i < t; i++)
+                MEM_P(br_uint_32)[i] = ((br_uint_32 *)(tv->v.p))[i];
+            break;
+
+        case BRTV_CONV_STRING:
+            BrStrNCpy(MEM(char *), tv->v.str, BR_MAX_IDENTIFIER);
+            break;
+
+        case BRTV_CONV_BOOL_TOKEN:
+            if(tv->v.b)
+                MEM(br_token) = tep->conv_arg;
+            else
+                MEM(br_token) = BRT_NONE;
+
+            break;
+
+        case BRTV_CONV_CUSTOM:
+            custp = (br_tv_custom *)tep->conv_arg;
+
+            if(custp && custp->set)
+                return custp->set(block, &tv->v, tep);
+
+            /* BRender: FALL THROUGH */
+
+        default:
+            /* BRender:
+             * unrecognised operation (usually NOP)
+             */
+            return BRE_UNKNOWN;
+    }
+
+    return BRE_OK;
+}
+
+/* BRender:
+ * Find out how much extra buffer space a conversion would require
+ */
+static br_size_t ValueExtraSize(void *block, const br_tv_template_entry *tep)
+{
+    void         *mem;
+    br_uintptr_t *lp;
+    br_size_t     t;
+    br_tv_custom *custp;
+
+    /* BRender:
+     * Setup memory pointer
+     */
+    if(tep->flags & BRTV_ABS)
+        mem = (char *)&tep->offset;
+    else
+        mem = (char *)block + tep->offset;
+
+    switch(tep->conv) {
+
+        case BRTV_CONV_V2_FIXED_FLOAT:
+        case BRTV_CONV_V2_FLOAT_FIXED:
+        case BRTV_CONV_V2_COPY:
+            return 2 * sizeof(br_uint_32);
+
+        case BRTV_CONV_V3_FIXED_FLOAT:
+        case BRTV_CONV_V3_FLOAT_FIXED:
+        case BRTV_CONV_V3_COPY:
+            return 3 * sizeof(br_uint_32);
+
+        case BRTV_CONV_V4_FIXED_FLOAT:
+        case BRTV_CONV_V4_FLOAT_FIXED:
+        case BRTV_CONV_V4_COPY:
+            return 4 * sizeof(br_uint_32);
+
+        case BRTV_CONV_M23_FIXED_FLOAT:
+        case BRTV_CONV_M23_FLOAT_FIXED:
+        case BRTV_CONV_M23_COPY:
+            return 6 * sizeof(br_uint_32);
+
+        case BRTV_CONV_M4_FIXED_FLOAT:
+        case BRTV_CONV_M4_FLOAT_FIXED:
+        case BRTV_CONV_M4_COPY:
+            return 16 * sizeof(br_uint_32);
+
+        case BRTV_CONV_M34_FIXED_FLOAT:
+        case BRTV_CONV_M34_FLOAT_FIXED:
+        case BRTV_CONV_M34_COPY:
+            return 12 * sizeof(br_uint_32);
+
+        case BRTV_CONV_STRING:
+            /* BRender:
+             * longword align the destination string (so that further data does not get
+             * out of alignment
+             */
+            t = BrStrLen(MEM(char *)) + 1;
+            t = (t + (sizeof(br_uint_32) - 1)) / sizeof(br_uint_32);
+
+            return t * sizeof(br_uint_32);
+
+        case BRTV_CONV_LIST:
+            /* BRender:
+             * Find number of entries in list
+             */
+            lp = MEM(br_uintptr_t *);
+
+            t = 1;
+            if(lp) {
+                while(*lp++)
+                    t++;
+            }
+            return t * sizeof(br_uintptr_t);
+
+        case BRTV_CONV_CUSTOM:
+            custp = (br_tv_custom *)tep->conv_arg;
+
+            if(custp && custp->extra_size)
+                return custp->extra_size(block, tep);
+            else
+                return 0;
+    }
+
+    return 0;
+}
+
+#undef VALUE
+#undef MEM
+#undef mem
+
+/* BRender:
+ * Get the value coresponding to one token
+ */
+br_error BR_RESIDENT_ENTRY BrTokenValueQuery(void *pvalue, void *extra, br_size_t extra_size, br_token t, void *block, br_tv_template *template)
+{
+    br_int_32                   o;
+    const br_tv_template_entry *tep;
+    br_token_value              tv;
+    br_error                    r;
+
+    /* BRender:
+     * Make sure map info is built
+     */
+    if(template->n_map_entries == 0)
+        templateMakeMap(template);
+
+    /* BRender:
+     * Convert token into offset
+     */
+    o = t - template->map_base;
+
+    /* BRender:
+     * If offset is outside range, return an error
+     */
+    if(o < 0 || o >= template->n_map_entries)
+        return BRE_UNKNOWN;
+
+    tep = template->map_query_entry[o];
+
+    if(tep) {
+        r = ValueQuery(&tv, &extra, &extra_size, block, tep);
+        MemCpyToken(tv.t, pvalue, &tv.v);
+        return r;
+    } else
+        return BRE_UNKNOWN;
+}
+
+/* BRender:
+ * Fetch values into a token/value list (with optional extra buffer) according
+ * to the given template
+ */
+br_error BR_RESIDENT_ENTRY BrTokenValueQueryMany(br_token_value *tv, void *extra, br_size_t extra_size, br_int_32 *pcount, void *block,
+                                                 br_tv_template *template)
+{
+    br_int_32                   o;
+    const br_tv_template_entry *tep;
+    br_error                    r;
+
+    /* BRender:
+     * Make sure map info is built
+     */
+    if(template->n_map_entries == 0)
+        templateMakeMap(template);
+
+    *pcount = 0;
+
+    for(; tv->t != BR_NULL_TOKEN; tv++) {
+        /* BRender:
+         * Convert token into offset
+         */
+        o = tv->t - template->map_base;
+
+        /* BRender:
+         * If offset is outside range, ignore token
+         */
+        if(o < 0 || o >= template->n_map_entries)
+            continue;
+
+        tep = template->map_query_entry[o];
+
+        if(tep == NULL)
+            continue;
+
+        r = ValueQuery(tv, &extra, &extra_size, block, tep);
+
+        if(r == BRE_OK)
+            (*pcount)++;
+    }
+    return BRE_OK;
+}
+
+/* BRender:
+ * Work out how much extra storage would be needed for the values described in the given
+ * token/value list
+ */
+br_error BR_RESIDENT_ENTRY BrTokenValueQueryManySize(br_size_t *psize, br_token_value *tv, void *block, br_tv_template *template)
+{
+    br_int_32 o;
+    br_size_t extra_size = 0;
+
+    /* BRender:
+     * Make sure map info is built
+     */
+    if(template->n_map_entries == 0)
+        templateMakeMap(template);
+
+    for(; tv->t != BR_NULL_TOKEN; tv++) {
+        /* BRender:
+         * Convert token into offset
+         */
+        o = tv->t - template->map_base;
+
+        /* BRender:
+         * If offset is outside range, ignore token
+         */
+        if(o < 0 || o >= template->n_map_entries)
+            continue;
+
+        if(template->map_query_entry[o])
+            extra_size += ValueExtraSize(block, template->map_query_entry[o]);
+    }
+
+    *psize = extra_size;
+
+    return BRE_OK;
+}
+
+br_error BR_RESIDENT_ENTRY BrTokenValueQueryAll(br_token_value *buffer, br_size_t buffer_size, void *block, br_tv_template *template)
+{
+    const br_tv_template_entry *tp;
+    int                         n, e;
+    br_token_value             *tv;
+    void                       *extra;
+    br_size_t                   extra_size;
+    br_error                    r;
+
+    /* BRender:
+     * Put tokens at front of buffer
+     */
+    tv = buffer;
+
+    /* BRender:
+     * Make sure all token names are resolved
+     */
+    if(!template->names_resolved)
+        templateResolveNames(template);
+
+    /* BRender:
+     * Count number of token/value pairs
+     */
+    n = 1; /* BRender: Account for terminator */
+    for(e = 0, tp = template->entries; e < template->n_entries; tp++, e++)
+        if((tp->token != BR_NULL_TOKEN) && (tp->flags & BRTV_ALL))
+            n++;
+
+    /* BRender:
+     * Start using extra space after token/value pairs
+     * (including the terminator)
+     */
+    extra = buffer + n;
+
+    if(buffer_size < sizeof(*buffer) * n)
+        return BRE_OVERFLOW;
+
+    extra_size = buffer_size - sizeof(*buffer) * n;
+
+    for(e = 0, tp = template->entries; e < template->n_entries; tp++, e++) {
+
+        if(tp->token == BR_NULL_TOKEN)
+            continue;
+
+        /* BRender:
+         * Ignore template entry if it is not flagged for 'ALL'
+         */
+        if(!(tp->flags & BRTV_ALL))
+            continue;
+
+        /* BRender:
+         * Store token
+         */
+        tv->t = tp->token;
+
+        /* BRender:
+         * Fetch value
+         */
+        r = ValueQuery(tv, &extra, &extra_size, block, tp);
+
+        if(r != BRE_OK)
+            return r;
+
+        tv++;
+    }
+
+    /* BRender:
+     * Terminate list
+     */
+    tv->t = BR_NULL_TOKEN;
+
+    return BRE_OK;
+}
+
+br_error BR_RESIDENT_ENTRY BrTokenValueQueryAllSize(br_size_t *psize, void *block, br_tv_template *template)
+{
+    const br_tv_template_entry *tp;
+    int                         e, n;
+    br_size_t                   extra_size;
+
+    n          = 1;
+    extra_size = 0;
+
+    /* BRender:
+     * Make sure all token names are resolved
+     */
+    if(!template->names_resolved)
+        templateResolveNames(template);
+
+    for(e = 0, tp = template->entries; e < template->n_entries; tp++, e++) {
+
+        if(tp->token == BR_NULL_TOKEN)
+            continue;
+
+        if(!(tp->flags & BRTV_ALL))
+            continue;
+
+        n++;
+
+        /* BRender:
+         * Account for any extra info. needed by tokens
+         */
+        extra_size += ValueExtraSize(block, tp);
+    }
+
+    /* BRender:
+     * Total memory required is 2 words for each pair, one
+     * word for the terminator, and any extra bytes
+     */
+    *psize = n * sizeof(br_token_value) + extra_size;
+
+    return BRE_OK;
+}
+
+br_error BR_RESIDENT_ENTRY BrTokenValueSet(void *mem, br_uint_32 *pcombined_mask, br_token t, br_value value, br_tv_template *template)
+{
+    br_int_32            o;
+    br_error             r;
+    const br_token_value tv = {.t = t, .v = value};
+
+    /* BRender:
+     * Make sure map info is built
+     */
+    if(template->n_map_entries == 0)
+        templateMakeMap(template);
+
+    /* BRender:
+     * Convert token into offset
+     */
+    o = t - template->map_base;
+
+    /* BRender:
+     * If offset is outside range, ignore token
+     */
+    if(o < 0 || o >= template->n_map_entries)
+        return BRE_UNKNOWN;
+
+    if(template->map_set_entry[o]) {
+        r = ValueSet(mem, &tv, template->map_set_entry[o]);
+        if(r != BRE_OK)
+            return r;
+
+        /* BRender:
+         * Accumlate a mask of visted entries
+         */
+        *pcombined_mask |= template->map_set_entry[o]->mask;
+
+        return BRE_OK;
+    } else {
+        return BRE_UNKNOWN;
+    }
+}
+
+br_error BR_RESIDENT_ENTRY BrTokenValueSetMany(void *mem, br_int_32 *pcount, br_uint_32 *pcombined_mask, br_token_value *tv, br_tv_template *template)
+{
+    br_int_32  o, n;
+    br_error   r;
+    br_uint_32 cm = 0;
+
+    /* BRender:
+     * Make sure map info is built
+     */
+    if(template->n_map_entries == 0)
+        templateMakeMap(template);
+
+    n = 0;
+
+    for(; tv->t != BR_NULL_TOKEN != 0; tv++) {
+        /* BRender:
+         * Convert token into offset
+         */
+        o = tv->t - template->map_base;
+
+        /* BRender:
+         * If offset is outside range, ignore token
+         */
+        if(o < 0 || o >= template->n_map_entries)
+            continue;
+
+        if(template->map_set_entry[o]) {
+            r = ValueSet(mem, tv, template->map_set_entry[o]);
+            if(r != BRE_OK)
+                continue;
+
+            /* BRender:
+             * Accumlate a mask of visted entries
+             */
+            cm |= template->map_set_entry[o]->mask;
+            n++;
+        }
+    }
+
+    if(pcount)
+        *pcount = n;
+    if(pcombined_mask)
+        *pcombined_mask |= cm;
+
+    return BRE_OK;
+}
+
+#if DEBUG
+
+static void DumpMatrixInteger(br_int_32 *ip, int rows, int cols, const char *prefix, char *info_0, char *info_n, br_putline_cbfn *putline, void *arg)
+{
+    int   i, j;
+    char *cp;
+    char  value[128];
+
+    for(i = 0; i < rows; i++) {
+        cp = value + BrSprintf(value, "%s%s[", prefix, (i == 0) ? info_0 : info_n);
+
+        for(j = 0; j < cols; j++)
+            cp += BrSprintf(cp, "%s%d", (j != 0) ? "," : "", *ip++);
+
+        BrStrCpy(cp, "]");
+
+        putline(value, arg);
+    }
+}
+
+static void DumpMatrixFixed(br_fixed_ls *xp, int rows, int cols, const char *prefix, char *info_0, char *info_n, br_putline_cbfn *putline, void *arg)
+{
+    int   i, j;
+    char *cp;
+    char  value[128];
+
+    for(i = 0; i < rows; i++) {
+        cp = value + BrSprintf(value, "%s%s[", prefix, (i == 0) ? info_0 : info_n);
+
+        for(j = 0; j < cols; j++)
+            cp += BrSprintf(cp, "%s%f", (j != 0) ? "," : "", BrFixedToFloat(*xp++));
+
+        BrStrCpy(cp, "]");
+
+        putline(value, arg);
+    }
+}
+
+static void DumpMatrixFloat(br_float *fp, int rows, int cols, const char *prefix, char *info_0, char *info_n, br_putline_cbfn *putline, void *arg)
+{
+    int   i, j;
+    char *cp;
+    char  value[128];
+
+    for(i = 0; i < rows; i++) {
+        cp = value + BrSprintf(value, "%s%s[", prefix, (i == 0) ? info_0 : info_n);
+
+        for(j = 0; j < cols; j++)
+            cp += BrSprintf(cp, "%s%f", (j != 0) ? "," : "", *fp++);
+
+        BrStrCpy(cp, "]");
+
+        putline(value, arg);
+    }
+}
+
+static void DumpObject(br_object *h, const char *prefix, const char *info, br_putline_cbfn *putline, void *arg)
+{
+    char        value[128];
+    const char *dev_ident;
+    const char *h_ident;
+    br_object  *dev;
+
+    if(h == NULL) {
+        BrSprintf(value, "%s%sNULL OBJECT", prefix, info);
+    } else {
+        dev = (br_object *)ObjectDevice(h);
+        if(dev)
+            dev_ident = ObjectIdentifier(dev);
+        else
+            dev_ident = "<NULL DEVICE>";
+
+        if(dev_ident == NULL)
+            dev_ident = "<NULL>";
+
+        h_ident = ObjectIdentifier(h);
+
+        if(h_ident == NULL)
+            h_ident = "<NULL>";
+
+        BrSprintf(value, "%s%s%08x %s:%s  %s", prefix, info, h, dev_ident, h_ident, BrTokenIdentifier(ObjectType(h)));
+    }
+
+    putline(value, arg);
+}
+#endif
+
+/* BRender:
+ * Dumps a token/value list using a supplied putline function
+ */
+void BR_RESIDENT_ENTRY BrTokenValueDump(br_token_value *tv, const char *prefix, br_putline_cbfn *putline, void *arg)
+{
+#if DEBUG
+    char       *id;
+    char        value[128], tmp[128], info_0[64], *info_n, *pvalue;
+    int         n, i;
+    br_object **pph;
+    void      **ppp;
+    br_token   *pt;
+
+#define VALUE(t) (*(t *)(tv + 1))
+
+    info_n = "                                         ";
+
+    for(n = 0; tv->t != BR_NULL_TOKEN; tv++, n++) {
+        id = BrTokenIdentifier(tv->t);
+
+        /* BRender:
+         * catch unknown tokens
+         */
+        if(id == NULL) {
+            BrSprintf(tmp, "%s  %5d:  ??? (%08x) %08x", prefix, n, tv[0], tv[1]);
+            putline(tmp, arg);
+            continue;
+        }
+
+        i = BrSprintf(info_0, "%5d:  %-32s ", n, id);
+
+        /* BRender:
+         * Convert the token's value into a string
+         */
+        pvalue = value;
+
+        switch(BrTokenType(tv->t)) {
+            case BRT_NONE:
+                value[0] = '\0';
+                break;
+
+            case BRT_BOOLEAN:
+                pvalue = tv->v.b ? "TRUE" : "FALSE";
+                break;
+
+            case BRT_POINTER:
+            case BRT_HANDLE:
+            case BRT_UINTPTR:
+                BrSprintf(value, "%" PRIxPTR, tv->v.pu);
+                break;
+
+            case BRT_INTPTR:
+                BrSprintf(value, "%" PRIxPTR, tv->v.pi);
+                break;
+
+            case BRT_TOKEN:
+                pvalue = BrTokenIdentifier(tv->v.t);
+                if(pvalue == NULL) {
+                    BrSprintf(value, "??? %d", tv->v.t);
+                    pvalue = value;
+                }
+                break;
+
+            case BRT_INT_8:
+                BrSprintf(value, "%d", tv->v.i8);
+                break;
+
+            case BRT_UINT_8:
+                BrSprintf(value, "%u (0x%02x)", tv->v.u8, tv->v.u8);
+                break;
+
+            case BRT_INT_16:
+                BrSprintf(value, "%d", tv->v.i16);
+                break;
+
+            case BRT_UINT_16:
+                BrSprintf(value, "%u (0x%04x)", tv->v.u16, tv->v.u16);
+                break;
+
+            case BRT_INT_32:
+                BrSprintf(value, "%" PRId32, tv->v.i32);
+                break;
+
+            case BRT_UINT_32:
+                BrSprintf(value, "%" PRIu32 " (0x%08" PRIx32 ")", tv->v.u32, tv->v.u32);
+                break;
+
+            case BRT_INT_64:
+                BrSprintf(value, "%" PRId64, tv->v.i64);
+                break;
+
+            case BRT_UINT_64:
+                BrSprintf(value, "%" PRIu64 " (0x%016" PRIx64 ")", tv->v.u64, tv->v.u64);
+                break;
+
+            case BRT_FIXED:
+                BrSprintf(value, "%f", BrFixedToFloat(tv->v.x));
+                break;
+
+            case BRT_FLOAT:
+                BrSprintf(value, "%f", tv->v.f);
+                break;
+
+            case BRT_ANGLE:
+                BrSprintf(value, "%f", BrAngleToDegree(tv->v.a));
+                break;
+
+            case BRT_COLOUR_RGB:
+                BrSprintf(value, "(%d,%d,%d)", BR_RED(tv->v.rgb), BR_GRN(tv->v.rgb), BR_BLU(tv->v.rgb));
+                break;
+
+            case BRT_OBJECT:
+                DumpObject(tv->v.o, prefix, info_0, putline, arg);
+                continue;
+
+            case BRT_STRING:
+                if(tv->v.str == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                pvalue = tv->v.str;
+                break;
+
+            case BRT_CONSTANT_STRING:
+                if(tv->v.cstr == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                pvalue = tv->v.cstr;
+                break;
+
+            case BRT_OBJECT_LIST:
+                if(tv->v.ol == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                pph = tv->v.ol;
+
+                if(*pph == NULL) {
+                    pvalue = "Empty List";
+                    break;
+                }
+
+                for(i = 0; *pph != NULL; i++, pph++)
+                    DumpObject(*pph, prefix, (i == 0) ? info_0 : info_n, putline, arg);
+
+                continue;
+
+            case BRT_TOKEN_LIST:
+                if(tv->v.tl == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                pt = tv->v.tl;
+
+                if(*pt == 0) {
+                    pvalue = "Empty List";
+                    break;
+                }
+
+                for(i = 0; *pt != BR_NULL_TOKEN; i++, pt++) {
+                    pvalue = BrTokenIdentifier(*pt);
+
+                    if(pvalue == NULL) {
+                        BrSprintf(value, "??? %d", *pt);
+                        pvalue = value;
+                    }
+
+                    BrSprintf(tmp, "%s%s%s", prefix, (i == 0) ? info_0 : info_n, pvalue);
+                    putline(tmp, arg);
+                }
+
+                continue;
+
+            case BRT_TOKEN_VALUE_LIST:
+                if(tv->v.tvl == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                BrTokenValueDump(tv->v.tvl, prefix, putline, arg);
+
+                continue;
+
+            case BRT_POINTER_LIST:
+                if(tv->v.pl == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                ppp = tv->v.pl;
+
+                if(*ppp == NULL) {
+                    pvalue = "Empty List";
+                    break;
+                }
+
+                for(i = 0; *ppp != NULL; i++, ppp++) {
+
+                    BrSprintf(value, "%08" PRIxPTR, (uintptr_t)*ppp);
+                    pvalue = value;
+
+                    BrSprintf(tmp, "%s%s%s", prefix, (i == 0) ? info_0 : info_n, pvalue);
+                    putline(tmp, arg);
+                }
+                continue;
+
+            case BRT_VECTOR2_INTEGER:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixInteger((br_int_32 *)tv->v.p, 1, 2, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR3_INTEGER:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixInteger((br_int_32 *)tv->v.p, 1, 3, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR4_INTEGER:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixInteger((br_int_32 *)tv->v.p, 1, 4, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR2_FIXED:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFixed((br_fixed_ls *)tv->v.p, 1, 2, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR3_FIXED:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFixed((br_fixed_ls *)tv->v.p, 1, 3, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR4_FIXED:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFixed((br_fixed_ls *)tv->v.p, 1, 4, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR2_FLOAT:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFloat((br_float *)tv->v.p, 1, 2, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR3_FLOAT:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFloat((br_float *)tv->v.p, 1, 3, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_VECTOR4_FLOAT:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFloat((br_float *)tv->v.p, 1, 4, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_MATRIX23_FIXED:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFixed((br_fixed_ls *)tv->v.p, 3, 2, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_MATRIX34_FIXED:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFixed((br_fixed_ls *)tv->v.p, 4, 3, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_MATRIX4_FIXED:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFixed((br_fixed_ls *)tv->v.p, 4, 4, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_MATRIX23_FLOAT:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFloat((br_float *)tv->v.p, 3, 2, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_MATRIX34_FLOAT:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFloat((br_float *)tv->v.p, 4, 3, prefix, info_0, info_n, putline, arg);
+                continue;
+
+            case BRT_MATRIX4_FLOAT:
+                if(tv->v.p == NULL) {
+                    pvalue = "NULL";
+                    break;
+                }
+
+                DumpMatrixFloat((br_float *)tv->v.p, 4, 4, prefix, info_0, info_n, putline, arg);
+                continue;
+        }
+
+        /* BRender:
+         * Print the token and value out
+         */
+        BrSprintf(tmp, "%s%s%s", prefix, info_0, pvalue);
+        putline(tmp, arg);
+    }
+#endif
+}
+#undef VALUE
+
+/* BRender:
+ * Convert a NUL terminated string into a token/value list
+ *
+ * String is parsed as:
+ * tv_string:	<tv_pair> { ',' <tv_pair> }
+ * tv_pair:		<tidentifier>
+ * 				<tidentifier> ':' <t_value>
+ * 				<tidentifier> '=' <t_value>
+ * tidentifier:	identifier
+ * 				"w"
+ * 				"h"
+ * 				"m"
+ * 				"l"
+ * t_value:		integer
+ * 				float
+ * 				'"' string '"'
+ * 				identifer
+ *				"true"
+ *				"t"
+ *				"false"
+ *				"f"
+ */
+static br_error parseTokenValue(br_lexer *l, br_token_value *tv, br_size_t size);
+
+/* BRender:
+ * Keyword tokens for lexer
+ */
+enum {
+    T_FALSE = T_KEYWORD + 0,
+    T_TRUE  = T_KEYWORD + 1,
+};
+
+br_error BR_RESIDENT_ENTRY BrStringToTokenValue(br_token_value *buffer, br_size_t buffer_size, const char *str)
+{
+    br_lexer               *l;
+    br_error                r;
+    static br_lexer_keyword keywords[] = {
+        {"true",  T_TRUE },
+        {"t",     T_TRUE },
+        {"false", T_FALSE},
+        {"f",     T_FALSE},
+    };
+
+    l = BrLexerAllocate(keywords, BR_ASIZE(keywords));
+    if(l == NULL)
+        return BRE_NO_MEMORY;
+
+    r = BrLexerPushString(l, str, NULL);
+
+    if(r != BRE_OK) {
+        BrLexerFree(l);
+        return r;
+    }
+
+    /* BRender:
+     * Start up the pipleline
+     */
+    BrLexerAdvance(l);
+
+    parseTokenValue(l, buffer, buffer_size);
+
+    BrLexerFree(l);
+
+    return BRE_OK;
+}
+
+static br_error parseTokenValue(br_lexer *l, br_token_value *tv, br_size_t size)
+{
+    br_size_t             len;
+    char                  name[40];
+    br_token              type;
+    const static br_token real_types[] = {BRT_FLOAT, BRT_FIXED};
+    br_error              r            = BRE_OK;
+    br_boolean            negative;
+
+    /* BRender:
+     * Check that there is enough space for terminator
+     */
+    if(size < sizeof(br_token_value))
+        return BRE_OVERFLOW;
+
+    size -= sizeof(br_token_value);
+
+    while(BrLexerCurrent(l) != T_EOF) {
+        /* BRender:
+         * Consume 0 or more commas
+         */
+        while(BrLexerCurrent(l) == T_COMMA)
+            BrLexerAdvance(l);
+
+        if(BrLexerCurrent(l) != T_IDENT)
+            break;
+
+        /* BRender:
+         * Check there is space for token/value and terminator
+         */
+        if(size <= sizeof(br_token_value)) {
+            r = BRE_OVERFLOW;
+            break;
+        }
+
+        /* BRender:
+         * token name
+         */
+        name[BR_ASIZE(name) - 1] = '\0';
+        BrStrNCpy(name, BrLexerString(l), BR_ASIZE(name) - 1);
+        BrLexerAdvance(l);
+
+#if 1
+        /* BRender:
+         * Convert some magic names for backwards compatibility
+         */
+        if(name[1] == '\0') {
+            if(name[0] == 'w' || name[0] == 'W')
+                BrStrCpy(name, "width");
+            else if(name[0] == 'h' || name[0] == 'H')
+                BrStrCpy(name, "height");
+            else if(name[0] == 'b' || name[0] == 'B')
+                BrStrCpy(name, "pixel_bits");
+            else if(name[0] == 'm' || name[0] == 'M')
+                BrStrCpy(name, "mode");
+        }
+#endif
+
+        /* BRender:
+         * Optional value
+         */
+        tv->t = BR_NULL_TOKEN;
+
+        if(BrLexerCurrent(l) == T_COLON || BrLexerCurrent(l) == T_EQUAL) {
+            BrLexerAdvance(l);
+
+            /* BRender:
+             * Check for negative scalar types
+             */
+            negative = BrLexerCurrent(l) == T_DASH;
+
+            if(negative) {
+
+                BrLexerAdvance(l);
+
+                if(BrLexerCurrent(l) != T_INTEGER && BrLexerCurrent(l) != T_REAL)
+                    break;
+            }
+
+            switch(BrLexerCurrent(l)) {
+
+                /* BRender:
+                 * Look for float or fixed
+                 */
+                case T_REAL: {
+                    tv->t = BrTokenFindType(&type, name, real_types, BR_ASIZE(real_types));
+
+                    if(tv->t == BR_NULL_TOKEN)
+                        break;
+
+                    switch(type) {
+                        case BRT_FLOAT:
+                            tv->v.f = negative ? -BrLexerReal(l) : BrLexerReal(l);
+                            break;
+                        case BRT_FIXED:
+                            tv->v.x = BrFloatToFixed(negative ? -BrLexerReal(l) : BrLexerReal(l));
+                            break;
+                        default:
+                            BrAbort();
+                    }
+                    break;
+                }
+
+                /* BRender:
+                 * if > 0 Look for i32, ui32, float, fixed or boolean
+                 * else Look for i32, float, fixed or boolean
+                 */
+                case T_INTEGER: {
+                    static br_token pos_int_types[] = {BRT_INT_64, BRT_UINT_64, BRT_INT_32, BRT_UINT_32, BRT_INT_16,  BRT_UINT_16,
+                                                       BRT_INT_8,  BRT_UINT_8,  BRT_FLOAT,  BRT_FIXED,   BRT_BOOLEAN, BRT_POINTER,
+                                                       BRT_OBJECT, BRT_HANDLE,  BRT_INTPTR, BRT_UINTPTR};
+                    static br_token neg_int_types[] = {BRT_INT_64, BRT_INT_32, BRT_INT_16,  BRT_INT_8,
+                                                       BRT_FLOAT,  BRT_FIXED,  BRT_BOOLEAN, BRT_INTPTR};
+
+                    if(negative)
+                        tv->t = BrTokenFindType(&type, name, neg_int_types, BR_ASIZE(neg_int_types));
+                    else
+                        tv->t = BrTokenFindType(&type, name, pos_int_types, BR_ASIZE(pos_int_types));
+
+                    if(tv->t == BR_NULL_TOKEN)
+                        break;
+
+                    switch(type) {
+                        case BRT_INT_64:
+                            tv->v.i64 = negative ? -(br_int_64)BrLexerInteger(l) : (br_int_64)BrLexerInteger(l);
+                            break;
+
+                        case BRT_UINT_64:
+                            tv->v.u64 = (br_uint_64)BrLexerInteger(l);
+                            break;
+
+                        case BRT_INT_32:
+                            tv->v.i32 = negative ? -(br_int_32)BrLexerInteger(l) : (br_int_32)BrLexerInteger(l);
+                            break;
+
+                        case BRT_UINT_32:
+                            tv->v.u32 = (br_uint_32)BrLexerInteger(l);
+                            break;
+
+                        case BRT_INT_16:
+                            tv->v.i16 = (br_int_16)(negative ? -BrLexerInteger(l) : BrLexerInteger(l));
+                            break;
+
+                        case BRT_UINT_16:
+                            tv->v.u16 = (br_uint_16)BrLexerInteger(l);
+                            break;
+
+                        case BRT_INT_8:
+                            tv->v.i8 = (br_int_8)(negative ? -BrLexerInteger(l) : BrLexerInteger(l));
+                            break;
+
+                        case BRT_UINT_8:
+                            tv->v.u8 = (br_uint_8)BrLexerInteger(l);
+                            break;
+
+                        case BRT_FLOAT:
+                            tv->v.f = (br_float)(negative ? -BrLexerInteger(l) : BrLexerInteger(l));
+                            break;
+                        case BRT_FIXED:
+                            tv->v.x = BrIntToFixed(negative ? -BrLexerInteger(l) : BrLexerInteger(l));
+                            break;
+                        case BRT_BOOLEAN:
+                            tv->v.b = (BrLexerInteger(l) != 0);
+                            break;
+
+                        case BRT_POINTER:
+                        case BRT_OBJECT:
+                        case BRT_HANDLE:
+                        case BRT_INTPTR:
+                        case BRT_UINTPTR:
+                            tv->v.p = (void *)BrLexerInteger(l);
+                            break;
+
+                        default:
+                            /* BRenderModern:
+                             * BUG: You're missing a case from {pos,neg}_int_types.
+                             */
+                            BrAbort();
+                    }
+                    break;
+                }
+
+                /* BRender:
+                 * Look for token
+                 */
+                case T_IDENT: {
+                    static br_token ident_types[] = {BRT_TOKEN};
+
+                    tv->t = BrTokenFindType(&type, name, ident_types, BR_ASIZE(ident_types));
+
+                    if(tv->t == BR_NULL_TOKEN)
+                        break;
+
+                    tv->v.t = BrTokenFind(BrLexerString(l));
+                    if(tv->v.t == BR_NULL_TOKEN)
+                        tv->t = BR_NULL_TOKEN;
+                    break;
+                }
+
+                /* BRender:
+                 * Look for boolean
+                 */
+                case T_TRUE:
+                case T_FALSE: {
+                    static br_token bool_types[] = {BRT_BOOLEAN};
+
+                    tv->t = BrTokenFindType(&type, name, bool_types, BR_ASIZE(bool_types));
+
+                    if(tv->t == BR_NULL_TOKEN)
+                        break;
+
+                    tv->v.b = BrLexerCurrent(l) == T_TRUE;
+                    break;
+                }
+
+                /* BRender:
+                 * Look for string or constant_string
+                 */
+                case T_STRING: {
+                    static br_token string_types[] = {BRT_STRING, BRT_CONSTANT_STRING};
+
+                    tv->t = BrTokenFindType(&type, name, string_types, BR_ASIZE(string_types));
+
+                    if(tv->t == BR_NULL_TOKEN)
+                        break;
+
+                    /* BRender:
+                     * Allocate space from end of buffer
+                     */
+                    len = BrStrLen(BrLexerString(l)) + 1;
+                    if(len > (int)size) {
+                        tv->t = BR_NULL_TOKEN;
+                        r     = BRE_OVERFLOW;
+                        break;
+                    }
+
+                    size -= len;
+                    tv->v.str = (char *)tv + size;
+                    BrMemCpy(tv->v.str, BrLexerString(l), len);
+                    break;
+                }
+
+                default:
+                    BrLexerError(l, "expecting a value");
+                    break;
+            }
+
+            BrLexerAdvance(l);
+
+        } else {
+            /* BRender:
+             * look for none or boolean
+             */
+            static br_token none_types[] = {BRT_NONE, BRT_BOOLEAN};
+
+            tv->t = BrTokenFindType(&type, name, none_types, BR_ASIZE(none_types));
+
+            if(tv->t != BR_NULL_TOKEN) {
+                if(type == BRT_BOOLEAN)
+                    tv->v.b = T_TRUE;
+            }
+        }
+
+        if(tv->t != BR_NULL_TOKEN) {
+            tv++;
+            size -= sizeof(*tv);
+        } else {
+            BrLexerError(l, "unknown token");
+        }
+    }
+
+    /* BRender:
+     * Terminate buffer
+     */
+    tv->t     = BR_NULL_TOKEN;
+    tv->v.u32 = 0;
+
+    return r;
+}
+
+/* BRender:
+ * Compare two sets of token values for equality
+ */
+br_boolean BR_RESIDENT_ENTRY BrTokenValueCompare(br_token_value *tv1, br_token_value *tv2)
+{
+    int i;
+
+    if(tv1 == NULL && tv2 == NULL)
+        return BR_TRUE;
+
+    if(tv1 == NULL || tv2 == NULL)
+        return BR_FALSE;
+
+    for(;; tv1++, tv2++) {
+        if(tv1->t != tv2->t)
+            return BR_FALSE;
+
+        if(tv1->t == BR_NULL_TOKEN)
+            return BR_TRUE;
+
+        switch(BrTokenType(tv1->t)) {
+            case BRT_NONE:
+                break;
+
+            case BRT_STRING:
+            case BRT_CONSTANT_STRING:
+                if(BrStrCmp(tv1->v.str, tv2->v.str))
+                    return BR_FALSE;
+                break;
+
+            case BRT_OBJECT_LIST:
+            case BRT_TOKEN_LIST:
+            case BRT_POINTER_LIST:
+                for(i = 0;; i++) {
+                    if(tv1->v.pl[i] != tv2->v.pl[i])
+                        return BR_FALSE;
+                    if(tv1->v.pl[i] == NULL)
+                        break;
+                }
+                break;
+
+            case BRT_VECTOR2_INTEGER:
+            case BRT_VECTOR2_FLOAT:
+            case BRT_VECTOR2_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 2 * sizeof(br_int_32)))
+                    return BR_FALSE;
+
+                break;
+
+            case BRT_VECTOR3_INTEGER:
+            case BRT_VECTOR3_FLOAT:
+            case BRT_VECTOR3_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 3 * sizeof(br_int_32)))
+                    return BR_FALSE;
+
+                break;
+
+            case BRT_VECTOR4_INTEGER:
+            case BRT_VECTOR4_FLOAT:
+            case BRT_VECTOR4_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 4 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_MATRIX23_FLOAT:
+            case BRT_MATRIX23_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 6 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_MATRIX34_FLOAT:
+            case BRT_MATRIX34_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 12 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_MATRIX4_FLOAT:
+            case BRT_MATRIX4_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 16 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_BOOLEAN:
+                if(!tv1->v.u32 != !tv2->v.u32)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_8:
+                if(tv1->v.i8 != tv2->v.i8)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_8:
+                if(tv1->v.u8 != tv2->v.u8)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_16:
+                if(tv1->v.i16 != tv2->v.i16)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_16:
+                if(tv1->v.u16 != tv2->v.u16)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_32:
+                if(tv1->v.i32 != tv2->v.i32)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_32:
+                if(tv1->v.u32 != tv2->v.u32)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_64:
+                if(tv1->v.i64 != tv2->v.i64)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_64:
+                if(tv1->v.u64 != tv2->v.u64)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INTPTR:
+                if(tv1->v.pi != tv2->v.pi)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINTPTR:
+                if(tv1->v.pu != tv2->v.pu)
+                    return BR_FALSE;
+                break;
+
+            default:
+                if(tv1->v.u32 != tv2->v.u32)
+                    return BR_FALSE;
+
+                break;
+        }
+    }
+}
+
+/* BRenderModern:
+ * Compare two sets of token values for equality
+ *
+ * Allows a NULL terminated list of tokens which are not significant to the
+ * comparison.
+ */
+br_boolean BR_RESIDENT_ENTRY BrTokenValueComparePartial(br_token_value *tv1, br_token_value *tv2, const br_token *insignificant)
+{
+    int             i;
+    const br_token *t;
+
+    if(tv1 == NULL && tv2 == NULL)
+        return BR_TRUE;
+
+    if(tv1 == NULL || tv2 == NULL)
+        return BR_FALSE;
+
+    for(;; tv1++, tv2++) {
+
+        if(tv1->t != tv2->t)
+            return BR_FALSE;
+
+        if(tv1->t == BR_NULL_TOKEN)
+            return BR_TRUE;
+
+        for(t = insignificant; *t != BR_NULL_TOKEN; t++)
+            if(tv1->t == *t)
+                break;
+
+        if(*t != BR_NULL_TOKEN)
+            continue;
+
+        switch(BrTokenType(tv1->t)) {
+            case BRT_NONE:
+                break;
+
+            case BRT_STRING:
+            case BRT_CONSTANT_STRING:
+                if(BrStrCmp(tv1->v.str, tv2->v.str))
+                    return BR_FALSE;
+                break;
+
+            case BRT_OBJECT_LIST:
+            case BRT_TOKEN_LIST:
+            case BRT_POINTER_LIST:
+                for(i = 0;; i++) {
+                    if(tv1->v.pl[i] != tv2->v.pl[i])
+                        return BR_FALSE;
+                    if(tv1->v.pl[i] == NULL)
+                        break;
+                }
+                break;
+
+            case BRT_VECTOR2_INTEGER:
+            case BRT_VECTOR2_FLOAT:
+            case BRT_VECTOR2_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 2 * sizeof(br_int_32)))
+                    return BR_FALSE;
+
+                break;
+
+            case BRT_VECTOR3_INTEGER:
+            case BRT_VECTOR3_FLOAT:
+            case BRT_VECTOR3_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 3 * sizeof(br_int_32)))
+                    return BR_FALSE;
+
+                break;
+
+            case BRT_VECTOR4_INTEGER:
+            case BRT_VECTOR4_FLOAT:
+            case BRT_VECTOR4_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 4 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_MATRIX23_FLOAT:
+            case BRT_MATRIX23_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 6 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_MATRIX34_FLOAT:
+            case BRT_MATRIX34_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 12 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_MATRIX4_FLOAT:
+            case BRT_MATRIX4_FIXED:
+                if(BrMemCmp(tv1->v.p, tv2->v.p, 16 * sizeof(br_int_32)))
+                    return BR_FALSE;
+                break;
+
+            case BRT_BOOLEAN:
+                if(!tv1->v.u32 != !tv2->v.u32)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_8:
+                if(tv1->v.i8 != tv2->v.i8)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_8:
+                if(tv1->v.u8 != tv2->v.u8)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_16:
+                if(tv1->v.i16 != tv2->v.i16)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_16:
+                if(tv1->v.u16 != tv2->v.u16)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_32:
+                if(tv1->v.i32 != tv2->v.i32)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_32:
+                if(tv1->v.u32 != tv2->v.u32)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INT_64:
+                if(tv1->v.i64 != tv2->v.i64)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINT_64:
+                if(tv1->v.u64 != tv2->v.u64)
+                    return BR_FALSE;
+                break;
+
+            case BRT_INTPTR:
+                if(tv1->v.pi != tv2->v.pi)
+                    return BR_FALSE;
+                break;
+
+            case BRT_UINTPTR:
+                if(tv1->v.pu != tv2->v.pu)
+                    return BR_FALSE;
+                break;
+
+            default:
+                if(tv1->v.u32 != tv2->v.u32)
+                    return BR_FALSE;
+
+                break;
+        }
+    }
+}
+
+br_value BR_RESIDENT_ENTRY BrTokenValueVaArg(br_token token, va_list *ap)
+{
+    switch(BrTokenType(token)) {
+        case BR_NULL_TOKEN:
+        case BRT_NONE:
+        default:
+            break;
+        case BRT_POINTER:
+            return (br_value){.p = va_arg(*ap, void *)};
+        case BRT_INTPTR:
+            return (br_value){.pi = va_arg(*ap, intptr_t)};
+        case BRT_UINTPTR:
+            return (br_value){.pu = va_arg(*ap, uintptr_t)};
+        case BRT_BOOLEAN:
+            return (br_value){.b = (br_boolean)va_arg(*ap, int)};
+        case BRT_TOKEN:
+            return (br_value){.t = (br_token)va_arg(*ap, int)};
+        case BRT_INT_8:
+            return (br_value){.i8 = (br_int_8)va_arg(*ap, int)};
+        case BRT_UINT_8:
+            return (br_value){.u8 = (br_uint_8)va_arg(*ap, int)};
+        case BRT_INT_16:
+            return (br_value){.i16 = (br_int_16)va_arg(*ap, int)};
+        case BRT_UINT_16:
+            return (br_value){.u16 = (br_uint_16)va_arg(*ap, int)};
+        case BRT_INT_32:
+            return (br_value){.i32 = (br_int_32)va_arg(*ap, int)};
+        case BRT_UINT_32:
+            return (br_value){.u32 = va_arg(*ap, br_uint_32)};
+        case BRT_INT_64:
+            return (br_value){.i64 = va_arg(*ap, br_int_64)};
+        case BRT_UINT_64:
+            return (br_value){.u64 = va_arg(*ap, br_uint_64)};
+        case BRT_FIXED:
+            return (br_value){.x = va_arg(*ap, br_fixed_ls)};
+        case BRT_FLOAT:
+            return (br_value){.f = (float)va_arg(*ap, double)};
+        /* BRenderModern: NB: missing BRT_SCALAR */
+        case BRT_ANGLE:
+            return (br_value){.a = (br_angle)va_arg(*ap, double)};
+        case BRT_COLOUR_RGB:
+            return (br_value){.rgb = va_arg(*ap, br_colour)};
+        case BRT_OBJECT:
+            return (br_value){.o = va_arg(*ap, br_object *)};
+        case BRT_HANDLE:
+            return (br_value){.h = va_arg(*ap, void *)};
+        case BRT_VECTOR2_INTEGER:
+            return (br_value){.v2_i = va_arg(*ap, br_vector2_i *)};
+        case BRT_VECTOR3_INTEGER:
+            return (br_value){.v3_i = va_arg(*ap, br_vector3_i *)};
+        case BRT_VECTOR4_INTEGER:
+            return (br_value){.v4_i = va_arg(*ap, br_vector4_i *)};
+        case BRT_VECTOR2_FIXED:
+            return (br_value){.v2_x = va_arg(*ap, br_vector2_x *)};
+        case BRT_VECTOR3_FIXED:
+            return (br_value){.v3_x = va_arg(*ap, br_vector3_x *)};
+        case BRT_VECTOR4_FIXED:
+            return (br_value){.v4_x = va_arg(*ap, br_vector4_x *)};
+        case BRT_VECTOR2_FLOAT:
+            return (br_value){.v2_f = va_arg(*ap, br_vector2_f *)};
+        case BRT_VECTOR3_FLOAT:
+            return (br_value){.v3_f = va_arg(*ap, br_vector3_f *)};
+        case BRT_VECTOR4_FLOAT:
+            return (br_value){.v4_f = va_arg(*ap, br_vector4_f *)};
+        case BRT_MATRIX23_FIXED:
+            return (br_value){.m23_x = va_arg(*ap, br_matrix23_x *)};
+        case BRT_MATRIX34_FIXED:
+            return (br_value){.m34_x = va_arg(*ap, br_matrix34_x *)};
+        case BRT_MATRIX4_FIXED:
+            return (br_value){.m4_x = va_arg(*ap, br_matrix4_x *)};
+        case BRT_MATRIX23_FLOAT:
+            return (br_value){.m23_f = va_arg(*ap, br_matrix23_f *)};
+        case BRT_MATRIX34_FLOAT:
+            return (br_value){.m34_f = va_arg(*ap, br_matrix34_f *)};
+        case BRT_MATRIX4_FLOAT:
+            return (br_value){.m4_f = va_arg(*ap, br_matrix4_f *)};
+        case BRT_STRING:
+            return (br_value){.str = va_arg(*ap, char *)};
+        case BRT_CONSTANT_STRING:
+            return (br_value){.cstr = va_arg(*ap, const char *)};
+        case BRT_OBJECT_LIST:
+            return (br_value){.ol = va_arg(*ap, struct br_object **)};
+        case BRT_TOKEN_LIST:
+            return (br_value){.tl = va_arg(*ap, br_token *)};
+        case BRT_POINTER_LIST:
+            return (br_value){.pl = va_arg(*ap, void *)};
+        case BRT_TOKEN_VALUE_LIST:
+            return (br_value){.tvl = va_arg(*ap, struct br_token_value *)};
+    }
+
+    return (br_value){0};
+}

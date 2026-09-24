@@ -1,4 +1,4 @@
-/*************************************************************************
+/** 3DMMv1.0: ***********************************************************************
 
     zbmp.h: Z-buffer Bitmap Class
 
@@ -11,9 +11,9 @@
 #ifndef ZBMP_H
 #define ZBMP_H
 
-#define kcbPixelZbmp 2 // Z-buffers are 2 bytes per pixel (16 bit)
+#define kcbPixelZbmp 2 // 3DMMv1.0: Z-buffers are 2 bytes per pixel (16 bit)
 
-// ZBMP on file
+// 3DMMv1.0: ZBMP on file
 struct ZBMPF
 {
     int16_t bo;
@@ -22,12 +22,12 @@ struct ZBMPF
     int16_t ypTop;
     int16_t dxp;
     int16_t dyp;
-    // void *rgb; 		// pixels follow immediately after ZBMPF
+    // 3DMMv1.0: void *rgb; 		// pixels follow immediately after ZBMPF
 };
 VERIFY_STRUCT_SIZE(ZBMPF, 12);
 const uint32_t kbomZbmpf = 0x55500000;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     ZBMP class
 ****************************************/
 typedef class ZBMP *PZBMP;
@@ -40,10 +40,10 @@ class ZBMP : public ZBMP_PAR
     MARKMEM
 
   protected:
-    RC _rc;         // bounding rectangle of ZBMP
-    int32_t _cbRow; // bytes per row
-    int32_t _cb;    // count of bytes in Z buffer
-    uint8_t *_prgb; // Z buffer
+    RC _rc;         // 3DMMv1.0: bounding rectangle of ZBMP
+    int32_t _cbRow; // 3DMMv1.0: bytes per row
+    int32_t _cb;    // 3DMMv1.0: count of bytes in Z buffer
+    uint8_t *_prgb; // 3DMMv1.0: Z buffer
     ZBMP(void)
     {
     }
@@ -72,4 +72,4 @@ class ZBMP : public ZBMP_PAR
     bool FWrite(PCFL pcfl, CTG ctg, CNO *pcno);
 };
 
-#endif // ZBMP_H
+#endif // 3DMMEx: ZBMP_H

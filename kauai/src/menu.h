@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-// Menu Bar class
+// 3DMMv1.0: Menu Bar class
 typedef class MUB *PMUB;
 #define MUB_PAR BASE
 #define kclsMUB KLCONST3('M', 'U', 'B')
@@ -27,24 +27,24 @@ class MUB : public MUB_PAR
 
   private:
 #ifdef MAC
-    // System Menu
+    // 3DMMv1.0: System Menu
     typedef MenuInfo SMU;
 
-    // System Menu Bar
+    // 3DMMv1.0: System Menu Bar
     struct SMB
     {
         ushort cmid;
         ushort rgmid[1];
     };
 
-    // Menu Item
+    // 3DMMv1.0: Menu Item
     struct MNI
     {
         int32_t cid;
         int32_t lw0;
     };
 
-    // Menu
+    // 3DMMv1.0: Menu
     struct MNU
     {
         int32_t mid;
@@ -52,7 +52,7 @@ class MUB : public MUB_PAR
         PGL pglmni;
     };
 
-    // menu list
+    // 3DMMv1.0: menu list
     struct MLST
     {
         int32_t imnu;
@@ -64,7 +64,7 @@ class MUB : public MUB_PAR
 
     HN _hnmbar;
     PGL _pglmnu;
-    PGL _pglmlst; // menu lists
+    PGL _pglmlst; // 3DMMv1.0: menu lists
 
     bool _FInsertMni(int32_t imnu, int32_t imni, int32_t cid, int32_t lw0, PSTN pstn);
     void _DeleteMni(int32_t imnu, int32_t imni);
@@ -72,10 +72,10 @@ class MUB : public MUB_PAR
     bool _FGetCmdFromCode(int32_t lwCode, CMD *pcmd);
     void _Free(void);
     bool _FFetchRes(uint32_t ridMenuBar);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
 #ifdef KAUAI_WIN32
-    // menu list
+    // 3DMMv1.0: menu list
     struct MLST
     {
         HMENU hmenu;
@@ -86,14 +86,14 @@ class MUB : public MUB_PAR
         PGL pgllw;
     };
 
-    HMENU _hmenu;  // the menu bar
-    int32_t _cmnu; // number of menus on the menu bar
-    PGL _pglmlst;  // menu lists
+    HMENU _hmenu;  // 3DMMv1.0: the menu bar
+    int32_t _cmnu; // 3DMMv1.0: number of menus on the menu bar
+    PGL _pglmlst;  // 3DMMv1.0: menu lists
 
     bool _FInitLists(void);
     bool _FFindMlst(int32_t wcid, MLST *pmlst, int32_t *pimlst = pvNil);
     bool _FGetCmdForWcid(int32_t wcid, PCMD pcmd);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
   protected:
     MUB(void)
@@ -111,10 +111,10 @@ class MUB : public MUB_PAR
 #ifdef MAC
     virtual bool FDoClick(EVT *pevt);
     virtual bool FDoKey(EVT *pevt);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef KAUAI_WIN32
     virtual void EnqueueWcid(int32_t wcid);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
     virtual bool FAddListCid(int32_t cid, uintptr_t lw0, PSTN pstn);
     virtual bool FRemoveListCid(int32_t cid, uintptr_t lw0, PSTN pstn = pvNil);
@@ -124,4 +124,4 @@ class MUB : public MUB_PAR
 
 extern PMUB vpmubCur;
 
-#endif //! MENU_H
+#endif //! 3DMMv1.0: MENU_H

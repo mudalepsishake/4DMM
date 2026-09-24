@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     CHOMP.CPP
     Main routine for Chomp, the chunky compiler
@@ -10,7 +10,7 @@
 #include "chomp.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main routine for the stand-alone chunky compiler.  Returns non-zero
     iff there's an error.
 ***************************************************************************/
@@ -29,13 +29,13 @@ int main(int cpszs, char *prgpszs[])
 
 #ifdef UNICODE
     fprintf(stderr, "\nMicrosoft (R) Chunky File Compiler (Unicode; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
     fprintf(stderr, "\nMicrosoft (R) Chunky File Compiler (Ansi; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
     fprintf(stderr, "Copyright (C) Microsoft Corp 1995. All rights reserved.\n\n");
 
 #ifdef DEBUG
-    // Override cactAV for faster builds
+    // 3DMMEx: Override cactAV for faster builds
     SZ szCactAv;
     FillPb(szCactAv, SIZEOF(szCactAv), 0);
     if (GetEnvironmentVariable(PszLit("CHOMP_CACTAV"), szCactAv, CvFromRgv(szCactAv)) != 0)
@@ -47,14 +47,14 @@ int main(int cpszs, char *prgpszs[])
             fprintf(stderr, "chomp: warning: Overriding vcactAV=%d\n", vcactAV);
         }
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     for (prgpszs++; --cpszs > 0; prgpszs++)
     {
         pszs = *prgpszs;
         if (strlen(pszs) == 2 && (pszs[0] == '-' || pszs[0] == '/'))
         {
-            // option
+            // 3DMMv1.0: option
             switch (pszs[1])
             {
             case 'c':
@@ -191,7 +191,7 @@ int main(int cpszs, char *prgpszs[])
         return !fRet;
     }
 
-    // print usage
+    // 3DMMv1.0: print usage
 LUsage:
     fprintf(stderr, "%s",
             "Usage:\n"
@@ -205,7 +205,7 @@ LUsage:
 #ifdef DEBUG
 bool _fEnableWarnings = fTrue;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Warning proc called by Warn() macro
 ***************************************************************************/
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
@@ -221,7 +221,7 @@ void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returning true breaks into the debugger.
 ***************************************************************************/
 bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int32_t cb)
@@ -262,4 +262,4 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int3
 
     return fFalse;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -15,7 +15,7 @@ ASSERTNAME
 RTCLASS(MSTP)
 RTCLASS(MIDS)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a midi stream parser.
 ***************************************************************************/
 MSTP::MSTP(void)
@@ -24,7 +24,7 @@ MSTP::MSTP(void)
     _pmids = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a midi stream parser.
 ***************************************************************************/
 MSTP::~MSTP(void)
@@ -36,7 +36,7 @@ MSTP::~MSTP(void)
     ReleasePpo(&_pmids);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize this midi stream parser to the given midi stream and use the
     given time as the start time.
 ***************************************************************************/
@@ -70,7 +70,7 @@ void MSTP::Init(PMIDS pmids, uint32_t tsStart, int32_t lwTempo)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next midi event. If fAdvance is true, advance to the next event
     after getting this one.
 ***************************************************************************/
@@ -94,7 +94,7 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
     tsCur = _tsCur;
     for (pbCur = _pbCur; midev.cb == 0;)
     {
-        // read the delta time
+        // 3DMMv1.0: read the delta time
         if (!_FReadVar(&pbCur, (int32_t *)&midev.ts) || pbCur >= _pbLim)
             goto LFail;
         tsCur += midev.ts;
@@ -102,12 +102,12 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
 
         if ((bT = *pbCur) & 0x80)
         {
-            // status byte
+            // 3DMMv1.0: status byte
             _bStatus = bT;
             pbCur++;
         }
 
-        // NOTE: we never return running status
+        // 3DMMv1.0: NOTE: we never return running status
         midev.rgbSend[0] = _bStatus;
         ibSend = 1;
 
@@ -116,27 +116,27 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
         default:
             goto LFail;
 
-        case 0x80: // note off
-        case 0x90: // note on
-        case 0xA0: // key pressure
-        case 0xB0: // control change
-        case 0xE0: // pitch wheel
+        case 0x80: // 3DMMv1.0: note off
+        case 0x90: // 3DMMv1.0: note on
+        case 0xA0: // 3DMMv1.0: key pressure
+        case 0xB0: // 3DMMv1.0: control change
+        case 0xE0: // 3DMMv1.0: pitch wheel
             goto LTwoBytes;
 
-        case 0xC0: // program change
-        case 0xD0: // channel pressure
+        case 0xC0: // 3DMMv1.0: program change
+        case 0xD0: // 3DMMv1.0: channel pressure
             goto LOneByte;
 
         case 0xF0:
             switch (_bStatus & 0x0F)
             {
             default:
-                // unknown opcode
+                // 3DMMv1.0: unknown opcode
                 goto LFail;
 
             case 0x02:
             LTwoBytes:
-                // 2 bytes worth of parameters
+                // 3DMMv1.0: 2 bytes worth of parameters
                 if (pbCur + 2 > _pbLim)
                     goto LFail;
                 midev.rgbSend[ibSend++] = *pbCur++;
@@ -144,10 +144,10 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
                 midev.cb = ibSend;
                 break;
 
-            case 0x01: // quarter frame
-            case 0x03: // song select
+            case 0x01: // 3DMMv1.0: quarter frame
+            case 0x03: // 3DMMv1.0: song select
             LOneByte:
-                // 1 byte worth of parameters
+                // 3DMMv1.0: 1 byte worth of parameters
                 if (pbCur >= _pbLim)
                     goto LFail;
                 midev.rgbSend[ibSend++] = *pbCur++;
@@ -160,15 +160,15 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
             case 0x0B:
             case 0x0C:
             case 0x0E:
-                // no parameters
-                _bStatus = 0; // can't use running status on this!
+                // 3DMMv1.0: no parameters
+                _bStatus = 0; // 3DMMv1.0: can't use running status on this!
                 midev.cb = ibSend;
                 break;
 
             case 0x00:
             case 0x07:
-                // system exclusive messages - ignore them
-                // read the length
+                // 3DMMv1.0: system exclusive messages - ignore them
+                // 3DMMv1.0: read the length
                 if (!_FReadVar(&pbCur, &cbT) || !FIn(cbT - 1, 0, _pbLim - pbCur))
                 {
                     goto LFail;
@@ -177,7 +177,7 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
                 break;
 
             case 0x0F:
-                // meta event
+                // 3DMMv1.0: meta event
                 if (pbCur >= _pbLim)
                     goto LFail;
                 bT = *pbCur++;
@@ -192,10 +192,10 @@ bool MSTP::FGetEvent(PMIDEV pmidev, bool fAdvance)
                     pbCur += cbT;
                     break;
 
-                case 0x2F: // end of track
+                case 0x2F: // 3DMMv1.0: end of track
                     goto LFail;
 
-                case 0x51: // tempo change
+                case 0x51: // 3DMMv1.0: tempo change
                     if (cbT != 3)
                         goto LFail;
                     midev.lwTempo = LwFromBytes(0, pbCur[0], pbCur[1], pbCur[2]);
@@ -226,7 +226,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a variable length quantity.
 ***************************************************************************/
 bool MSTP::_FReadVar(uint8_t **ppbCur, int32_t *plw)
@@ -248,7 +248,7 @@ bool MSTP::_FReadVar(uint8_t **ppbCur, int32_t *plw)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MSTP.
 ***************************************************************************/
 void MSTP::AssertValid(uint32_t grf)
@@ -263,7 +263,7 @@ void MSTP::AssertValid(uint32_t grf)
     AssertIn(_pbCur - _prgb, 0, _pbLim - _prgb + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MSTP.
 ***************************************************************************/
 void MSTP::MarkMem(void)
@@ -272,16 +272,16 @@ void MSTP::MarkMem(void)
     MSTP_PAR::MarkMem();
     MarkMemObj(_pmids);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a midi stream object.
 ***************************************************************************/
 MIDS::MIDS(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a midi stream object.
 ***************************************************************************/
 MIDS::~MIDS(void)
@@ -290,7 +290,7 @@ MIDS::~MIDS(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MIDS.
 ***************************************************************************/
 void MIDS::AssertValid(uint32_t grf)
@@ -299,7 +299,7 @@ void MIDS::AssertValid(uint32_t grf)
     AssertHq(_hqrgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MIDS.
 ***************************************************************************/
 void MIDS::MarkMem(void)
@@ -308,9 +308,9 @@ void MIDS::MarkMem(void)
     MIDS_PAR::MarkMem();
     MarkHq(_hqrgb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A baco reader for a midi stream.
 ***************************************************************************/
 bool MIDS::FReadMids(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -340,7 +340,7 @@ bool MIDS::FReadMids(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a midi stream from the given block.
 ***************************************************************************/
 PMIDS MIDS::PmidsRead(PBLCK pblck)
@@ -359,7 +359,7 @@ PMIDS MIDS::PmidsRead(PBLCK pblck)
     return pmids;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a native standard midi file and create a midi stream from it.
 ***************************************************************************/
 PMIDS MIDS::PmidsReadNative(FNI *pfni)
@@ -367,7 +367,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
     AssertPo(pfni, ffniFile);
 
 #pragma pack(1)
-    // Midi chunk header
+    // 3DMMv1.0: Midi chunk header
     struct MIDCHD
     {
         int32_t lwSig;
@@ -376,7 +376,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
     VERIFY_STRUCT_SIZE(MIDCHD, 8);
 #define kbomMidchd 0xF0000000
 
-    // Midi file header chunk - should be first chunk
+    // 3DMMv1.0: Midi file header chunk - should be first chunk
     struct MIDHED
     {
         MIDCHD midchd;
@@ -411,35 +411,35 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
     PMIDS pmids = pvNil;
     PGL pglmidtr = pvNil;
 
-    // open the file and set up the source flo
+    // 3DMMv1.0: open the file and set up the source flo
     if (pvNil == (flo.pfil = FIL::PfilOpen(pfni)))
         return pvNil;
     flo.fp = 0;
     flo.cb = flo.pfil->FpMac();
 
-    // get the header chunk
+    // 3DMMv1.0: get the header chunk
     if (flo.cb < SIZEOF(MIDHED) || !flo.FReadRgb(&midhed, SIZEOF(midhed), 0))
         goto LFail;
 
-        // byte order is always big endian
+        // 3DMMv1.0: byte order is always big endian
 #ifdef LITTLE_ENDIAN
     SwapBytesBom(&midhed, kbomMidhed);
-#endif // LITTLE_ENDIAN
+#endif // 3DMMv1.0: LITTLE_ENDIAN
 
-    // make sure it's a valid header chunk
+    // 3DMMv1.0: make sure it's a valid header chunk
     if (midhed.midchd.lwSig != 'MThd' || !FIn(midhed.midchd.cb + SIZEOF(midchd), SIZEOF(midhed), flo.cb))
     {
         goto LFail;
     }
 
-    // allocate the list of tracks to parse
+    // 3DMMv1.0: allocate the list of tracks to parse
     if (pvNil == (pglmidtr = GL::PglNew(SIZEOF(MIDTR))))
         goto LFail;
 
-    // build the track list...
+    // 3DMMv1.0: build the track list...
     for (fp = midhed.midchd.cb + SIZEOF(midchd); fp < flo.cb;)
     {
-        // read the next midi chunk header
+        // 3DMMv1.0: read the next midi chunk header
         if (fp + SIZEOF(midchd) > flo.cb || !flo.FReadRgb(&midchd, SIZEOF(midchd), fp))
         {
             goto LFail;
@@ -448,41 +448,41 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
 
 #ifdef LITTLE_ENDIAN
         SwapBytesBom(&midchd, kbomMidchd);
-#endif // LITTLE_ENDIAN
+#endif // 3DMMv1.0: LITTLE_ENDIAN
 
-        // make sure the chunk length is valid
+        // 3DMMv1.0: make sure the chunk length is valid
         if (!FIn(midchd.cb, 0, flo.cb - fp + 1))
             goto LFail;
 
-        // if it's not a track chunk ignore it
+        // 3DMMv1.0: if it's not a track chunk ignore it
         if (midchd.lwSig != 'MTrk' || midchd.cb == 0)
         {
             fp += midchd.cb;
             continue;
         }
 
-        // wrap a midi stream object around the track data
+        // 3DMMv1.0: wrap a midi stream object around the track data
         if (pvNil == (pmids = NewObj MIDS) || !flo.FReadHq(&pmids->_hqrgb, midchd.cb, fp))
         {
             goto LFail;
         }
         fp += midchd.cb;
 
-        // create the midi stream parser for this stream
+        // 3DMMv1.0: create the midi stream parser for this stream
         if (pvNil == (midtr.pmstp = NewObj MSTP))
             goto LFail;
-        midtr.pmstp->Init(pmids, 0, 500000 /* microseconds per beat */);
+        midtr.pmstp->Init(pmids, 0, 500000 /* 3DMMv1.0: microseconds per beat */);
         ReleasePpo(&pmids);
 
-        // get the first event - if there isn't one, just free
-        // the stream parser and continue
+        // 3DMMv1.0: get the first event - if there isn't one, just free
+        // 3DMMv1.0: the stream parser and continue
         if (!midtr.pmstp->FGetEvent(&midtr.midevCur))
         {
             ReleasePpo(&midtr.pmstp);
             continue;
         }
 
-        // add the track to the list
+        // 3DMMv1.0: add the track to the list
         if (!pglmidtr->FAdd(&midtr))
         {
             ReleasePpo(&midtr.pmstp);
@@ -491,28 +491,28 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
 
         if (midhed.swFmt != 1 && midhed.swFmt != 2)
         {
-            // we're only supposed to have one track and we have it,
-            // so don't bother looking for more.
+            // 3DMMv1.0: we're only supposed to have one track and we have it,
+            // 3DMMv1.0: so don't bother looking for more.
             break;
         }
     }
     ReleasePpo(&flo.pfil);
 
-    // make sure we have at least one track
+    // 3DMMv1.0: make sure we have at least one track
     if (pglmidtr->IvMac() == 0)
         goto LFail;
 
-    // set the amount to grow the bsm by
+    // 3DMMv1.0: set the amount to grow the bsm by
     bsm.SetMinGrow(1024);
 
     if (FPure(fSmpte = (midhed.swDiv < 0)))
     {
-        // SMPTE time
+        // 3DMMv1.0: SMPTE time
         int32_t fps = (uint8_t)(-BHigh(midhed.swDiv));
         int32_t ctickFrame = BLow(midhed.swDiv);
 
         if (fps == 29)
-            fps = 30; // 29 is 30 drop frame - 30 is close enough for us
+            fps = 30; // 3DMMv1.0: 29 is 30 drop frame - 30 is close enough for us
 
         if (ctickFrame <= 0 || fps <= 0)
             goto LFail;
@@ -520,15 +520,15 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
     }
     else
     {
-        // midhed.swDiv is the number of ticks per beat.
+        // 3DMMv1.0: midhed.swDiv is the number of ticks per beat.
         if (midhed.swDiv == 0)
             goto LFail;
 
-        // assume 120 beats per minute - gives us 500 ms per beat
+        // 3DMMv1.0: assume 120 beats per minute - gives us 500 ms per beat
         ratTempo.Set(500, midhed.swDiv);
     }
 
-    // merge the tracks or play them in sequence (according to fSeq).
+    // 3DMMv1.0: merge the tracks or play them in sequence (according to fSeq).
     fSeq = pglmidtr->IvMac() == 1 || midhed.swFmt == 2;
 
     tsTempo = tsRawTempo = 0;
@@ -543,7 +543,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
     {
         if (!fSeq)
         {
-            // find the track with the next event
+            // 3DMMv1.0: find the track with the next event
             imidtrMin = ivNil;
             tsMin = kluMax;
             for (imidtr = 0; imidtr < pglmidtr->IvMac(); imidtr++)
@@ -560,12 +560,12 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
             pglmidtr->Get(imidtrMin, &midtr);
         }
 
-        // get the time of this event
+        // 3DMMv1.0: get the time of this event
         ts = ratTempo.LwScale(midtr.midevCur.ts - tsRawTempo) + tsTempo;
 
         if (midtr.midevCur.cb == 0)
         {
-            // just a tempo change
+            // 3DMMv1.0: just a tempo change
             if (!fSmpte)
             {
                 RAT ratTempoNew(midtr.midevCur.lwTempo, LwMul(1000, midhed.swDiv));
@@ -580,7 +580,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
         }
         else
         {
-            // write the time out - in variable format
+            // 3DMMv1.0: write the time out - in variable format
             Assert(midtr.midevCur.cb > 0, 0);
             dts = ts - tsLast;
             cbT = _CbEncodeLu(dts, rgbT);
@@ -601,7 +601,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
         }
         else
         {
-            // imidtrMin is empty
+            // 3DMMv1.0: imidtrMin is empty
             ReleasePpo(&midtr.pmstp);
             pglmidtr->Delete(imidtrMin);
             if (0 == pglmidtr->IvMac())
@@ -626,7 +626,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
         ReleasePpo(&pmids);
     }
 
-    // clean up stuff
+    // 3DMMv1.0: clean up stuff
     ReleasePpo(&flo.pfil);
     if (pvNil != pglmidtr)
     {
@@ -639,7 +639,7 @@ PMIDS MIDS::PmidsReadNative(FNI *pfni)
     return pmids;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to convert a long to its midi file variable length
     equivalent.
 ***************************************************************************/
@@ -661,7 +661,7 @@ int32_t MIDS::_CbEncodeLu(uint32_t lu, uint8_t *prgb)
     return ib;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a midi stream to the given block.
 ***************************************************************************/
 bool MIDS::FWrite(PBLCK pblck)
@@ -672,7 +672,7 @@ bool MIDS::FWrite(PBLCK pblck)
     return pblck->FWriteHq(_hqrgb, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of this midi stream on file.
 ***************************************************************************/
 int32_t MIDS::CbOnFile(void)

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai test app
     Reviewed:
@@ -15,9 +15,9 @@ ASSERTNAME
 
 #ifdef DEBUG
 extern void CheckForLostMem(BASE *po);
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define CheckForLostMem(po)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
 void TestInt(void);
 void TestMem(void);
@@ -29,7 +29,7 @@ void TestCfl(void);
 void TestErs(void);
 void TestCrf(void);
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test util code.
 ******************************************************************************/
 void TestUtil(void)
@@ -43,13 +43,13 @@ void TestUtil(void)
     TestErs();
     TestGl();
     TestGg();
-    // TestFni();
-    // TestFil();
-    // TestCfl();
+    // 3DMMv1.0: TestFni();
+    // 3DMMv1.0: TestFil();
+    // 3DMMv1.0: TestCfl();
     TestCrf();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test utilint stuff.
 ***************************************************************************/
 void TestInt(void)
@@ -127,13 +127,13 @@ void TestInt(void)
     AssertDo(FcmpCompareFracs(0x1FFF0000, 0x10, 0x11000000, 0x10) == fcmpGt, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test the memory manager.
 ***************************************************************************/
 void TestMem(void)
 {
 #define kchq 18
-    static HQ rghq[kchq]; // static so it's initially zeros
+    static HQ rghq[kchq]; // 3DMMv1.0: static so it's initially zeros
     HQ hqT, hq;
     int32_t cb, ihq;
 
@@ -206,7 +206,7 @@ void TestMem(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test list code.
 ***************************************************************************/
 void TestGl(void)
@@ -273,7 +273,7 @@ void TestGl(void)
     ReleasePpo(&pglsw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test the fni code.
 ***************************************************************************/
 void TestFni(void)
@@ -312,7 +312,7 @@ void TestFni(void)
     AssertDo(!fni1.FEqual(&fni2), 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     File test code.
 ***************************************************************************/
 void TestFil(void)
@@ -343,7 +343,7 @@ void TestFil(void)
     FIL::CloseUnmarked();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test the group api.
 ***************************************************************************/
 void TestGg(void)
@@ -407,7 +407,7 @@ void TestGg(void)
     ReleasePpo(&pgg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test the chunky file stuff.
 ***************************************************************************/
 void TestCfl(void)
@@ -503,8 +503,8 @@ void TestCfl(void)
             AssertDo(FEqualRgb(rgch, perel->psz, CchSz(perel->psz) * SIZEOF(achar)), 0);
         }
 
-        // copy all the chunks - they should already be there, but this
-        // should set up all the child links
+        // 3DMMv1.0: copy all the chunks - they should already be there, but this
+        // 3DMMv1.0: should set up all the child links
         for (rel = 0; rel < relLim; rel++)
         {
             perel = &dnrel[rel];
@@ -512,7 +512,7 @@ void TestCfl(void)
         }
         AssertPo(pcflDst, fcflFull);
 
-        // this should delete relShon, but not relBaby
+        // 3DMMv1.0: this should delete relShon, but not relBaby
         perelPar = &dnrel[relCarl];
         perel = &dnrel[relShon];
         pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
@@ -520,7 +520,7 @@ void TestCfl(void)
         pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
         AssertDo(pcfl->Ccki() == 13, 0);
 
-        // this should delete relGreg and relStephen
+        // 3DMMv1.0: this should delete relGreg and relStephen
         perelPar = &dnrel[relCarl];
         perel = &dnrel[relGreg];
         pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
@@ -528,8 +528,8 @@ void TestCfl(void)
         pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
         AssertDo(pcfl->Ccki() == 11, 0);
 
-        // this should delete relCarl, relPriscilla, relCathy, relJoshua,
-        // relRachel and relMike
+        // 3DMMv1.0: this should delete relCarl, relPriscilla, relCathy, relJoshua,
+        // 3DMMv1.0: relRachel and relMike
         pcfl->Delete(perelPar->ctg, perelPar->cno);
         perelPar = &dnrel[relCarl];
         pcfl->Delete(perelPar->ctg, perelPar->cno);
@@ -544,7 +544,7 @@ void TestCfl(void)
             AssertDo(stn.Cch() * SIZEOF(achar) == blck.Cb(), 0);
         }
 
-        // copy all the chunks back
+        // 3DMMv1.0: copy all the chunks back
         for (icki = 0; pcflDst->FGetCki(icki, &cki); icki++)
         {
             AssertDo(pcflDst->FCopy(cki.ctg, cki.cno, pcfl, &cno), "copy failed");
@@ -581,7 +581,7 @@ void TestCfl(void)
     CFL::CloseUnmarked();
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test the error registration code.
 ******************************************************************************/
 void TestErs(void)
@@ -622,7 +622,7 @@ void TestErs(void)
     Assert(vpers->Cerc() == 0, "bad count of error codes on stack");
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test chunky resource file
 ******************************************************************************/
 void TestCrf(void)

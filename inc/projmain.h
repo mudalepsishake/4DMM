@@ -1,14 +1,14 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-//////////////////////////////////////////////
-//	defines for projmain
-//////////////////////////////////////////////
+/// 3DMMv1.0: ///////////////////////////////////////////
+// 3DMMv1.0:	defines for projmain
+/// 3DMMv1.0: ///////////////////////////////////////////
 #ifndef PROJMAIN_H
 #define PROJMAIN_H
 
-// the following are the file names of the project movies loaded into the workspace
-// localize at will...
+// 3DMMv1.0: the following are the file names of the project movies loaded into the workspace
+// 3DMMv1.0: localize at will...
 
 #define PROJECT1_MOVIENAME "dialogue.3mm"
 #define PROJECT2_MOVIENAME "jog.3mm"
@@ -17,7 +17,7 @@
 #define PROJECT5_MOVIENAME "bongo.3mm"
 #define PROJECT6_MOVIENAME "bridge.3mm"
 
-// gadget objects
+// 3DMMv1.0: gadget objects
 #define kidGadgetPersistent 0x00003030
 #define kidGadgetParent 0x00003031
 #define kidGadgetBody 0x00003032
@@ -39,11 +39,11 @@
 #define kidGadgetAlertGlass 0x00003042
 #define kidGadgetVolumePath 0x00003043
 #define kidGadgetTextBox 0x00003044
-#define kidGadgetStartUp 0x00003046 // 3045 is used in helpbook.h
+#define kidGadgetStartUp 0x00003046 // 3DMMv1.0: 3045 is used in helpbook.h
 #define kidGadgetStartOk 0x00003047
 
-// Instruction Ids
-#define EndTable 0 // not an instruction, just a marker
+// 3DMMv1.0: Instruction Ids
+#define EndTable 0 // 3DMMv1.0: not an instruction, just a marker
 #define InitState 1
 #define MatchGoto 2
 #define MatchDescGoto 3
@@ -61,7 +61,7 @@
 #define MatchParentGoto 15
 #define IgnoreParentMatch 16
 
-// Special Instruction Ids
+// 3DMMv1.0: Special Instruction Ids
 #define QuitMM 1
 #define QuitHelp 2
 #define QuitGadgetHelp 3
@@ -79,7 +79,7 @@
 #define SetBrowserItem 15
 #define SetNextProject 16
 
-// Parent States
+// 3DMMv1.0: Parent States
 #define ParState2 0
 #define ParState3 1
 #define ParState4 2
@@ -89,11 +89,11 @@
 #define NoHelpHere 0
 #define PrevState -1
 
-// Definitions of controls(parent object and table objects)
+// 3DMMv1.0: Definitions of controls(parent object and table objects)
 #define kidSequenceParent 0x00030000
-// logo wizard
+// 3DMMv1.0: logo wizard
 #define kidLogoWizard 0x00030001
-// how to scenes
+// 3DMMv1.0: how to scenes
 #define kidHowToScenes01 0x00030002
 #define kidHowToScenes02 0x00030003
 #define kidHowToScenes03 0x00030004
@@ -109,7 +109,7 @@
 #define kidHowToScenes13 0x0003000E
 #define kidHowToScenes14 0x0003000F
 #define kidHowToScenes15 0x00030010
-// how to sounds
+// 3DMMv1.0: how to sounds
 #define kidHowToSounds01 0x00030020
 #define kidHowToSounds02 0x00030021
 #define kidHowToSounds03 0x00030022
@@ -122,7 +122,7 @@
 #define kidHowToSounds10 0x00030029
 #define kidHowToSounds11 0x0003002A
 #define kidHowToSounds12 0x0003002B
-// how to words
+// 3DMMv1.0: how to words
 #define kidHowToWords01 0x00030040
 #define kidHowToWords02 0x00030041
 #define kidHowToWords03 0x00030042
@@ -138,7 +138,7 @@
 #define kidHowToWords13 0x0003004C
 #define kidHowToWords14 0x0003004D
 #define kidHowToWords15 0x0003004E
-// how to actors
+// 3DMMv1.0: how to actors
 #define kidHowToActors01 0x00030060
 #define kidHowToActors02 0x00030061
 #define kidHowToActors03 0x00030062
@@ -167,7 +167,7 @@
 #define kidHowToActors26 0x00030079
 #define kidHowToActors27 0x0003007A
 #define kidHowToActors28 0x0003007B
-// Project 1
+// 3DMMv1.0: Project 1
 #define kid1Project01 0x00030100
 #define kid1Project02 0x00030101
 #define kid1Project03 0x00030102
@@ -175,7 +175,7 @@
 #define kid1Project05 0x00030104
 #define kid1Project06 0x00030105
 #define kid1Project07 0x00030106
-// Project 2
+// 3DMMv1.0: Project 2
 #define kid2Project01 0x00030200
 #define kid2Project02 0x00030201
 #define kid2Project03 0x00030202
@@ -183,19 +183,19 @@
 #define kid2Project05 0x00030204
 #define kid2Project06 0x00030205
 #define kid2Project07 0x00030206
-// Project 3
+// 3DMMv1.0: Project 3
 #define kid3Project01 0x00030300
 #define kid3Project02 0x00030301
 #define kid3Project03 0x00030302
 #define kid3Project04 0x00030303
 #define kid3Project05 0x00030304
-// Project 4
+// 3DMMv1.0: Project 4
 #define kid4Project01 0x00030400
 #define kid4Project02 0x00030401
 #define kid4Project03 0x00030402
 #define kid4Project04 0x00030403
 #define kid4Project05 0x00030404
-// Project 5
+// 3DMMv1.0: Project 5
 #define kid5Project01 0x00030500
 #define kid5Project02 0x00030501
 #define kid5Project03 0x00030502
@@ -206,14 +206,14 @@
 #define kid5Project08 0x00030507
 #define kid5Project09 0x00030508
 #define kid5Project10 0x00030509
-// Project 6
+// 3DMMv1.0: Project 6
 #define kid6Project01 0x00030510
 #define kid6Project02 0x00030511
 #define kid6Project03 0x00030512
 #define kid6Project04 0x00030513
 #define kid6Project05 0x00030514
 #define kid6Project06 0x00030515
-// basics
+// 3DMMv1.0: basics
 #define kidBasics01 0x00030520
 #define kidBasics02 0x00030521
 #define kidBasics03 0x00030522
@@ -223,10 +223,10 @@
 #define kidBasics07 0x00030526
 #define kidBasics08 0x00030527
 #define kidBasics09 0x00030528
-// guidehelp
+// 3DMMv1.0: guidehelp
 #define kidGuideHelp 0x000305A0
 
-// script for playing help sounds
+// 3DMMv1.0: script for playing help sounds
 #define sclHelpSoundClass 999
 #define ksclBldgSound 998
 #define kidPlayHelpSounds 0x000305F0
@@ -235,8 +235,8 @@
 #define kidPlayGuideSounds 0x000305F3
 #define kidPlayToolTipSounds 0x000305F4
 
-////////////////////////////// control ids
-//#define kgobOkButton			0x00030100
+/// 3DMMv1.0: /////////////////////////// control ids
+// 3DMMv1.0: #define kgobOkButton			0x00030100
 #define kgobLogoWizard 0x00030600
 #define kgobHowtoSequence 0x00030601
 #define kgobHowToSequenceHot 0x00030602
@@ -246,8 +246,8 @@
 #define kgobGuideHelpHot 0x00030606
 #define kgobGadgetText 0x00030607
 
-/////////////////////////Filtering defines
-// for projmain
+/// 3DMMv1.0: //////////////////////Filtering defines
+// 3DMMv1.0: for projmain
 #define kFltrMouse 1
 #define kFltrClicked 2
 #define kFltrKey 4
@@ -277,12 +277,12 @@
 #define kFltrPortfolioResult 67108864
 #define kFltrMouseBoth 3
 
-// message id
+// 3DMMv1.0: message id
 #define cidParse 100100
 #define cidHelpAlarmOff 100101
 #define cidGadgetAviStop 100102
 
-// string id's for movies
+// 3DMMv1.0: string id's for movies
 #define stidMovie1 701
 #define stidMovie2 702
 #define stidMovie3 703
@@ -290,7 +290,7 @@
 #define stidMovie5 705
 #define stidMovie6 706
 
-// position of gadget controls
+// 3DMMv1.0: position of gadget controls
 #define kxpGdPlay 443
 #define kypGdPlay 269
 #define kxpregGdPlay 24
@@ -337,56 +337,56 @@
 #define kdypGadgetSlider 91
 #define kdypGadgetSliderTotal 98
 
-// locker fill stuff
+// 3DMMv1.0: locker fill stuff
 #define kLockerFillLeft 247
 #define kLockerFillTop 229
 #define kLockerFillRight 397
 #define kLockerFillBottom 371
-// text box stuff
+// 3DMMv1.0: text box stuff
 #define kTextBoxFillLeft 5
 #define kTextBoxFillTop 3
 #define kTextBoxFillRight 167
 #define kTextBoxFillBottom 43
 
-// where to jump for each movie in projects(at start)
-// conversation
+// 3DMMv1.0: where to jump for each movie in projects(at start)
+// 3DMMv1.0: conversation
 #define Proj1Scene 0
 #define Proj1Frame 48
-// jog
+// 3DMMv1.0: jog
 #define Proj2Scene 0
 #define Proj2Frame 113
-// graveyard - surprise!
+// 3DMMv1.0: graveyard - surprise!
 #define Proj3Scene 0
 #define Proj3Frame 1
-// mummy
+// 3DMMv1.0: mummy
 #define Proj4Scene 0
 #define Proj4Frame 1
-// bongo
+// 3DMMv1.0: bongo
 #define Proj5Scene 0
 #define Proj5Frame 138
-// bridge
+// 3DMMv1.0: bridge
 #define Proj6Scene 0
 #define Proj6Frame 165
 
-// Objects for browsers, what to point at
-// project 1
+// 3DMMv1.0: Objects for browsers, what to point at
+// 3DMMv1.0: project 1
 #define Prj1Action1 29
 #define Prj1SoundsMic1 0x0000400f
 #define Prj1Camera1 5
 #define Prj1SoundsMic2 0x00004009
 #define Prj1Camera2 4
 #define Prj1SoundsMic3 0x00004012
-// project 3(2)
+// 3DMMv1.0: project 3(2)
 #define Prj3Action1 3
 #define Prj3SoundsMic1 0x0000400e
 #define Prj3Action2 32
 #define Prj3SoundsMic2 0x00004016
-// project 4(6)
+// 3DMMv1.0: project 4(6)
 #define Prj4Action1 11
 #define Prj4Prop1 0x00001011
 #define Prj4Action2 5
 #define Prj4Action3 25
-// project 5
+// 3DMMv1.0: project 5
 #define Prj5Action1 27
 #define Prj5Action2 28
 #define Prj5Action3 23
@@ -397,13 +397,13 @@
 #define Prj5Actor1 0x00002030
 #define Prj5Action5 3
 #define Prj5Action6 1
-// project 6(4)
+// 3DMMv1.0: project 6(4)
 #define Prj6SoundsMus1 0x0000505a
 #define Prj6SoundsMus2 0x0000505b
 #define Prj6SoundsMus3 0x0000505e
 #define Prj6SoundsMus4 0x00005064
 #define Prj6SoundsEfx1 0x000032a3
 #define Prj6SoundsEfx2 0x000032a2
-// *maybe* #define
+// 3DMMv1.0: *maybe* #define
 
-#endif // !PROJMAIN_H
+#endif // 3DMMv1.0: !PROJMAIN_H

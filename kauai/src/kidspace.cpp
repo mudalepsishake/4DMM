@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -30,7 +30,7 @@ END_CMD_MAP(&GOK::FCmdAll, pvNil, kgrfcmmAll)
 
 const int32_t kcmhlGok = -10000;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new kidspace gob as described in the GOKD with given cno
     in the given RCA.
 ***************************************************************************/
@@ -67,7 +67,7 @@ PGOK GOK::PgokNew(PWOKS pwoks, PGOB pgobPar, int32_t hid, PGOKD pgokd, PRCA prca
     return pgok;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to find the GOB that should be before a new GOK with
     this zp.
 ***************************************************************************/
@@ -76,7 +76,7 @@ PGOB GOK::_PgobBefore(PGOB pgobPar, int32_t zp)
     AssertPo(pgobPar, 0);
     PGOB pgobBefore, pgobT;
 
-    // find the place in the GOB tree to put the GOK.
+    // 3DMMv1.0: find the place in the GOB tree to put the GOK.
     for (pgobBefore = pvNil, pgobT = pgobPar->PgobFirstChild(); pgobT != pvNil; pgobT = pgobT->PgobNextSib())
     {
         if (pgobT->FIs(kclsGOK))
@@ -89,7 +89,7 @@ PGOB GOK::_PgobBefore(PGOB pgobPar, int32_t zp)
     return pgobBefore;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the Kidspace graphic object.
 ***************************************************************************/
 GOK::GOK(GCB *pgcb) : GOB(pgcb)
@@ -101,7 +101,7 @@ GOK::GOK(GCB *pgcb) : GOB(pgcb)
     _gmsCur = gmsNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a GOK.
 ***************************************************************************/
 GOK::~GOK(void)
@@ -128,7 +128,7 @@ GOK::~GOK(void)
     ReleasePpo(&_pglcmflt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize this GOK given the cno for the gokd.
 ***************************************************************************/
 bool GOK::_FInit(PWOKS pwoks, CNO cno, PRCA prca)
@@ -148,7 +148,7 @@ bool GOK::_FInit(PWOKS pwoks, CNO cno, PRCA prca)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize this GOK.
 ***************************************************************************/
 bool GOK::_FInit(PWOKS pwoks, PGOKD pgokd, PRCA prca)
@@ -181,7 +181,7 @@ bool GOK::_FInit(PWOKS pwoks, PGOKD pgokd, PRCA prca)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This is a table of what relative chid value to use for the
     representation in the given mouse tracking state. relative means that
     the actual chid is gotten by putting the current gob state number in
@@ -195,7 +195,7 @@ const CHID _mpgmschidRep[] = {
     kchidUpDownOn,   kchidDownUpOn, kchidDownOn,  kchidDownOnOff, kchidDownOffOn, kchidDownOff,   chidNil,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the chid value for the current mouse tracking state.
 ***************************************************************************/
 CHID GOK::_ChidMouse(void)
@@ -209,7 +209,7 @@ CHID GOK::_ChidMouse(void)
     return chid;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     These are the actions that can occur at transitions between mouse
     tracking states.
 ***************************************************************************/
@@ -219,7 +219,7 @@ enum
     factEnqueueClick = 0x1,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The following are the transition tables between the mouse tracking
     states when given various input.
 ***************************************************************************/
@@ -234,14 +234,14 @@ struct GMSE
     {                                                                                                                  \
         gms, gmsDst, grfact                                                                                            \
     }
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define _Gmse(gms, gmsDst, grfact)                                                                                     \
     {                                                                                                                  \
         gmsDst, grfact                                                                                                 \
     }
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when an animation ends
 ***************************************************************************/
 GMSE _mpgmsgmseEnd[] = {
@@ -257,7 +257,7 @@ GMSE _mpgmsgmseEnd[] = {
     _Gmse(kgmsWait, kgmsWait, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidMouseMove
 ***************************************************************************/
 GMSE _mpgmsgmseMove[] = {
@@ -270,8 +270,8 @@ GMSE _mpgmsgmseMove[] = {
     _Gmse(kgmsOn, kgmsOn, factNil),
     _Gmse(kgmsReleaseOff, kgmsIdle, factNil),
 
-    // shouldn't get a cidMouseMove when tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidMouseMove when tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsPressOn, gmsNil, factNil),
     _Gmse(kgmsReleaseOn, gmsNil, factNil),
     _Gmse(kgmsDownOn, gmsNil, factNil),
@@ -281,7 +281,7 @@ GMSE _mpgmsgmseMove[] = {
     _Gmse(kgmsWait, gmsNil, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidRollOff
 ***************************************************************************/
 GMSE _mpgmsgmseRollOff[] = {
@@ -294,8 +294,8 @@ GMSE _mpgmsgmseRollOff[] = {
     _Gmse(kgmsOn, kgmsRollOff, factNil),
     _Gmse(kgmsReleaseOff, kgmsReleaseOff, factNil),
 
-    // shouldn't get a cidRollOff when tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidRollOff when tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsPressOn, gmsNil, factNil),
     _Gmse(kgmsReleaseOn, gmsNil, factNil),
     _Gmse(kgmsDownOn, gmsNil, factNil),
@@ -303,11 +303,11 @@ GMSE _mpgmsgmseRollOff[] = {
     _Gmse(kgmsDragOn, gmsNil, factNil),
     _Gmse(kgmsDownOff, gmsNil, factNil),
 
-    // This one can happen if a modal comes up in response to our click
+    // 3DMMv1.0: This one can happen if a modal comes up in response to our click
     _Gmse(kgmsWait, kgmsOn, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidMouseDown
 ***************************************************************************/
 GMSE _mpgmsgmseMouseDown[] = {
@@ -320,8 +320,8 @@ GMSE _mpgmsgmseMouseDown[] = {
     _Gmse(kgmsOn, kgmsPressOn, factNil),
     _Gmse(kgmsReleaseOff, kgmsIdle, factNil),
 
-    // shouldn't get a cidMouseDown when tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidMouseDown when tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsPressOn, gmsNil, factNil),
     _Gmse(kgmsReleaseOn, gmsNil, factNil),
     _Gmse(kgmsDownOn, gmsNil, factNil),
@@ -331,14 +331,14 @@ GMSE _mpgmsgmseMouseDown[] = {
     _Gmse(kgmsWait, gmsNil, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidTrackMouse with button down and mouse on
 ***************************************************************************/
 GMSE _mpgmsgmseDownOn[] = {
     _Gmse(gmsNil, gmsNil, factNil),
 
-    // shouldn't get a cidTrackMouse when not tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidTrackMouse when not tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsEnterState, gmsNil, factNil),
     _Gmse(kgmsIdle, gmsNil, factNil),
     _Gmse(kgmsRollOn, gmsNil, factNil),
@@ -355,14 +355,14 @@ GMSE _mpgmsgmseDownOn[] = {
     _Gmse(kgmsWait, kgmsOn, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidTrackMouse with button down and mouse off
 ***************************************************************************/
 GMSE _mpgmsgmseDownOff[] = {
     _Gmse(gmsNil, gmsNil, factNil),
 
-    // shouldn't get a cidTrackMouse when not tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidTrackMouse when not tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsEnterState, gmsNil, factNil),
     _Gmse(kgmsIdle, gmsNil, factNil),
     _Gmse(kgmsRollOn, gmsNil, factNil),
@@ -379,14 +379,14 @@ GMSE _mpgmsgmseDownOff[] = {
     _Gmse(kgmsWait, kgmsOn, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidTrackMouse with button up and mouse on
 ***************************************************************************/
 GMSE _mpgmsgmseUpOn[] = {
     _Gmse(gmsNil, gmsNil, factNil),
 
-    // shouldn't get a cidTrackMouse when not tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidTrackMouse when not tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsEnterState, gmsNil, factNil),
     _Gmse(kgmsIdle, gmsNil, factNil),
     _Gmse(kgmsRollOn, gmsNil, factNil),
@@ -403,14 +403,14 @@ GMSE _mpgmsgmseUpOn[] = {
     _Gmse(kgmsWait, kgmsOn, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     what to do when we get a cidTrackMouse with button up and mouse off
 ***************************************************************************/
 GMSE _mpgmsgmseUpOff[] = {
     _Gmse(gmsNil, gmsNil, factNil),
 
-    // shouldn't get a cidTrackMouse when not tracking the mouse,
-    // so all of these cause asserts
+    // 3DMMv1.0: shouldn't get a cidTrackMouse when not tracking the mouse,
+    // 3DMMv1.0: so all of these cause asserts
     _Gmse(kgmsEnterState, gmsNil, factNil),
     _Gmse(kgmsIdle, gmsNil, factNil),
     _Gmse(kgmsRollOn, gmsNil, factNil),
@@ -427,7 +427,7 @@ GMSE _mpgmsgmseUpOff[] = {
     _Gmse(kgmsWait, kgmsOn, factNil),
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     We got some input, make sure the mouse tracking state is correct,
     according to the given transition table.
 
@@ -454,7 +454,7 @@ bool GOK::_FAdjustGms(GMSE *pmpgmsgmse)
             if (fStable)
                 break;
 
-            // use the done table from here on out
+            // 3DMMv1.0: use the done table from here on out
             Assert(pmpgmsgmse != _mpgmsgmseEnd, "bug in _mpgmsgmseEnd");
             pmpgmsgmse = _mpgmsgmseEnd;
             continue;
@@ -473,7 +473,7 @@ bool GOK::_FAdjustGms(GMSE *pmpgmsgmse)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the graphical mouse state. Note that the _gmsCur may end up different
     than gms. This is similar to _FAdjustGms(_mpgmsgmseEnd), except that
     the current representation is set before trying to advance.
@@ -499,12 +499,12 @@ bool GOK::_FSetGms(int32_t gms, uint32_t grfact)
 
         Assert(_gmsCur == gms, "bad _gmsCur");
 
-        // Nothing was set so advance
+        // 3DMMv1.0: Nothing was set so advance
         gmse = _mpgmsgmseEnd[gms];
         Assert(gmse.gms == gms, "bad gmse table");
         Assert(gmse.gmsDst != gms, "bad gmse table");
 
-        // continue to the next state
+        // 3DMMv1.0: continue to the next state
         gms = gmse.gmsDst;
         grfact = gmse.grfact;
     }
@@ -512,7 +512,7 @@ bool GOK::_FSetGms(int32_t gms, uint32_t grfact)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the graphical mouse state. Note that _gmsCur may end up different
     than gms. *pfStable is set to false iff the gms is an auto-advance gms
     and the representation wasn't set (didn't exist or failed).
@@ -528,10 +528,10 @@ bool GOK::_FSetGmsCore(int32_t gms, uint32_t grfact, bool *pfStable)
     CHID chid;
     CTG ctg;
 
-    // set the gms
+    // 3DMMv1.0: set the gms
     _gmsCur = gms;
 
-    // do the actions
+    // 3DMMv1.0: do the actions
     if (FIn(gms, kgmsMinTrack, kgmsLimTrack))
     {
         if (pvNil == vpcex->PgobTracking())
@@ -554,7 +554,7 @@ bool GOK::_FSetGmsCore(int32_t gms, uint32_t grfact, bool *pfStable)
         vpcex->EnqueueCmd((PCMD)&cmd);
     }
 
-    // change the representation
+    // 3DMMv1.0: change the representation
     ctg = (_mpgmsgmseEnd[gms].gmsDst == gms) ? ctgNil : kctgAnimation;
     chid = _ChidMouse();
     if (chidNil != chid)
@@ -563,7 +563,7 @@ bool GOK::_FSetGmsCore(int32_t gms, uint32_t grfact, bool *pfStable)
         {
             return fFalse;
         }
-        // we're stable if we didn't require an animation or the rep was set
+        // 3DMMv1.0: we're stable if we didn't require an animation or the rep was set
         if (ctgNil == ctg)
             *pfStable = fTrue;
     }
@@ -573,7 +573,7 @@ bool GOK::_FSetGmsCore(int32_t gms, uint32_t grfact, bool *pfStable)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the current graphical representation that indicated by the given
     chid value (if not nil).
 
@@ -599,7 +599,7 @@ bool GOK::_FSetRep(CHID chid, uint32_t grfgok, CTG ctg, int32_t dxp, int32_t dyp
 
     if (!(grfgok & fgokNoAnim) && (ctgNil == ctg || kctgAnimation == ctg))
     {
-        // animations are allowed - try to start one
+        // 3DMMv1.0: animations are allowed - try to start one
         if (_chidAnim == chid && !(grfgok & fgokReset))
         {
             fSet = fTrue;
@@ -666,7 +666,7 @@ bool GOK::_FSetRep(CHID chid, uint32_t grfgok, CTG ctg, int32_t dxp, int32_t dyp
     }
 
 LAdjust:
-    // reposition the GOK
+    // 3DMMv1.0: reposition the GOK
     if (dxp != 0 || dyp != 0)
     {
         RC rc;
@@ -693,7 +693,7 @@ LAdjust:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Run the next section of the animation script.
 ***************************************************************************/
 bool GOK::_FAdvanceFrame(void)
@@ -722,7 +722,7 @@ bool GOK::_FAdvanceFrame(void)
 
         if (!fExists)
         {
-            // this GOK went away
+            // 3DMMv1.0: this GOK went away
             ReleasePpo(&psceg);
             return fFalse;
         }
@@ -730,9 +730,9 @@ bool GOK::_FAdvanceFrame(void)
         AssertThis(0);
         if (!fRet || !fPaused || pvNil == _pscegAnim)
         {
-            // end the animation, but keep _chidAnim set, so we don't restart
-            // this animation until after the animation has been explicitly
-            // killed.
+            // 3DMMv1.0: end the animation, but keep _chidAnim set, so we don't restart
+            // 3DMMv1.0: this animation until after the animation has been explicitly
+            // 3DMMv1.0: killed.
             if (psceg == _pscegAnim)
             {
                 ReleasePpo(&_pscegAnim);
@@ -769,7 +769,7 @@ LSetGorp:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the kidspace graphic object in the indicated state.
 
     CAUTION: this GOK may not exist on return. Returns false iff the GOK
@@ -790,14 +790,14 @@ bool GOK::_FEnterState(int32_t sno)
     {                                                                                                                  \
         gms, gmsPar                                                                                                    \
     }
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define _Gmmpe(gms, gmsPar)                                                                                            \
     {                                                                                                                  \
         gmsPar                                                                                                         \
     }
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-    // this maps a gms to its parent in the natural traversal tree
+    // 3DMMv1.0: this maps a gms to its parent in the natural traversal tree
     static GMMPE _mpgmsgmmpe[] = {
         _Gmmpe(gmsNil, gmsNil),
 
@@ -806,10 +806,10 @@ bool GOK::_FEnterState(int32_t sno)
         _Gmmpe(kgmsRollOn, kgmsIdle),
         _Gmmpe(kgmsRollOff, kgmsOn),
         _Gmmpe(kgmsOn, kgmsRollOn),
-        // Note: this is the only strange one - we can't go through kgmsDownOff
-        // because that would require tracking the mouse. If some other button
-        // is currently tracking, we couldn't start tracking and things might
-        // break. Thus, we just go through kgmsIdle.
+        // 3DMMv1.0: Note: this is the only strange one - we can't go through kgmsDownOff
+        // 3DMMv1.0: because that would require tracking the mouse. If some other button
+        // 3DMMv1.0: is currently tracking, we couldn't start tracking and things might
+        // 3DMMv1.0: break. Thus, we just go through kgmsIdle.
         _Gmmpe(kgmsReleaseOff, kgmsIdle),
 
         _Gmmpe(kgmsPressOn, kgmsOn),
@@ -833,13 +833,13 @@ bool GOK::_FEnterState(int32_t sno)
         gms = _mpgmsgmmpe[gms].gmsPar;
     }
 
-    // defer rep changes
+    // 3DMMv1.0: defer rep changes
     _DeferGorp(fTrue);
 
-    // change the state number
+    // 3DMMv1.0: change the state number
     _sno = (int16_t)sno;
 
-    // put it in gmsNil
+    // 3DMMv1.0: put it in gmsNil
     if (!_FSetGmsCore(gmsNil, factNil, &fStable))
         return fFalse;
 
@@ -863,7 +863,7 @@ bool GOK::_FEnterState(int32_t sno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the given point is in this GOK.
 ***************************************************************************/
 bool GOK::FPtIn(int32_t xp, int32_t yp)
@@ -884,7 +884,7 @@ bool GOK::FPtIn(int32_t xp, int32_t yp)
     return _pgorp->FPtIn(xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the given point is in the rectangular bounds of this GOK (ie,
     whether there's any chance the point is in a child of this GOK).
 ***************************************************************************/
@@ -900,7 +900,7 @@ bool GOK::FPtInBounds(int32_t xp, int32_t yp)
     return rc.FPtIn(xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the kidspace object.
 ***************************************************************************/
 void GOK::Draw(PGNV pgnv, RC *prcClip)
@@ -918,7 +918,7 @@ void GOK::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Respond to an alarm. If the clock is the animation clock or noslip clock
     we advance the animation. Otherwise we run an associated script.
     CAUTION: this GOK may not exist on return.
@@ -948,7 +948,7 @@ bool GOK::FCmdAlarm(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     For command filtering.
     CAUTION: this GOK may not exist on return.
 ***************************************************************************/
@@ -983,7 +983,7 @@ bool GOK::FCmdAll(PCMD pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the command should be filtered out by calling the indicated
     script and checking its return value. This returns true iff the command
     is filtered out or the GOK goes away, in which case *pfFilter is set
@@ -1008,8 +1008,8 @@ bool GOK::_FFilterCmd(PCMD pcmd, CHID chidScript, bool *pfFilter)
 
     if (rglw[1] == cidKey)
     {
-        // Scripts use Win32 virtual key codes for keyboard handling
-        // Translate the key if required
+        // 3DMMEx: Scripts use Win32 virtual key codes for keyboard handling
+        // 3DMMEx: Translate the key if required
         rglw[3] = APPB::Win32VkFromVk(rglw[3]);
     }
 
@@ -1019,7 +1019,7 @@ bool GOK::_FFilterCmd(PCMD pcmd, CHID chidScript, bool *pfFilter)
     return !fGokExists || *pfFilter;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Filter on a command id and/or a handler id. Either cid or hid may be
     nil. To turn off filtering for a (cid, hid), use chidNil for chidScript.
     If both cid and hid are nil, chidScript should be nil. If the cid, hid
@@ -1035,7 +1035,7 @@ bool GOK::FFilterCidHid(int32_t cid, int32_t hid, CHID chidScript)
     if (chidNil == chidScript ||
         !_pcrf->Pcfl()->FGetKidChidCtg(_pgokd->Ctg(), _pgokd->Cno(), chidScript, kctgScript, &kid))
     {
-        // turn off filtering
+        // 3DMMv1.0: turn off filtering
         if (chidNil != chidScript)
             Warn("script doesn't exist (for filtering)");
 
@@ -1048,7 +1048,7 @@ bool GOK::FFilterCidHid(int32_t cid, int32_t hid, CHID chidScript)
                 return fTrue;
         }
 
-        // release the filters and remove ourself from the command handler list
+        // 3DMMv1.0: release the filters and remove ourself from the command handler list
         ReleasePpo(&_pglcmflt);
         vpcex->RemoveCmh(this, kcmhlGok);
         return fTrue;
@@ -1080,7 +1080,7 @@ bool GOK::FFilterCidHid(int32_t cid, int32_t hid, CHID chidScript)
     return vpcex->FAddCmh(this, kcmhlGok, kgrfcmmAll);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for the given (cid, hid) pair in the filtering map.
 ***************************************************************************/
 bool GOK::_FFindCmflt(int32_t cid, int32_t hid, CMFLT *pcmflt, int32_t *picmflt)
@@ -1124,7 +1124,7 @@ bool GOK::_FFindCmflt(int32_t cid, int32_t hid, CMFLT *pcmflt, int32_t *picmflt)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This handles cidMouseMove and cidRollOff.
 ***************************************************************************/
 bool GOK::FCmdMouseMove(PCMD_MOUSE pcmd)
@@ -1149,7 +1149,7 @@ bool GOK::FCmdMouseMove(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the cursor for this GOK and the given cursor state.
 ***************************************************************************/
 void GOK::SetCursor(uint32_t grfcust)
@@ -1179,7 +1179,7 @@ void GOK::SetCursor(uint32_t grfcust)
     vpappb->SetCursCno(pgok->_prca, cume.cnoCurs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do mouse tracking.
 ***************************************************************************/
 bool GOK::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -1190,7 +1190,7 @@ bool GOK::FCmdTrackMouse(PCMD_MOUSE pcmd)
     pcmd->grfcust = _pwoks->GrfcustAdjust(pcmd->grfcust);
     if (pcmd->cid == cidMouseDown)
     {
-        // first response to mouse down
+        // 3DMMv1.0: first response to mouse down
         CUME cume;
 
         if (!_pgokd->FGetCume(pcmd->grfcust, _sno, &cume))
@@ -1211,12 +1211,12 @@ bool GOK::FCmdTrackMouse(PCMD_MOUSE pcmd)
         fIn = FPtIn(pcmd->xp, pcmd->yp);
         if (pcmd->grfcust & fcustMouse)
         {
-            // mouse is down
+            // 3DMMv1.0: mouse is down
             pmpgmsgmse = fIn ? _mpgmsgmseDownOn : _mpgmsgmseDownOff;
         }
         else
         {
-            // mouse is up
+            // 3DMMv1.0: mouse is up
             pmpgmsgmse = fIn ? _mpgmsgmseUpOn : _mpgmsgmseUpOff;
         }
         if (!_FAdjustGms(pmpgmsgmse))
@@ -1226,7 +1226,7 @@ bool GOK::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up a tool tip if this GOK has one. Return true if tool tips are
     still active.
 ***************************************************************************/
@@ -1246,24 +1246,24 @@ bool GOK::FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse)
     {
         if (pvNil == (pgokSrc = (PGOK)_pwoks->PgobFromHid(_hidToolTipSrc)) || !pgokSrc->FIs(kclsGOK))
         {
-            // abort tool tip mode
+            // 3DMMv1.0: abort tool tip mode
             return fFalse;
         }
     }
 
     if (cnoNil == (cno = pgokSrc->_CnoToolTip()))
     {
-        // abort tool tip mode
+        // 3DMMv1.0: abort tool tip mode
         return fFalse;
     }
 
     if (kcnoToolTipNoAffect == cno)
     {
-        // return true to stay in tool tip mode, but don't put up a tool tip
+        // 3DMMv1.0: return true to stay in tool tip mode, but don't put up a tool tip
         return fTrue;
     }
 
-    // put up the tool tip
+    // 3DMMv1.0: put up the tool tip
     htop.cnoBalloon = cnoNil;
     htop.hidThis = khidToolTip;
     htop.hidTarget = Hid();
@@ -1278,7 +1278,7 @@ bool GOK::FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the cno for the our tool tip (given the current modifier state).
 ***************************************************************************/
 CNO GOK::_CnoToolTip(void)
@@ -1292,7 +1292,7 @@ CNO GOK::_CnoToolTip(void)
     return cume.cnoTopic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Makes the GOK get its tool tip from the GOK having the given hid.
 ***************************************************************************/
 void GOK::SetHidToolTip(int32_t hidSrc)
@@ -1302,7 +1302,7 @@ void GOK::SetHidToolTip(int32_t hidSrc)
     _hidToolTipSrc = hidSrc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the state information for the GOK (for testing). High 16 bits are
     the state number; next 14 bits are _gmsCur; low 2 bits are set.
 ***************************************************************************/
@@ -1313,7 +1313,7 @@ int32_t GOK::LwState(void)
     return (_sno << 16) | (_gmsCur << 2) & 0x0000FFFF | 0x03;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the registration point of the given GOK in its parent's coordinates.
 ***************************************************************************/
 void GOK::GetPtReg(PT *ppt, int32_t coo)
@@ -1330,7 +1330,7 @@ void GOK::GetPtReg(PT *ppt, int32_t coo)
     ppt->yp = rc.ypTop + _dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the "content" rectangle of this GOK. This is primarily for GOKs
     that have a content area, such as help balloons and easels.
 ***************************************************************************/
@@ -1345,7 +1345,7 @@ void GOK::GetRcContent(RC *prc)
         GetRc(prc, cooLocal);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the GOK's z plane.
 ***************************************************************************/
 void GOK::SetZPlane(int32_t zp)
@@ -1367,7 +1367,7 @@ void GOK::SetZPlane(int32_t zp)
     _zp = zp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the slipping behavior of the GOK.
 ***************************************************************************/
 void GOK::SetNoSlip(bool fNoSlip)
@@ -1377,7 +1377,7 @@ void GOK::SetNoSlip(bool fNoSlip)
     _fNoSlip = FPure(fNoSlip);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If there is an attached script with the given chid value, run it.
     Returns false iff the GOK no longer exists on return. *ptSuccess is
     filled with tNo if the script doesn't exist, tMaybe if the script exists
@@ -1401,7 +1401,7 @@ bool GOK::FRunScript(CHID chid, int32_t *prglw, int32_t clw, int32_t *plwReturn,
     return FRunScriptCno(kid.cki.cno, prglw, clw, plwReturn, ptSuccess);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If there is a script with the given cno, run it. Returns false iff
     the GOK no longer exists on return. *ptSuccess is filled with tNo
     if the script doesn't exist, tMaybe if the script exists but there
@@ -1425,8 +1425,8 @@ bool GOK::FRunScriptCno(CNO cno, int32_t *prglw, int32_t clw, int32_t *plwReturn
         PWOKS pwoks = _pwoks;
         PSCEG psceg = _pwoks->PscegNew(_prca, this);
 
-        // be careful not to use GOK variables here in case the GOK is
-        // freed while the script is running.
+        // 3DMMv1.0: be careful not to use GOK variables here in case the GOK is
+        // 3DMMv1.0: freed while the script is running.
         if (pvNil != psceg && psceg->FRunScript(pscpt, prglw, clw, plwReturn))
             tRet = tYes;
         else
@@ -1434,7 +1434,7 @@ bool GOK::FRunScriptCno(CNO cno, int32_t *prglw, int32_t clw, int32_t *plwReturn
         ReleasePpo(&psceg);
         ReleasePpo(&pscpt);
 
-        // see if this GOK still exists
+        // 3DMMv1.0: see if this GOK still exists
         fExists = (this == pwoks->PgobFromGrid(grid));
     }
     else
@@ -1445,7 +1445,7 @@ bool GOK::FRunScriptCno(CNO cno, int32_t *prglw, int32_t clw, int32_t *plwReturn
     return fExists;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change the current state of the GOK to the given state number.
     CAUTION: this GOK may not exist on return.
 ***************************************************************************/
@@ -1456,7 +1456,7 @@ bool GOK::FChangeState(int32_t sno)
     return _FEnterState(sno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the representation to the given chid (if it's not nil).
 
     Moves the GOK by dxp, dyp and sets its wait time for animation script
@@ -1478,7 +1478,7 @@ bool GOK::FSetRep(CHID chid, uint32_t grfgok, CTG ctg, int32_t dxp, int32_t dyp,
     return _FSetRep(chid, grfgok, ctg, dxp, dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The GOK has been hit with the mouse, do the associated action.
     CAUTION: this GOK may not exist on return.
 ***************************************************************************/
@@ -1514,7 +1514,7 @@ bool GOK::FCmdClicked(PCMD_MOUSE pcmd)
         pgok = (PGOK)pgob;
     }
 
-    // do the action associated with a mouse click
+    // 3DMMv1.0: do the action associated with a mouse click
     rglw[0] = pcmd->grfcust;
     rglw[1] = hid;
     rglw[2] = pcmd->cact;
@@ -1523,18 +1523,18 @@ bool GOK::FCmdClicked(PCMD_MOUSE pcmd)
         return fTrue;
     if (cidNil != cume.cidDefault && (tYes != tRet || lw != 0))
     {
-        // do the default action
+        // 3DMMv1.0: do the default action
         vpcex->EnqueueCid(cume.cidDefault, pvNil, pvNil, pgok->Hid(), hid);
     }
 
-    // undefer sound - be careful because this GOK may have gone away
+    // 3DMMv1.0: undefer sound - be careful because this GOK may have gone away
     if (this == pgok || (this == pgok->_pwoks->PgobFromGrid(grid)))
         _DeferSnd(fFalse);
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the current graphical representation that indicated by the given
     chid value. If we're already in that representation, don't do anything,
     ie, don't restart an animation.
@@ -1573,7 +1573,7 @@ PGORP GOK::_PgorpNew(PCRF pcrf, CTG ctg, CNO cno)
     return (*pfngorp)(this, pcrf, ctg, cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current graphical representation to this one.
 ***************************************************************************/
 void GOK::_SetGorp(PGORP pgorp, int32_t dxp, int32_t dyp)
@@ -1629,7 +1629,7 @@ void GOK::_SetGorp(PGORP pgorp, int32_t dxp, int32_t dyp)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Defer or finish defering marking and positioning the gorp.
 ***************************************************************************/
 void GOK::_DeferGorp(bool fDefer)
@@ -1650,7 +1650,7 @@ void GOK::_DeferGorp(bool fDefer)
     _DeferSnd(fDefer);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start playing the current representation.
 ***************************************************************************/
 bool GOK::FPlay(void)
@@ -1660,7 +1660,7 @@ bool GOK::FPlay(void)
     return pvNil != _pgorp && _pgorp->FPlay();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the current representation is being played.
 ***************************************************************************/
 bool GOK::FPlaying(void)
@@ -1670,7 +1670,7 @@ bool GOK::FPlaying(void)
     return pvNil != _pgorp && _pgorp->FPlaying();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop playing the current representation.
 ***************************************************************************/
 void GOK::Stop(void)
@@ -1681,7 +1681,7 @@ void GOK::Stop(void)
         _pgorp->Stop();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Goto the given frame of the current representation.
 ***************************************************************************/
 void GOK::GotoNfr(int32_t nfr)
@@ -1697,7 +1697,7 @@ void GOK::GotoNfr(int32_t nfr)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of frames in the current representation.
 ***************************************************************************/
 int32_t GOK::NfrMac(void)
@@ -1707,7 +1707,7 @@ int32_t GOK::NfrMac(void)
     return pvNil == _pgorp ? 0 : _pgorp->NfrMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current frame number of the current representation.
 ***************************************************************************/
 int32_t GOK::NfrCur(void)
@@ -1717,7 +1717,7 @@ int32_t GOK::NfrCur(void)
     return pvNil == _pgorp ? 0 : _pgorp->NfrCur();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play a sound and attach the sound to this GOK so that when the GOK
     goes away, the sound will be killed.
 ***************************************************************************/
@@ -1742,7 +1742,7 @@ int32_t GOK::SiiPlaySound(CTG ctg, CNO cno, int32_t sqn, int32_t vlm, int32_t ca
     return _siiSound;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Defer or stop defering mouse sounds.
 ***************************************************************************/
 void GOK::_DeferSnd(bool fDefer)
@@ -1761,7 +1761,7 @@ void GOK::_DeferSnd(bool fDefer)
         Bug("_cactDeferSnd is bad");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play a sound and attach the sound to this GOK as the mouse tracking
     sound, so that when the GOK goes away and the mouse state changes,
     the sound will be killed.
@@ -1771,6 +1771,16 @@ int32_t GOK::SiiPlayMouseSound(CTG ctg, CNO cno)
     AssertThis(0);
 
     _fMouseSndDirty = fFalse;
+
+    // 3DMM audio v1: adopted WAVE reps are UI feedback sounds, not movie
+    // soundtrack/SFX events. Honor the Help-machine McZee-audio toggle here
+    // so button/menu/easel noises are silent without touching movie audio.
+    int32_t grfMcZeeAudio = 0;
+    if (vpappb != pvNil && vpappb->FGetProp(0x23503, &grfMcZeeAudio) && (grfMcZeeAudio & 0x01) != 0)
+    {
+        _siiMouse = siiNil;
+        return siiNil;
+    }
     if (pvNil == vpsndm)
         return siiNil;
 
@@ -1785,7 +1795,7 @@ int32_t GOK::SiiPlayMouseSound(CTG ctg, CNO cno)
     return _siiMouse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play a sound with the given chid as the current mouse tracking sound.
 ***************************************************************************/
 void GOK::_PlayMouseSound(CHID chid)
@@ -1811,7 +1821,7 @@ void GOK::_PlayMouseSound(CHID chid)
         SiiPlayMouseSound(kid.cki.ctg, kid.cki.cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Our kidworld is being suspended. Make sure no AVIs or other things
     are running.
 ***************************************************************************/
@@ -1823,7 +1833,7 @@ void GOK::Suspend(void)
         _pgorp->Suspend();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Our kidworld is being resumed. Undo anything we did in Suspend.
 ***************************************************************************/
 void GOK::Resume(void)
@@ -1834,7 +1844,7 @@ void GOK::Resume(void)
         _pgorp->Resume();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The streaming property is being set or reset. If streaming is set, the
     rep should get flushed when we're done with it.
 ***************************************************************************/
@@ -1848,7 +1858,7 @@ void GOK::Stream(bool fStream)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a GOK.
 ***************************************************************************/
 void GOK::AssertValid(uint32_t grf)
@@ -1871,7 +1881,7 @@ void GOK::AssertValid(uint32_t grf)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the GOK.
 ***************************************************************************/
 void GOK::MarkMem(void)
@@ -1884,9 +1894,9 @@ void GOK::MarkMem(void)
     MarkMemObj(_pgorp);
     MarkMemObj(_pglcmflt);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 int32_t GORP::NfrMac(void)
@@ -1895,7 +1905,7 @@ int32_t GORP::NfrMac(void)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 int32_t GORP::NfrCur(void)
@@ -1904,7 +1914,7 @@ int32_t GORP::NfrCur(void)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 void GORP::GotoNfr(int32_t nfr)
@@ -1912,7 +1922,7 @@ void GORP::GotoNfr(int32_t nfr)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 bool GORP::FPlaying(void)
@@ -1921,7 +1931,7 @@ bool GORP::FPlaying(void)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 bool GORP::FPlay(void)
@@ -1930,7 +1940,7 @@ bool GORP::FPlay(void)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 void GORP::Stop(void)
@@ -1938,7 +1948,7 @@ void GORP::Stop(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 void GORP::Suspend(void)
@@ -1946,7 +1956,7 @@ void GORP::Suspend(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub method for non-frame based representations.
 ***************************************************************************/
 void GORP::Resume(void)
@@ -1954,7 +1964,7 @@ void GORP::Resume(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The streaming property is being set or reset. If streaming is set, we
     should flush our stuff from the RCA cache when we're done with it.
 ***************************************************************************/
@@ -1963,7 +1973,7 @@ void GORP::Stream(bool fStream)
     AssertThis(0);
 }
 
-// a FILL chunk
+// 3DMMv1.0: a FILL chunk
 struct GOKFL
 {
     int16_t bo;
@@ -1976,7 +1986,7 @@ struct GOKFL
 VERIFY_STRUCT_SIZE(GOKFL, 36);
 const BOM kbomGokfl = 0x5FFF0000;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new fill representation.
 ***************************************************************************/
 PGORF GORF::PgorfNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
@@ -2017,7 +2027,7 @@ PGORF GORF::PgorfNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
     return pgorf;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill the rectangle.
 ***************************************************************************/
 void GORF::Draw(PGNV pgnv, RC *prcClip)
@@ -2032,7 +2042,7 @@ void GORF::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the point is in the representation.
 ***************************************************************************/
 bool GORF::FPtIn(int32_t xp, int32_t yp)
@@ -2041,7 +2051,7 @@ bool GORF::FPtIn(int32_t xp, int32_t yp)
     return FIn(xp, 0, _dxp) && FIn(yp, 0, _dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the internal state of the GORF to accomodate the given preferred
     size of the content area.
 ***************************************************************************/
@@ -2057,7 +2067,7 @@ void GORF::SetDxpDyp(int32_t dxpPref, int32_t dypPref)
         _dyp = _rc.Dyp();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the natural rectangle.
 ***************************************************************************/
 void GORF::GetRc(RC *prc)
@@ -2069,7 +2079,7 @@ void GORF::GetRc(RC *prc)
     prc->CenterOnRc(&_rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the interior content rectangle.
 ***************************************************************************/
 void GORF::GetRcContent(RC *prc)
@@ -2081,7 +2091,7 @@ void GORF::GetRcContent(RC *prc)
     prc->OffsetToOrigin();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new masked bitmap representation of a graphical object.
 ***************************************************************************/
 PGORB GORB::PgorbNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
@@ -2101,7 +2111,7 @@ PGORB GORB::PgorbNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
     return pgorb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a GORB.
 ***************************************************************************/
 GORB::~GORB(void)
@@ -2111,7 +2121,7 @@ GORB::~GORB(void)
     ReleasePpo(&_pcrf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the bitmap.
 ***************************************************************************/
 void GORB::Draw(PGNV pgnv, RC *prcClip)
@@ -2137,7 +2147,7 @@ void GORB::Draw(PGNV pgnv, RC *prcClip)
         Warn("Couldn't load kidspace bitmap");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the point is in the bitmap.
 ***************************************************************************/
 bool GORB::FPtIn(int32_t xp, int32_t yp)
@@ -2160,7 +2170,7 @@ bool GORB::FPtIn(int32_t xp, int32_t yp)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the internal state of the GORB to accomodate the given preferred
     size of the content area.
 ***************************************************************************/
@@ -2170,10 +2180,10 @@ void GORB::SetDxpDyp(int32_t dxpPref, int32_t dypPref)
     AssertIn(dxpPref, 0, kcbMax);
     AssertIn(dypPref, 0, kcbMax);
 
-    // GORB's are not resizeable, so we do nothing
+    // 3DMMv1.0: GORB's are not resizeable, so we do nothing
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the natural rectangle.
 ***************************************************************************/
 void GORB::GetRc(RC *prc)
@@ -2196,7 +2206,7 @@ void GORB::GetRc(RC *prc)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the interior content rectangle.
 ***************************************************************************/
 void GORB::GetRcContent(RC *prc)
@@ -2208,7 +2218,7 @@ void GORB::GetRcContent(RC *prc)
     prc->OffsetToOrigin();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The streaming property is being set or reset. If streaming is set, we
     should flush our stuff from the RCA cache when we're done with it.
 ***************************************************************************/
@@ -2218,7 +2228,7 @@ void GORB::Stream(bool fStream)
     _fStream = FPure(fStream);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new tile representation.
 ***************************************************************************/
 PGORT GORT::PgortNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
@@ -2247,9 +2257,9 @@ PGORT GORT::PgortNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
     if (kboCur != gotil.bo || gotil.rgdxp[idzpLeftBorder] < 0 || gotil.rgdxp[idzpRightBorder] < 0 ||
         gotil.rgdxp[idzpLeft] < 0 || gotil.rgdxp[idzpRight] < 0 || gotil.rgdxp[idzpLeftFlex] < 0 ||
         gotil.rgdxp[idzpRightFlex] < 0 || gotil.rgdxp[idzpLeftFlex] + gotil.rgdxp[idzpRightFlex] <= 0 ||
-        /* FIXME(bruxisma): This is comparing an integer with a boolean */
+        /* 3DMMEx: FIXME(bruxisma): This is comparing an integer with a boolean */
         gotil.rgdxp[idzpLeftInc] < (gotil.rgdxp[idzpLeftFlex] > 0) ||
-        /* FIXME(bruxisma): This is comparing an integer with a boolean */
+        /* 3DMMEx: FIXME(bruxisma): This is comparing an integer with a boolean */
         gotil.rgdxp[idzpRightInc] < (gotil.rgdxp[idzpRightFlex] > 0) ||
         gotil.rgdxp[idzpLeftInc] > gotil.rgdxp[idzpLeftFlex] ||
         gotil.rgdxp[idzpRightInc] > gotil.rgdxp[idzpRightFlex] ||
@@ -2257,9 +2267,9 @@ PGORT GORT::PgortNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
         gotil.rgdyp[idzpLeftBorder] < 0 || gotil.rgdyp[idzpRightBorder] < 0 || gotil.rgdyp[idzpLeft] < 0 ||
         gotil.rgdyp[idzpRight] < 0 || gotil.rgdyp[idzpLeftFlex] < 0 || gotil.rgdyp[idzpRightFlex] < 0 ||
         gotil.rgdyp[idzpLeftFlex] + gotil.rgdyp[idzpRightFlex] <= 0 ||
-        /* FIXME(bruxisma): This is comparing an integer with a boolean */
+        /* 3DMMEx: FIXME(bruxisma): This is comparing an integer with a boolean */
         gotil.rgdyp[idzpLeftInc] < (gotil.rgdyp[idzpLeftFlex] > 0) ||
-        /* FIXME(bruxisma): This is comparing an integer with a boolean */
+        /* 3DMMEx: FIXME(bruxisma): This is comparing an integer with a boolean */
         gotil.rgdyp[idzpRightInc] < (gotil.rgdyp[idzpRightFlex] > 0) ||
         gotil.rgdyp[idzpLeftInc] > gotil.rgdyp[idzpLeftFlex] || gotil.rgdyp[idzpRightInc] > gotil.rgdyp[idzpRightFlex])
     {
@@ -2289,7 +2299,7 @@ PGORT GORT::PgortNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
     return pgort;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a GORT.
 ***************************************************************************/
 GORT::~GORT(void)
@@ -2299,7 +2309,7 @@ GORT::~GORT(void)
     ReleasePpo(&_pcrf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the GORT.
 ***************************************************************************/
 void GORT::Draw(PGNV pgnv, RC *prcClip)
@@ -2320,12 +2330,12 @@ void GORT::Draw(PGNV pgnv, RC *prcClip)
     AssertPo(pmbmp, 0);
     dyp = 0;
 
-    // draw the top row
+    // 3DMMv1.0: draw the top row
     ypLim = _rgdyp[idzpLeft] + _dypLeftFlex;
     rcRow.Set(0, 0, _dxp, LwMin(ypLim, _rgdyp[idzpLeft] + _rgdyp[idzpLeftFlex]));
     _DrawRow(pgnv, pmbmp, &rcRow, prcClip, 0, dyp);
 
-    // draw the top flex rows
+    // 3DMMv1.0: draw the top flex rows
     dyp -= _rgdyp[idzpLeft];
     while (rcRow.ypBottom < ypLim)
     {
@@ -2334,14 +2344,14 @@ void GORT::Draw(PGNV pgnv, RC *prcClip)
         _DrawRow(pgnv, pmbmp, &rcRow, prcClip, 0, dyp);
     }
 
-    // draw the middle row
+    // 3DMMv1.0: draw the middle row
     ypLim = rcRow.ypBottom + _rgdyp[idzpMid] + _dypRightFlex;
     rcRow.ypTop = rcRow.ypBottom;
     rcRow.ypBottom = LwMin(ypLim, rcRow.ypTop + _rgdyp[idzpMid] + _rgdyp[idzpRightFlex]);
     dyp -= _rgdyp[idzpLeftFlex];
     _DrawRow(pgnv, pmbmp, &rcRow, prcClip, 0, dyp);
 
-    // draw the bottom flex rows
+    // 3DMMv1.0: draw the bottom flex rows
     dyp -= _rgdyp[idzpMid];
     while (rcRow.ypBottom < ypLim)
     {
@@ -2350,7 +2360,7 @@ void GORT::Draw(PGNV pgnv, RC *prcClip)
         _DrawRow(pgnv, pmbmp, &rcRow, prcClip, 0, dyp);
     }
 
-    // draw the bottom row
+    // 3DMMv1.0: draw the bottom row
     rcRow.ypTop = rcRow.ypBottom;
     rcRow.ypBottom = _dyp;
     dyp -= _rgdyp[idzpRightFlex];
@@ -2359,7 +2369,7 @@ void GORT::Draw(PGNV pgnv, RC *prcClip)
     ReleasePpo(&pmbmp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw a row of the tiled bitmap.
 ***************************************************************************/
 void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp, int32_t dyp)
@@ -2377,7 +2387,7 @@ void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp
 
     pmbmp->GetRc(&rcMbmp);
 
-    // draw the left cell
+    // 3DMMv1.0: draw the left cell
     xpLim = prcRow->xpLeft + _rgdxp[idzpLeft] + _dxpLeftFlex;
     rc = *prcRow;
     rc.xpRight = LwMin(xpLim, rc.xpLeft + _rgdxp[idzpLeft] + _rgdxp[idzpLeftFlex]);
@@ -2389,7 +2399,7 @@ void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp
         pgnv->DrawMbmp(pmbmp, &rcMbmp);
     }
 
-    // draw the left flex cells
+    // 3DMMv1.0: draw the left flex cells
     dxp -= _rgdxp[idzpLeft];
     while (rc.xpRight < xpLim)
     {
@@ -2403,7 +2413,7 @@ void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp
         }
     }
 
-    // draw the middle cell
+    // 3DMMv1.0: draw the middle cell
     xpLim = rc.xpRight + _rgdxp[idzpMid] + _dxpRightFlex;
     rc.xpLeft = rc.xpRight;
     rc.xpRight = LwMin(xpLim, rc.xpLeft + _rgdxp[idzpMid] + _rgdxp[idzpRightFlex]);
@@ -2415,7 +2425,7 @@ void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp
         pgnv->DrawMbmp(pmbmp, &rcMbmp);
     }
 
-    // draw the right flex cells
+    // 3DMMv1.0: draw the right flex cells
     dxp -= _rgdxp[idzpMid];
     while (rc.xpRight < xpLim)
     {
@@ -2429,7 +2439,7 @@ void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp
         }
     }
 
-    // draw the right cell
+    // 3DMMv1.0: draw the right cell
     rc.xpLeft = rc.xpRight;
     rc.xpRight = prcRow->xpRight;
     dxp -= _rgdxp[idzpRightFlex];
@@ -2441,7 +2451,7 @@ void GORT::_DrawRow(PGNV pgnv, PMBMP pmbmp, RC *prcRow, RC *prcClip, int32_t dxp
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do hit testing on a tiled bitmap.
 ***************************************************************************/
 bool GORT::FPtIn(int32_t xp, int32_t yp)
@@ -2470,7 +2480,7 @@ bool GORT::FPtIn(int32_t xp, int32_t yp)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map the point from flexed coordinates to zero based mbmp coordinates
     for hit testing.
 ***************************************************************************/
@@ -2494,7 +2504,7 @@ void GORT::_MapZpToMbmp(int32_t *pzp, int16_t *prgdzp, int32_t dzpLeftFlex, int3
         *pzp += prgdzp[idzpRightFlex] - dzpRightFlex;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the internal state of the GORT to accomodate the given preferred
     size of the content area.
 ***************************************************************************/
@@ -2512,7 +2522,7 @@ void GORT::SetDxpDyp(int32_t dxpPref, int32_t dypPref)
     _dyp = _dypLeftFlex + _dypRightFlex + _rgdyp[idzpLeft] + _rgdyp[idzpMid] + _rgdyp[idzpRight];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compute the flex values in one direction.
 ***************************************************************************/
 void GORT::_ComputeFlexZp(int32_t *pdzpLeftFlex, int32_t *pdzpRightFlex, int32_t dzp, int16_t *prgdzp)
@@ -2537,7 +2547,7 @@ void GORT::_ComputeFlexZp(int32_t *pdzpLeftFlex, int32_t *pdzpRightFlex, int32_t
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the bounding rectangle for the tiled bitmap.
 ***************************************************************************/
 void GORT::GetRc(RC *prc)
@@ -2561,16 +2571,16 @@ void GORT::GetRc(RC *prc)
     pt.xp = -rc.xpLeft;
     pt.yp = -rc.ypTop;
 
-    // map the point from the MBMP to the flexed rectangle, scaling
-    // proportionally if the point is in a flex portion of the MBMP
+    // 3DMMv1.0: map the point from the MBMP to the flexed rectangle, scaling
+    // 3DMMv1.0: proportionally if the point is in a flex portion of the MBMP
     _MapZpFlex(&pt.xp, _rgdxp, _dxpLeftFlex, _dxpRightFlex);
     _MapZpFlex(&pt.yp, _rgdyp, _dypLeftFlex, _dypRightFlex);
 
-    // now make pt the registration point
+    // 3DMMv1.0: now make pt the registration point
     prc->Offset(-pt.xp, -pt.yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map the point from MBMP coordinates to flexed coordinates for setting the
     registration point. WARNING: this is not the inverse of _MapZpToMbmp.
 ***************************************************************************/
@@ -2594,7 +2604,7 @@ void GORT::_MapZpFlex(int32_t *pzp, int16_t *prgdzp, int32_t dzpLeftFlex, int32_
         *pzp += dzpRightFlex - prgdzp[idzpRightFlex];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the interior content rectangle.
 ***************************************************************************/
 void GORT::GetRcContent(RC *prc)
@@ -2608,7 +2618,7 @@ void GORT::GetRcContent(RC *prc)
     prc->ypBottom = _dyp - _rgdyp[idzpRightBorder];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The streaming property is being set or reset. If streaming is set, we
     should flush our stuff from the RCA cache when we're done with it.
 ***************************************************************************/
@@ -2618,7 +2628,7 @@ void GORT::Stream(bool fStream)
     _fStream = FPure(fStream);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new video representation.
 ***************************************************************************/
 PGORV GORV::PgorvNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
@@ -2640,7 +2650,7 @@ PGORV GORV::PgorvNew(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
     return pgorv;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the GORV - load the movie indicated byt (pcrf, ctg, cno).
 ***************************************************************************/
 bool GORV::_FInit(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
@@ -2676,7 +2686,7 @@ bool GORV::_FInit(PGOK pgok, PCRF pcrf, CTG ctg, CNO cno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a video representation.
 ***************************************************************************/
 GORV::~GORV(void)
@@ -2684,7 +2694,7 @@ GORV::~GORV(void)
     ReleasePpo(&_pgvid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the frame.
 ***************************************************************************/
 void GORV::Draw(PGNV pgnv, RC *prcClip)
@@ -2696,7 +2706,7 @@ void GORV::Draw(PGNV pgnv, RC *prcClip)
     _pgvid->Draw(pgnv, &rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the point is in the representation.
 ***************************************************************************/
 bool GORV::FPtIn(int32_t xp, int32_t yp)
@@ -2705,7 +2715,7 @@ bool GORV::FPtIn(int32_t xp, int32_t yp)
     return FIn(xp, 0, _dxp) && FIn(yp, 0, _dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the internal state of the GORF to accomodate the given preferred
     size of the content area.
 ***************************************************************************/
@@ -2723,7 +2733,7 @@ void GORV::SetDxpDyp(int32_t dxpPref, int32_t dypPref)
         _dyp = rc.Dyp();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the natural rectangle.
 ***************************************************************************/
 void GORV::GetRc(RC *prc)
@@ -2734,7 +2744,7 @@ void GORV::GetRc(RC *prc)
     prc->Set(0, 0, _dxp, _dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the interior content rectangle.
 ***************************************************************************/
 void GORV::GetRcContent(RC *prc)
@@ -2745,7 +2755,7 @@ void GORV::GetRcContent(RC *prc)
     prc->Set(0, 0, _dxp, _dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of the video.
 ***************************************************************************/
 int32_t GORV::NfrMac(void)
@@ -2754,7 +2764,7 @@ int32_t GORV::NfrMac(void)
     return _pgvid->NfrMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current frame of the video.
 ***************************************************************************/
 int32_t GORV::NfrCur(void)
@@ -2763,7 +2773,7 @@ int32_t GORV::NfrCur(void)
     return _pgvid->NfrCur();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Goto a particular frame.
 ***************************************************************************/
 void GORV::GotoNfr(int32_t nfr)
@@ -2772,7 +2782,7 @@ void GORV::GotoNfr(int32_t nfr)
     _pgvid->GotoNfr(nfr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the video is playing.
 ***************************************************************************/
 bool GORV::FPlaying(void)
@@ -2781,7 +2791,7 @@ bool GORV::FPlaying(void)
     return (_cactSuspend > 0 && _fPlayOnResume) || _pgvid->FPlaying();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play from the current frame to the end.
 ***************************************************************************/
 bool GORV::FPlay(void)
@@ -2794,7 +2804,7 @@ bool GORV::FPlay(void)
     return _pgvid->FPlay(&rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop playing.
 ***************************************************************************/
 void GORV::Stop(void)
@@ -2803,7 +2813,7 @@ void GORV::Stop(void)
     _pgvid->Stop();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Suspend the video.
 ***************************************************************************/
 void GORV::Suspend(void)
@@ -2822,7 +2832,7 @@ void GORV::Suspend(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resume the video.
 ***************************************************************************/
 void GORV::Resume(void)
@@ -2837,7 +2847,7 @@ void GORV::Resume(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a GORV.
 ***************************************************************************/
 void GORV::AssertValid(uint32_t grf)
@@ -2846,7 +2856,7 @@ void GORV::AssertValid(uint32_t grf)
     AssertPo(_pgvid, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the GORV.
 ***************************************************************************/
 void GORV::MarkMem(void)
@@ -2855,4 +2865,4 @@ void GORV::MarkMem(void)
     GORV_PAR::MarkMem();
     MarkMemObj(_pgvid);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993 Argonaut Software Ltd. All rights reserved.
  *
  * $Id: stdfile.c 1.5 1994/11/29 18:20:34 sam Exp $
@@ -13,7 +13,7 @@
 
 #include "brender.h"
 
-/*
+/* BRender:
  * Access functions for stdio
  */
 static br_uint_32 BR_CALLBACK BrStdioAttributes(void)
@@ -22,7 +22,7 @@ static br_uint_32 BR_CALLBACK BrStdioAttributes(void)
            BR_FS_ATTR_HAS_ADVANCE;
 }
 
-/*
+/* BRender:
  * Open a file for reading
  *
  * Use BRENDER_PATH to locate the file if necessary
@@ -44,7 +44,7 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
     br_uint_8 magics[BR_MAX_FILE_MAGICS];
     int open_mode = BR_FS_MODE_BINARY;
 
-    /*
+    /* BRender:
      * Try the current directory
      */
     strncpy(try_name, name, FILENAME_MAX);
@@ -52,14 +52,14 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
     if ((fh = fopen(try_name, "rb")) == NULL)
     {
 
-        /*
+        /* BRender:
          * If that fails, and if a drive or a
          * directory were specified, don't search along path
          */
         if (strchr(name, ':') || strchr(name, '/') || strchr(name, '\\'))
             return NULL;
 
-        /*
+        /* BRender:
          * For each element of the path, if it exists
          */
         if ((br_path = getenv("BRENDER_PATH")) == NULL)
@@ -67,7 +67,7 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
 
         while (*br_path)
         {
-            /*
+            /* BRender:
              * Take characters until next seperator or terminator
              */
             cp = try_name;
@@ -78,7 +78,7 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
             if (*br_path == ';')
                 br_path++;
 
-            /*
+            /* BRender:
              * Add a directory seperator if none
              */
             if (cp != try_name && (*(cp - 1) != ':' && *(cp - 1) != '/' && *(cp - 1) != '\\'))
@@ -94,19 +94,19 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
             return NULL;
     }
 
-    /*
+    /* BRender:
      * Now have an open file, try and grab the first bytes from it
      */
     if (fread(magics, 1, n_magics, fh) != n_magics)
     {
-        /*
+        /* BRender:
          * Could not read all the required data, close and punt
          */
         fclose(fh);
         return NULL;
     }
 
-    /*
+    /* BRender:
      * Try and identify the file
      */
     if (identify)
@@ -115,7 +115,7 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
     if (mode_result)
         *mode_result = open_mode;
 
-    /*
+    /* BRender:
      * Reopen file with it's new identity (or abandon if unknown identity)
      */
     switch (open_mode)
@@ -140,7 +140,7 @@ void *BR_CALLBACK BrStdioOpenRead(char *name, br_size_t n_magics, br_mode_test_c
     return fh;
 }
 
-/*
+/* BRender:
  * Open a file for writing, overwrites any existing file of the same name
  *
  * Return a void * file handle ('FILE *' cast to 'void *') or NULL
@@ -155,7 +155,7 @@ static void *BR_CALLBACK BrStdioOpenWrite(char *name, int mode)
     return fh;
 }
 
-/*
+/* BRender:
  * Close an open file
  */
 static void BR_CALLBACK BrStdioClose(void *f)
@@ -163,7 +163,7 @@ static void BR_CALLBACK BrStdioClose(void *f)
     fclose((FILE *)f);
 }
 
-/*
+/* BRender:
  * Test EOF
  */
 static int BR_CALLBACK BrStdioEof(void *f)
@@ -171,7 +171,7 @@ static int BR_CALLBACK BrStdioEof(void *f)
     return feof((FILE *)f);
 }
 
-/*
+/* BRender:
  * Read one character from file
  */
 static int BR_CALLBACK BrStdioGetChar(void *f)
@@ -179,7 +179,7 @@ static int BR_CALLBACK BrStdioGetChar(void *f)
     return getc((FILE *)f);
 }
 
-/*
+/* BRender:
  * Write one character to file
  */
 static void BR_CALLBACK BrStdioPutChar(int c, void *f)
@@ -187,7 +187,7 @@ static void BR_CALLBACK BrStdioPutChar(int c, void *f)
     putc(c, (FILE *)f);
 }
 
-/*
+/* BRender:
  * Read a block from a file
  */
 static br_size_t BR_CALLBACK BrStdioRead(void *buf, br_size_t size, unsigned int n, void *f)
@@ -195,7 +195,7 @@ static br_size_t BR_CALLBACK BrStdioRead(void *buf, br_size_t size, unsigned int
     return fread(buf, size, n, (FILE *)f);
 }
 
-/*
+/* BRender:
  * Write a block to a file
  */
 static br_size_t BR_CALLBACK BrStdioWrite(void *buf, br_size_t size, unsigned int n, void *f)
@@ -203,7 +203,7 @@ static br_size_t BR_CALLBACK BrStdioWrite(void *buf, br_size_t size, unsigned in
     return fwrite(buf, size, n, (FILE *)f);
 }
 
-/*
+/* BRender:
  * Read a line of text from stdin and trim any terminators
  *
  * Return length of line
@@ -223,7 +223,7 @@ static br_size_t BR_CALLBACK BrStdioGetLine(char *buf, br_size_t buf_len, void *
     return l;
 }
 
-/*
+/* BRender:
  * Write a line to text file, followed by newline
  */
 void BR_CALLBACK BrStdioPutLine(char *buf, void *f)
@@ -232,7 +232,7 @@ void BR_CALLBACK BrStdioPutLine(char *buf, void *f)
     putc('\n', (FILE *)f);
 }
 
-/*
+/* BRender:
  * Advance N bytes through a binary stream
  */
 static void BR_CALLBACK BrStdioAdvance(br_size_t count, void *f)
@@ -240,31 +240,31 @@ static void BR_CALLBACK BrStdioAdvance(br_size_t count, void *f)
     fseek((FILE *)f, (long int)count, SEEK_CUR);
 }
 
-/*
+/* BRender:
  * Filesystem structure
  */
 br_filesystem BrStdioFilesystem = {
-    "Standard IO", /* identifier */
+    "Standard IO", /* BRender: identifier */
 
-    BrStdioAttributes, /* attributes */
-    BrStdioOpenRead,   /* open_read  */
-    BrStdioOpenWrite,  /* openwrite  */
-    BrStdioClose,      /* close      */
-    BrStdioEof,        /* eof		  */
+    BrStdioAttributes, /* BRender: attributes */
+    BrStdioOpenRead,   /* BRender: open_read  */
+    BrStdioOpenWrite,  /* BRender: openwrite  */
+    BrStdioClose,      /* BRender: close      */
+    BrStdioEof,        /* BRender: eof		  */
 
-    BrStdioGetChar, /* getchar	  */
-    BrStdioPutChar, /* putchar	  */
+    BrStdioGetChar, /* BRender: getchar	  */
+    BrStdioPutChar, /* BRender: putchar	  */
 
-    BrStdioRead,  /* read		  */
-    BrStdioWrite, /* write	  */
+    BrStdioRead,  /* BRender: read		  */
+    BrStdioWrite, /* BRender: write	  */
 
-    BrStdioGetLine, /* getline	  */
-    BrStdioPutLine, /* putline	  */
+    BrStdioGetLine, /* BRender: getline	  */
+    BrStdioPutLine, /* BRender: putline	  */
 
-    BrStdioAdvance, /* advance	  */
+    BrStdioAdvance, /* BRender: advance	  */
 };
 
-/*
+/* BRender:
  * Override global variable s.t. the default filesystem will be stdio
  */
 br_filesystem *_BrDefaultFilesystem = &BrStdioFilesystem;

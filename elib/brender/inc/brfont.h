@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1992,1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: brfont.h 1.4 1995/03/29 16:42:55 sam Exp $
@@ -25,12 +25,12 @@ extern "C"
         br_uint_8 *glyphs;
     } br_font;
 
-/*
+/* BRender:
  * Flags
  */
 #define BR_FONTF_PROPORTIONAL 1
 
-    /*
+    /* BRender:
      * Default fonts that are available in framework
      */
     extern struct br_font *BrFontFixed3x5;

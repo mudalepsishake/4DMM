@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Chunky editor document management
 
@@ -60,7 +60,7 @@ RTCLASS(DCD)
 RTCLASS(SEL)
 RTCLASS(TSCG)
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Add Chunk dialog
 ****************************************/
 enum
@@ -73,7 +73,7 @@ enum
     kiditLimInfo
 };
 
-// add chunk data
+// 3DMMv1.0: add chunk data
 struct ADCD
 {
     PCFL pcfl;
@@ -83,7 +83,7 @@ struct ADCD
 
 bool _FDlgAddChunk(PDLG pdlg, int32_t *pidit, void *pv);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dialog proc for Add Chunk dialog. pv should be a padcd.
 ***************************************************************************/
 bool _FDlgAddChunk(PDLG pdlg, int32_t *pidit, void *pv)
@@ -98,7 +98,7 @@ bool _FDlgAddChunk(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelInfo:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
 
     case kiditOkInfo:
         if (!pdlg->FGetValues(0, kiditLimInfo))
@@ -146,7 +146,7 @@ bool _FDlgAddChunk(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for DOC class.
 ***************************************************************************/
 DOC::DOC(void)
@@ -154,7 +154,7 @@ DOC::DOC(void)
     _pcfl = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for DOC class.
 ***************************************************************************/
 DOC::~DOC(void)
@@ -162,7 +162,7 @@ DOC::~DOC(void)
     ReleasePpo(&_pcfl);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new document based on the given fni.
     Use pfni == pvNil to create a new file, non-nil to open an
     existing file.
@@ -178,7 +178,7 @@ PDOC DOC::PdocNew(FNI *pfni)
     {
         AssertPo(pfni, ffniFile);
 
-        // make sure no other docs are based on this pcfl.
+        // 3DMMv1.0: make sure no other docs are based on this pcfl.
         if (pvNil != DOCB::PdocbFromFni(pfni))
             return pvNil;
         pcfl = CFL::PcflOpen(pfni, fcflNil);
@@ -198,7 +198,7 @@ PDOC DOC::PdocNew(FNI *pfni)
     return pdoc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG for the doc.
 ***************************************************************************/
 PDDG DOC::PddgNew(PGCB pgcb)
@@ -207,7 +207,7 @@ PDDG DOC::PddgNew(PGCB pgcb)
     return DCD::PdcdNew(this, _pcfl, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current FNI for the doc. Return false if the doc is not
     currently based on an FNI (it's a new doc or an internal one).
 ***************************************************************************/
@@ -222,7 +222,7 @@ bool DOC::FGetFni(FNI *pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document and optionally set this fni as the current one.
     If the doc is currently based on an FNI, pfni may be nil, indicating
     that this is a normal save (not save as). If pfni is not nil and
@@ -252,7 +252,7 @@ bool DOC::FSaveToFni(FNI *pfni, bool fSetFni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ask the user what file they want to save to.
 ***************************************************************************/
 bool DOC::FGetFniSave(FNI *pfni)
@@ -265,7 +265,7 @@ bool DOC::FGetFniSave(FNI *pfni)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the DOC.
 ***************************************************************************/
 void DOC::AssertValid(uint32_t grf)
@@ -273,9 +273,9 @@ void DOC::AssertValid(uint32_t grf)
     DOC_PAR::AssertValid(grf);
     AssertPo(_pcfl, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for chunk editing doc.
 ***************************************************************************/
 DOCE::DOCE(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCB(pdocb)
@@ -286,7 +286,7 @@ DOCE::DOCE(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCB(pdocb)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the DOCH - initialize the stream.
 ***************************************************************************/
 bool DOCE::_FInit(void)
@@ -304,7 +304,7 @@ bool DOCE::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to look for a DOCE for the given chunk.
 ***************************************************************************/
 PDOCE DOCE::PdoceFromChunk(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
@@ -323,7 +323,7 @@ PDOCE DOCE::PdoceFromChunk(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: For all DOCE children of the DOCB, checks if the chunk
     still exists and nukes the DOCE if not.
 ***************************************************************************/
@@ -338,8 +338,8 @@ void DOCE::CloseDeletedDoce(PDOCB pdocb)
         if (!pdocb->FIs(kclsDOCE))
             continue;
         pdoce = (PDOCE)pdocb;
-        // NOTE: can't assert the pdoce here because the chunk may be gone
-        // AssertPo(pdoce, 0);
+        // 3DMMv1.0: NOTE: can't assert the pdoce here because the chunk may be gone
+        // 3DMMv1.0: AssertPo(pdoce, 0);
         AssertPo(pdoce->_pcfl, 0);
         if (!pdoce->_pcfl->FFind(pdoce->_ctg, pdoce->_cno))
             pdoce->CloseAllDdg();
@@ -348,7 +348,7 @@ void DOCE::CloseDeletedDoce(PDOCB pdocb)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the name of the item document.
 ***************************************************************************/
 void DOCE::GetName(PSTN pstn)
@@ -361,7 +361,7 @@ void DOCE::GetName(PSTN pstn)
     pstn->FAppendStn(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document. Handles cidSave, cidSaveAs and cidSaveCopy.
 ***************************************************************************/
 bool DOCE::FSave(int32_t cid)
@@ -385,7 +385,7 @@ bool DOCE::FSave(int32_t cid)
         int32_t lw;
         ADCD adcd;
 
-        // put up the dialog
+        // 3DMMv1.0: put up the dialog
         adcd.pcfl = _pcfl;
         adcd.fCkiValid = fTrue;
         adcd.cki.ctg = _ctg;
@@ -431,7 +431,7 @@ bool DOCE::FSave(int32_t cid)
         return fTrue;
     }
 
-    // saving failed
+    // 3DMMv1.0: saving failed
     if (fCreated)
         _pcfl->Delete(ctg, cno);
 
@@ -442,7 +442,7 @@ LCancel:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the chunk data to a chunk.
 ***************************************************************************/
 bool DOCE::_FSaveToChunk(CTG ctg, CNO cno, bool fRedirect)
@@ -453,9 +453,9 @@ bool DOCE::_FSaveToChunk(CTG ctg, CNO cno, bool fRedirect)
     BLCK blck;
     int32_t cb = _CbOnFile();
 
-    // if the chunk already exists, add a temporary chunk, swap the data
-    // between the two chunks, then delete the temporary chunk.
-    // if the chunk doesn't yet exist, create it.
+    // 3DMMv1.0: if the chunk already exists, add a temporary chunk, swap the data
+    // 3DMMv1.0: between the two chunks, then delete the temporary chunk.
+    // 3DMMv1.0: if the chunk doesn't yet exist, create it.
     if (!_pcfl->FFind(ctg, cno))
     {
         cnoT = cno;
@@ -484,7 +484,7 @@ bool DOCE::_FSaveToChunk(CTG ctg, CNO cno, bool fRedirect)
         _fDirty = fFalse;
     }
 
-    // need to invalidate the line
+    // 3DMMv1.0: need to invalidate the line
     cki.ctg = ctg;
     cki.cno = cno;
     DCD::InvalAllDcd(_pdocbPar, _pcfl, &cki);
@@ -493,7 +493,7 @@ bool DOCE::_FSaveToChunk(CTG ctg, CNO cno, bool fRedirect)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void DOCE::AssertValid(uint32_t grf)
@@ -502,9 +502,9 @@ void DOCE::AssertValid(uint32_t grf)
     AssertPo(_pcfl, 0);
     Assert(_pcfl->FFind(_ctg, _cno), "chunk not in CFL");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a DCLB.
 ***************************************************************************/
 DCLB::DCLB(PDOCB pdocb, PGCB pgcb) : DDG(pdocb, pgcb)
@@ -523,7 +523,7 @@ DCLB::DCLB(PDOCB pdocb, PGCB pgcb) : DDG(pdocb, pgcb)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the ln that corresponds with the given yp value. If yp is in
     the header, returns lnNil.
 ***************************************************************************/
@@ -535,7 +535,7 @@ int32_t DCLB::_LnFromYp(int32_t yp)
     return _scvVert + (yp - _dypHeader) / _dypLine;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Perform a scroll according to scaHorz and scaVert.
 ***************************************************************************/
 void DCLB::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t scvVert)
@@ -600,7 +600,7 @@ void DCLB::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
         _ScrollDxpDyp(dxp, dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the bits in the window.
 ***************************************************************************/
 void DCLB::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
@@ -612,14 +612,14 @@ void DCLB::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
     Scroll(&rc, -dxp, -dyp, kginDraw);
     if (0 != dxp)
     {
-        // scroll the header
+        // 3DMMv1.0: scroll the header
         rc.ypTop = 0;
         rc.ypBottom = _dypHeader - 1;
         Scroll(&rc, -dxp, 0, kginDraw);
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the content part of the DCLB minus header (and any future footer).
 ***************************************************************************/
 void DCLB::_GetContent(RC *prc)
@@ -628,7 +628,7 @@ void DCLB::_GetContent(RC *prc)
     prc->ypTop += _dypHeader;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill in reasonable minimum and maximum sizes.
 ***************************************************************************/
 void DCLB::GetMinMax(RC *prcMinMax)
@@ -640,7 +640,7 @@ void DCLB::GetMinMax(RC *prcMinMax)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void DCLB::AssertValid(uint32_t grf)
@@ -650,9 +650,9 @@ void DCLB::AssertValid(uint32_t grf)
     AssertIn(_dxpChar, 1, 1000);
     AssertIn(_dypHeader, 0, 1000);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the DCD.
 ***************************************************************************/
 DCD::DCD(PDOCB pdocb, PCFL pcfl, PGCB pgcb) : DCLB(pdocb, pgcb), _sel(pcfl)
@@ -664,7 +664,7 @@ DCD::DCD(PDOCB pdocb, PCFL pcfl, PGCB pgcb) : DCLB(pdocb, pgcb), _sel(pcfl)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DCD.
 ***************************************************************************/
 PDCD DCD::PdcdNew(PDOCB pdocb, PCFL pcfl, PGCB pgcb)
@@ -685,7 +685,7 @@ PDCD DCD::PdcdNew(PDOCB pdocb, PCFL pcfl, PGCB pgcb)
     return pdcd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     We're being activated or deactivated, invert the sel.
 ***************************************************************************/
 void DCD::_Activate(bool fActive)
@@ -697,7 +697,7 @@ void DCD::_Activate(bool fActive)
     _DrawSel(&gnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: should be called by any code that edits the pcfl.
     *pcki and *pkid should be at or before the first line modified.
     pcki and pkid can be nil.
@@ -712,10 +712,10 @@ void DCD::InvalAllDcd(PDOCB pdocb, PCFL pcfl, CKI *pcki, KID *pkid)
     PDDG pddg;
     PDCD pdcd;
 
-    // mark the document dirty
+    // 3DMMv1.0: mark the document dirty
     pdocb->SetDirty();
 
-    // inform the DCDs
+    // 3DMMv1.0: inform the DCDs
     for (ipddg = 0; pvNil != (pddg = pdocb->PddgGet(ipddg)); ipddg++)
     {
         if (!pddg->FIs(kclsDCD))
@@ -727,7 +727,7 @@ void DCD::InvalAllDcd(PDOCB pdocb, PCFL pcfl, CKI *pcki, KID *pkid)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the display from (pcki, pkid) to the end of the display. If
     we're the active DCD, also redraw.
 ***************************************************************************/
@@ -739,7 +739,7 @@ void DCD::_InvalCkiKid(CKI *pcki, KID *pkid)
     RC rc;
     int32_t lnMin;
 
-    // we need to recalculate the lnLim
+    // 3DMMv1.0: we need to recalculate the lnLim
     _sel.InvalLim();
 
     if (pvNil != pcki)
@@ -752,7 +752,7 @@ void DCD::_InvalCkiKid(CKI *pcki, KID *pkid)
     else
         lnMin = lnNil;
 
-    // correct the sel
+    // 3DMMv1.0: correct the sel
     if (lnNil != _sel.Ln() && _sel.Ln() >= lnMin)
         _sel.Adjust();
 
@@ -770,7 +770,7 @@ void DCD::_InvalCkiKid(CKI *pcki, KID *pkid)
         InvalRc(&rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the chunk list
 ***************************************************************************/
 void DCD::Draw(PGNV pgnv, RC *prcClip)
@@ -793,7 +793,7 @@ void DCD::Draw(PGNV pgnv, RC *prcClip)
     pgnv->SetOnn(_onn);
 
     xp = _XpFromIch(0);
-    // draw the header
+    // 3DMMv1.0: draw the header
     rc = *prcClip;
     rc.ypTop = 0;
     rc.ypBottom = _dypHeader - _dypBorder;
@@ -805,10 +805,10 @@ void DCD::Draw(PGNV pgnv, RC *prcClip)
     rc.ypBottom = _dypHeader;
     pgnv->FillRc(&rc, kacrBlack);
 
-    // use the sel to find the first (icki, ikid) to draw
+    // 3DMMv1.0: use the sel to find the first (icki, ikid) to draw
     if (!sel.FSetLn(_LnFromYp(LwMax(prcClip->ypTop, _dypHeader))))
     {
-        // no visible lines
+        // 3DMMv1.0: no visible lines
         rc = *prcClip;
         rc.ypTop = _dypHeader;
         pgnv->FillRc(&rc, kacrWhite);
@@ -840,7 +840,7 @@ void DCD::Draw(PGNV pgnv, RC *prcClip)
         {
             Assert(grfsel & fselCki, "bad grfsel");
 
-            // draw the cki description
+            // 3DMMv1.0: draw the cki description
             _pcfl->FFind(cki.ctg, cki.cno, &blck);
             _pcfl->FGetName(cki.ctg, cki.cno, &stnT);
             cckiRef = _pcfl->CckiRef(cki.ctg, cki.cno);
@@ -857,7 +857,7 @@ void DCD::Draw(PGNV pgnv, RC *prcClip)
 
         sel.FAdvance();
 
-        // draw seperating line
+        // 3DMMv1.0: draw seperating line
         if (yp > _dypHeader)
         {
             rc = *prcClip;
@@ -867,12 +867,12 @@ void DCD::Draw(PGNV pgnv, RC *prcClip)
         }
     }
 
-    // draw the selection
+    // 3DMMv1.0: draw the selection
     if (_fActive)
         _DrawSel(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hilite the selection (if there is one)
 ***************************************************************************/
 void DCD::_DrawSel(PGNV pgnv)
@@ -892,7 +892,7 @@ void DCD::_DrawSel(PGNV pgnv)
     pgnv->HiliteRc(&rc, kacrWhite);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to the given ln.
 ***************************************************************************/
 void DCD::_SetSel(int32_t ln, CKI *pcki, KID *pkid)
@@ -918,17 +918,17 @@ void DCD::_SetSel(int32_t ln, CKI *pcki, KID *pkid)
 
     GNV gnv(this);
 
-    // erase the old sel
+    // 3DMMv1.0: erase the old sel
     if (_fActive)
         _DrawSel(&gnv);
 
-    // set the new sel and draw it
+    // 3DMMv1.0: set the new sel and draw it
     _sel = sel;
     if (_fActive)
         _DrawSel(&gnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the sel into view.
 ***************************************************************************/
 void DCD::_ShowSel(void)
@@ -950,7 +950,7 @@ void DCD::_ShowSel(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mouse down in our content.
 ***************************************************************************/
 void DCD::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -984,7 +984,7 @@ void DCD::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     if (lnNil == lnNew)
         return;
 
-    // handle a control/command click--edit chunk information/change CHID
+    // 3DMMv1.0: handle a control/command click--edit chunk information/change CHID
     if (grfcust & fcustCmd)
     {
         _SetSel(lnNil);
@@ -1005,7 +1005,7 @@ void DCD::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
         return;
     }
 
-    // handle a double click - edit or goto the item
+    // 3DMMv1.0: handle a double click - edit or goto the item
     if (cact > 1 && ln == lnNew)
     {
         if (!(grfsel & fselKid))
@@ -1059,7 +1059,7 @@ void DCD::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
 
         if (pdcd != pdcdNew || ln != lnNew)
         {
-            // target change
+            // 3DMMv1.0: target change
             if (pvNil != pdcdNew)
                 pdcdNew->_HiliteLn(lnNew);
             if (pvNil != pdcd)
@@ -1076,7 +1076,7 @@ void DCD::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hilite the line (to indicate a drag target)
 ***************************************************************************/
 void DCD::_HiliteLn(int32_t ln)
@@ -1092,7 +1092,7 @@ void DCD::_HiliteLn(int32_t ln)
     gnv.FrameRcApt(&rc, &vaptGray, kacrInvert, kacrClear);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reopen the file - nuking all changes since last saved.
 ***************************************************************************/
 bool DCD::FCmdReopen(PCMD pcmd)
@@ -1127,14 +1127,14 @@ bool DCD::FCmdReopen(PCMD pcmd)
         _ShowSel();
     }
 
-    // get rid of all child documents
+    // 3DMMv1.0: get rid of all child documents
     while (pvNil != (pdocb = _pdocb->PdocbChd()))
     {
         pdocb->CloseAllDdg();
         if (pdocb == _pdocb->PdocbChd())
         {
-            //	REVIEW shonk: Release: is this the right thing to do?  What if
-            // someone else has a reference count to this child DOCB?
+            // 3DMMv1.0:	REVIEW shonk: Release: is this the right thing to do?  What if
+            // 3DMMv1.0: someone else has a reference count to this child DOCB?
             Bug("why wasn't this child doc released?");
             ReleasePpo(&pdocb);
         }
@@ -1144,7 +1144,7 @@ bool DCD::FCmdReopen(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle key input.
 ***************************************************************************/
 bool DCD::FCmdKey(PCMD_KEY pcmd)
@@ -1230,7 +1230,7 @@ bool DCD::FCmdKey(PCMD_KEY pcmd)
             }
             else if (grfsel & fselCki)
             {
-                // edit the chunk
+                // 3DMMv1.0: edit the chunk
                 _ShowSel();
                 _EditCki(&cki, cidEditNatural);
             }
@@ -1244,7 +1244,7 @@ bool DCD::FCmdKey(PCMD_KEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the maximum for the indicated scroll bar.
 ***************************************************************************/
 int32_t DCD::_ScvMax(bool fVert)
@@ -1261,7 +1261,7 @@ int32_t DCD::_ScvMax(bool fVert)
     return 320;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle enabling/disabling DCD commands.
 ***************************************************************************/
 bool DCD::FEnableDcdCmd(PCMD pcmd, uint32_t *pgrfeds)
@@ -1321,7 +1321,7 @@ bool DCD::FEnableDcdCmd(PCMD pcmd, uint32_t *pgrfeds)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up the dialog and add the chunk.
 ***************************************************************************/
 bool DCD::_FAddChunk(CTG ctgDef, CKI *pcki, bool *pfCreated)
@@ -1335,7 +1335,7 @@ bool DCD::_FAddChunk(CTG ctgDef, CKI *pcki, bool *pfCreated)
     ADCD adcd;
     STN stn;
 
-    // put up the dialog
+    // 3DMMv1.0: put up the dialog
     adcd.pcfl = _pcfl;
     adcd.fCkiValid = fFalse;
     pdlg = DLG::PdlgNew(dlidChunkInfo, _FDlgAddChunk, &adcd);
@@ -1388,7 +1388,7 @@ bool DCD::_FAddChunk(CTG ctgDef, CKI *pcki, bool *pfCreated)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to add a chunk.
 ***************************************************************************/
 bool DCD::FCmdAddChunk(PCMD pcmd)
@@ -1399,13 +1399,13 @@ bool DCD::FCmdAddChunk(PCMD pcmd)
     int32_t lnOld;
     bool fCreated;
 
-    // save and clear the sel
+    // 3DMMv1.0: save and clear the sel
     lnOld = _sel.Ln();
     _SetSel(lnNil);
 
     if (!_FAddChunk(ctgNil, &cki, &fCreated))
     {
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         _SetSel(lnOld);
         return fTrue;
     }
@@ -1416,7 +1416,7 @@ bool DCD::FCmdAddChunk(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to add a chunk.
 ***************************************************************************/
 bool DCD::FCmdAddPicChunk(PCMD pcmd)
@@ -1431,11 +1431,11 @@ bool DCD::FCmdAddPicChunk(PCMD pcmd)
     bool fCreated;
     PPIC ppic = pvNil;
 
-    // save and clear the sel
+    // 3DMMv1.0: save and clear the sel
     lnOld = _sel.Ln();
     _SetSel(lnNil);
 
-    // get the fni of the file to add
+    // 3DMMv1.0: get the fni of the file to add
     Mac(FTG ftg = 'PICT';) if (!FGetFniOpenMacro(&fni, &ftg, 1, PszLit("MetaFiles\0*.EMF;*.WMF\0"), vwig.hwndApp))
     {
         goto LCancel;
@@ -1446,7 +1446,7 @@ bool DCD::FCmdAddPicChunk(PCMD pcmd)
         goto LCancel;
     }
 
-    // add the chunk and write the data
+    // 3DMMv1.0: add the chunk and write the data
     if (!_FAddChunk(kctgPictNative, &cki, &fCreated))
         goto LCancel;
     cb = ppic->CbOnFile();
@@ -1457,7 +1457,7 @@ bool DCD::FCmdAddPicChunk(PCMD pcmd)
         vpappb->TGiveAlertSz(PszLit("Writing chunk failed"), bkOk, cokExclamation);
     LCancel:
         ReleasePpo(&ppic);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         _SetSel(lnOld);
         return fTrue;
     }
@@ -1469,7 +1469,7 @@ bool DCD::FCmdAddPicChunk(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Masked bitmap dialog
 ***************************************************************************/
 enum
@@ -1484,7 +1484,7 @@ enum
 };
 bool _FDlgMbmp(PDLG pdlg, int32_t *pidit, void *pv);
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Dialog proc for input of transparent pixel value and reference point
 ****************************************************************************/
 bool _FDlgMbmp(PDLG pdlg, int32_t *pidit, void *pv)
@@ -1529,7 +1529,7 @@ bool _FDlgMbmp(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to add Mbmp or chunk.
 ***************************************************************************/
 bool DCD::FCmdAddBitmapChunk(PCMD pcmd)
@@ -1549,19 +1549,19 @@ bool DCD::FCmdAddBitmapChunk(PCMD pcmd)
     CTG ctg;
     PDLG pdlg = pvNil;
 
-    // save and clear the sel
+    // 3DMMv1.0: save and clear the sel
     lnOld = _sel.Ln();
     _SetSel(lnNil);
 
-    // get the fni of the file to add
-    Mac(FTG ftg = '\0BMP';) // REVIEW shonk: this is bogus
+    // 3DMMv1.0: get the fni of the file to add
+    Mac(FTG ftg = '\0BMP';) // 3DMMv1.0: REVIEW shonk: this is bogus
         if (!FGetFniOpenMacro(&fni, &ftg, 1, PszLit("Bitmaps\0*.BMP\0"), vwig.hwndApp)) goto LCancel;
 
-    // get the transparent pixel value
+    // 3DMMv1.0: get the transparent pixel value
     pdlg = DLG::PdlgNew(dlidMbmp, _FDlgMbmp);
     if (pvNil == pdlg)
         goto LCancel;
-    // put up the initial values
+    // 3DMMv1.0: put up the initial values
     pdlg->FPutLwInEdit(kiditPixelMbmp, 0);
     pdlg->FPutLwInEdit(kiditXPosMbmp, 0);
     pdlg->FPutLwInEdit(kiditYPosMbmp, 0);
@@ -1592,7 +1592,7 @@ bool DCD::FCmdAddBitmapChunk(PCMD pcmd)
     }
     ctg = fMask ? kctgMask : kctgMbmp;
 
-    // add the chunk and write the data
+    // 3DMMv1.0: add the chunk and write the data
     if (!_FAddChunk(ctg, &cki, &fCreated))
         goto LCancel;
 
@@ -1603,7 +1603,7 @@ bool DCD::FCmdAddBitmapChunk(PCMD pcmd)
         vpappb->TGiveAlertSz(PszLit("Writing chunk failed"), bkOk, cokExclamation);
     LCancel:
         ReleasePpo(&pbaco);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         _SetSel(lnOld);
         return fTrue;
     }
@@ -1615,7 +1615,7 @@ bool DCD::FCmdAddBitmapChunk(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to add a chunk that is a copy of a file's contents.
 ***************************************************************************/
 bool DCD::FCmdAddFileChunk(PCMD pcmd)
@@ -1629,11 +1629,11 @@ bool DCD::FCmdAddFileChunk(PCMD pcmd)
     FNI fni;
     bool fCreated;
 
-    // save and clear the sel
+    // 3DMMv1.0: save and clear the sel
     lnOld = _sel.Ln();
     _SetSel(lnNil);
 
-    // get the fni of the file to add
+    // 3DMMv1.0: get the fni of the file to add
     if (!FGetFniOpenMacro(&fni, pvNil, 0, PszLit("All files\0*.*\0"), vwig.hwndApp))
         goto LCancel;
     if (pvNil == (pfil = FIL::PfilOpen(&fni)))
@@ -1644,7 +1644,7 @@ bool DCD::FCmdAddFileChunk(PCMD pcmd)
     blck.Set(pfil, 0, pfil->FpMac());
     ReleasePpo(&pfil);
 
-    // add the chunk and write the data
+    // 3DMMv1.0: add the chunk and write the data
     if (!_FAddChunk(ctgNil, &cki, &fCreated))
         goto LCancel;
     if (!_pcfl->FPutBlck(&blck, cki.ctg, cki.cno))
@@ -1653,7 +1653,7 @@ bool DCD::FCmdAddFileChunk(PCMD pcmd)
             _pcfl->Delete(cki.ctg, cki.cno);
         vpappb->TGiveAlertSz(PszLit("Writing chunk failed"), bkOk, cokExclamation);
     LCancel:
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         _SetSel(lnOld);
         return fTrue;
     }
@@ -1664,13 +1664,13 @@ bool DCD::FCmdAddFileChunk(PCMD pcmd)
     return fTrue;
 }
 
-/**************************************************************************
+/** 3DMMv1.0: ************************************************************************
     Edit Chunk Information dialog
 **************************************************************************/
 
-// This struct is needed so _FDlgEditChunkInfo() has access to the chunk
-// and chunky file and so _FDlgChangeChunk() has access to the parent and
-// child chunks and the chunky file.
+// 3DMMv1.0: This struct is needed so _FDlgEditChunkInfo() has access to the chunk
+// 3DMMv1.0: and chunky file and so _FDlgChangeChunk() has access to the parent and
+// 3DMMv1.0: child chunks and the chunky file.
 struct CLAN
 {
     CKI cki;
@@ -1680,7 +1680,7 @@ struct CLAN
 
 bool _FDlgEditChunkInfo(PDLG pdlg, int32_t *pidit, void *pv);
 
-/**************************************************************************
+/** 3DMMv1.0: ************************************************************************
     Dialog proc for Edit Chunk Info dialog. *pv should be a CLAN *, with
     the cki and pcfl fields filled in (the kid field is not used).
 **************************************************************************/
@@ -1698,7 +1698,7 @@ bool _FDlgEditChunkInfo(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelInfo:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
     case kiditOkInfo:
         if (!pdlg->FGetValues(0, kiditLimInfo))
         {
@@ -1706,7 +1706,7 @@ bool _FDlgEditChunkInfo(PDLG pdlg, int32_t *pidit, void *pv)
             return fTrue;
         }
 
-        // check the chunk
+        // 3DMMv1.0: check the chunk
         if (!_FGetCtg(pdlg, kiditCtgInfo, &cki.ctg))
         {
             vpappb->TGiveAlertSz(PszLit("CTG is bad"), bkOk, cokStop);
@@ -1733,7 +1733,7 @@ bool _FDlgEditChunkInfo(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Put up the dialog with initial values and edit the chunk. This function
     will update *pckiOld to contain the new ctg and cno values.
 ****************************************************************************/
@@ -1750,12 +1750,12 @@ bool DCD::_FEditChunkInfo(CKI *pckiOld)
     clan.pcfl = _pcfl;
     clan.cki = *pckiOld;
     TrashVar(&clan.kid);
-    // put up the dialog
+    // 3DMMv1.0: put up the dialog
     pdlg = DLG::PdlgNew(dlidChunkInfo, _FDlgEditChunkInfo, &clan);
     if (pvNil == pdlg)
         return fFalse;
 
-    // set the initial values
+    // 3DMMv1.0: set the initial values
     idit = kiditCtgInfo;
     _PutCtgStn(pdlg, kiditCtgInfo, pckiOld->ctg);
     pdlg->FPutLwInEdit(kiditCnoInfo, pckiOld->cno);
@@ -1775,7 +1775,7 @@ bool DCD::_FEditChunkInfo(CKI *pckiOld)
     if (cki.ctg != pckiOld->ctg || cki.cno != pckiOld->cno)
         _pcfl->Move(pckiOld->ctg, pckiOld->cno, cki.ctg, cki.cno);
 
-    // set the original cki to the new cki so the caller has the new chunk
+    // 3DMMv1.0: set the original cki to the new cki so the caller has the new chunk
     pckiOld->ctg = cki.ctg;
     pckiOld->cno = cki.cno;
 
@@ -1785,7 +1785,7 @@ bool DCD::_FEditChunkInfo(CKI *pckiOld)
     return fTrue;
 }
 
-/**************************************************************************
+/** 3DMMv1.0: ************************************************************************
     Handle command to edit chunk information.
 **************************************************************************/
 bool DCD::FCmdEditChunkInfo(PCMD pcmd)
@@ -1795,7 +1795,7 @@ bool DCD::FCmdEditChunkInfo(PCMD pcmd)
     CKI cki;
     int32_t lnOld;
 
-    // record, save, and clear the sel
+    // 3DMMv1.0: record, save, and clear the sel
     if (fselCki != _sel.GrfselGetCkiKid(&cki, pvNil))
         goto LFail;
     lnOld = _sel.Ln();
@@ -1805,18 +1805,18 @@ bool DCD::FCmdEditChunkInfo(PCMD pcmd)
     {
         _SetSel(lnOld);
     LFail:
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         return fTrue;
     }
 
-    // refresh the window and reset the selection
+    // 3DMMv1.0: refresh the window and reset the selection
     InvalAllDcd(_pdocb, _pcfl);
     _SetSel(lnNil, &cki);
     _ShowSel();
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to delete a chunk.
 ***************************************************************************/
 bool DCD::FCmdDeleteChunk(PCMD pcmd)
@@ -1845,11 +1845,11 @@ bool DCD::FCmdDeleteChunk(PCMD pcmd)
     return fTrue;
 
 LCancel:
-    pcmd->cid = cidNil; // don't record
+    pcmd->cid = cidNil; // 3DMMv1.0: don't record
     return fTrue;
 }
 
-/**************************************************************************
+/** 3DMMv1.0: ************************************************************************
     Change CHID dialog
 **************************************************************************/
 enum
@@ -1862,7 +1862,7 @@ enum
 
 bool _FDlgChangeChid(PDLG pdlg, int32_t *pidit, void *pv);
 
-/**************************************************************************
+/** 3DMMv1.0: ************************************************************************
     Dialog proc for Change CHID dialog.
 **************************************************************************/
 bool _FDlgChangeChid(PDLG pdlg, int32_t *pidit, void *pv)
@@ -1879,7 +1879,7 @@ bool _FDlgChangeChid(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelChid:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
     case kiditOkChid:
         if (!pdlg->FGetValues(kiditChidChid, kiditLimChid))
         {
@@ -1887,7 +1887,7 @@ bool _FDlgChangeChid(PDLG pdlg, int32_t *pidit, void *pv)
             return fTrue;
         }
 
-        // get the new chid
+        // 3DMMv1.0: get the new chid
         if (!pdlg->FGetLwFromEdit(kiditChidChid, &lw))
         {
             vpappb->TGiveAlertSz(PszLit("CHID value is bad"), bkOk, cokStop);
@@ -1896,8 +1896,8 @@ bool _FDlgChangeChid(PDLG pdlg, int32_t *pidit, void *pv)
         }
         chid = lw;
 
-        // check the new chid to make sure that the CTG/CNO/new CHID does not
-        // already exist
+        // 3DMMv1.0: check the new chid to make sure that the CTG/CNO/new CHID does not
+        // 3DMMv1.0: already exist
         if (pclan->pcfl->FGetIkid(pclan->cki.ctg, pclan->cki.cno, pclan->kid.cki.ctg, pclan->kid.cki.cno, chid,
                                   &ikid) &&
             chid != pclan->kid.chid)
@@ -1913,7 +1913,7 @@ bool _FDlgChangeChid(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Put up the dialog with initial values and change the CHID. *pkid will be
     affected to reflect this change.
 ****************************************************************************/
@@ -1931,12 +1931,12 @@ bool DCD::_FChangeChid(CKI *pcki, KID *pkid)
     clan.kid = *pkid;
     clan.pcfl = _pcfl;
 
-    // put up the dialog
+    // 3DMMv1.0: put up the dialog
     pdlg = DLG::PdlgNew(dlidChangeChid, _FDlgChangeChid, &clan);
     if (pvNil == pdlg)
         return fFalse;
 
-    // set the initial value
+    // 3DMMv1.0: set the initial value
     pdlg->FPutLwInEdit(kiditChidChid, pkid->chid);
 
     idit = pdlg->IditDo(kiditChidChid);
@@ -1948,20 +1948,20 @@ bool DCD::_FChangeChid(CKI *pcki, KID *pkid)
     chid = lw;
     ReleasePpo(&pdlg);
 
-    // If new CHID is different, unadopt and adopt child to change CHID.
-    // This is easier than directly changing the GG which keeps track of the
-    // parent and its children.
+    // 3DMMv1.0: If new CHID is different, unadopt and adopt child to change CHID.
+    // 3DMMv1.0: This is easier than directly changing the GG which keeps track of the
+    // 3DMMv1.0: parent and its children.
     if (chid != pkid->chid)
     {
         _pcfl->ChangeChid(pcki->ctg, pcki->cno, pkid->cki.ctg, pkid->cki.cno, pkid->chid, chid);
-        // set the new CHID so the caller has the right kid
+        // 3DMMv1.0: set the new CHID so the caller has the right kid
         pkid->chid = chid;
     }
 
     return fTrue;
 }
 
-/**************************************************************************
+/** 3DMMv1.0: ************************************************************************
     Handle command to change the CHID.
 **************************************************************************/
 bool DCD::FCmdChangeChid(PCMD pcmd)
@@ -1972,7 +1972,7 @@ bool DCD::FCmdChangeChid(PCMD pcmd)
     KID kid;
     int32_t lnOld;
 
-    // record, save, and clear the sel
+    // 3DMMv1.0: record, save, and clear the sel
     if (ivNil == _sel.Icki() || ivNil == _sel.Ikid())
         goto LFail;
     _sel.GrfselGetCkiKid(&cki, &kid);
@@ -1983,7 +1983,7 @@ bool DCD::FCmdChangeChid(PCMD pcmd)
     {
         _SetSel(lnOld);
     LFail:
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         return fTrue;
     }
 
@@ -1993,7 +1993,7 @@ bool DCD::FCmdChangeChid(PCMD pcmd)
     return fTrue;
 }
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Adopt Chunk dialog
 ****************************************/
 enum
@@ -2009,7 +2009,7 @@ enum
 };
 bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dialog proc for Adopt Chunk dialog.
 ***************************************************************************/
 bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
@@ -2027,7 +2027,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelAdopt:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
 
     case kiditOkAdopt:
         if (!pdlg->FGetValues(0, kiditLimAdopt))
@@ -2036,7 +2036,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
             return fTrue;
         }
 
-        // check the parent
+        // 3DMMv1.0: check the parent
         if (!_FGetCtg(pdlg, kiditCtgParAdopt, &cki.ctg))
         {
             vpappb->TGiveAlertSz(PszLit("Parent CTG is bad"), bkOk, cokStop);
@@ -2057,7 +2057,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
             return fFalse;
         }
 
-        // check the child
+        // 3DMMv1.0: check the child
         if (!_FGetCtg(pdlg, kiditCtgChdAdopt, &kid.cki.ctg))
         {
             vpappb->TGiveAlertSz(PszLit("Child CTG is bad"), bkOk, cokStop);
@@ -2078,7 +2078,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
             return fFalse;
         }
 
-        // check the chid
+        // 3DMMv1.0: check the chid
         if (!pdlg->FGetLwFromEdit(kiditChidAdopt, &lw, &fEmpty) && !fEmpty)
         {
             vpappb->TGiveAlertSz(PszLit("Child ID value is bad"), bkOk, cokStop);
@@ -2087,7 +2087,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
         }
         kid.chid = lw;
 
-        // see if this child-parent relationship already exists
+        // 3DMMv1.0: see if this child-parent relationship already exists
         if (pcfl->FGetIkid(cki.ctg, cki.cno, kid.cki.ctg, kid.cki.cno, kid.chid, &ikid) && !fEmpty)
         {
             vpappb->TGiveAlertSz(PszLit("This parent/child relationship already exists."), bkOk, cokStop);
@@ -2095,7 +2095,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
             return fFalse;
         }
 
-        // see if a loop would be formed
+        // 3DMMv1.0: see if a loop would be formed
         if (pcfl->TIsDescendent(kid.cki.ctg, kid.cki.cno, cki.ctg, cki.cno))
         {
             vpappb->TGiveAlertSz(PszLit("Adopting this child would form a loop")
@@ -2113,7 +2113,7 @@ bool _FDlgAdoptChunk(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up and handle the adopt dialog with the given initial values
     (if not nil).
 ***************************************************************************/
@@ -2130,12 +2130,12 @@ bool DCD::_FDoAdoptChunkDlg(CKI *pcki, KID *pkid)
     bool fEmptyChid;
     PDLG pdlg = pvNil;
 
-    // put up the dialog
+    // 3DMMv1.0: put up the dialog
     pdlg = DLG::PdlgNew(dlidAdoptChunk, _FDlgAdoptChunk, _pcfl);
     if (pvNil == pdlg)
         return fFalse;
 
-    // set the initial values
+    // 3DMMv1.0: set the initial values
     idit = kiditCtgParAdopt;
     if (pvNil != pcki)
     {
@@ -2151,7 +2151,7 @@ bool DCD::_FDoAdoptChunkDlg(CKI *pcki, KID *pkid)
         idit = kiditChidAdopt;
     }
 
-    // save and clear the old sel
+    // 3DMMv1.0: save and clear the old sel
     lnOld = _sel.Ln();
     _SetSel(lnNil);
 
@@ -2190,7 +2190,7 @@ bool DCD::_FDoAdoptChunkDlg(CKI *pcki, KID *pkid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to adopt a chunk.
 ***************************************************************************/
 bool DCD::FCmdAdoptChunk(PCMD pcmd)
@@ -2212,7 +2212,7 @@ bool DCD::FCmdAdoptChunk(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to unadopt a chunk.
 ***************************************************************************/
 bool DCD::FCmdUnadoptChunk(PCMD pcmd)
@@ -2224,7 +2224,7 @@ bool DCD::FCmdUnadoptChunk(PCMD pcmd)
 
     if (!(_sel.GrfselGetCkiKid(&cki, &kid) & fselKid))
     {
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         return fTrue;
     }
 
@@ -2235,7 +2235,7 @@ bool DCD::FCmdUnadoptChunk(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles commands to edit a chunk.
 ***************************************************************************/
 bool DCD::FCmdEditChunk(PCMD pcmd)
@@ -2249,7 +2249,7 @@ bool DCD::FCmdEditChunk(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Opens a window onto the CKI's data.
 ***************************************************************************/
 void DCD::_EditCki(CKI *pcki, int32_t cid)
@@ -2260,7 +2260,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
     int32_t cls;
     CTG ctg;
 
-    // check for a doce already open on the chunk.
+    // 3DMMv1.0: check for a doce already open on the chunk.
     if (pvNil != (pdoce = DOCE::PdoceFromChunk(_pdocb, _pcfl, pcki->ctg, pcki->cno)))
     {
         pdoce->ActivateDmd();
@@ -2272,7 +2272,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
     case cidEditNatural:
         ctg = pcki->ctg;
 
-        // handle 4 character ctg's
+        // 3DMMv1.0: handle 4 character ctg's
         switch (ctg)
         {
         case kctgPictNative:
@@ -2287,7 +2287,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
             break;
         }
 
-        // handle 3 character ctg's
+        // 3DMMv1.0: handle 3 character ctg's
         ctg = ctg & 0xFFFFFF00L | 0x00000020L;
         switch (ctg)
         {
@@ -2301,7 +2301,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
             break;
         }
 
-        // handle 2 character ctg's
+        // 3DMMv1.0: handle 2 character ctg's
         ctg = ctg & 0xFFFF0000L | 0x00002020L;
         switch (ctg)
         {
@@ -2320,7 +2320,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
         default:
             break;
         }
-        // fall through
+        // 3DMMv1.0: fall through
     case cidEditHex:
     LHex:
         cid = cidEditHex;
@@ -2361,13 +2361,13 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
     LSound:
         if ((pcki->ctg == kctgMidi || pcki->ctg == kctgWave) && pvNil != vpsndm)
         {
-            // play once
+            // 3DMMv1.0: play once
             PCRF pcrf;
 
             if (pvNil == (pcrf = CRF::PcrfNew(_pcfl, 1)))
             {
                 ReleasePpo(&pcrf);
-                // edit as hex
+                // 3DMMv1.0: edit as hex
                 break;
             }
 
@@ -2376,7 +2376,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
             return;
         }
 
-        // edit as hex
+        // 3DMMv1.0: edit as hex
         break;
 
     default:
@@ -2388,8 +2388,8 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
     {
         if (cid == cidEditNatural)
         {
-            // our guess at a natural type may have been wrong, so just
-            // edit as hex
+            // 3DMMv1.0: our guess at a natural type may have been wrong, so just
+            // 3DMMv1.0: edit as hex
             goto LHex;
         }
         else if (cid != cidEditHex)
@@ -2403,7 +2403,7 @@ void DCD::_EditCki(CKI *pcki, int32_t cid)
     ReleasePpo(&pdoce);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to compile and add a script chunk.
 ***************************************************************************/
 bool DCD::FCmdImportScript(PCMD pcmd)
@@ -2418,23 +2418,23 @@ bool DCD::FCmdImportScript(PCMD pcmd)
     MSFIL msfil;
     PSCPT pscpt = pvNil;
 
-    // save and clear the sel
+    // 3DMMv1.0: save and clear the sel
     lnOld = _sel.Ln();
     _SetSel(lnNil);
 
-    // get the fni of the file to add
+    // 3DMMv1.0: get the fni of the file to add
     Mac(FTG ftg = 'TEXT';) if (!FGetFniOpenMacro(&fni, &ftg, 1, PszLit("All files\0*.*\0"), vwig.hwndApp)) goto LCancel;
     if (pvNil == (pscpt = sccg.PscptCompileFni(&fni, pcmd->cid == cidCompileInScript, &msfil)))
     {
-        // if the error file isn't empty, open it
+        // 3DMMv1.0: if the error file isn't empty, open it
         vpappb->TGiveAlertSz(PszLit("Compiling script failed"), bkOk, cokExclamation);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         _SetSel(lnOld);
         OpenSinkDoc(&msfil);
         return fTrue;
     }
 
-    // add the chunk and write the data
+    // 3DMMv1.0: add the chunk and write the data
     if (!_FAddChunk(kctgScript, &cki, &fCreated))
         goto LCancel;
     if (!pscpt->FSaveToChunk(_pcfl, cki.ctg, cki.cno))
@@ -2444,7 +2444,7 @@ bool DCD::FCmdImportScript(PCMD pcmd)
         vpappb->TGiveAlertSz(PszLit("Writing chunk failed"), bkOk, cokExclamation);
     LCancel:
         ReleasePpo(&pscpt);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         _SetSel(lnOld);
         return fTrue;
     }
@@ -2456,7 +2456,7 @@ bool DCD::FCmdImportScript(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw routine for a test-script gob - just erase the gob.
 ***************************************************************************/
 void TSCG::Draw(PGNV pgnv, RC *prcClip)
@@ -2472,7 +2472,7 @@ enum
     kiditLimScript
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open a new window and run a script in it.
 ***************************************************************************/
 bool DCD::FCmdTestScript(PCMD pcmd)
@@ -2487,15 +2487,15 @@ bool DCD::FCmdTestScript(PCMD pcmd)
 
     if (pcmd->cid == cidRunScriptCache)
     {
-        // get the cache size from the user
+        // 3DMMv1.0: get the cache size from the user
         PDLG pdlg;
 
-        // get the cache size
+        // 3DMMv1.0: get the cache size
         pdlg = DLG::PdlgNew(dlidScriptCache);
         if (pvNil == pdlg)
             return fTrue;
 
-        // put up the initial values
+        // 3DMMv1.0: put up the initial values
         pdlg->FPutLwInEdit(kiditSizeScript, 3072);
         if (pdlg->IditDo(kiditSizeScript) != kiditOkScript)
             goto LCancel;
@@ -2515,7 +2515,7 @@ bool DCD::FCmdTestScript(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command handler to Edit a WAVE chunk
 ***************************************************************************/
 bool DCD::FCmdStopSound(PCMD pcmd)
@@ -2529,7 +2529,7 @@ bool DCD::FCmdStopSound(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command handler to pack or unpack (toggle) a chunk.  Also handle just
     toggling the packed flag.
 ***************************************************************************/
@@ -2546,7 +2546,7 @@ bool DCD::FCmdPack(PCMD pcmd)
     fPack = !_pcfl->FPacked(cki.ctg, cki.cno);
     if (cidPack == pcmd->cid)
     {
-        // actually pack or unpack the data
+        // 3DMMv1.0: actually pack or unpack the data
         if (fPack ? _pcfl->FPackData(cki.ctg, cki.cno) : _pcfl->FUnpackData(cki.ctg, cki.cno))
         {
             InvalAllDcd(_pdocb, _pcfl, &cki);
@@ -2565,7 +2565,7 @@ bool DCD::FCmdPack(PCMD pcmd)
     }
     else
     {
-        // just toggle the packed flag
+        // 3DMMv1.0: just toggle the packed flag
         _pcfl->SetPacked(cki.ctg, cki.cno, fPack);
         InvalAllDcd(_pdocb, _pcfl, &cki);
     }
@@ -2573,7 +2573,7 @@ bool DCD::FCmdPack(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Run a script. Make the crf cache cbCache large.
 ***************************************************************************/
 bool DCD::FTestScript(CTG ctg, CNO cno, int32_t cbCache)
@@ -2606,7 +2606,7 @@ bool DCD::FTestScript(CTG ctg, CNO cno, int32_t cbCache)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Disassemble a script and display it in a new window.
 ***************************************************************************/
 bool DCD::FCmdDisasmScript(PCMD pcmd)
@@ -2637,7 +2637,7 @@ bool DCD::FCmdDisasmScript(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the selection to a new document.
 ***************************************************************************/
 bool DCD::_FCopySel(PDOCB *ppdocb)
@@ -2662,7 +2662,7 @@ bool DCD::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the current selection.
 ***************************************************************************/
 void DCD::_ClearSel(void)
@@ -2683,7 +2683,7 @@ void DCD::_ClearSel(void)
     ReleasePpo(&cmd.pgg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paste all non-child chunk of the given document into the current document.
     REVIEW shonk: should this delete the current selection?
     REVIEW shonk: is there an easy way to make this atomic?
@@ -2741,7 +2741,7 @@ bool DCD::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Use the selected chunk as the current color table.
 ***************************************************************************/
 bool DCD::FCmdSetColorTable(PCMD pcmd)
@@ -2774,7 +2774,7 @@ enum
     kiditLimFilter,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change the filtering.
 ***************************************************************************/
 bool DCD::FCmdFilterChunk(PCMD pcmd)
@@ -2795,7 +2795,7 @@ bool DCD::FCmdFilterChunk(PCMD pcmd)
     grfsel = _sel.GrfselGetCkiKid(&cki, &kid);
     _SetSel(lnNil);
 
-    // put up the dialog
+    // 3DMMv1.0: put up the dialog
     pdlg = DLG::PdlgNew(dlidFilter);
     if (pvNil == pdlg)
         goto LCancel;
@@ -2816,7 +2816,7 @@ bool DCD::FCmdFilterChunk(PCMD pcmd)
     if (kiditOkFilter != pdlg->IditDo(kiditCtgEditFilter))
         goto LCancel;
 
-    // set the filtering on the sel
+    // 3DMMv1.0: set the filtering on the sel
     _sel.HideKids(pdlg->FGetCheck(kiditHideKidsFilter));
     _sel.HideList(pdlg->FGetCheck(kiditHideListFilter));
 
@@ -2861,7 +2861,7 @@ LCancel:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clone a chunk and its subgraph
 ***************************************************************************/
 bool DCD::FCmdCloneChunk(PCMD pcmd)
@@ -2880,7 +2880,7 @@ bool DCD::FCmdCloneChunk(PCMD pcmd)
         _SetSel(lnNil, &cki);
         vpappb->TGiveAlertSz(PszLit("Cloning failed"), bkOk, cokExclamation);
     LFail:
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         return fTrue;
     }
 
@@ -2891,7 +2891,7 @@ bool DCD::FCmdCloneChunk(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void DCD::AssertValid(uint32_t grf)
@@ -2901,7 +2901,7 @@ void DCD::AssertValid(uint32_t grf)
     AssertPo(_pcfl, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DCD.
 ***************************************************************************/
 void DCD::MarkMem(void)
@@ -2910,9 +2910,9 @@ void DCD::MarkMem(void)
     DCD_PAR::MarkMem();
     _sel.MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parses the stn as a ctg. Pads with spaces. Fails if pstn is longer
     than 4 characters or empty.
 ***************************************************************************/
@@ -2931,12 +2931,12 @@ bool FGetCtgFromStn(CTG *pctg, PSTN pstn)
     rgch[0] = rgch[1] = rgch[2] = rgch[3] = kchSpace;
     CopyPb(pstn->Psz(), rgch, pstn->Cch() * SIZEOF(achar));
 
-    // first character becomes the high byte
+    // 3DMMv1.0: first character becomes the high byte
     *pctg = LwFromBytes((uint8_t)rgch[0], (uint8_t)rgch[1], (uint8_t)rgch[2], (uint8_t)rgch[3]);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the indicated edit item from the dialog and convert it to a CTG.
     Pads with spaces. Fails if the text in the edit item is longer
     than 4 characters or empty.
@@ -2951,7 +2951,7 @@ bool _FGetCtg(PDLG pdlg, int32_t idit, CTG *pctg)
     return FGetCtgFromStn(pctg, &stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the ctg into the indicated edit item.
 ***************************************************************************/
 void _PutCtgStn(PDLG pdlg, int32_t idit, CTG ctg)
@@ -2963,7 +2963,7 @@ void _PutCtgStn(PDLG pdlg, int32_t idit, CTG ctg)
     pdlg->FPutStn(idit, &stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for SEL class.
 ***************************************************************************/
 SEL::SEL(PCFL pcfl)
@@ -2976,7 +2976,7 @@ SEL::SEL(PCFL pcfl)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a selection based on another selection. If the source
     selection is filtered, this selection will share the same filter list.
 ***************************************************************************/
@@ -2986,7 +2986,7 @@ SEL::SEL(SEL &selT)
     *this = selT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a selection. Release the GL of ctg's to filter on.
 ***************************************************************************/
 SEL::~SEL(void)
@@ -2994,7 +2994,7 @@ SEL::~SEL(void)
     ReleasePpo(&_pglctg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assignment operator from one selection to another. If the source
     selection is filtered, this selection will share the same filter list.
 ***************************************************************************/
@@ -3010,7 +3010,7 @@ SEL &SEL::operator=(SEL &selT)
     return *this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to a nil selection.
 ***************************************************************************/
 void SEL::_SetNil(void)
@@ -3021,7 +3021,7 @@ void SEL::_SetNil(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the cki and kid. Return which of the elements are valid. One or
     both of pcki, pkid may be nil.
 ***************************************************************************/
@@ -3044,7 +3044,7 @@ uint32_t SEL::GrfselGetCkiKid(CKI *pcki, KID *pkid)
     return fselCki | fselKid;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to the given line. Return true iff the resulting
     selection is not nil.
 ***************************************************************************/
@@ -3066,7 +3066,7 @@ bool SEL::FSetLn(int32_t ln)
     {
         if (_ln - ln < ln)
         {
-            // move backwards
+            // 3DMMv1.0: move backwards
             SuspendAssertValid();
             SuspendCheckPointers();
             while (_ln > ln)
@@ -3092,7 +3092,7 @@ bool SEL::FSetLn(int32_t ln)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the number of active lines in the sel.
 ***************************************************************************/
 int32_t SEL::LnLim(void)
@@ -3114,7 +3114,7 @@ int32_t SEL::LnLim(void)
     return _lnLim;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Advance the selection to the next item. If the selection is nil,
     advances it to the first item. Returns false and makes the selection
     nil iff there is no next item.
@@ -3133,7 +3133,7 @@ bool SEL::FAdvance(void)
         _ln++;
         if (!_fHideKids)
         {
-            // check for the next child
+            // 3DMMv1.0: check for the next child
             for (_ikid = (ivNil == _ikid) ? 0 : _ikid + 1; _pcfl->FGetKid(_cki.ctg, _cki.cno, _ikid, &_kid); _ikid++)
             {
                 if (_FFilter(_kid.cki.ctg, _kid.cki.cno))
@@ -3154,7 +3154,7 @@ bool SEL::FAdvance(void)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the selection to the previous item. If the selection is nil or
     at the first item, this sets the selection nil and returns false.
 ***************************************************************************/
@@ -3170,7 +3170,7 @@ bool SEL::FRetreat(void)
     _ln--;
     if (ivNil == _ikid)
     {
-        // find the previous cki
+        // 3DMMv1.0: find the previous cki
         do
         {
             if (_icki-- <= 0)
@@ -3190,7 +3190,7 @@ bool SEL::FRetreat(void)
         }
     }
 
-    // move to the previous child
+    // 3DMMv1.0: move to the previous child
     while (--_ikid >= 0)
     {
         AssertDo(_pcfl->FGetKid(_cki.ctg, _cki.cno, _ikid, &_kid), 0);
@@ -3201,7 +3201,7 @@ bool SEL::FRetreat(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to represent *pcki, *pkid. pkid may be nil. If
     fExact is false, this sets the sel to the last item at or before
     the given (pcki, pkid).
@@ -3228,7 +3228,7 @@ bool SEL::FSetCkiKid(CKI *pcki, KID *pkid, bool fExact)
     return ivNil != _icki;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adjust the sel after an edit to the doc. Assume icki and ikid are wrong
     (except as indicators of invalid cki and kid fields), and assume ln
     is wrong. If fExact is false and the current (cki, kid) is no longer
@@ -3243,7 +3243,7 @@ void SEL::Adjust(bool fExact)
     if (ivNil == _icki)
         goto LSetNil;
 
-    // get the icki and ikid
+    // 3DMMv1.0: get the icki and ikid
     if (!_pcfl->FGetIcki(_cki.ctg, _cki.cno, &icki) || !_FFilter(_cki.ctg, _cki.cno))
     {
         if (fExact)
@@ -3266,7 +3266,7 @@ void SEL::Adjust(bool fExact)
         }
     }
 
-    // find the icki and ikid
+    // 3DMMv1.0: find the icki and ikid
     _SetNil();
     SEL sel = *this;
 
@@ -3285,7 +3285,7 @@ void SEL::Adjust(bool fExact)
         _SetNil();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hide or show children according to fHide.
 ***************************************************************************/
 void SEL::HideKids(bool fHide)
@@ -3298,7 +3298,7 @@ void SEL::HideKids(bool fHide)
     Adjust();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hide or show the filter list according to fHide.
 ***************************************************************************/
 void SEL::HideList(bool fHide)
@@ -3311,7 +3311,7 @@ void SEL::HideList(bool fHide)
     Adjust();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the ictg'th ctg that we're filtering on.
 ***************************************************************************/
 bool SEL::FGetCtgFilter(int32_t ictg, CTG *pctg)
@@ -3325,7 +3325,7 @@ bool SEL::FGetCtgFilter(int32_t ictg, CTG *pctg)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reset the filter list to be empty.
 ***************************************************************************/
 void SEL::FreeFilterList(void)
@@ -3339,7 +3339,7 @@ void SEL::FreeFilterList(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an element to the filter list.
 ***************************************************************************/
 bool SEL::FAddCtgFilter(CTG ctg)
@@ -3354,7 +3354,7 @@ bool SEL::FAddCtgFilter(CTG ctg)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return true iff (ctg, cno) passes our filtering criteria.
 ***************************************************************************/
 bool SEL::_FFilter(CTG ctg, CNO cno)
@@ -3375,7 +3375,7 @@ bool SEL::_FFilter(CTG ctg, CNO cno)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the sel.
 ***************************************************************************/
 void SEL::AssertValid(uint32_t grf)
@@ -3386,7 +3386,7 @@ void SEL::AssertValid(uint32_t grf)
     AssertNilOrPo(_pglctg, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the SEL.
 ***************************************************************************/
 void SEL::MarkMem(void)
@@ -3395,4 +3395,4 @@ void SEL::MarkMem(void)
     SEL_PAR::MarkMem();
     MarkMemObj(_pglctg);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

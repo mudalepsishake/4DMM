@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -20,7 +20,7 @@ ERS *vpers = &_ers;
 
 RTCLASS(ERS)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the error code stack.
 ***************************************************************************/
 ERS::ERS(void)
@@ -28,15 +28,15 @@ ERS::ERS(void)
     _cerd = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Push an error code onto the stack.  If overflow occurs, blt the top
     kcerdMax - 1 entries down by one (and lose the bottom entry).
 ***************************************************************************/
 #ifdef DEBUG
 void ERS::Push(int32_t erc, PSZS pszsFile, int32_t lwLine)
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 void ERS::Push(int32_t erc)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertThis(0);
 
@@ -47,7 +47,7 @@ void ERS::Push(int32_t erc)
     stn.FFormatSz(PszLit("Error %d"), erc);
     stn.GetSzs(szs);
     WarnProc(pszsFile, lwLine, szs);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     _mutx.Enter();
 
@@ -63,7 +63,7 @@ void ERS::Push(int32_t erc)
 #ifdef DEBUG
     _rgerd[_cerd].pszsFile = pszsFile;
     _rgerd[_cerd].lwLine = lwLine;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     _rgerd[_cerd++].erc = erc;
 
 LDone:
@@ -72,7 +72,7 @@ LDone:
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pop the top error from the stack.  Return fFalse if underflow.
 ***************************************************************************/
 bool ERS::FPop(int32_t *perc)
@@ -98,7 +98,7 @@ bool ERS::FPop(int32_t *perc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clear the error stack.
 ***************************************************************************/
 void ERS::Clear(void)
@@ -110,7 +110,7 @@ void ERS::Clear(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the size of the error stack.
 ***************************************************************************/
 int32_t ERS::Cerc(void)
@@ -119,7 +119,7 @@ int32_t ERS::Cerc(void)
     return _cerd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the given error code is on the stack.
 ***************************************************************************/
 bool ERS::FIn(int32_t erc)
@@ -140,7 +140,7 @@ bool ERS::FIn(int32_t erc)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the i'th entry.
 ***************************************************************************/
 int32_t ERS::ErcGet(int32_t ierc)
@@ -158,7 +158,7 @@ int32_t ERS::ErcGet(int32_t ierc)
     return erc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Flush all instances of the given error code from the error stack.
 ***************************************************************************/
 void ERS::Flush(int32_t erc)
@@ -181,7 +181,7 @@ void ERS::Flush(int32_t erc)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the error stack is valid.
 ***************************************************************************/
 void ERS::AssertValid(uint32_t grf)
@@ -189,4 +189,4 @@ void ERS::AssertValid(uint32_t grf)
     ERS_PAR::AssertValid(0);
     AssertIn(_cerd, 0, kcerdMax + 1);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

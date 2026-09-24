@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     portfnative.cpp: Portfolio using Native File Dialog Extended
 
@@ -8,7 +8,7 @@
 
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Translate file filter to format used by NFD
 ***************************************************************************/
 static void TranslateFilterExtension(PU8SZ pszFilterExt, PSTN pstnFilterExt)
@@ -17,9 +17,9 @@ static void TranslateFilterExtension(PU8SZ pszFilterExt, PSTN pstnFilterExt)
 
     STN stnTranslated;
 
-    // Win32 common dialogs use the following format: "*.3mm;*.wav"
-    // NFD expects the following format: "3mm,wav"
-    // Strip out wildcard characters and replace semicolons with commas
+    // 3DMMEx: Win32 common dialogs use the following format: "*.3mm;*.wav"
+    // 3DMMEx: NFD expects the following format: "3mm,wav"
+    // 3DMMEx: Strip out wildcard characters and replace semicolons with commas
 
     stnTranslated.SetNil();
     for (int32_t ich = 0; ich < pstnFilterExt->Cch(); ich++)
@@ -71,7 +71,7 @@ bool FPortDisplayWithIds(FNI *pfni, bool fOpen, int32_t lFilterLabel, int32_t lF
 
     vpcex->Suspend(fTrue);
 
-    // Get initial directory
+    // 3DMMEx: Get initial directory
     if (pfniInitialDir != pvNil)
     {
         pfniInitialDir->GetStnPath(&stnT);
@@ -82,14 +82,14 @@ bool FPortDisplayWithIds(FNI *pfni, bool fOpen, int32_t lFilterLabel, int32_t lF
     }
     stnT.GetUtf8Sz(u8szInitialDir);
 
-    // Get default file name
+    // 3DMMEx: Get default file name
     u8szDefFileName[0] = chNil;
     if (pstnDefFileName != pvNil)
     {
         pstnDefFileName->GetUtf8Sz(u8szDefFileName);
     }
 
-    // Get file format filter strings
+    // 3DMMEx: Get file format filter strings
     if (!vapp.FGetStnApp(lFilterLabel, &stnT))
         goto LDone;
     stnT.GetUtf8Sz(u8szFilterLabel);
@@ -97,7 +97,12 @@ bool FPortDisplayWithIds(FNI *pfni, bool fOpen, int32_t lFilterLabel, int32_t lF
     if (!vapp.FGetStnApp(lFilterExt, &stnT))
         goto LDone;
 
-    // Build filter list
+    // Modern 4DMM restores V3DMM package opening/saving. Keep the resource
+    // string untouched and extend only the native movie dialog at runtime.
+    if (lFilterExt == idsPortfMovieFilterExt && strstr(stnT.Psz(), "*.vmm") == pvNil)
+        AssertDo(stnT.FAppendSz(PszLit(";*.vmm")), 0);
+
+    // 3DMMEx: Build filter list
     TranslateFilterExtension(u8szFilterExt, &stnT);
 
     ClearPb(rgfilteritem, SIZEOF(rgfilteritem));
@@ -116,17 +121,17 @@ bool FPortDisplayWithIds(FNI *pfni, bool fOpen, int32_t lFilterLabel, int32_t lF
     vapp.EnsureInteractive();
     vapp.SetFInPortfolio(fTrue);
 
-    // Play sound associated with this portfolio
+    // 3DMMEx: Play sound associated with this portfolio
     if (cnoWave != cnoNil)
     {
         PCRF pcrf;
         if ((pcrf = ((APP *)vpappb)->PcrmAll()->PcrfFindChunk(kctgWave, cnoWave)) != pvNil)
         {
-            vpsndm->SiiPlay(pcrf, kctgWave, cnoWave);
+            vpsndm->SiiPlay(pcrf, kctgWave, cnoWave, ksqnNone, kvlmFull, 1, 0, 0, ksclUISound);
         }
     }
 
-    // Show the dialog
+    // 3DMMEx: Show the dialog
     if (fOpen)
     {
         nfdret = NFD_OpenDialogU8(&nfdu8Path, rgfilteritem, cfilteritem, u8szInitialDir);
@@ -136,11 +141,11 @@ bool FPortDisplayWithIds(FNI *pfni, bool fOpen, int32_t lFilterLabel, int32_t lF
         nfdret = NFD_SaveDialogU8(&nfdu8Path, rgfilteritem, cfilteritem, u8szInitialDir, u8szDefFileName);
     }
 
-    // Get the selected path
+    // 3DMMEx: Get the selected path
     if (nfdret == NFD_OKAY)
     {
         stnT.SetUtf8Sz(nfdu8Path);
-        fRet = pfni->FBuildFromPath(&stnT, 0);
+        fRet = pfni->FBuildFromPath(&stnT, F4DMMPathIsVmm(&stnT) ? kftgVmm : 0);
     }
     else
     {
@@ -156,7 +161,7 @@ LDone:
     vapp.SetFInPortfolio(fFalse);
     vpcex->Suspend(fFalse);
 
-    // Notify scripts that the portfolio was closed
+    // 3DMMEx: Notify scripts that the portfolio was closed
     vpcex->EnqueueCid(cidPortfolioClosed, 0, 0, fRet);
     vpcex->EnqueueCid(cidPortfolioResult, 0, 0, fRet);
 

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -17,16 +17,16 @@ RTCLASS(SPLC)
 #ifdef MIR
 #undef MIR
 #define MIR(foo) MAKEINTRESOURCEA(foo)
-#endif // MIR
+#endif // 3DMMEx: MIR
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the spell checker.
 ***************************************************************************/
 SPLC::SPLC(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the spell checker.
 ***************************************************************************/
 SPLC::~SPLC(void)
@@ -45,10 +45,10 @@ SPLC::~SPLC(void)
 #ifdef WIN
     if (hNil != _hlib)
         FreeLibrary(_hlib);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new spell checker.
 ***************************************************************************/
 PSPLC SPLC::PsplcNew(SC_LID sclid, PSTN pstnCustom)
@@ -66,7 +66,7 @@ PSPLC SPLC::PsplcNew(SC_LID sclid, PSTN pstnCustom)
     return psplc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initializes the spell checker - finds the dll, loads the default
     dictionary.
 ***************************************************************************/
@@ -103,7 +103,7 @@ bool SPLC::_FInit(SC_LID sclid, PSTN pstnCustom)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the spelling dll and link the functions we need.
 ***************************************************************************/
 bool SPLC::_FEnsureDll(SC_LID sclid)
@@ -158,13 +158,13 @@ LError:
     PushErc(ercSpellNoDll);
     return fFalse;
 
-#else  //! WIN
-    RawRtn(); // REVIEW shonk: Mac: implement _FEnsureDll
+#else  //! 3DMMv1.0: WIN
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement _FEnsureDll
     return fFalse;
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the main dictionary and load it
 ***************************************************************************/
 bool SPLC::_FEnsureMainDict(SC_LID sclid, PFNI pfni)
@@ -213,13 +213,13 @@ LError:
     PushErc(ercSpellNoDict);
     return fFalse;
 
-#else  //! WIN
-    RawRtn(); // REVIEW shonk: Mac: implement _FEnsureMainDict
+#else  //! 3DMMv1.0: WIN
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement _FEnsureMainDict
     return fFalse;
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the main dictionary and load it
 ***************************************************************************/
 bool SPLC::_FEnsureUserDict(PSTN pstnCustom, PFNI pfniDef)
@@ -273,13 +273,13 @@ LError:
     PushErc(ercSpellNoUserDict);
     return fFalse;
 
-#else  //! WIN
-    RawRtn(); // REVIEW shonk: Mac: implement _FEnsureUserDict
+#else  //! 3DMMv1.0: WIN
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement _FEnsureUserDict
     return fFalse;
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load a particular dictionary given its path.
 ***************************************************************************/
 bool SPLC::_FLoadDictionary(SC_LID sclid, PSZ psz, SC_MDRS *pmdrs)
@@ -295,10 +295,10 @@ bool SPLC::_FLoadDictionary(SC_LID sclid, PSZ psz, SC_MDRS *pmdrs)
     }
 
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
 
     if (secNOERRORS != SpellOpenMdr(_splid, psz, pvNil, fFalse, fTrue, sclid, pmdrs))
     {
@@ -306,10 +306,10 @@ bool SPLC::_FLoadDictionary(SC_LID sclid, PSZ psz, SC_MDRS *pmdrs)
     }
 
     return fTrue;
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load a particular user dictionary given its path.
 ***************************************************************************/
 bool SPLC::_FLoadUserDictionary(PSZ psz, SC_UDR *pudr, bool fCreate)
@@ -325,20 +325,20 @@ bool SPLC::_FLoadUserDictionary(PSZ psz, SC_UDR *pudr, bool fCreate)
         return fFalse;
     }
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
     if (secNOERRORS != SpellOpenUdr(_splid, psz, FPure(fCreate), IgnoreAlwaysProp, pudr, &fReadOnly))
     {
         return fFalse;
     }
 
     return fTrue;
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set spelling options.
 ***************************************************************************/
 bool SPLC::FSetOptions(uint32_t grfsplc)
@@ -351,18 +351,18 @@ bool SPLC::FSetOptions(uint32_t grfsplc)
         return fFalse;
     }
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
     if (secNOERRORS != SpellOptions(_splid, grfsplc))
         return fFalse;
 
     return fTrue;
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the spelling of stuff in the given buffer.
 ***************************************************************************/
 bool SPLC::FCheck(achar *prgch, int32_t cch, int32_t *pichMinBad, int32_t *pichLimBad, PSTN pstnReplace, int32_t *pscrs)
@@ -376,10 +376,10 @@ bool SPLC::FCheck(achar *prgch, int32_t cch, int32_t *pichMinBad, int32_t *pichL
     AssertVarMem(pscrs);
 
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
 
     SC_SIB sib;
     SC_SRB srb;
@@ -432,10 +432,10 @@ bool SPLC::FCheck(achar *prgch, int32_t cch, int32_t *pichMinBad, int32_t *pichL
     *pichMinBad = srb.ichError;
     *pichLimBad = srb.ichError + srb.cchError;
     return fTrue;
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the istn'th suggestion for the given word.
 ***************************************************************************/
 bool SPLC::FSuggest(achar *prgch, int32_t cch, bool fFirst, PSTN pstn)
@@ -446,10 +446,10 @@ bool SPLC::FSuggest(achar *prgch, int32_t cch, bool fFirst, PSTN pstn)
     AssertPo(pstn, 0);
 
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
 
     SC_SIB sib;
     SC_SRB srb;
@@ -465,7 +465,7 @@ bool SPLC::FSuggest(achar *prgch, int32_t cch, bool fFirst, PSTN pstn)
 
     if (!fFirst && _ichSuggest < CvFromRgv(_rgchSuggest) && _rgchSuggest[_ichSuggest] != 0)
     {
-        // have another suggestion in the buffer
+        // 3DMMv1.0: have another suggestion in the buffer
         *pstn = _rgchSuggest + _ichSuggest;
         _ichSuggest += CchSz(_rgchSuggest + _ichSuggest) + 1;
         return fTrue;
@@ -495,7 +495,7 @@ bool SPLC::FSuggest(achar *prgch, int32_t cch, bool fFirst, PSTN pstn)
         sec = SpellCheck(_splid, sccc, &sib, &srb);
         if (sec != secNOERRORS)
         {
-            // invalidate the buffer
+            // 3DMMv1.0: invalidate the buffer
             _ichSuggest = CvFromRgv(_rgchSuggest);
             return fFalse;
         }
@@ -503,7 +503,7 @@ bool SPLC::FSuggest(achar *prgch, int32_t cch, bool fFirst, PSTN pstn)
         switch (srb.scrs)
         {
         case scrsNoMoreSuggestions:
-            // invalidate the buffer
+            // 3DMMv1.0: invalidate the buffer
             _ichSuggest = CvFromRgv(_rgchSuggest);
             return fFalse;
 
@@ -517,10 +517,10 @@ bool SPLC::FSuggest(achar *prgch, int32_t cch, bool fFirst, PSTN pstn)
             break;
         }
     }
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add this word to the ignore all list.
 ***************************************************************************/
 bool SPLC::FIgnoreAll(PSTN pstn)
@@ -535,15 +535,15 @@ bool SPLC::FIgnoreAll(PSTN pstn)
     }
 
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
     return secNOERRORS == SpellAddUdr(_splid, udrIgnoreAlways, pstn->Psz());
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add this word pair to the change once list.
 ***************************************************************************/
 bool SPLC::FChange(PSTN pstnSrc, PSTN pstnDst, bool fAll)
@@ -558,16 +558,16 @@ bool SPLC::FChange(PSTN pstnSrc, PSTN pstnDst, bool fAll)
         return fFalse;
     }
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
     return secNOERRORS ==
            SpellAddChangeUdr(_splid, fAll ? udrChangeAlways : udrChangeOnce, pstnSrc->Psz(), pstnDst->Psz());
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add this word pair to the user dictionary.
 ***************************************************************************/
 bool SPLC::FAddToUser(PSTN pstn)
@@ -581,15 +581,15 @@ bool SPLC::FAddToUser(PSTN pstn)
         return fFalse;
     }
 #ifdef UNICODE
-    // CSAPI used in Kauai does not support Unicode
+    // 3DMMEx: CSAPI used in Kauai does not support Unicode
     RawRtn();
     return fFalse;
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
     return secNOERRORS == SpellAddUdr(_splid, _udr, pstn->Psz());
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add this word to the ignore all list.
 ***************************************************************************/
 void SPLC::FlushIgnoreList(void)
@@ -605,7 +605,7 @@ void SPLC::FlushIgnoreList(void)
     SpellClearUdr(_splid, udrIgnoreAlways);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add this word pair to the change once list.
 ***************************************************************************/
 void SPLC::FlushChangeList(bool fAll)
@@ -621,11 +621,11 @@ void SPLC::FlushChangeList(bool fAll)
     SpellClearUdr(_splid, fAll ? udrChangeAlways : udrChangeOnce);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     These are the stubs for the dll entry points.
 ***************************************************************************/
 #ifdef WIN
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellInit
 ***************************************************************************/
 SC_SEC SPLC::SpellInit(SC_SPLID *psplid, SC_WSC *pwsc)
@@ -641,7 +641,7 @@ SC_SEC SPLC::SpellInit(SC_SPLID *psplid, SC_WSC *pwsc)
     return (*_pfnInit)(psplid, pwsc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellOptions
 ***************************************************************************/
 SC_SEC SPLC::SpellOptions(SC_SPLID splid, int32_t grfso)
@@ -657,7 +657,7 @@ SC_SEC SPLC::SpellOptions(SC_SPLID splid, int32_t grfso)
     return (*_pfnOptions)(splid, grfso);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellCheck
 ***************************************************************************/
 SC_SEC SPLC::SpellCheck(SC_SPLID splid, SC_CC sccc, LPSC_SIB psib, LPSC_SRB psrb)
@@ -673,7 +673,7 @@ SC_SEC SPLC::SpellCheck(SC_SPLID splid, SC_CC sccc, LPSC_SIB psib, LPSC_SRB psrb
     return (*_pfnCheck)(splid, sccc, psib, psrb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellTerminate
 ***************************************************************************/
 SC_SEC SPLC::SpellTerminate(SC_SPLID splid, SC_BOOL fForce)
@@ -689,7 +689,7 @@ SC_SEC SPLC::SpellTerminate(SC_SPLID splid, SC_BOOL fForce)
     return (*_pfnTerminate)(splid, fForce);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellOpenMdr
 ***************************************************************************/
 SC_SEC SPLC::SpellOpenMdr(SC_SPLID splid, LPSC_PATH ppath, LPSC_PATH ppathExclude, SC_BOOL fCreateExclude,
@@ -706,7 +706,7 @@ SC_SEC SPLC::SpellOpenMdr(SC_SPLID splid, LPSC_PATH ppath, LPSC_PATH ppathExclud
     return (*_pfnOpenMdr)(splid, ppath, ppathExclude, fCreateExclude, fCache, sclidExpected, pmdrs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellOpenUdr
 ***************************************************************************/
 SC_SEC SPLC::SpellOpenUdr(SC_SPLID splid, LPSC_PATH ppath, SC_BOOL fCreate, SC_WORD udrprop, SC_UDR *pudr,
@@ -723,7 +723,7 @@ SC_SEC SPLC::SpellOpenUdr(SC_SPLID splid, LPSC_PATH ppath, SC_BOOL fCreate, SC_W
     return (*_pfnOpenUdr)(splid, ppath, fCreate, udrprop, pudr, pfReadOnly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a word to the given user dictionary
 ***************************************************************************/
 SC_SEC SPLC::SpellAddUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd)
@@ -739,7 +739,7 @@ SC_SEC SPLC::SpellAddUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd)
     return (*_pfnAddUdr)(splid, udr, pszAdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a word pair to the given user dictionary
 ***************************************************************************/
 SC_SEC SPLC::SpellAddChangeUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd, SC_CHAR *pszChange)
@@ -755,7 +755,7 @@ SC_SEC SPLC::SpellAddChangeUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd, SC_C
     return (*_pfnAddChangeUdr)(splid, udr, pszAdd, pszChange);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellClearUdr
 ***************************************************************************/
 SC_SEC SPLC::SpellClearUdr(SC_SPLID splid, SC_UDR udr)
@@ -771,7 +771,7 @@ SC_SEC SPLC::SpellClearUdr(SC_SPLID splid, SC_UDR udr)
     return (*_pfnClearUdr)(splid, udr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellCloseMdr
 ***************************************************************************/
 SC_SEC SPLC::SpellCloseMdr(SC_SPLID splid, LPSC_MDRS pmdrs)
@@ -787,7 +787,7 @@ SC_SEC SPLC::SpellCloseMdr(SC_SPLID splid, LPSC_MDRS pmdrs)
     return (*_pfnCloseMdr)(splid, pmdrs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellCloseUdr
 ***************************************************************************/
 SC_SEC SPLC::SpellCloseUdr(SC_SPLID splid, SC_UDR udr, SC_BOOL fForce)
@@ -803,9 +803,9 @@ SC_SEC SPLC::SpellCloseUdr(SC_SPLID splid, SC_UDR udr, SC_BOOL fForce)
     return (*_pfnCloseUdr)(splid, udr, fForce);
 }
 
-#elif !defined(MAC) // WIN
+#elif !defined(MAC) // 3DMMv1.0: WIN
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellInit
 ***************************************************************************/
 SC_SEC SPLC::SpellInit(SC_SPLID *psplid, SC_WSC *pwsc)
@@ -822,7 +822,7 @@ SC_SEC SPLC::SpellInit(SC_SPLID *psplid, SC_WSC *pwsc)
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellOptions
 ***************************************************************************/
 SC_SEC SPLC::SpellOptions(SC_SPLID splid, int32_t grfso)
@@ -839,7 +839,7 @@ SC_SEC SPLC::SpellOptions(SC_SPLID splid, int32_t grfso)
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellCheck
 ***************************************************************************/
 SC_SEC SPLC::SpellCheck(SC_SPLID splid, SC_CC sccc, LPSC_SIB psib, LPSC_SRB psrb)
@@ -856,7 +856,7 @@ SC_SEC SPLC::SpellCheck(SC_SPLID splid, SC_CC sccc, LPSC_SIB psib, LPSC_SRB psrb
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellTerminate
 ***************************************************************************/
 SC_SEC SPLC::SpellTerminate(SC_SPLID splid, SC_BOOL fForce)
@@ -873,7 +873,7 @@ SC_SEC SPLC::SpellTerminate(SC_SPLID splid, SC_BOOL fForce)
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellOpenMdr
 ***************************************************************************/
 SC_SEC SPLC::SpellOpenMdr(SC_SPLID splid, LPSC_PATH ppath, LPSC_PATH ppathExclude, SC_BOOL fCreateExclude,
@@ -891,7 +891,7 @@ SC_SEC SPLC::SpellOpenMdr(SC_SPLID splid, LPSC_PATH ppath, LPSC_PATH ppathExclud
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellOpenUdr
 ***************************************************************************/
 SC_SEC SPLC::SpellOpenUdr(SC_SPLID splid, LPSC_PATH ppath, SC_BOOL fCreate, SC_WORD udrprop, SC_UDR *pudr,
@@ -909,7 +909,7 @@ SC_SEC SPLC::SpellOpenUdr(SC_SPLID splid, LPSC_PATH ppath, SC_BOOL fCreate, SC_W
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a word to the given user dictionary
 ***************************************************************************/
 SC_SEC SPLC::SpellAddUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd)
@@ -926,7 +926,7 @@ SC_SEC SPLC::SpellAddUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd)
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a word pair to the given user dictionary
 ***************************************************************************/
 SC_SEC SPLC::SpellAddChangeUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd, SC_CHAR *pszChange)
@@ -943,7 +943,7 @@ SC_SEC SPLC::SpellAddChangeUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd, SC_C
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellClearUdr
 ***************************************************************************/
 SC_SEC SPLC::SpellClearUdr(SC_SPLID splid, SC_UDR udr)
@@ -960,7 +960,7 @@ SC_SEC SPLC::SpellClearUdr(SC_SPLID splid, SC_UDR udr)
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellCloseMdr
 ***************************************************************************/
 SC_SEC SPLC::SpellCloseMdr(SC_SPLID splid, LPSC_MDRS pmdrs)
@@ -977,7 +977,7 @@ SC_SEC SPLC::SpellCloseMdr(SC_SPLID splid, LPSC_MDRS pmdrs)
     return secModuleError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stub for SpellCloseUdr
 ***************************************************************************/
 SC_SEC SPLC::SpellCloseUdr(SC_SPLID splid, SC_UDR udr, SC_BOOL fForce)
@@ -996,7 +996,7 @@ SC_SEC SPLC::SpellCloseUdr(SC_SPLID splid, SC_UDR udr, SC_BOOL fForce)
 #endif
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a SPLC.
 ***************************************************************************/
 void SPLC::AssertValid(uint32_t grf)
@@ -1004,7 +1004,7 @@ void SPLC::AssertValid(uint32_t grf)
     SPLC_PAR::AssertValid(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the SPLC.
 ***************************************************************************/
 void SPLC::MarkMem(void)
@@ -1012,4 +1012,4 @@ void SPLC::MarkMem(void)
     AssertValid(0);
     SPLC_PAR::MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

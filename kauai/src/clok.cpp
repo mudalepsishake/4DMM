@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -78,10 +78,10 @@ RTCLASS(CLOK)
 BEGIN_CMD_MAP_BASE(CLOK)
 END_CMD_MAP(&CLOK::FCmdAll, pvNil, kgrfcmmAll)
 
-const int32_t kcmhlClok = kswMin; // put clocks at the head of the list
+const int32_t kcmhlClok = kswMin; // 3DMMv1.0: put clocks at the head of the list
 PCLOK CLOK::_pclokFirst;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the clock - just zeros the time.  fclokReset specifies
     that this clock should reset itself to zero on key or mouse input.
     fclokNoSlip specifies that the clok should not let time slip.
@@ -98,7 +98,7 @@ CLOK::CLOK(int32_t hid, uint32_t grfclok) : CMH(hid)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a CLOK - remove it from the linked list of clocks.
 ***************************************************************************/
 CLOK::~CLOK(void)
@@ -116,7 +116,7 @@ CLOK::~CLOK(void)
     ReleasePpo(&_pglalad);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to find the first clok with the given id.
 ***************************************************************************/
 PCLOK CLOK::PclokFromHid(int32_t hid)
@@ -132,7 +132,7 @@ PCLOK CLOK::PclokFromHid(int32_t hid)
     return pclok;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to remove all references to the given CMH from the clok
     ALAD lists.
 ***************************************************************************/
@@ -144,7 +144,7 @@ void CLOK::BuryCmh(PCMH pcmh)
         pclok->RemoveCmh(pcmh);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove any alarms set by the given CMH.
 ***************************************************************************/
 void CLOK::RemoveCmh(PCMH pcmh)
@@ -164,7 +164,7 @@ void CLOK::RemoveCmh(PCMH pcmh)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start the clock.
 ***************************************************************************/
 void CLOK::Start(uint32_t tim)
@@ -177,7 +177,7 @@ void CLOK::Start(uint32_t tim)
     vpcex->FAddCmh(this, kcmhlClok, kgrfcmmAll);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop the clock. The time will no longer advance on this clock.
 ***************************************************************************/
 void CLOK::Stop(void)
@@ -186,7 +186,7 @@ void CLOK::Stop(void)
     vpcex->RemoveCmh(this, kcmhlClok);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current time. If fAdjustForDelay is true, the time is a more
     accurate time, but is not synchronized to the alarms or to the command
     stream. Normally, the clok's time is only updated when a command gets
@@ -204,7 +204,7 @@ uint32_t CLOK::TimCur(bool fAdjustForDelay)
     return _timBase + LuMulDiv(TsCurrent() - _tsBase, kdtimSecond, kdtsSecond);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set an alarm for the given time and for the given command handler.
     Alarms are sorted in _decreasing_ order.
 ***************************************************************************/
@@ -238,7 +238,7 @@ bool CLOK::FSetAlarm(int32_t dtim, PCMH pcmhNotify, int32_t lwUser, bool fAdjust
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Advance the clock and sound an alarm if one is due to go off.  This
     actually gets called every time through the command loop.
 ***************************************************************************/
@@ -281,12 +281,12 @@ bool CLOK::FCmdAll(PCMD pcmd)
 
     if (timCur < _timNext)
     {
-        // just update the time
+        // 3DMMv1.0: just update the time
         _timCur = timCur;
         return fFalse;
     }
 
-    // sound any alarms
+    // 3DMMv1.0: sound any alarms
     for (;;)
     {
         if (pvNil == _pglalad || 0 > (ialad = _pglalad->IvMac() - 1))
@@ -302,17 +302,17 @@ bool CLOK::FCmdAll(PCMD pcmd)
         }
         _pglalad->Delete(ialad);
 
-        // adjust the current time
+        // 3DMMv1.0: adjust the current time
         _timCur = alad.tim;
         _timNext = kluMax;
         if (timCur > alad.tim && !(_grfclok & fclokNoSlip))
         {
-            // we've slipped
+            // 3DMMv1.0: we've slipped
             timCur = _timBase = alad.tim;
             _tsBase = tsCur;
         }
 
-        // send the alarm
+        // 3DMMv1.0: send the alarm
         ClearPb(&cmd, SIZEOF(CMD));
         cmd.cid = cidAlarm;
         cmd.pcmh = alad.pcmh;
@@ -322,7 +322,7 @@ bool CLOK::FCmdAll(PCMD pcmd)
 
         if (pvNil != alad.pcmh)
         {
-            // tell the CMH that the alarm went off
+            // 3DMMv1.0: tell the CMH that the alarm went off
             AddRef();
             Assert(_cactRef > 1, 0);
             _dtimAlarm = timCur - _timCur;
@@ -344,7 +344,7 @@ bool CLOK::FCmdAll(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CLOK.
 ***************************************************************************/
 void CLOK::AssertValid(uint32_t grf)
@@ -355,7 +355,7 @@ void CLOK::AssertValid(uint32_t grf)
     Assert((_grfclok & fclokNoSlip) || _dtimAlarm == 0, "_dtimAlarm should be 0");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CLOK.
 ***************************************************************************/
 void CLOK::MarkMem(void)
@@ -365,7 +365,7 @@ void CLOK::MarkMem(void)
     MarkMemObj(_pglalad);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to mark all the CLOKs
 ***************************************************************************/
 void CLOK::MarkAllCloks(void)
@@ -378,4 +378,4 @@ void CLOK::MarkAllCloks(void)
         MarkMemObj(pclok);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

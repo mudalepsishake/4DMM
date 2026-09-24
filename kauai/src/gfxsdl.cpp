@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -9,15 +9,15 @@
 #include "frame.h"
 ASSERTNAME
 
-// Palette used for drawing 8-bit images
+// 3DMMEx: Palette used for drawing 8-bit images
 static SDL_Palette *_pal = pvNil;
 
-// Number of colors in an 8-bit palette
+// 3DMMEx: Number of colors in an 8-bit palette
 const int32_t kcsdlc = 256;
 
 #define AssertDoSDL(x) AssertDo(0 == (x), SDL_GetError());
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Draw a surface.
 ***************************************************************************/
 void GNV::DrawSurface(SDL_Surface *surface, RC *prc)
@@ -33,12 +33,12 @@ void GNV::DrawSurface(SDL_Surface *surface, RC *prc)
     _pgpt->DrawSurface(surface, &rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to flush any pending graphics operations.
 ***************************************************************************/
 void GPT::Flush(void)
 {
-    // Use the flush call to repaint the screen
+    // 3DMMEx: Use the flush call to repaint the screen
     PGOB pgobScreen = GOB::PgobScreen();
     if (pgobScreen != pvNil)
     {
@@ -50,7 +50,7 @@ void GPT::Flush(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     These are the standard windows static colors. We use these on
     non-palettized displays.
 ***************************************************************************/
@@ -61,7 +61,7 @@ const SDL_Color _rgsdlcWin[20] = {
     {0xFF, 0xFF, 0, 0},    {0, 0, 0xFF, 0},       {0xFF, 0, 0xFF, 0},    {0, 0xFF, 0xFF, 0},    {0xFF, 0xFF, 0xFF, 0},
 };
 
-// Set colors in a SDL palette from a list of colors
+// 3DMMEx: Set colors in a SDL palette from a list of colors
 static void SetPalette(SDL_Palette *sdlpal, PGL pglclr)
 {
     int ret = 0;
@@ -71,11 +71,11 @@ static void SetPalette(SDL_Palette *sdlpal, PGL pglclr)
     Assert(sdlpal != pvNil, "Palette cannot be nil");
     AssertNilOrPo(pglclr, 0);
 
-    // Copy standard colors
+    // 3DMMEx: Copy standard colors
     CopyPb(_rgsdlcWin, rgsdlc, 10 * SIZEOF(_rgsdlcWin[0]));
     CopyPb(_rgsdlcWin + 10, rgsdlc + 246, 10 * SIZEOF(_rgsdlcWin[0]));
 
-    // Copy colors from the pglcr if given
+    // 3DMMEx: Copy colors from the pglcr if given
     if (pglclr != pvNil)
     {
         int32_t cclr = pglclr->IvMac();
@@ -94,11 +94,11 @@ static void SetPalette(SDL_Palette *sdlpal, PGL pglclr)
         }
     }
 
-    // Add colours to the palette
+    // 3DMMEx: Add colours to the palette
     AssertDoSDL(SDL_SetPaletteColors(sdlpal, rgsdlc, 0, CvFromRgv(rgsdlc)));
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to set the current color table.
     While using fpalIdentity the following cautions apply:
 
@@ -116,7 +116,7 @@ void GPT::SetActiveColors(PGL pglclr, uint32_t grfpal)
 {
     AssertNilOrPo(pglclr, 0);
 
-    // Allocate a palette
+    // 3DMMEx: Allocate a palette
     if (_pal == pvNil)
     {
         _pal = SDL_AllocPalette(kcsdlc);
@@ -147,14 +147,14 @@ PGPT GPT::PgptNew(SDL_Window *wnd, int cbitPixel, bool fOffscreen, int dxp, int 
     Assert(dxp != 0, "dxp must be > 0");
     Assert(dyp != 0, "dyp must be > 0");
 
-    // Create a surface that is used for updating the texture
+    // 3DMMEx: Create a surface that is used for updating the texture
     pgpt->_surface = SDL_CreateRGBSurface(0, dxp, dyp, cbitPixel, 0, 0, 0, 0);
     Assert(pgpt->_surface != pvNil, "CreateRGBSurface failed");
 
-    // If this is a 8-bit surface, use the global palette
+    // 3DMMEx: If this is a 8-bit surface, use the global palette
     if (cbitPixel == 8)
     {
-        // TODO: REFACTOR: Split out into an "EnsurePalette" function
+        // 3DMMEx: TODO: REFACTOR: Split out into an "EnsurePalette" function
         if (_pal == pvNil)
         {
             _pal = SDL_AllocPalette(256);
@@ -166,7 +166,7 @@ PGPT GPT::PgptNew(SDL_Window *wnd, int cbitPixel, bool fOffscreen, int dxp, int 
     return pgpt;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to create a new GPT for a window.
 ***************************************************************************/
 PGPT GPT::PgptNewHwnd(KWND hwnd)
@@ -187,13 +187,13 @@ PGPT GPT::PgptNewHwnd(KWND hwnd)
 #ifdef KAUAI_WIN32
 PGPT GPT::PgptNew(HDC hdc)
 {
-    // Used by the Portfolio on Win32. No longer required.
+    // 3DMMEx: Used by the Portfolio on Win32. No longer required.
     RawRtn();
     return pvNil;
 }
 #endif
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for a port.
 ***************************************************************************/
 GPT::~GPT(void)
@@ -219,7 +219,7 @@ GPT::~GPT(void)
     ReleasePpo(&_pregnClip);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to create an offscreen port.
 ***************************************************************************/
 PGPT GPT::PgptNewOffscreen(RC *prc, int32_t cbitPixel)
@@ -233,11 +233,11 @@ PGPT GPT::PgptNewOffscreen(RC *prc, int32_t cbitPixel)
     if (cbitPixel == 24)
         cbitPixel = 32;
 
-    // assert that cbitPixel is in {1,2,4,8,16,32}
+    // 3DMMEx: assert that cbitPixel is in {1,2,4,8,16,32}
     AssertIn(cbitPixel, 1, 33);
     AssertVar((cbitPixel & (cbitPixel - 1)) == 0, "bad cbitPixel value", &cbitPixel);
 
-    // Create a GPT
+    // 3DMMEx: Create a GPT
     pgpt = PgptNew((SDL_Window *)vwig.hwndApp, cbitPixel, fTrue, prc->Dxp(), prc->Dyp());
     Assert(pgpt != pvNil, "couldn't allocate GPT");
 
@@ -248,7 +248,7 @@ PGPT GPT::PgptNewOffscreen(RC *prc, int32_t cbitPixel)
     return pgpt;
 }
 
-/**
+/** 3DMMEx:
  * Mark the texture as invalidated
  **/
 void GPT::InvalidateTexture()
@@ -260,7 +260,7 @@ void GPT::UpdateTexture()
 {
     if (_fSurfaceDirty == fTrue)
     {
-        // Copy the bitmap from the surface to the texture
+        // 3DMMEx: Copy the bitmap from the surface to the texture
         void *pixels = pvNil;
         int pitch;
 
@@ -276,21 +276,21 @@ void GPT::UpdateTexture()
 
 void GPT::RebuildTexture(void)
 {
-    // Free the existing texture
+    // 3DMMEx: Free the existing texture
     if (_texture != pvNil)
         SDL_DestroyTexture(_texture);
 
-    // Free the existing renderer
+    // 3DMMEx: Free the existing renderer
     if (_renderer != pvNil)
         SDL_DestroyRenderer(_renderer);
 
-    // Create a renderer
+    // 3DMMEx: Create a renderer
     _renderer = SDL_CreateRenderer(_wnd, -1, 0);
     Assert(_renderer != pvNil, "no renderer created from SDL_CreateRenderer");
     AssertDoSDL(SDL_RenderClear(_renderer));
     AssertDoSDL(SDL_RenderSetLogicalSize(_renderer, kdxpLogical, kdypLogical));
 
-    // Create a new texture
+    // 3DMMEx: Create a new texture
     _texture =
         SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, kdxpLogical, kdypLogical);
     Assert(_texture, "SDL_CreateTexture failed");
@@ -306,7 +306,7 @@ void GPT::DumpBitmap(STN *stnBmp)
     AssertDoSDL(SDL_SaveBMP(_surface, u8szFilePath));
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     If this is an offscreen bitmap, return the pointer to the pixels and
     optionally get the bounds. Must balance with a call to Unlock().
 ***************************************************************************/
@@ -325,7 +325,7 @@ uint8_t *GPT::PrgbLockPixels(RC *prc)
     return (uint8_t *)_surface->pixels;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     If this is an offscreen bitmap, return the number of bytes per row.
 ***************************************************************************/
 int32_t GPT::CbRow(void)
@@ -334,7 +334,7 @@ int32_t GPT::CbRow(void)
     return _surface->w * _surface->format->BytesPerPixel;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     If this is an offscreen bitmap, return the number of bits per pixel.
 ***************************************************************************/
 int32_t GPT::CbitPixel(void)
@@ -344,7 +344,7 @@ int32_t GPT::CbitPixel(void)
     return _surface->format->BitsPerPixel;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to create a PICT and its an associated GPT.
     This should be balanced with a call to PpicRelease().
 ***************************************************************************/
@@ -357,7 +357,7 @@ PGPT GPT::PgptNewPic(RC *prc)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Closes a metafile based GPT and returns the picture produced from
     drawing into the GPT.
 ***************************************************************************/
@@ -369,7 +369,7 @@ PPIC GPT::PpicRelease(void)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Fill or frame a rectangle.
 ***************************************************************************/
 void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
@@ -380,17 +380,17 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
 
     ACR acrFore = pgdd->acrFore;
 
-    // If there is a pattern, check if it is solid
+    // 3DMMEx: If there is a pattern, check if it is solid
     bool fSolid = fTrue;
     if (pgdd->grfgdd & fgddPattern)
     {
         if (pgdd->apt.FSolidFore())
         {
-            // Solid foreground: fill the rectangle with the foreground color
+            // 3DMMEx: Solid foreground: fill the rectangle with the foreground color
         }
         else if (pgdd->apt.FSolidBack())
         {
-            // Solid background: fill the rectangle with the background color
+            // 3DMMEx: Solid background: fill the rectangle with the background color
             acrFore = pgdd->acrBack;
         }
         else
@@ -401,18 +401,18 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
 
     if (fSolid && (acrFore == kacrClear))
     {
-        // clear: do nothing
+        // 3DMMEx: clear: do nothing
         return;
     }
     else if (acrFore == kacrInvert)
     {
-        // Invert the rectangle instead
+        // 3DMMEx: Invert the rectangle instead
         Assert(fSolid, "inverting a pattern is not supported");
         HiliteRcs(prcs, pgdd);
         return;
     }
 
-    // Set clipping
+    // 3DMMEx: Set clipping
     if (pgdd->prcsClip != pvNil)
     {
         SDL_Rect sdlRectClip = *pgdd->prcsClip;
@@ -421,23 +421,23 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
 
     SDL_Rect sdlRect(*prcs);
 
-    // Convert color to SDL color
+    // 3DMMEx: Convert color to SDL color
     SDL_Color clrFore = acrFore._SDLColor();
 
-    // TODO: Support fgddPattern
+    // 3DMMEx: TODO: Support fgddPattern
     if (fSolid)
     {
         Uint32 sdlclr = SDL_MapRGB(_surface->format, clrFore.r, clrFore.g, clrFore.b);
 
         if (_pregnClip == pvNil || _pregnClip->FIsRc())
         {
-            // Fill rectangle
+            // 3DMMEx: Fill rectangle
             AssertDoSDL(SDL_FillRect(_surface, &sdlRect, sdlclr));
         }
         else
         {
-            // Clipping region is not a rectangle
-            // Use the region scanner to fill the rectangle
+            // 3DMMEx: Clipping region is not a rectangle
+            // 3DMMEx: Use the region scanner to fill the rectangle
 
             REGSC regsc;
             RC rcClipDest(*prcs);
@@ -450,7 +450,7 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
             {
                 dyp = regsc.DypCur();
 
-                // Find each rectangle at this scan line
+                // 3DMMEx: Find each rectangle at this scan line
                 while (regsc.XpCur() < klwMax)
                 {
                     xpDestStart = regsc.XpCur();
@@ -463,11 +463,11 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
 
                     AssertDoSDL(SDL_FillRect(_surface, &sdlRect, sdlclr));
 
-                    // Fetch the next run
+                    // 3DMMEx: Fetch the next run
                     regsc.XpFetch();
                 }
 
-                // Move to the next change in rectangles
+                // 3DMMEx: Move to the next change in rectangles
                 regsc.ScanNext(dyp);
             }
         }
@@ -478,7 +478,7 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
     SDL_SetClipRect(_surface, pvNil);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Hilite the rectangle by reversing white and the system hilite color.
 ***************************************************************************/
 void GPT::HiliteRcs(RCS *prcs, GDD *pgdd)
@@ -496,7 +496,7 @@ void GPT::HiliteRcs(RCS *prcs, GDD *pgdd)
     uint8_t *prgb = pvNil;
     RC rc = *prcs;
 
-    // Clip to surface bounds and clipping rectangle if given
+    // 3DMMEx: Clip to surface bounds and clipping rectangle if given
     if (pgdd->prcsClip != pvNil)
     {
         rc.xpLeft = LwMax(rc.xpLeft, pgdd->prcsClip->xpLeft);
@@ -510,14 +510,14 @@ void GPT::HiliteRcs(RCS *prcs, GDD *pgdd)
     rc.xpRight = LwMin(rc.xpRight, _surface->w);
     rc.ypBottom = LwMin(rc.ypBottom, _surface->h);
 
-    // Return if rectangle is empty after clipping
+    // 3DMMEx: Return if rectangle is empty after clipping
     if (rc.xpLeft >= rc.xpRight || rc.ypTop >= rc.ypBottom)
         return;
 
     prgb = PrgbLockPixels();
     if (prgb != pvNil)
     {
-        // Invert all pixels in the rectangle
+        // 3DMMEx: Invert all pixels in the rectangle
         for (int32_t yp = rc.ypTop; yp < rc.ypBottom; yp++)
         {
             for (int32_t xp = rc.xpLeft; xp < rc.xpRight; xp++)
@@ -531,7 +531,7 @@ void GPT::HiliteRcs(RCS *prcs, GDD *pgdd)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Fill or frame an oval.
 ***************************************************************************/
 void GPT::DrawOval(RCS *prcs, GDD *pgdd)
@@ -545,7 +545,7 @@ void GPT::DrawOval(RCS *prcs, GDD *pgdd)
     DrawRcs(prcs, pgdd);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Fill or frame a polygon.
 ***************************************************************************/
 void GPT::DrawPoly(HQ hqoly, GDD *pgdd)
@@ -557,7 +557,7 @@ void GPT::DrawPoly(HQ hqoly, GDD *pgdd)
     RawRtn();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Draw a line.
 ***************************************************************************/
 void GPT::DrawLine(PTS *ppts1, PTS *ppts2, GDD *pgdd)
@@ -570,7 +570,7 @@ void GPT::DrawLine(PTS *ppts1, PTS *ppts2, GDD *pgdd)
     RawRtn();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Low level routine to fill/frame a shape.
 ***************************************************************************/
 void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
@@ -578,7 +578,7 @@ void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
     RawRtn();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Scroll the given rectangle.
 ***************************************************************************/
 void GPT::ScrollRcs(RCS *prcs, int32_t dxp, int32_t dyp, GDD *pgdd)
@@ -596,7 +596,7 @@ SDL_Color ACR::_SDLColor()
     int iclr;
     ClearPb(&sdlColor, SIZEOF(sdlColor));
 
-    // Check what type of color this is
+    // 3DMMEx: Check what type of color this is
     uint8_t colortype = B3Lw(_lu);
     switch (colortype)
     {
@@ -623,7 +623,7 @@ SDL_Color ACR::_SDLColor()
         }
         else if (_lu == kluAcrInvert)
         {
-            // do nothing
+            // 3DMMEx: do nothing
         }
         else
         {
@@ -652,7 +652,7 @@ void GPT::_SetTextProps(TTF_Font *ttfFont, DSF *pdsf)
 
     AssertDoSDL(TTF_SetFontSize(ttfFont, pdsf->dyp));
 
-    // Map DSF alignment flags to SDL wrapped align flags
+    // 3DMMEx: Map DSF alignment flags to SDL wrapped align flags
     const int _mptahfwa[] = {TTF_WRAPPED_ALIGN_LEFT, TTF_WRAPPED_ALIGN_CENTER, TTF_WRAPPED_ALIGN_RIGHT};
     AssertIn(pdsf->tah, 0, SIZEOF(_mptahfwa) / SIZEOF(_mptahfwa[0]));
     TTF_SetFontWrappedAlign(ttfFont, _mptahfwa[pdsf->tah]);
@@ -678,7 +678,7 @@ void GPT::_SetTextProps(TTF_Font *ttfFont, DSF *pdsf)
     TTF_SetFontHinting(ttfFont, TTF_HINTING_MONO);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Draw the text.
 ***************************************************************************/
 void GPT::DrawRgch(const achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pdsf)
@@ -705,7 +705,7 @@ void GPT::DrawRgch(const achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pds
     Assert(acrFore != kacrInvert, "not supported yet");
     Assert(acrBack != kacrInvert, "not supported yet");
 
-    // Skip drawing if the string is empty or contains only spaces
+    // 3DMMEx: Skip drawing if the string is empty or contains only spaces
     bool fAllSpaces = fTrue;
     for (int32_t ich = 0; ich < cch; ich++)
     {
@@ -721,14 +721,14 @@ void GPT::DrawRgch(const achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pds
         return;
     }
 
-    // Map colors
+    // 3DMMEx: Map colors
     sdlcBack = acrBack._SDLColor();
     sdlcFore = acrFore._SDLColor();
 
-    // Get dimensions of font
+    // 3DMMEx: Get dimensions of font
     GetRcsFromRgch(&rcs, prgch, cch, pts, pdsf);
 
-    // Find the font
+    // 3DMMEx: Find the font
     ttfFont = vntl.TtfFontFromDsf(pdsf);
     Assert(ttfFont != pvNil, "No font from TtfFontFromDsf");
     if (ttfFont == pvNil)
@@ -739,14 +739,14 @@ void GPT::DrawRgch(const achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pds
 
     SDL_Rect sdlRect(rcs);
 
-    // Set clipping
+    // 3DMMEx: Set clipping
     if (pgdd->prcsClip != pvNil)
     {
         SDL_Rect sdlRectClip(*pgdd->prcsClip);
         SDL_SetClipRect(_surface, &sdlRectClip);
     }
 
-    // Draw background rect
+    // 3DMMEx: Draw background rect
     if ((acrBack != kacrClear) && (acrBack != kacrInvert))
     {
         int sdlcolor = SDL_MapRGB(_surface->format, sdlcBack.r, sdlcBack.g, sdlcBack.b);
@@ -755,7 +755,7 @@ void GPT::DrawRgch(const achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pds
 
     stnText.SetRgch(prgch, cch);
 
-    // Draw text
+    // 3DMMEx: Draw text
     U8SZ u8szText;
     stnText.GetUtf8Sz(u8szText);
     surRendered = TTF_RenderUTF8_Solid(ttfFont, u8szText, sdlcFore);
@@ -770,11 +770,11 @@ void GPT::DrawRgch(const achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pds
         surRendered = pvNil;
     }
 
-    // Restore clipping region
+    // 3DMMEx: Restore clipping region
     SDL_SetClipRect(_surface, pvNil);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the bounding text rectangle (in port coordinates).
 ***************************************************************************/
 void GPT::GetRcsFromRgch(RCS *prcs, const achar *prgch, int32_t cch, PTS pts, DSF *pdsf)
@@ -792,13 +792,13 @@ void GPT::GetRcsFromRgch(RCS *prcs, const achar *prgch, int32_t cch, PTS pts, DS
     int tmHeight = 0;
     int tmAscent = 0;
 
-    // Validate parameters
+    // 3DMMEx: Validate parameters
     if (pdsf == pvNil)
     {
         goto LError;
     }
 
-    // Find the font
+    // 3DMMEx: Find the font
     AssertDo(ttfFont = vntl.TtfFontFromDsf(pdsf), "Font number not in font list");
     if (ttfFont == pvNil)
     {
@@ -806,7 +806,7 @@ void GPT::GetRcsFromRgch(RCS *prcs, const achar *prgch, int32_t cch, PTS pts, DS
     }
     _SetTextProps(ttfFont, pdsf);
 
-    // Get bounding box of text with current font
+    // 3DMMEx: Get bounding box of text with current font
     stnText.SetRgch(prgch, cch);
     U8SZ u8szText;
     stnText.GetUtf8Sz(u8szText);
@@ -867,7 +867,7 @@ LError:
     return;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Lock the pixels for the port if this is an offscreen PixMap.
     Must be balanced by a call to Unlock.
 ***************************************************************************/
@@ -883,7 +883,7 @@ void GPT::Lock(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Unlock the pixels for the port if this is an offscreen PixMap.
 ***************************************************************************/
 void GPT::Unlock(void)
@@ -898,7 +898,7 @@ void GPT::Unlock(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Copy bits from pgptSrc to this GPT.
 ***************************************************************************/
 void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
@@ -914,8 +914,8 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
     SDL_Rect srectSrc;
     SDL_Rect srectDst;
 
-    // TODO: HACK: BWLD calls CopyPixels with a pgptSrc that is locked
-    // force unlock it for now
+    // 3DMMEx: TODO: HACK: BWLD calls CopyPixels with a pgptSrc that is locked
+    // 3DMMEx: force unlock it for now
     bool fRelock = fFalse;
     if (pgptSrc->_cactLock != 0)
     {
@@ -923,7 +923,7 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
         fRelock = fTrue;
     }
 
-    // TODO: refactor: reduce duplication of clipping rect setup
+    // 3DMMEx: TODO: refactor: reduce duplication of clipping rect setup
     if (pgdd->prcsClip != pvNil)
     {
         SDL_Rect sdlRectClip(*pgdd->prcsClip);
@@ -933,15 +933,15 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
 
     if (_pregnClip == pvNil || _pregnClip->FIsRc())
     {
-        // Clipping region is a rectangle
+        // 3DMMEx: Clipping region is a rectangle
         srectSrc = *prcsSrc;
         srectDst = *prcsDst;
         AssertDoSDL(SDL_BlitSurface(pgptSrc->_surface, &srectSrc, _surface, &srectDst));
     }
     else
     {
-        // Clipping region is not a rectangle
-        // Use the region scanner to blit the bitmap
+        // 3DMMEx: Clipping region is not a rectangle
+        // 3DMMEx: Use the region scanner to blit the bitmap
 
         REGSC regsc;
         RC rcClipDest(*prcsDst);
@@ -954,7 +954,7 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
         {
             dyp = regsc.DypCur();
 
-            // Find each rectangle at this scan line
+            // 3DMMEx: Find each rectangle at this scan line
             while (regsc.XpCur() < klwMax)
             {
                 xpDestStart = regsc.XpCur();
@@ -970,14 +970,14 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
                 srectSrc.w = srectDst.w;
                 srectSrc.h = srectDst.h;
 
-                // Blit the rectangle
+                // 3DMMEx: Blit the rectangle
                 AssertDoSDL(SDL_BlitSurface(pgptSrc->_surface, &srectSrc, _surface, &srectDst));
 
-                // Fetch the next run
+                // 3DMMEx: Fetch the next run
                 regsc.XpFetch();
             }
 
-            // Move to the next change in rectangles
+            // 3DMMEx: Move to the next change in rectangles
             regsc.ScanNext(dyp);
         }
     }
@@ -989,14 +989,14 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
         SDL_SetClipRect(_surface, pvNil);
     }
 
-    // TODO: fix BWLD to not need this hack
+    // 3DMMEx: TODO: fix BWLD to not need this hack
     if (fRelock)
     {
         pgptSrc->Lock();
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Draw the picture in the given rectangle.
 ***************************************************************************/
 void GPT::DrawPic(PPIC ppic, RCS *prcs, GDD *pgdd)
@@ -1006,11 +1006,11 @@ void GPT::DrawPic(PPIC ppic, RCS *prcs, GDD *pgdd)
     AssertVarMem(prcs);
     AssertVarMem(pgdd);
 
-    // not implemented: not used in 3DMM
+    // 3DMMEx: not implemented: not used in 3DMM
     RawRtn();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Draw the masked bitmap in the given rectangle with reference point
     *ppts.  pgdd->prcsClip is the clipping rectangle.
 ***************************************************************************/
@@ -1044,12 +1044,12 @@ void GPT::DrawMbmp(PMBMP pmbmp, RCS *prcs, GDD *pgdd)
     }
     else
     {
-        // not implemented
+        // 3DMMEx: not implemented
         RawRtn();
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the color table of an offscreen GPT.
 ***************************************************************************/
 void GPT::SetOffscreenColors(PGL pglclr)
@@ -1058,7 +1058,7 @@ void GPT::SetOffscreenColors(PGL pglclr)
     AssertNilOrPo(pglclr, 0);
     Assert(_surface != pvNil, "Surface must be created");
 
-    // Allocate a palette
+    // 3DMMEx: Allocate a palette
     if (_palOff == pvNil)
     {
         _palOff = SDL_AllocPalette(kcsdlc);
@@ -1073,7 +1073,7 @@ void GPT::SetOffscreenColors(PGL pglclr)
     AssertDoSDL(SDL_SetSurfacePalette(_surface, _palOff));
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to create a new pglclr containing the current palette.
 ***************************************************************************/
 PGL GPT::PglclrGetPalette(void)
@@ -1089,7 +1089,7 @@ PGL GPT::PglclrGetPalette(void)
     cclr = _pal->ncolors;
     Assert(cclr <= 256, "too many colors in palette");
 
-    // Convert SDL colors to CLRs
+    // 3DMMEx: Convert SDL colors to CLRs
     for (int isdlc = 0; isdlc < cclr; isdlc++)
     {
         SDL_Color sdlc = _pal->colors[isdlc];
@@ -1116,12 +1116,12 @@ void GPT::Flip()
 
     Assert(!_fOffscreen, "drawing an offscreen GPT to the screen?");
 
-    // Paint the texture
+    // 3DMMEx: Paint the texture
     AssertDoSDL(SDL_RenderCopy(_renderer, _texture, NULL, NULL));
     SDL_RenderPresent(_renderer);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Draw the surface.
 ***************************************************************************/
 void GPT::DrawSurface(SDL_Surface *surface, RCS *prcs, GDD *pgdd)
@@ -1153,7 +1153,7 @@ void GPT::DrawSurface(SDL_Surface *surface, RCS *prcs, GDD *pgdd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Test the validity of the port.
 ***************************************************************************/
 void GPT::AssertValid(uint32_t grf)
@@ -1162,10 +1162,10 @@ void GPT::AssertValid(uint32_t grf)
     AssertIn(_cactRef, 1, kcbMax);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to mark static GPT memory.
 ***************************************************************************/
 void GPT::MarkStaticMem(void)
 {
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

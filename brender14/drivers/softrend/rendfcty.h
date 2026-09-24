@@ -1,0 +1,64 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: rendfcty.h 1.1 1997/12/10 16:52:33 jon Exp $
+ * $Locker: $
+ *
+ * Private renderer facility structure
+ */
+#ifndef _RENDFCTY_H_
+#define _RENDFCTY_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* BRender:
+ * Private state of renderer facility
+ */
+typedef struct br_renderer_facility {
+    /* BRender:
+     * Dispatch table
+     */
+    struct br_renderer_facility_dispatch *dispatch;
+
+    /* BRender:
+     * Standard object identifier
+     */
+    char *identifier;
+
+    /* BRender:
+     * Pointer to owning device
+     */
+    br_device *device;
+
+    /* BRender:
+     * List of objects associated with this device
+     */
+    void *object_list;
+
+    /* BRenderModern:
+     * Object query templates.
+     */
+    br_tv_template *templates;
+
+    /* BRenderModern:
+     * rendererNew() argument processing templates
+     */
+    br_tv_template *rendererNewTemplate;
+
+    /* BRender:
+     * Default state
+     */
+    state_all default_state;
+
+    /* BRender:
+     * Number of instances
+     */
+    br_int_32 num_instances;
+} br_renderer_facility;
+
+#ifdef __cplusplus
+};
+#endif
+#endif

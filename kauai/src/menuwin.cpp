@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -20,17 +20,17 @@ const achar kchFontList = ChLit('$');
 PMUB vpmubCur;
 RTCLASS(MUB)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor - make sure vpmubCur is not this mub.
 ***************************************************************************/
 MUB::~MUB(void)
 {
-    // REVIEW shonk: free mem and the _hmenu
+    // 3DMMv1.0: REVIEW shonk: free mem and the _hmenu
     if (vpmubCur == this)
         vpmubCur = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to load and set a new menu bar.
 ***************************************************************************/
 PMUB MUB::PmubNew(uint32_t ridMenuBar)
@@ -55,7 +55,7 @@ PMUB MUB::PmubNew(uint32_t ridMenuBar)
     return pmub;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make this the current menu bar.
 ***************************************************************************/
 void MUB::Set(void)
@@ -71,7 +71,7 @@ void MUB::Set(void)
     vpmubCur = this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the menu's are clean - ie, items are enabled/disabled/marked
     correctly.  Called immediately before dropping the menus.
 ***************************************************************************/
@@ -83,7 +83,7 @@ void MUB::Clean(void)
     int32_t wcid;
     CMD cmd;
 
-    // adjust for the goofy mdi window's menu
+    // 3DMMv1.0: adjust for the goofy mdi window's menu
     cmnu = GetMenuItemCount(_hmenu);
     Assert(cmnu >= _cmnu, "somebody took some menus out of the menu bar!");
 
@@ -120,7 +120,7 @@ void MUB::Clean(void)
 
             if (grfeds & kgrfedsMark)
             {
-                // REVIEW shonk: bullet doesn't work (uses a check mark)
+                // 3DMMv1.0: REVIEW shonk: bullet doesn't work (uses a check mark)
                 CheckMenuItem(hmenu, imni,
                               (grfeds & (fedsCheck | fedsBullet)) ? MF_BYPOSITION | MF_CHECKED
                                                                   : MF_BYPOSITION | MF_UNCHECKED);
@@ -129,7 +129,7 @@ void MUB::Clean(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The given wcid is the value Windows handed us in a WM_COMMAND message.
     Remap it to a real command id and enqueue the result.
 ***************************************************************************/
@@ -141,7 +141,7 @@ void MUB::EnqueueWcid(int32_t wcid)
         vpcex->EnqueueCmd(&cmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds an item identified by the given list cid, long parameter
     and string.
 ***************************************************************************/
@@ -206,7 +206,7 @@ bool MUB::FAddListCid(int32_t cid, uintptr_t lw0, PSTN pstn)
         fSeparator = mlst.imniBase > (FPure(mlst.fSeparator) ? 1 : 0) && pvNil != mlst.pgllw && mlst.pgllw->IvMac() > 0;
         if (fSeparator && !mlst.fSeparator)
         {
-            // add a separator
+            // 3DMMv1.0: add a separator
             if (!InsertMenu(mlst.hmenu, mlst.imniBase, MF_BYPOSITION | MF_SEPARATOR, cidNil, pvNil))
             {
                 fRet = false;
@@ -221,7 +221,7 @@ bool MUB::FAddListCid(int32_t cid, uintptr_t lw0, PSTN pstn)
         }
         else if (!fSeparator && mlst.fSeparator)
         {
-            // delete a separator
+            // 3DMMv1.0: delete a separator
             if (!DeleteMenu(mlst.hmenu, mlst.imniBase - 1, MF_BYPOSITION))
                 fRet = true;
             else
@@ -237,7 +237,7 @@ bool MUB::FAddListCid(int32_t cid, uintptr_t lw0, PSTN pstn)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Removes all items identified by the given list cid, and long parameter
     or string.  If pstn is non-nil, it is used to find the item.
     If pstn is nil, lw0 is used to identify the item.
@@ -317,7 +317,7 @@ bool MUB::FRemoveListCid(int32_t cid, uintptr_t lw0, PSTN pstn)
         fSeparator = mlst.imniBase > (FPure(mlst.fSeparator) ? 1 : 0) && pvNil != mlst.pgllw && mlst.pgllw->IvMac() > 0;
         if (fSeparator && !mlst.fSeparator)
         {
-            // add a separator
+            // 3DMMv1.0: add a separator
             if (!InsertMenu(mlst.hmenu, mlst.imniBase, MF_BYPOSITION | MF_SEPARATOR, cidNil, pvNil))
             {
                 fRet = fFalse;
@@ -332,7 +332,7 @@ bool MUB::FRemoveListCid(int32_t cid, uintptr_t lw0, PSTN pstn)
         }
         else if (!fSeparator && mlst.fSeparator)
         {
-            // delete a separator
+            // 3DMMv1.0: delete a separator
             if (!DeleteMenu(mlst.hmenu, mlst.imniBase - 1, MF_BYPOSITION))
                 fRet = fFalse;
             else
@@ -348,7 +348,7 @@ bool MUB::FRemoveListCid(int32_t cid, uintptr_t lw0, PSTN pstn)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Removes all items identified by the given list cid.
 ***************************************************************************/
 bool MUB::FRemoveAllListCid(int32_t cid)
@@ -397,7 +397,7 @@ bool MUB::FRemoveAllListCid(int32_t cid)
         fSeparator = mlst.imniBase > (FPure(mlst.fSeparator) ? 1 : 0) && pvNil != mlst.pgllw && mlst.pgllw->IvMac() > 0;
         if (fSeparator && !mlst.fSeparator)
         {
-            // add a separator
+            // 3DMMv1.0: add a separator
             if (!InsertMenu(mlst.hmenu, mlst.imniBase, MF_BYPOSITION | MF_SEPARATOR, cidNil, pvNil))
             {
                 fRet = fFalse;
@@ -412,7 +412,7 @@ bool MUB::FRemoveAllListCid(int32_t cid)
         }
         else if (!fSeparator && mlst.fSeparator)
         {
-            // delete a separator
+            // 3DMMv1.0: delete a separator
             if (!DeleteMenu(mlst.hmenu, mlst.imniBase - 1, MF_BYPOSITION))
                 fRet = fFalse;
             else
@@ -428,7 +428,7 @@ bool MUB::FRemoveAllListCid(int32_t cid)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Changes the long parameter and the menu text associated with a menu
     list item.  If pstnOld is non-nil, it is used to find the item.
     If pstnOld is nil, lwOld is used to identify the item.  In either case
@@ -471,7 +471,7 @@ bool MUB::FChangeListCid(int32_t cid, uintptr_t lwOld, PSTN pstnOld, uintptr_t l
             }
             if (pvNil != pstnNew)
             {
-                // change the string
+                // 3DMMv1.0: change the string
                 fRet = ModifyMenu(mlst.hmenu, mlst.imniBase + ilw, MF_BYPOSITION | MF_STRING, mlst.wcidList + ilw,
                                   pstnNew->Psz()) &&
                        fRet;
@@ -483,7 +483,7 @@ bool MUB::FChangeListCid(int32_t cid, uintptr_t lwOld, PSTN pstnOld, uintptr_t l
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill in the CMD structure for the given wcid.
 ***************************************************************************/
 bool MUB::_FGetCmdForWcid(int32_t wcid, PCMD pcmd)
@@ -515,7 +515,7 @@ bool MUB::_FGetCmdForWcid(int32_t wcid, PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the given item is in a list.
 ***************************************************************************/
 bool MUB::_FFindMlst(int32_t wcid, MLST *pmlst, int32_t *pimlst)
@@ -545,7 +545,7 @@ bool MUB::_FFindMlst(int32_t wcid, MLST *pmlst, int32_t *pimlst)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the menu bar has a font list item or other list item, do the right
     thing.
 ***************************************************************************/
@@ -583,7 +583,7 @@ bool MUB::_FInitLists(void)
                 break;
 
             case kchFontList:
-                // insert all the fonts
+                // 3DMMv1.0: insert all the fonts
                 mlst.fSeparator = (0 < imni);
                 if (!mlst.fSeparator)
                 {
@@ -644,7 +644,7 @@ bool MUB::_FInitLists(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark mem used by the menu bar.
 ***************************************************************************/
 void MUB::MarkMem(void)
@@ -664,4 +664,4 @@ void MUB::MarkMem(void)
         MarkMemObj(mlst.pgllw);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

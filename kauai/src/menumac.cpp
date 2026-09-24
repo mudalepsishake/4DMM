@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -24,18 +24,18 @@ const achar kchFontList = '$';
 PMUB vpmubCur;
 RTCLASS(MUB)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor - make sure vpmubCur is not this mub.
 ***************************************************************************/
 MUB::~MUB(void)
 {
-    // REVIEW shonk: free the _hnmbar
+    // 3DMMv1.0: REVIEW shonk: free the _hnmbar
     if (vpmubCur == this)
         vpmubCur = pvNil;
     _Free();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to load and set a new menu bar.
 ***************************************************************************/
 PMUB MUB::PmubNew(uint32_t ridMenuBar)
@@ -54,7 +54,7 @@ PMUB MUB::PmubNew(uint32_t ridMenuBar)
     return pmub;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frees all mem associated with the menu bar.
 ***************************************************************************/
 void MUB::_Free(void)
@@ -73,7 +73,7 @@ void MUB::_Free(void)
     ReleasePpo(&_pglmnu);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Loads the menu bar with the given resource id and makes this MUB the
     current one.  Can only be called once per mub.
 ***************************************************************************/
@@ -83,7 +83,7 @@ bool MUB::_FFetchRes(uint32_t ridMenuBar)
     MNU mnu;
     int32_t cmnu, imnu;
 
-    // get the menu list and record the menu id's
+    // 3DMMv1.0: get the menu list and record the menu id's
     if ((hnsmb = (SMB **)GetResource('MBAR', (ushort)ridMenuBar)) == hNil)
         return fFalse;
 
@@ -100,7 +100,7 @@ bool MUB::_FFetchRes(uint32_t ridMenuBar)
     }
     ReleaseResource((HN)hnsmb);
 
-    // get the mbar and set it
+    // 3DMMv1.0: get the mbar and set it
     if ((_hnmbar = GetNewMBar((ushort)ridMenuBar)) == hNil)
         goto LFail;
     SetMenuBar(_hnmbar);
@@ -129,10 +129,10 @@ bool MUB::_FFetchRes(uint32_t ridMenuBar)
             MLST mlst;
             int32_t onn;
 
-            // This loop looks for kchCid and kchList in the menu name.
-            // Following a kchCid, it extracts the number (in ascii).
-            // Following a kchList, an optional resource type (rtg)
-            // is extracted.
+            // 3DMMv1.0: This loop looks for kchCid and kchList in the menu name.
+            // 3DMMv1.0: Following a kchCid, it extracts the number (in ascii).
+            // 3DMMv1.0: Following a kchList, an optional resource type (rtg)
+            // 3DMMv1.0: is extracted.
             rtg = 0;
             mni.cid = cidNil;
             mni.lw0 = 0;
@@ -158,7 +158,7 @@ bool MUB::_FFetchRes(uint32_t ridMenuBar)
             {
             default:
                 Assert(chList == chNil, "unknown list type");
-                // not a list
+                // 3DMMv1.0: not a list
                 if (pchLim != pvNil)
                 {
                     SetStCch(stName, pchLim - stName - 1);
@@ -174,7 +174,7 @@ bool MUB::_FFetchRes(uint32_t ridMenuBar)
                 break;
 
             case kchFontList:
-                // insert all the fonts
+                // 3DMMv1.0: insert all the fonts
                 mlst.fSeparator = (0 < imni);
                 mlst.cid = mni.cid;
                 mlst.imnu = imnu;
@@ -255,7 +255,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make this the current menu bar.
 ***************************************************************************/
 void MUB::Set(void)
@@ -266,7 +266,7 @@ void MUB::Set(void)
     vpmubCur = this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mouse down event in the menu bar.
 ***************************************************************************/
 bool MUB::FDoClick(EVT *pevt)
@@ -288,7 +288,7 @@ bool MUB::FDoClick(EVT *pevt)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a menu key event.
 ***************************************************************************/
 bool MUB::FDoKey(EVT *pevt)
@@ -310,7 +310,7 @@ bool MUB::FDoKey(EVT *pevt)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the menu's are clean - ie, items are enabled/disabled/marked
     correctly.  Called immediately before dropping the menus.
 ***************************************************************************/
@@ -343,7 +343,7 @@ void MUB::Clean(void)
 
             if (_FFindMlst(imnu, imni))
             {
-                // need the item name in a GG
+                // 3DMMv1.0: need the item name in a GG
                 GetItem(mnu.hnsmu, imni + 1, (uint8_t *)st);
                 cch = (int32_t) * (uint8_t *)st;
                 if ((cmd.pgg = GG::PggNew(0, 1, cch)) != pvNil)
@@ -368,7 +368,7 @@ void MUB::Clean(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the given item is in a list.
 ***************************************************************************/
 bool MUB::_FFindMlst(int32_t imnu, int32_t imni, MLST *pmlst, int32_t *pimlst)
@@ -399,7 +399,7 @@ bool MUB::_FFindMlst(int32_t imnu, int32_t imni, MLST *pmlst, int32_t *pimlst)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a command struct for the command from the Mac menu item code.
 ***************************************************************************/
 bool MUB::_FGetCmdFromCode(int32_t lwCode, CMD *pcmd)
@@ -417,7 +417,7 @@ bool MUB::_FGetCmdFromCode(int32_t lwCode, CMD *pcmd)
     bool fNeedName;
     MLST mlst;
 
-    // the code is one-based
+    // 3DMMv1.0: the code is one-based
     if (imni-- == 0)
         return fFalse;
 
@@ -449,7 +449,7 @@ bool MUB::_FGetCmdFromCode(int32_t lwCode, CMD *pcmd)
 
     if (fNeedName)
     {
-        // need the item name in a GG
+        // 3DMMv1.0: need the item name in a GG
         GetItem(mnu.hnsmu, imni + 1, (uint8_t *)st);
         cch = (int32_t) * (uint8_t *)st;
         if (pvNil == (pcmd->pgg = GG::PggNew(0, 1, cch)))
@@ -460,7 +460,7 @@ bool MUB::_FGetCmdFromCode(int32_t lwCode, CMD *pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds an item identified by the given list cid, long parameter
     and string.
 ***************************************************************************/
@@ -509,7 +509,7 @@ bool MUB::FAddListCid(int32_t cid, int32_t lw0, PSTZ pstz)
         fSeparator = mlst.imniBase > FPure(mlst.fSeparator) && (mlst.cmni > 0 || mlst.cmni == cvNil);
         if (fSeparator && !mlst.fSeparator)
         {
-            // add a separator
+            // 3DMMv1.0: add a separator
             if (!_FInsertMni(mlst.imnu, mlst.imniBase, cidNil, 0,
                              "\x2"
                              "(-"))
@@ -524,7 +524,7 @@ bool MUB::FAddListCid(int32_t cid, int32_t lw0, PSTZ pstz)
         }
         else if (!fSeparator && mlst.fSeparator)
         {
-            // delete a separator
+            // 3DMMv1.0: delete a separator
             _DeleteMni(mlst.imnu, --mlst.imniBase);
             mlst.fSeparator = fFalse;
             _pglmlst->Put(imlst, &mlst);
@@ -535,7 +535,7 @@ bool MUB::FAddListCid(int32_t cid, int32_t lw0, PSTZ pstz)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a new menu item.
 ***************************************************************************/
 bool MUB::_FInsertMni(int32_t imnu, int32_t imni, int32_t cid, int32_t lw0, PSTZ pstz)
@@ -564,7 +564,7 @@ bool MUB::_FInsertMni(int32_t imnu, int32_t imni, int32_t cid, int32_t lw0, PSTZ
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete a menu item.
 ***************************************************************************/
 void MUB::_DeleteMni(int32_t imnu, int32_t imni)
@@ -580,7 +580,7 @@ void MUB::_DeleteMni(int32_t imnu, int32_t imni)
     DelMenuItem(mnu.hnsmu, imni + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Removes all items identified by the given list cid, and long parameter
     or string.  If pstz is non-nil, it is used to find the item.
     If pstz is nil, lw0 is used to identify the item.
@@ -647,7 +647,7 @@ bool MUB::FRemoveListCid(int32_t cid, int32_t lw0, PSTZ pstz)
         fSeparator = mlst.imniBase > FPure(mlst.fSeparator) && (mlst.cmni > 0 || mlst.cmni == cvNil);
         if (fSeparator && !mlst.fSeparator)
         {
-            // add a separator
+            // 3DMMv1.0: add a separator
             if (!_FInsertMni(mlst.imnu, mlst.imniBase, cidNil, 0,
                              "\x2"
                              "(-"))
@@ -662,7 +662,7 @@ bool MUB::FRemoveListCid(int32_t cid, int32_t lw0, PSTZ pstz)
         }
         else if (!fSeparator && mlst.fSeparator)
         {
-            // delete a separator
+            // 3DMMv1.0: delete a separator
             _DeleteMni(mlst.imnu, --mlst.imniBase);
             mlst.fSeparator = fFalse;
             _pglmlst->Put(imlst, &mlst);
@@ -673,7 +673,7 @@ bool MUB::FRemoveListCid(int32_t cid, int32_t lw0, PSTZ pstz)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Removes all items identified by the given list cid.
 ***************************************************************************/
 bool MUB::FRemoveAllListCid(int32_t cid)
@@ -718,7 +718,7 @@ bool MUB::FRemoveAllListCid(int32_t cid)
         fSeparator = mlst.imniBase > FPure(mlst.fSeparator) && (mlst.cmni > 0 || mlst.cmni == cvNil);
         if (fSeparator && !mlst.fSeparator)
         {
-            // add a separator
+            // 3DMMv1.0: add a separator
             if (!_FInsertMni(mlst.imnu, mlst.imniBase, cidNil, 0,
                              "\x2"
                              "(-"))
@@ -733,7 +733,7 @@ bool MUB::FRemoveAllListCid(int32_t cid)
         }
         else if (!fSeparator && mlst.fSeparator)
         {
-            // delete a separator
+            // 3DMMv1.0: delete a separator
             _DeleteMni(mlst.imnu, --mlst.imniBase);
             mlst.fSeparator = fFalse;
             _pglmlst->Put(imlst, &mlst);
@@ -744,7 +744,7 @@ bool MUB::FRemoveAllListCid(int32_t cid)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Changes the long parameter and the menu text associated with a menu
     list item.  If pstzOld is non-nil, it is used to find the item.
     If pstzOld is nil, lwOld is used to identify the item.  In either case
@@ -792,7 +792,7 @@ bool MUB::FChangeListCid(int32_t cid, int32_t lwOld, PSTZ pstzOld, int32_t lwNew
             mnu.pglmni->Put(imni, &mni);
             if (pvNil != pstzNew)
             {
-                // change the string
+                // 3DMMv1.0: change the string
                 SetItem(mnu.hnsmu, imni + 1, (uint8_t *)pstzNew);
             }
         }
@@ -802,7 +802,7 @@ bool MUB::FChangeListCid(int32_t cid, int32_t lwOld, PSTZ pstzOld, int32_t lwNew
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark mem used by the menu bar.
 ***************************************************************************/
 void MUB::MarkMem(void)
@@ -822,4 +822,4 @@ void MUB::MarkMem(void)
         MarkMemObj(mnu.pglmni);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

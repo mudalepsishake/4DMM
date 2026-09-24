@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Status: All changes must be code reviewed.
 
@@ -33,24 +33,24 @@
 #define TBOX_H
 
 //
-// Defines for global text box constant values
+// 3DMMv1.0: Defines for global text box constant values
 //
-#define kdzpBorderTbox 5                    // Width of the border in pixels
-#define kdxpMinTbox 16 + 2 * kdxpIndentTxtg // Minimum Width of a tbox in pixels
-#define kdypMinTbox 12                      // Minimum Height of a tbox in pixels
-#define kxpDefaultTbox 177                  // Default location of a tbox
-#define kypDefaultTbox 78                   // Default location of a tbox
-#define kdxpDefaultTbox 140                 // Default width of a tbox
-#define kdypDefaultTbox 100                 // Default height of a tbox
+#define kdzpBorderTbox 5                    // 3DMMv1.0: Width of the border in pixels
+#define kdxpMinTbox 16 + 2 * kdxpIndentTxtg // 3DMMv1.0: Minimum Width of a tbox in pixels
+#define kdypMinTbox 12                      // 3DMMv1.0: Minimum Height of a tbox in pixels
+#define kxpDefaultTbox 177                  // 3DMMv1.0: Default location of a tbox
+#define kypDefaultTbox 78                   // 3DMMv1.0: Default location of a tbox
+#define kdxpDefaultTbox 140                 // 3DMMv1.0: Default width of a tbox
+#define kdypDefaultTbox 100                 // 3DMMv1.0: Default height of a tbox
 
 //
 //
-// The border for a single textbox (TBXB)
+// 3DMMv1.0: The border for a single textbox (TBXB)
 //
 //
 
 //
-// Definitions for each of the anchor points in a border
+// 3DMMv1.0: Definitions for each of the anchor points in a border
 //
 enum TBXT
 {
@@ -76,28 +76,28 @@ class TBXB : public TBXB_PAR
     MARKMEM
 
   private:
-    PTBOX _ptbox;         // Owning text box.
-    bool _fTrackingMouse; // Are we tracking the mouse.
-    TBXT _tbxt;           // The anchor point being dragged.
-    int32_t _xpPrev;      // Previous x coord of the mouse.
-    int32_t _ypPrev;      // Previous y coord of the mouse.
-    RC _rcOrig;           // Original size of the border.
+    PTBOX _ptbox;         // 3DMMv1.0: Owning text box.
+    bool _fTrackingMouse; // 3DMMv1.0: Are we tracking the mouse.
+    TBXT _tbxt;           // 3DMMv1.0: The anchor point being dragged.
+    int32_t _xpPrev;      // 3DMMv1.0: Previous x coord of the mouse.
+    int32_t _ypPrev;      // 3DMMv1.0: Previous y coord of the mouse.
+    RC _rcOrig;           // 3DMMv1.0: Original size of the border.
 
     TBXB(PTBOX ptbox, PGCB pgcb) : GOB(pgcb)
     {
         _ptbox = ptbox;
     }
 
-    TBXT _TbxtAnchor(int32_t xp, int32_t yp); // Returns the anchor point the mouse is at.
+    TBXT _TbxtAnchor(int32_t xp, int32_t yp); // 3DMMv1.0: Returns the anchor point the mouse is at.
 
   public:
     //
-    // Creates a text box with border
+    // 3DMMv1.0: Creates a text box with border
     //
     static PTBXB PtbxbNew(PTBOX ptbox, PGCB pgcb);
 
     //
-    // Overridden routines
+    // 3DMMv1.0: Overridden routines
     //
     void Draw(PGNV pgnv, RC *prcClip) override;
     virtual void Activate(bool fActive);
@@ -110,7 +110,7 @@ class TBXB : public TBXB_PAR
 
 //
 //
-// The DDG for a single textbox (TBXG).
+// 3DMMv1.0: The DDG for a single textbox (TBXG).
 //
 //
 
@@ -126,8 +126,8 @@ class TBXG : public TBXG_PAR
     CMD_MAP_DEC(TBXG)
 
   private:
-    PTBXB _ptbxb; // Enclosing border.
-    RC _rcOld;    // Old rectangle for the ddg.
+    PTBXB _ptbxb; // 3DMMv1.0: Enclosing border.
+    RC _rcOld;    // 3DMMv1.0: Old rectangle for the ddg.
 
     TBXG(PTXRD ptxrd, PGCB pgcb) : TXRG(ptxrd, pgcb)
     {
@@ -136,12 +136,12 @@ class TBXG : public TBXG_PAR
 
   public:
     //
-    // Creation function
+    // 3DMMv1.0: Creation function
     //
     static PTBXG PtbxgNew(PTBOX ptbox, PGCB pgcb);
 
     //
-    // Accessors
+    // 3DMMv1.0: Accessors
     //
     void SetTbxb(PTBXB ptbxb)
     {
@@ -153,13 +153,13 @@ class TBXG : public TBXG_PAR
     }
 
     //
-    // Scrolling
+    // 3DMMv1.0: Scrolling
     //
-    bool FNeedToScroll(void);     // Does this text box need to scroll anything
-    void Scroll(int32_t scaVert); // Scrolls to beginning or a single pixel only.
+    bool FNeedToScroll(void);     // 3DMMv1.0: Does this text box need to scroll anything
+    void Scroll(int32_t scaVert); // 3DMMv1.0: Scrolls to beginning or a single pixel only.
 
     //
-    // Overridden routines
+    // 3DMMv1.0: Overridden routines
     //
     virtual bool FPtIn(int32_t xp, int32_t yp) override;
     virtual bool FCmdMouseMove(PCMD_MOUSE pcmd) override;
@@ -174,14 +174,14 @@ class TBXG : public TBXG_PAR
     virtual void _FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin = pvNil, int32_t *pcpLim = pvNil) override;
 
     //
-    // Status
+    // 3DMMv1.0: Status
     //
     bool FTextSelected(void);
 
     //
-    // Only for TBXB
+    // 3DMMv1.0: Only for TBXB
     //
-    bool _FDoClip(int32_t tool); // Actually does a clipboard command.
+    bool _FDoClip(int32_t tool); // 3DMMv1.0: Actually does a clipboard command.
 };
 
 enum
@@ -196,7 +196,7 @@ const uint32_t kgrfchpAll = (kfchpOnn | kfchpDypFont | kfchpBold | kfchpItalic);
 
 //
 //
-// Text box document class (TBOX).
+// 3DMMv1.0: Text box document class (TBOX).
 //
 //
 typedef class TBOX *PTBOX;
@@ -210,13 +210,13 @@ class TBOX : public TBOX_PAR
     MARKMEM
 
   private:
-    PSCEN _pscen;       // The owning scene
-    int32_t _nfrmFirst; // Frame the tbox appears in.
-    int32_t _nfrmMax;   // Frame the tbox disappears in.
-    int32_t _nfrmCur;   // Current frame number.
-    bool _fSel;         // Is this tbox selected?
-    bool _fStory;       // Is this a story text box.
-    RC _rc;             // Size of text box.
+    PSCEN _pscen;       // 3DMMv1.0: The owning scene
+    int32_t _nfrmFirst; // 3DMMv1.0: Frame the tbox appears in.
+    int32_t _nfrmMax;   // 3DMMv1.0: Frame the tbox disappears in.
+    int32_t _nfrmCur;   // 3DMMv1.0: Current frame number.
+    bool _fSel;         // 3DMMv1.0: Is this tbox selected?
+    bool _fStory;       // 3DMMv1.0: Is this a story text box.
+    RC _rc;             // 3DMMv1.0: Size of text box.
 
     TBOX(void) : TXRD()
     {
@@ -224,7 +224,7 @@ class TBOX : public TBOX_PAR
 
   public:
     //
-    // Creation routines
+    // 3DMMv1.0: Creation routines
     //
     static PTBOX PtboxNew(PSCEN pscen = pvNil, RC *prcRel = pvNil, bool fStory = fTrue);
     PDDG PddgNew(PGCB pgcb) override
@@ -236,11 +236,12 @@ class TBOX : public TBOX_PAR
     bool FDup(PTBOX *pptbox);
 
     //
-    // Movie specific functions
+    // 3DMMv1.0: Movie specific functions
     //
     void SetScen(PSCEN pscen);
     bool FIsVisible(void);
     bool FGotoFrame(int32_t nfrm);
+    void InsertDuplicateFramesAfter(int32_t nfrm, int32_t cfrm);
     void Select(bool fSel);
     bool FSelected(void)
     {
@@ -282,7 +283,7 @@ class TBOX : public TBOX_PAR
     void AttachToMouse(void);
 
     //
-    // Overridden functions
+    // 3DMMv1.0: Overridden functions
     //
     void SetDirty(bool fDirty = fTrue) override;
     virtual bool FAddUndo(PUNDB pundb) override;
@@ -293,7 +294,7 @@ class TBOX : public TBOX_PAR
     }
 
     //
-    // TBXG/TBXB specific funtions
+    // 3DMMv1.0: TBXG/TBXB specific funtions
     //
     void GetRc(RC *prc)
     {
@@ -304,7 +305,7 @@ class TBOX : public TBOX_PAR
     int32_t Itbox(void);
 
     //
-    // Undo access functions, not for use by anyone but tbox.cpp
+    // 3DMMv1.0: Undo access functions, not for use by anyone but tbox.cpp
     //
     int32_t NfrmFirst(void)
     {
@@ -318,7 +319,7 @@ class TBOX : public TBOX_PAR
 
 //
 //
-// Textbox document for clipping
+// 3DMMv1.0: Textbox document for clipping
 //
 //
 typedef class TCLP *PTCLP;
@@ -332,20 +333,20 @@ class TCLP : public TCLP_PAR
     ASSERT
 
   protected:
-    PTBOX _ptbox; // Text box copy.
+    PTBOX _ptbox; // 3DMMv1.0: Text box copy.
     TCLP(void)
     {
     }
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     static PTCLP PtclpNew(PTBOX ptbox);
     ~TCLP(void);
 
     //
-    // Pasting
+    // 3DMMv1.0: Pasting
     //
     bool FPaste(PSCEN pscen);
 };

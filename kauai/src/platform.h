@@ -1,4 +1,4 @@
-/*
+/* 3DMMEx:
  * Platform-specific definitions
  */
 
@@ -10,7 +10,7 @@
 #include <condition_variable>
 #include <chrono>
 
-/****************************************
+/** 3DMMEx: **************************************
     Mutex (critical section) object
 ****************************************/
 typedef class MUTX *PMUTX;
@@ -28,7 +28,7 @@ class MUTX : public std::recursive_mutex
     }
 };
 
-/****************************************
+/** 3DMMEx: **************************************
     Signal - simulates a Win32 Event
 ****************************************/
 
@@ -37,7 +37,7 @@ class MUTX : public std::recursive_mutex
 class Signal
 {
   public:
-    // Wake up a thread that is waiting for this event
+    // 3DMMEx: Wake up a thread that is waiting for this event
     void Set()
     {
         {
@@ -48,21 +48,21 @@ class Signal
         _cv.notify_one();
     }
 
-    // Wait for the event to be signalled
+    // 3DMMEx: Wait for the event to be signalled
     bool Wait(uint32_t dtsTime = KSIGNAL_INFINITE)
     {
         std::unique_lock<std::mutex> lock(_mutx);
 
         if (dtsTime == KSIGNAL_INFINITE)
         {
-            // Wait forever
+            // 3DMMEx: Wait forever
             _cv.wait(lock, [&] { return _fSignaled; });
             _fSignaled = false;
             return true;
         }
         else
         {
-            // Wait for the given number of milliseconds
+            // 3DMMEx: Wait for the given number of milliseconds
             auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(dtsTime);
             bool fResult = _cv.wait_until(lock, deadline, [&] { return _fSignaled; });
             if (fResult)
@@ -79,7 +79,7 @@ class Signal
     bool _fSignaled = false;
 };
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Universal scalable application clock and other time stuff
 ***************************************************************************/
 
@@ -87,37 +87,37 @@ extern const uint32_t kdtsSecond;
 extern uint32_t TsCurrentSystem(void);
 extern uint32_t DtsCaret(void);
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return a path to a directory to store configuration files
 ***************************************************************************/
 extern bool FGetAppConfigDir(char *psz, int32_t cchMax);
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return a path to a directory to store documents
 ***************************************************************************/
 extern bool FGetDocumentsDir(char *psz, int32_t cchMax);
 
 #ifndef WIN
-/****************************************
+/** 3DMMEx: **************************************
     Current executable name
 ****************************************/
 extern void GetExecutableName(char *psz, int cchMax);
 
-/****************************************
+/** 3DMMEx: **************************************
     Get environment variable
 ****************************************/
 extern uint32_t GetEnvironmentVariable(const char *pcszName, char *pszValue, uint32_t cchMax);
 
-/****************************************
+/** 3DMMEx: **************************************
     Current username
 ****************************************/
 extern bool GetUserName(char *psz, int cchMax);
 
-/****************************************
+/** 3DMMEx: **************************************
     Directory containing app resources
 ****************************************/
 extern bool FGetResourcesDir(char *psz, int32_t cchMax);
 
 #endif
 
-#endif //! PLATFORM_H
+#endif //! 3DMMEx: PLATFORM_H

@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: light.h 1.6 1995/05/25 13:37:32 sam Exp $
@@ -16,7 +16,7 @@ extern "C"
 
     enum
     {
-        /*
+        /* BRender:
          * Type of light
          */
         BR_LIGHT_TYPE = 0x0003,
@@ -24,7 +24,7 @@ extern "C"
         BR_LIGHT_DIRECT = 0x0001,
         BR_LIGHT_SPOT = 0x0002,
 
-        /*
+        /* BRender:
          * Flag idicating that caluculations are done in view space
          */
         BR_LIGHT_VIEW = 0x0004
@@ -32,22 +32,22 @@ extern "C"
 
     typedef struct br_light
     {
-        /*
+        /* BRender:
          * Optional identifier
          */
         char *identifier;
 
-        /*
+        /* BRender:
          * Type of light
          */
         br_uint_8 type;
 
-        /*
+        /* BRender:
          * Colour of light (if renderer supports it)
          */
         br_colour colour;
 
-        /*
+        /* BRender:
          * Attenuation of light with distance - constant, linear, and quadratic
          * l & q only apply to point and spot lights
          */
@@ -55,7 +55,7 @@ extern "C"
         br_scalar attenuation_l;
         br_scalar attenuation_q;
 
-        /*
+        /* BRender:
          * Cone angles for spot light
          */
         br_angle cone_outer;

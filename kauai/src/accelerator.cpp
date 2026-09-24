@@ -1,5 +1,5 @@
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
 
@@ -12,18 +12,18 @@
 
 ASSERTNAME
 
-// Accelerator table entry: maps a keycode + flags to a command ID
+// 3DMMEx: Accelerator table entry: maps a keycode + flags to a command ID
 struct CmdKey
 {
     union {
         struct
         {
-            int32_t vk;      // Keycode
-            int32_t grfcust; // Flags for keycode
+            int32_t vk;      // 3DMMEx: Keycode
+            int32_t grfcust; // 3DMMEx: Flags for keycode
         };
-        int64_t vkgrfcust; // Combination of keycode and flags
+        int64_t vkgrfcust; // 3DMMEx: Combination of keycode and flags
     };
-    int32_t cid; // Command ID to enqueue
+    int32_t cid; // 3DMMEx: Command ID to enqueue
 };
 
 RTCLASS(ATBL)
@@ -42,12 +42,12 @@ bool ATBL::FCmdKey(PCMD pcmd)
 
     Assert(pcmd->cid == cidKey, "wrong message type");
 
-    // Check if there is a keyboard accelerator that matches this key
+    // 3DMMEx: Check if there is a keyboard accelerator that matches this key
     PCMD_KEY pcmdkey = (PCMD_KEY)pcmd;
     int32_t cid;
     if (_FFindCmdKey(pcmdkey->vk, pcmdkey->grfcust, &cid, pvNil))
     {
-        // Enqueue a message with the new command ID
+        // 3DMMEx: Enqueue a message with the new command ID
         CMD cmd = *pcmd;
         cmd.cid = cid;
         _pcex->EnqueueCmd(&cmd);
@@ -101,7 +101,7 @@ void ATBL::MarkMem(void)
     MarkMemObj(_pcex);
     MarkMemObj(_pglCmdKey);
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 bool ATBL::_FFindCmdKey(int32_t vk, int32_t grfcust, int32_t *pcid, int32_t *picmdkey)
 {
@@ -123,7 +123,7 @@ bool ATBL::_FFindCmdKey(int32_t vk, int32_t grfcust, int32_t *pcid, int32_t *pic
         return fFalse;
     }
 
-    // Find the key in the accelerator table
+    // 3DMMEx: Find the key in the accelerator table
     for (ivMin = 0, ivLim = _pglCmdKey->IvMac(); ivMin < ivLim;)
     {
         iv = (ivMin + ivLim) / 2;
@@ -134,7 +134,7 @@ bool ATBL::_FFindCmdKey(int32_t vk, int32_t grfcust, int32_t *pcid, int32_t *pic
             ivLim = iv;
         else
         {
-            // Found it
+            // 3DMMEx: Found it
             if (pvNil != picmdkey)
                 *picmdkey = iv;
             if (pvNil != pcid)
@@ -143,7 +143,7 @@ bool ATBL::_FFindCmdKey(int32_t vk, int32_t grfcust, int32_t *pcid, int32_t *pic
         }
     }
 
-    // Not found
+    // 3DMMEx: Not found
     if (pvNil != picmdkey)
         *picmdkey = ivMin;
     TrashVar(pcid);
@@ -168,7 +168,7 @@ bool ATBL::FAddCmdKey(int32_t vk, int32_t grfcust, int32_t cid)
 
     if (_FFindCmdKey(vk, grfcust, pvNil, &icmdkey))
     {
-        // Replace the existing item
+        // 3DMMEx: Replace the existing item
         _pglCmdKey->Put(icmdkey, &cmdkey);
         return fTrue;
     }

@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -19,14 +19,14 @@
 enum
 {
     fgobNil = 0,
-    fgobSibling = 1,    // for Constructors
-    fgobEnsureHwnd = 2, // for FInitScreen
-    fgobNoVis = 0,      // for DrawTree
-    fgobAutoVis = 4,    // for DrawTree
-    fgobUseVis = 8,     // for DrawTree
+    fgobSibling = 1,    // 3DMMv1.0: for Constructors
+    fgobEnsureHwnd = 2, // 3DMMv1.0: for FInitScreen
+    fgobNoVis = 0,      // 3DMMv1.0: for DrawTree
+    fgobAutoVis = 4,    // 3DMMv1.0: for DrawTree
+    fgobUseVis = 8,     // 3DMMv1.0: for DrawTree
 };
 
-// GOB invalidation types
+// 3DMMv1.0: GOB invalidation types
 enum
 {
     ginNil,
@@ -36,7 +36,7 @@ enum
     kginDefault
 };
 
-const int32_t krelOne = 0x00010000L; // denominator for relative rectangles
+const int32_t krelOne = 0x00010000L; // 3DMMv1.0: denominator for relative rectangles
 const int32_t krelZero = 0;
 
 #ifdef MAC
@@ -62,7 +62,7 @@ inline void ValidHwndRcs(HWND hwnd, RCS *prcs)
     ValidRect(prcs);
     SetPort(pprt);
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef KAUAI_WIN32
 inline void InvalHwndRcs(HWND hwnd, RCS *prcs)
 {
@@ -74,31 +74,31 @@ inline void ValidHwndRcs(HWND hwnd, RCS *prcs)
     RECT rcs = *prcs;
     ValidateRect(hwnd, &rcs);
 }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #ifdef KAUAI_SDL
 inline void InvalHwndRcs(KWND hwnd, RCS *prcs)
 {
-    // do nothing
+    // 3DMMEx: do nothing
 }
 inline void ValidHwndRcs(KWND hwnd, RCS *prcs)
 {
-    // do nothing
+    // 3DMMEx: do nothing
 }
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
-// coordinates
+// 3DMMv1.0: coordinates
 enum
 {
-    cooLocal,  // top-left is (0,0)
-    cooParent, // relative to parent
-    cooGpt,    // relative to the UI port
-    cooHwnd,   // relative to the enclosing hwnd
-    cooGlobal, // global coordinates
+    cooLocal,  // 3DMMv1.0: top-left is (0,0)
+    cooParent, // 3DMMv1.0: relative to parent
+    cooGpt,    // 3DMMv1.0: relative to the UI port
+    cooHwnd,   // 3DMMv1.0: relative to the enclosing hwnd
+    cooGlobal, // 3DMMv1.0: global coordinates
     cooLim
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     GOB creation block
 ****************************************/
 struct GCB
@@ -123,7 +123,7 @@ struct GCB
 };
 typedef GCB *PGCB;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Graphics object
 ****************************************/
 #define GOB_PAR CMH
@@ -140,21 +140,21 @@ class GOB : public GOB_PAR
   private:
     static PGOB _pgobScreen;
 
-    KWND _hwnd;   // the OS window (may be nil)
-    PGPT _pgpt;   // the graphics port (may be shared with _pgobPar)
-    PCURS _pcurs; // the cursor to show over this gob
+    KWND _hwnd;   // 3DMMv1.0: the OS window (may be nil)
+    PGPT _pgpt;   // 3DMMv1.0: the graphics port (may be shared with _pgobPar)
+    PCURS _pcurs; // 3DMMv1.0: the cursor to show over this gob
 
-    RC _rcCur; // current position
-    RC _rcVis; // current visible rectangle (in its parent)
-    RC _rcAbs; //_rcAbs and _rcRel describe the position of this
-    RC _rcRel; // gob in its parent.
+    RC _rcCur; // 3DMMv1.0: current position
+    RC _rcVis; // 3DMMv1.0: current visible rectangle (in its parent)
+    RC _rcAbs; // 3DMMv1.0: _rcAbs and _rcRel describe the position of this
+    RC _rcRel; // 3DMMv1.0: gob in its parent.
 
-    // tree management
+    // 3DMMv1.0: tree management
     PGOB _pgobPar;
     PGOB _pgobChd;
     PGOB _pgobSib;
 
-    // variables
+    // 3DMMv1.0: variables
     PGL _pglrtvm;
 
     void _SetRcCur(void);
@@ -207,7 +207,7 @@ class GOB : public GOB_PAR
     GOB(int32_t hid);
     virtual void Release(void) override;
 
-    // hwnd stuff
+    // 3DMMv1.0: hwnd stuff
     bool FAttachHwnd(KWND hwnd);
     bool FCreateAndAttachMdi(PSTN pstnTitle);
     KWND Hwnd(void)
@@ -218,13 +218,13 @@ class GOB : public GOB_PAR
     virtual void GetMinMax(RC *prcMinMax);
     void SetHwndName(PSTN pstn);
 
-    // unique gob run-time id.
+    // 3DMMv1.0: unique gob run-time id.
     int32_t Grid(void)
     {
         return _grid;
     }
 
-    // tree management
+    // 3DMMv1.0: tree management
     PGOB PgobPar(void)
     {
         return _pgobPar;
@@ -249,7 +249,7 @@ class GOB : public GOB_PAR
     void BringToFront(void);
     void SendBehind(PGOB pgobBefore);
 
-    // rectangle management
+    // 3DMMv1.0: rectangle management
     void SetPos(RC *prcAbs, RC *prcRel = pvNil);
     void GetPos(RC *prcAbs, RC *prcRel);
     void GetRc(RC *prc, int32_t coo);
@@ -260,7 +260,7 @@ class GOB : public GOB_PAR
     void MapPt(PT *ppt, int32_t cooSrc, int32_t cooDst);
     void MapRc(RC *prc, int32_t cooSrc, int32_t cooDst);
 
-    // variables
+    // 3DMMv1.0: variables
     virtual PGL *Ppglrtvm(void);
 
     PGPT Pgpt(void)
@@ -277,7 +277,7 @@ class GOB : public GOB_PAR
     virtual void DrawTreeRgn(PGPT pgpt, RC *prc, REGN *pregn, uint32_t grfgob);
     virtual void Draw(PGNV pgnv, RC *prcClip);
 
-    // mouse handling and hit testing
+    // 3DMMv1.0: mouse handling and hit testing
     void GetPtMouse(PT *ppt, bool *pfDown);
     virtual PGOB PgobFromPt(int32_t xp, int32_t yp, PT *pptLocal = pvNil);
     virtual bool FPtIn(int32_t xp, int32_t yp);
@@ -290,9 +290,9 @@ class GOB : public GOB_PAR
 
 #ifdef MAC
     virtual void TrackGrow(PEVT pevt);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-    // command functions
+    // 3DMMv1.0: command functions
     virtual bool FCmdCloseWnd(PCMD pcmd);
     virtual bool FCmdTrackMouse(PCMD_MOUSE pcmd);
     bool FCmdTrackMouseCore(PCMD pcmd)
@@ -305,7 +305,7 @@ class GOB : public GOB_PAR
         return FCmdMouseMove((PCMD_MOUSE)pcmd);
     }
 
-    // key commands
+    // 3DMMv1.0: key commands
     virtual bool FCmdKey(PCMD_KEY pcmd);
     bool FCmdKeyCore(PCMD pcmd)
     {
@@ -319,28 +319,28 @@ class GOB : public GOB_PAR
     virtual bool FCmdSelIdle(PCMD pcmd);
     virtual bool FCmdActivateSel(PCMD pcmd);
 
-    // tool tips
+    // 3DMMv1.0: tool tips
     virtual bool FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse);
 
-    // gob state (for automated testing)
+    // 3DMMv1.0: gob state (for automated testing)
     virtual int32_t LwState(void);
 
 #ifdef DEBUG
     void MarkGobTree(void);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Gob Tree Enumerator
 ****************************************/
 enum
 {
-    // inputs
+    // 3DMMv1.0: inputs
     fgteNil = 0x0000,
-    fgteSkipToSib = 0x0001,   // legal to FNextGob
-    fgteBackToFront = 0x0002, // legal to Init
+    fgteSkipToSib = 0x0001,   // 3DMMv1.0: legal to FNextGob
+    fgteBackToFront = 0x0002, // 3DMMv1.0: legal to Init
 
-    // outputs
+    // 3DMMv1.0: outputs
     fgtePre = 0x0010,
     fgtePost = 0x0020,
     fgteRoot = 0x0040
@@ -354,7 +354,7 @@ class GTE : public GTE_PAR
     ASSERT
 
   private:
-    // enumeration states
+    // 3DMMv1.0: enumeration states
     enum
     {
         esStart,
@@ -364,7 +364,7 @@ class GTE : public GTE_PAR
     };
 
     int32_t _es;
-    bool _fBackWards; // which way to walk sibling lists
+    bool _fBackWards; // 3DMMv1.0: which way to walk sibling lists
     PGOB _pgobRoot;
     PGOB _pgobCur;
 
@@ -374,4 +374,4 @@ class GTE : public GTE_PAR
     bool FNextGob(PGOB *ppgob, uint32_t *pgrfgteOut, uint32_t grfgteIn);
 };
 
-#endif //! GOB_H
+#endif //! 3DMMv1.0: GOB_H

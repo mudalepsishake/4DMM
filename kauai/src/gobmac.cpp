@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,7 +17,7 @@ PGOB GOB::_pgobScreen;
 
 #define kswKindGob 0x526F
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the screen gob.  If fgobEnsureHwnd is set, ensures that the
     screen gob has an OS window associated with it.
 ***************************************************************************/
@@ -40,14 +40,14 @@ bool GOB::FInitScreen(uint32_t grfgob, int32_t ginDef)
 
     if (grfgob & fgobEnsureHwnd)
     {
-        // REVIEW shonk: create the hwnd and attach it
+        // 3DMMv1.0: REVIEW shonk: create the hwnd and attach it
         RawRtn();
     }
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the GOB a wrapper for the given system window.
 ***************************************************************************/
 bool GOB::FAttachHwnd(HWND hwnd)
@@ -55,7 +55,7 @@ bool GOB::FAttachHwnd(HWND hwnd)
     if (_hwnd != hNil)
     {
         ReleasePpo(&_pgpt);
-        // don't destroy the hwnd
+        // 3DMMv1.0: don't destroy the hwnd
         _hwnd = hNil;
         _hwnd->refCon = 0;
     }
@@ -72,7 +72,7 @@ bool GOB::FAttachHwnd(HWND hwnd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the GOB associated with the given hwnd (if there is one).
 ***************************************************************************/
 PGOB GOB::PgobFromHwnd(HWND hwnd)
@@ -87,7 +87,7 @@ PGOB GOB::PgobFromHwnd(HWND hwnd)
     return pgob;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to get the next
 ***************************************************************************/
 HWND GOB::HwndMdiActive(void)
@@ -103,7 +103,7 @@ HWND GOB::HwndMdiActive(void)
     return hwnd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Creates a new MDI window and returns it.  This is normally then
     attached to a gob.
 ***************************************************************************/
@@ -114,7 +114,7 @@ HWND GOB::_HwndNewMdi(PSTZ pstzTitle)
     static int32_t _cact = 0;
 
     rcs = qd.screenBits.bounds;
-    rcs.top += GetMBarHeight() + 25; // menu bar and title
+    rcs.top += GetMBarHeight() + 25; // 3DMMv1.0: menu bar and title
     rcs.left += 5;
     rcs.right -= 105;
     rcs.bottom -= 105;
@@ -127,7 +127,7 @@ HWND GOB::_HwndNewMdi(PSTZ pstzTitle)
     return hwnd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destroy an hwnd.
 ***************************************************************************/
 void GOB::_DestroyHwnd(HWND hwnd)
@@ -137,7 +137,7 @@ void GOB::_DestroyHwnd(HWND hwnd)
     DisposeWindow((PPRT)hwnd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The grow area has been hit, track it and resize the window.
 ***************************************************************************/
 void GOB::TrackGrow(PEVT pevt)
@@ -158,7 +158,7 @@ void GOB::TrackGrow(PEVT pevt)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Gets the current mouse location in this gob's coordinates (if ppt is
     not nil) and determines if the mouse button is down (if pfDown is
     not nil).
@@ -196,7 +196,7 @@ void GOB::GetPtMouse(PT *ppt, bool *pfDown)
         *pfDown = FPure(Button());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Makes sure the GOB is clean (no update is pending).
 ***************************************************************************/
 void GOB::Clean(void)
@@ -229,7 +229,7 @@ void GOB::Clean(void)
     SetPort(pprt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the window name.
 ***************************************************************************/
 void GOB::SetHwndName(PSTZ pstz)
@@ -246,7 +246,7 @@ void GOB::SetHwndName(PSTZ pstz)
     SetWTitle(&_hwnd->port, (uint8_t *)pstz);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method.  If this hwnd is one of our MDI windows, make it the
     active MDI window.
 ***************************************************************************/

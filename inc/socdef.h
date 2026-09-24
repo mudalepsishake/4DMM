@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Socrates #defines that might get used by a source file for a tool, such
     as source files for the chunky compiler.  This file should only contain
@@ -25,17 +25,17 @@
 #define BUG1961
 #define BUG1973
 
-#define kfps 6 // frames per second for playback and recording
+#define kfps 6 // 3DMMv1.0: frames per second for playback and recording
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Error codes
 ***************************************************************************/
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
     100000 - 109999: Movie-engine-issued error codes
 ****************************************************/
 
-// 100000 - 100099: general movie engine errors
+// 3DMMv1.0: 100000 - 100099: general movie engine errors
 #define ercSocSaveFailure 100000
 #define ercSocSceneSwitch 100002
 #define ercSocSceneChop 100003
@@ -82,14 +82,14 @@
 #define ercSocInvalidFilename 100044
 #define ercSocNoSndOnPaste 100045
 #define ercSocCantCopyMsnd 100046
-// *If you add anything below this line you need to notify leannp about it so she can make a help topic for it*
+// 3DMMv1.0: *If you add anything below this line you need to notify leannp about it so she can make a help topic for it*
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     String IDs
 ***************************************************************************/
 
-// For kcnoGstApp:
-// REVIEW: should these (and other instances of string IDs) be kids...? */
+// 3DMMv1.0: For kcnoGstApp:
+// 3DMMv1.0: REVIEW: should these (and other instances of string IDs) be kids...? */
 #define idsNil (-1L)
 #define idsWindowTitle 0
 #define idsProductLong 1
@@ -121,7 +121,7 @@
 #define idsReplaceFile 32
 #define idsPurgeSounds 33
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunk numbers
 ***************************************************************************/
 
@@ -149,7 +149,7 @@
 
 #define kcnoMidiSplash 0
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Commands
 ***************************************************************************/
 
@@ -173,9 +173,9 @@
 #define cidDeactivate 44017
 #define cidSceneLoaded 44018
 
-// Feature flags
+// 3DMMEx: Feature flags
 #define kpridHighQualitySoundImport 0x23700
 #define kpridStereoSoundPlayback 0x23701
 #define kpridFeatureFlagLim 0x23800
 
-#endif // SOCDEF_H
+#endif // 3DMMv1.0: SOCDEF_H

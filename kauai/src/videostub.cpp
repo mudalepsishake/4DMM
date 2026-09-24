@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
 
@@ -18,7 +18,7 @@ RTCLASS(GVDW)
 BEGIN_CMD_MAP_BASE(GVDS)
 END_CMD_MAP(&GVDS::FCmdAll, pvNil, kgrfcmmAll)
 
-const int32_t kcmhlGvds = kswMin; // put videos at the head of the list
+const int32_t kcmhlGvds = kswMin; // 3DMMEx: put videos at the head of the list
 
 PGVID GVID::PgvidNew(PFNI pfni, PGOB pgobBase, bool fHwndBased, int32_t hid)
 {
@@ -51,7 +51,7 @@ bool GVDS::_FInit(PFNI pfni, PGOB pgobBase)
     AssertPo(pfni, ffniFile);
     AssertPo(pgobBase, 0);
 
-    // Not implemented: fail
+    // 3DMMEx: Not implemented: fail
     RawRtn();
     return fFalse;
 }
@@ -148,7 +148,7 @@ bool GVDS::FCmdAll(PCMD pcmd)
         return fFalse;
     }
 
-    // TODO: update _nfrCur
+    // 3DMMEx: TODO: update _nfrCur
     _nfrCur = 0;
 
     if (_nfrCur != _nfrMarked)
@@ -183,9 +183,9 @@ void GVDS::AssertValid(uint32_t grf)
 {
     GVDS_PAR::AssertValid(0);
     AssertPo(_pgobBase, 0);
-    // REVIEW shonk: fill in GVDS::AssertValid
+    // 3DMMEx: REVIEW shonk: fill in GVDS::AssertValid
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 PGVDW GVDW::PgvdwNew(PFNI pfni, PGOB pgobBase, int32_t hid)
 {
@@ -328,4 +328,4 @@ void GVDW::AssertValid(uint32_t grf)
     Assert(_hwndMovie != hNil, 0);
     AssertPo(_pgobBase, 0);
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

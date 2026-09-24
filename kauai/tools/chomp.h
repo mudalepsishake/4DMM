@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     CHOMP.H
     Header file for Chomp, the chunky compiler
@@ -18,4 +18,4 @@
 #include "chcm.h"
 #include "mssio.h"
 
-#endif //! CHOMP_H
+#endif //! 3DMMv1.0: CHOMP_H

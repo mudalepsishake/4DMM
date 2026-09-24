@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,16 +16,16 @@ ASSERTNAME
 
 RTCLASS(LEXB)
 
-// #line handling
+// 3DMMv1.0: #line handling
 achar _szMsvcPoundLine[] = PszLit("#line");
 #define kcchMsvcPoundLine (CvFromRgv(_szMsvcPoundLine) - 1)
 
-// #<space> handling
+// 3DMMEx: #<space> handling
 achar _szGccPoundLine[] = PszLit("# ");
 #define kcchGccPoundLine (CvFromRgv(_szGccPoundLine) - 1)
 
 uint16_t LEXB::_mpchgrfct[128] = {
-    // 0x00 - 0x07
+    // 3DMMv1.0: 0x00 - 0x07
     fctNil,
     fctNil,
     fctNil,
@@ -34,7 +34,7 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctNil,
     fctNil,
     fctNil,
-    // 0x08; 0x09=tab; 0x0A=line-feed; 0x0B; 0x0C; 0x0D=return; 0x0E; 0x0F
+    // 3DMMv1.0: 0x08; 0x09=tab; 0x0A=line-feed; 0x0B; 0x0C; 0x0D=return; 0x0E; 0x0F
     fctNil,
     fctSpc,
     fctSpc,
@@ -44,7 +44,7 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctNil,
     fctNil,
 
-    // 0x10 - 0x17
+    // 3DMMv1.0: 0x10 - 0x17
     fctNil,
     fctNil,
     fctNil,
@@ -53,7 +53,7 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctNil,
     fctNil,
     fctNil,
-    // 0x18; 0x19; 0x1A=Ctrl-Z; 0x1B - 0x1F
+    // 3DMMv1.0: 0x18; 0x19; 0x1A=Ctrl-Z; 0x1B - 0x1F
     fctNil,
     fctNil,
     fctSpc,
@@ -63,59 +63,59 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctNil,
     fctNil,
 
-    // space ! " #
+    // 3DMMv1.0: space ! " #
     fctSpc,
     fctOpr | fctOp1,
     fctQuo,
     fctOpr,
-    // $ % & '
+    // 3DMMv1.0: $ % & '
     fctOpr,
     fctOpr | fctOp1,
     fctOpr | fctOp1 | fctOp2,
     fctQuo,
-    // ( ) * +
+    // 3DMMv1.0: ( ) * +
     fctOpr,
     fctOpr,
     fctOpr | fctOp1,
     fctOpr | fctOp1 | fctOp2,
-    // , - . /
+    // 3DMMv1.0: , - . /
     fctOpr,
     fctOpr | fctOp1 | fctOp2,
     fctOpr,
     fctOpr | fctOp1,
 
-    // 0 1 2 3
+    // 3DMMv1.0: 0 1 2 3
     kgrfctDigit,
     kgrfctDigit,
     kgrfctDigit,
     kgrfctDigit,
-    // 4 5 6 7
+    // 3DMMv1.0: 4 5 6 7
     kgrfctDigit,
     kgrfctDigit,
     kgrfctDigit,
     kgrfctDigit,
-    // 8 9 : ;
+    // 3DMMv1.0: 8 9 : ;
     fctDec | fctHex,
     fctDec | fctHex,
     fctOpr | fctOp1 | fctOp2,
     fctOpr,
-    // < = > ?
+    // 3DMMv1.0: < = > ?
     fctOpr | fctOp1 | fctOp2,
     fctOpr | fctOp1 | fctOp2,
     fctOpr | fctOp1 | fctOp2,
     fctOpr,
 
-    // @ A B C
+    // 3DMMv1.0: @ A B C
     fctOpr,
     fctUpp | fctHex,
     fctUpp | fctHex,
     fctUpp | fctHex,
-    // D E F G
+    // 3DMMv1.0: D E F G
     fctUpp | fctHex,
     fctUpp | fctHex,
     fctUpp | fctHex,
     fctUpp,
-    // H I J K L M N O
+    // 3DMMv1.0: H I J K L M N O
     fctUpp,
     fctUpp,
     fctUpp,
@@ -125,7 +125,7 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctUpp,
     fctUpp,
 
-    // P Q R S T U V W
+    // 3DMMv1.0: P Q R S T U V W
     fctUpp,
     fctUpp,
     fctUpp,
@@ -134,7 +134,7 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctUpp,
     fctUpp,
     fctUpp,
-    // X Y Z [ \ ] ^ _
+    // 3DMMv1.0: X Y Z [ \ ] ^ _
     fctUpp,
     fctUpp,
     fctUpp,
@@ -144,17 +144,17 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctOpr | fctOp1 | fctOp2,
     fctUpp | fctLow,
 
-    // ` a b c
+    // 3DMMv1.0: ` a b c
     fctOpr,
     fctLow | fctHex,
     fctLow | fctHex,
     fctLow | fctHex,
-    // d e f g
+    // 3DMMv1.0: d e f g
     fctLow | fctHex,
     fctLow | fctHex,
     fctLow | fctHex,
     fctLow,
-    // h i j k l m n o
+    // 3DMMv1.0: h i j k l m n o
     fctLow,
     fctLow,
     fctLow,
@@ -164,7 +164,7 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctLow,
     fctLow,
 
-    // p q r s t u v w
+    // 3DMMv1.0: p q r s t u v w
     fctLow,
     fctLow,
     fctLow,
@@ -173,48 +173,48 @@ uint16_t LEXB::_mpchgrfct[128] = {
     fctLow,
     fctLow,
     fctLow,
-    // x y z {
+    // 3DMMv1.0: x y z {
     fctLow,
     fctLow,
     fctLow,
     fctOpr,
-    // | } ~ 0x7F=del
+    // 3DMMv1.0: | } ~ 0x7F=del
     fctOpr | fctOp1 | fctOp2,
     fctOpr,
     fctOpr | fctOp1,
     fctNil,
 };
 
-// token values for single characters
+// 3DMMv1.0: token values for single characters
 #define kchMinTok ChLit('!')
 int16_t _rgtt[] = {
-    // ! " # $ % & '
+    // 3DMMv1.0: ! " # $ % & '
     ttLNot, ttNil, ttPound, ttDollar, ttMod, ttBAnd, ttNil,
-    // ( ) * + , - . /
+    // 3DMMv1.0: ( ) * + , - . /
     ttOpenParen, ttCloseParen, ttMul, ttAdd, ttComma, ttSub, ttDot, ttDiv,
-    // 0-7
+    // 3DMMv1.0: 0-7
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // 8 9 : ; < = > ?
+    // 3DMMv1.0: 8 9 : ; < = > ?
     ttNil, ttNil, ttColon, ttSemi, ttLt, ttAssign, ttGt, ttQuery,
-    // @ A-G
+    // 3DMMv1.0: @ A-G
     ttAt, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // H-O
+    // 3DMMv1.0: H-O
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // P-W
+    // 3DMMv1.0: P-W
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // X Y Z [ \ ] ^ _
+    // 3DMMv1.0: X Y Z [ \ ] ^ _
     ttNil, ttNil, ttNil, ttOpenRef, ttBackSlash, ttCloseRef, ttBXor, ttNil,
-    // ` a-g
+    // 3DMMv1.0: ` a-g
     ttAccent, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // h-o
+    // 3DMMv1.0: h-o
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // p-w
+    // 3DMMv1.0: p-w
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // x y a { | } ~
+    // 3DMMv1.0: x y a { | } ~
     ttNil, ttNil, ttNil, ttOpenBrace, ttBOr, ttCloseBrace, ttBNot};
 int32_t _TtFromCh(achar ch);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the token type of a single character operator.
 ***************************************************************************/
 int32_t _TtFromCh(achar ch)
@@ -226,61 +226,61 @@ int32_t _TtFromCh(achar ch)
 #define kchMinDouble ChLit('&')
 #define kchLastDouble ChLit('|')
 int16_t _rgttDouble[] = {
-    // & '
+    // 3DMMv1.0: & '
     ttLAnd, ttNil,
-    // ( ) * + , - . /
+    // 3DMMv1.0: ( ) * + , - . /
     ttNil, ttNil, ttNil, ttInc, ttNil, ttDec, ttNil, ttNil,
-    // 0-7
+    // 3DMMv1.0: 0-7
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // 8 9 : ; < = > ?
+    // 3DMMv1.0: 8 9 : ; < = > ?
     ttNil, ttNil, ttScope, ttNil, ttShl, ttEq, ttShr, ttNil,
-    // @ A-G
+    // 3DMMv1.0: @ A-G
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // H-O
+    // 3DMMv1.0: H-O
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // P-W
+    // 3DMMv1.0: P-W
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // X Y Z [ \ ] ^ _
+    // 3DMMv1.0: X Y Z [ \ ] ^ _
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttLXor, ttNil,
-    // ` a-g
+    // 3DMMv1.0: ` a-g
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // h-o
+    // 3DMMv1.0: h-o
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // p-w
+    // 3DMMv1.0: p-w
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // x y a { |
+    // 3DMMv1.0: x y a { |
     ttNil, ttNil, ttNil, ttNil, ttLOr};
 
 #define kchMinEqual ChLit('!')
 #define kchLastEqual ChLit('|')
 int16_t _rgttEqual[] = {
-    // ! " # $ % & '
+    // 3DMMv1.0: ! " # $ % & '
     ttNe, ttNil, ttNil, ttNil, ttAMod, ttABAnd, ttNil,
-    // ( ) * + , - . /
+    // 3DMMv1.0: ( ) * + , - . /
     ttNil, ttNil, ttAMul, ttAAdd, ttNil, ttASub, ttNil, ttADiv,
-    // 0-7
+    // 3DMMv1.0: 0-7
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // 8 9 : ; < = > ?
+    // 3DMMv1.0: 8 9 : ; < = > ?
     ttNil, ttNil, ttNil, ttNil, ttLe, ttEq, ttGe, ttNil,
-    // @ A-G
+    // 3DMMv1.0: @ A-G
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // H-O
+    // 3DMMv1.0: H-O
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // P-W
+    // 3DMMv1.0: P-W
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // X Y Z [ \ ] ^ _
+    // 3DMMv1.0: X Y Z [ \ ] ^ _
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttABXor, ttNil,
-    // ` a-g
+    // 3DMMv1.0: ` a-g
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // h-o
+    // 3DMMv1.0: h-o
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // p-w
+    // 3DMMv1.0: p-w
     ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil, ttNil,
-    // x y a { |
+    // 3DMMv1.0: x y a { |
     ttNil, ttNil, ttNil, ttNil, ttABOr};
 int32_t _TtFromChCh(achar ch1, achar ch2);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the token type of a double character token.
 ***************************************************************************/
 int32_t _TtFromChCh(achar ch1, achar ch2)
@@ -301,7 +301,7 @@ int32_t _TtFromChCh(achar ch1, achar ch2)
     return ttNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the lexer.
 ***************************************************************************/
 LEXB::LEXB(PFIL pfil, bool fUnionStrings)
@@ -323,7 +323,7 @@ LEXB::LEXB(PFIL pfil, bool fUnionStrings)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the lexer.
 ***************************************************************************/
 LEXB::LEXB(PBSF pbsf, PSTN pstnFile, bool fUnionStrings)
@@ -346,7 +346,7 @@ LEXB::LEXB(PBSF pbsf, PSTN pstnFile, bool fUnionStrings)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the lexer.
 ***************************************************************************/
 LEXB::~LEXB(void)
@@ -356,7 +356,7 @@ LEXB::~LEXB(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a LEXB.
 ***************************************************************************/
 void LEXB::AssertValid(uint32_t grf)
@@ -374,7 +374,7 @@ void LEXB::AssertValid(uint32_t grf)
     AssertIn(_ichLim, 0, CvFromRgv(_rgch) + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the LEXB.
 ***************************************************************************/
 void LEXB::MarkMem(void)
@@ -384,9 +384,9 @@ void LEXB::MarkMem(void)
     MarkMemObj(_pfil);
     MarkMemObj(_pbsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current file that we're reading tokens from.
 ***************************************************************************/
 void LEXB::GetStnFile(PSTN pstn)
@@ -396,7 +396,7 @@ void LEXB::GetStnFile(PSTN pstn)
     *pstn = _stnFile;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch some characters.  Don't advance the pointer into the file.  Can
     fetch at most kcchLexbBuf characters at a time.
 ***************************************************************************/
@@ -408,16 +408,16 @@ bool LEXB::_FFetchRgch(achar *prgch, int32_t cch)
 
     if (_ichLim < _ichCur + cch)
     {
-        // need to read some more data
+        // 3DMMv1.0: need to read some more data
         int32_t cchT;
 
         if (_fpCur + (_ichCur + cch - _ichLim) * SIZEOF(achar) > _fpMac)
         {
-            // hit the eof
+            // 3DMMv1.0: hit the eof
             return fFalse;
         }
 
-        // keep any valid characters
+        // 3DMMv1.0: keep any valid characters
         if (_ichCur < _ichLim)
         {
             BltPb(_rgch + _ichCur, _rgch, (_ichLim - _ichCur) * SIZEOF(achar));
@@ -427,7 +427,7 @@ bool LEXB::_FFetchRgch(achar *prgch, int32_t cch)
             _ichLim = 0;
         _ichCur = 0;
 
-        // read new stuff
+        // 3DMMv1.0: read new stuff
         cchT = LwMin((_fpMac - _fpCur) / SIZEOF(achar), kcchLexbBuf - _ichLim);
         AssertIn(cchT, cch - _ichLim, kcchLexbBuf + 1);
         if (pvNil != _pfil)
@@ -450,13 +450,13 @@ bool LEXB::_FFetchRgch(achar *prgch, int32_t cch)
         AssertIn(_ichLim, _ichCur + cch, kcchLexbBuf + 1);
     }
 
-    // get the text
+    // 3DMMv1.0: get the text
     CopyPb(_rgch + _ichCur, prgch, cch * SIZEOF(achar));
     AssertThis(0);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Skip any white space at the current location in the buffer.  This
     handles #line directives and comments.  Comments are not allowed on
     the same line as a #line directive.
@@ -499,21 +499,21 @@ bool LEXB::_FSkipWhiteSpace(void)
             continue;
         }
 
-        // not a white space character
+        // 3DMMv1.0: not a white space character
 
-        // check for a comment
+        // 3DMMv1.0: check for a comment
         if (ChLit('/') == ch && _FFetchRgch(rgch, 2))
         {
             switch (rgch[1])
             {
             case ChLit('/'):
-                // line comment - skip characters until we hit a return
+                // 3DMMv1.0: line comment - skip characters until we hit a return
                 _Advance(2);
                 _fSkipToNextLine = fTrue;
                 continue;
 
             case ChLit('*'):
-                // normal comment
+                // 3DMMv1.0: normal comment
                 _Advance(2);
                 fSkipComment = fTrue;
                 fStar = fFalse;
@@ -521,17 +521,17 @@ bool LEXB::_FSkipWhiteSpace(void)
             }
         }
 
-        // if this is at the beginning of a line, check for a pre-processor directive
+        // 3DMMEx: if this is at the beginning of a line, check for a pre-processor directive
         fCppMs = fFalse;
         fCppGcc = fFalse;
         if (_fLineStart && (ch == _szMsvcPoundLine[0]) && _FFetchRgch(rgch, 2))
         {
-            // check for #line directive (msvc)
+            // 3DMMEx: check for #line directive (msvc)
             if (FEqualRgb(rgch, _szMsvcPoundLine, 2) && _FFetchRgch(rgch, kcchMsvcPoundLine + 1) &&
                 (_GrfctCh(rgch[kcchMsvcPoundLine]) & fctSpc))
                 fCppMs = fTrue;
 
-            // check for #<space> directive (gcc)
+            // 3DMMEx: check for #<space> directive (gcc)
             if (FEqualRgb(rgch, _szGccPoundLine, 2) && _FFetchRgch(rgch, kcchGccPoundLine) &&
                 (_GrfctCh(rgch[kcchGccPoundLine - 1]) & fctSpc))
                 fCppGcc = fTrue;
@@ -550,12 +550,12 @@ bool LEXB::_FSkipWhiteSpace(void)
 
         if (fCppMs == fTrue)
         {
-            // a #line directive - skip it and white space
+            // 3DMMv1.0: a #line directive - skip it and white space
             _Advance(kcchMsvcPoundLine);
             while (_FFetchRgch(&ch) && (_GrfctCh(ch) & fctSpc) && ch != kchReturn)
                 _Advance();
 
-            // read the line number
+            // 3DMMv1.0: read the line number
             lwLineSav = _lwLine;
             if (!_FFetchRgch(&ch) || !(_GrfctCh(ch) & fctDec))
                 goto LBadDirective;
@@ -563,19 +563,19 @@ bool LEXB::_FSkipWhiteSpace(void)
             _ReadNumber(&_lwLine, ch, 10, klwMax);
             _lwLine--;
 
-            // skip white space (and make sure there is some)
+            // 3DMMv1.0: skip white space (and make sure there is some)
             if (!_FFetchRgch(&ch))
-                break; // eof
+                break; // 3DMMv1.0: eof
             if (!(_GrfctCh(ch) & fctSpc))
                 goto LBadDirective;
             while (_FFetchRgch(&ch) && (_GrfctCh(ch) & fctSpc) && ch != kchReturn)
                 _Advance();
             if (!_FFetchRgch(&ch))
-                break; // eof
+                break; // 3DMMv1.0: eof
             if (ch == kchReturn)
-                continue; // end of #line
+                continue; // 3DMMv1.0: end of #line
 
-            // read file name
+            // 3DMMv1.0: read file name
             if (ch != ChLit('"'))
                 goto LBadDirective;
             _Advance();
@@ -589,7 +589,7 @@ bool LEXB::_FSkipWhiteSpace(void)
                     break;
                 if (ch == ChLit('\\'))
                 {
-                    // if this is the second of a pair of slashes, skip it
+                    // 3DMMv1.0: if this is the second of a pair of slashes, skip it
                     fSlash = !fSlash;
                     if (!fSlash)
                         continue;
@@ -599,19 +599,19 @@ bool LEXB::_FSkipWhiteSpace(void)
                 stn.FAppendCh(ch);
             }
 
-            // skip white space to end of line
+            // 3DMMv1.0: skip white space to end of line
             if (!_FFetchRgch(&ch))
-                goto LSetFileName; // eof
+                goto LSetFileName; // 3DMMv1.0: eof
             if (!(_GrfctCh(ch) & fctSpc))
                 goto LBadDirective;
             while (_FFetchRgch(&ch) && (_GrfctCh(ch) & fctSpc) && ch != kchReturn)
                 _Advance();
             if (!_FFetchRgch(&ch))
-                goto LSetFileName; // eof
+                goto LSetFileName; // 3DMMv1.0: eof
             if (ch != kchReturn)
             {
             LBadDirective:
-                // Bad #line directive - restore the line number
+                // 3DMMv1.0: Bad #line directive - restore the line number
                 _lwLine = lwLineSav;
                 return fFalse;
             }
@@ -624,12 +624,12 @@ bool LEXB::_FSkipWhiteSpace(void)
 
         if (fCppGcc == fTrue)
         {
-            // a #<space> directive - skip it and white space
+            // 3DMMEx: a #<space> directive - skip it and white space
             _Advance(kcchGccPoundLine);
             while (_FFetchRgch(&ch) && (_GrfctCh(ch) & fctSpc) && ch != kchReturn && ch != kchLineFeed)
                 _Advance();
 
-            // read the line number
+            // 3DMMv1.0: read the line number
             lwLineSav = _lwLine;
             if (!_FFetchRgch(&ch) || !(_GrfctCh(ch) & fctDec))
                 goto LBadDirective;
@@ -638,19 +638,19 @@ bool LEXB::_FSkipWhiteSpace(void)
             if (_lwLine)
                 _lwLine--;
 
-            // skip white space (and make sure there is some)
+            // 3DMMv1.0: skip white space (and make sure there is some)
             if (!_FFetchRgch(&ch))
-                break; // eof
+                break; // 3DMMv1.0: eof
             if (!(_GrfctCh(ch) & fctSpc))
                 goto LBadDirective;
             while (_FFetchRgch(&ch) && (_GrfctCh(ch) & fctSpc) && ch != kchReturn && ch != kchLineFeed)
                 _Advance();
             if (!_FFetchRgch(&ch))
-                break; // eof
+                break; // 3DMMv1.0: eof
             if (ch == kchReturn || ch == kchLineFeed)
-                continue; // end of #<space>
+                continue; // 3DMMEx: end of #<space>
 
-            // read file name
+            // 3DMMv1.0: read file name
             if (ch != ChLit('"'))
                 goto LBadDirective;
             _Advance();
@@ -664,7 +664,7 @@ bool LEXB::_FSkipWhiteSpace(void)
                     break;
                 if (ch == ChLit('\\'))
                 {
-                    // if this is the second of a pair of slashes, skip it
+                    // 3DMMv1.0: if this is the second of a pair of slashes, skip it
                     fSlash = !fSlash;
                     if (!fSlash)
                         continue;
@@ -674,26 +674,26 @@ bool LEXB::_FSkipWhiteSpace(void)
                 stn.FAppendCh(ch);
             }
 
-            // if end of line, no flags
+            // 3DMMEx: if end of line, no flags
             if (!_FFetchRgch(&ch))
-                goto LSetFileName2; // eof
+                goto LSetFileName2; // 3DMMv1.0: eof
             if (!(_GrfctCh(ch) & fctSpc))
                 goto LBadDirective2;
             if (ch == kchReturn || ch == kchLineFeed)
             {
-                goto LSetFileName2; // no flags
+                goto LSetFileName2; // 3DMMEx: no flags
             }
-            // fetch up until end of line
+            // 3DMMEx: fetch up until end of line
             while (_FFetchRgch(&ch) && ((_GrfctCh(ch) & fctSpc) || (_GrfctCh(ch) & fctDec)) && ch != kchReturn &&
                    ch != kchLineFeed)
                 _Advance();
             if (!_FFetchRgch(&ch))
-                goto LSetFileName; // eof
+                goto LSetFileName; // 3DMMv1.0: eof
 
             if (ch != kchReturn && ch != kchLineFeed)
             {
             LBadDirective2:
-                // Bad #<space> directive - restore the line number
+                // 3DMMEx: Bad #<space> directive - restore the line number
                 _lwLine = lwLineSav;
                 return fFalse;
             }
@@ -705,11 +705,11 @@ bool LEXB::_FSkipWhiteSpace(void)
         }
     }
 
-    // if fSkipComment is true, we hit the eof in a comment
+    // 3DMMv1.0: if fSkipComment is true, we hit the eof in a comment
     return !fSkipComment;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next token from the file.
 ***************************************************************************/
 bool LEXB::FGetTok(PTOK ptok)
@@ -737,11 +737,11 @@ bool LEXB::FGetTok(PTOK ptok)
     grfct = _GrfctCh(ch);
     if (grfct & fctDec)
     {
-        // numeric value
+        // 3DMMv1.0: numeric value
         ptok->tt = ttLong;
         if (ch == ChLit('0'))
         {
-            // hex or octal
+            // 3DMMv1.0: hex or octal
             if (!_FFetchRgch(&ch))
             {
                 ptok->lw = 0;
@@ -750,24 +750,24 @@ bool LEXB::FGetTok(PTOK ptok)
 
             if (ch == ChLit('x') || ch == ChLit('X'))
             {
-                // hex
+                // 3DMMv1.0: hex
                 _Advance();
                 if (!_FReadHex(&ptok->lw))
                     goto LError;
             }
             else
             {
-                // octal
+                // 3DMMv1.0: octal
                 _ReadNumTok(ptok, ChLit('0'), 8, klwMax);
             }
         }
         else
         {
-            // decimal
+            // 3DMMv1.0: decimal
             _ReadNumTok(ptok, ch, 10, klwMax);
         }
 
-        // check for bad termination
+        // 3DMMv1.0: check for bad termination
         if (_FFetchRgch(&ch) && (_GrfctCh(ch) & (fctDec | fctUpp | fctLow | fctQuo)))
         {
             goto LError;
@@ -777,10 +777,10 @@ bool LEXB::FGetTok(PTOK ptok)
 
     if (grfct & fctQuo)
     {
-        // single or double quote
+        // 3DMMv1.0: single or double quote
         if (ch == ChLit('"'))
         {
-            // string
+            // 3DMMv1.0: string
             ptok->tt = ttString;
             for (;;)
             {
@@ -792,7 +792,7 @@ bool LEXB::FGetTok(PTOK ptok)
                 case kchReturn:
                     goto LError;
                 case ChLit('"'):
-                    // check for another string immediately following this one
+                    // 3DMMv1.0: check for another string immediately following this one
                     if (!_fUnionStrings)
                         return fTrue;
                     if (!_FSkipWhiteSpace())
@@ -805,7 +805,7 @@ bool LEXB::FGetTok(PTOK ptok)
                     _Advance();
                     break;
                 case ChLit('\\'):
-                    // control sequence
+                    // 3DMMv1.0: control sequence
                     if (!_FReadControlCh(&ch))
                     {
                         _fSkipToNextLine = fTrue;
@@ -825,7 +825,7 @@ bool LEXB::FGetTok(PTOK ptok)
         Assert(ch == ChLit('\''), "bad grfct");
         ptok->tt = ttLong;
         ptok->lw = 0;
-        // ctg type long
+        // 3DMMv1.0: ctg type long
         for (cch = 0; cch < 5;)
         {
             if (!_FFetchRgch(&ch))
@@ -848,18 +848,18 @@ bool LEXB::FGetTok(PTOK ptok)
             ptok->lw = (ptok->lw << 8) + (uint8_t)ch;
             cch++;
         }
-        // constant too long
+        // 3DMMv1.0: constant too long
         goto LError;
     }
 
     if (grfct & fctOp1)
     {
-        // check for multi character token
+        // 3DMMv1.0: check for multi character token
         if (_FFetchRgch(&ch2) && (_GrfctCh(ch2) & fctOp2) && ttNil != (ptok->tt = _TtFromChCh(ch, ch2)))
         {
             _Advance();
 
-            // special case <<= and >>=
+            // 3DMMv1.0: special case <<= and >>=
             if ((ptok->tt == ttShr || ptok->tt == ttShl) && _FFetchRgch(&ch2) && ch2 == ChLit('='))
             {
                 ptok->tt = (ptok->tt == ttShr) ? ttAShr : ttAShl;
@@ -872,7 +872,7 @@ bool LEXB::FGetTok(PTOK ptok)
 
     if (grfct & fctOpr)
     {
-        /* single character token */
+        /* 3DMMv1.0: single character token */
         ptok->tt = _TtFromCh(ch);
         Assert(ttNil != ptok->tt, "bad table entry");
         return fTrue;
@@ -880,7 +880,7 @@ bool LEXB::FGetTok(PTOK ptok)
 
     if (grfct & (fctLow | fctUpp))
     {
-        // identifier
+        // 3DMMv1.0: identifier
         ptok->tt = ttName;
         ptok->stn.FAppendCh(ch);
         while (_FFetchRgch(&ch) && (_GrfctCh(ch) & (fctUpp | fctLow | fctDec)))
@@ -898,7 +898,7 @@ LError:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the size of extra data associated with the last token returned.
 ***************************************************************************/
 int32_t LEXB::CbExtra(void)
@@ -907,7 +907,7 @@ int32_t LEXB::CbExtra(void)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the extra data for the last token returned.
 ***************************************************************************/
 void LEXB::GetExtra(void *pv)
@@ -916,7 +916,7 @@ void LEXB::GetExtra(void *pv)
     Bug("no extra data");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a number.  The first character is passed in ch.  lwBase is the base
     of the number (must be <= 10).
 ***************************************************************************/
@@ -935,7 +935,7 @@ void LEXB::_ReadNumber(int32_t *plw, achar ch, int32_t lwBase, int32_t cchMax)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read in a hexadecimal value (without the 0x).
 ***************************************************************************/
 bool LEXB::_FReadHex(int32_t *plw)
@@ -966,7 +966,7 @@ bool LEXB::_FReadHex(int32_t *plw)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a control character (eg, \x3F).  This code assumes the \ has
     already been read.
 ***************************************************************************/
@@ -974,7 +974,7 @@ bool LEXB::_FReadControlCh(achar *pch)
 {
     AssertThis(0);
     AssertVarMem(pch);
-    // control sequence
+    // 3DMMv1.0: control sequence
     achar ch;
     int32_t lw;
 

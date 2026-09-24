@@ -1,0 +1,142 @@
+diff --git a/drivers/glrend/devpixmp.c b/drivers/glrend/devpixmp.c
+index b6457b8..35fd827 100644
+--- a/drivers/glrend/devpixmp.c
++++ b/drivers/glrend/devpixmp.c
+@@ -709,11 +709,19 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_dev
+     br_uint_16                bytes_per_pixel;
+     void                     *dst_pixels;
+     const GladGLContext      *gl = DevicePixelmapGLGetGLContext(self);
++    GLint                     old_pack_alignment = 4;
++    GLint                     old_pack_row_length = 0;
++    br_int_32                 pack_row_pixels = 0;
++    br_boolean                direct_readback = BR_FALSE;
++    br_uint_8                *packed_pixels = NULL;
++    br_size_t                 bytes_per_subrow;
++    br_size_t                 packed_bytes;
+ 
+     /*
+-     * Need contig pixels and whole rows.
++     * Need contiguous pixels and whole-pixel rows. Both flags are required.
+      */
+-    if(!(dest->pm_flags & (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)))
++    if((dest->pm_flags & (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)) !=
++       (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS))
+         return BRE_FAIL;
+ 
+     if(PixelmapRectangleClipTwo(&srect, &dpoint, r, p, (br_pixelmap *)dest, (br_pixelmap *)self) == BR_CLIP_REJECT)
+@@ -726,24 +734,103 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_dev
+         return err;
+ 
+     bytes_per_pixel = BrPixelmapPixelSize((br_pixelmap *)dest) >> 3;
+-    dst_pixels      = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y, bytes_per_pixel);
++    if(bytes_per_pixel == 0)
++        return BRE_FAIL;
++
++    dst_pixels       = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y, bytes_per_pixel);
++    bytes_per_subrow = (br_size_t)srect.w * (br_size_t)bytes_per_pixel;
++
++    /*
++     * glReadPixels advances output rows according to GL_PACK_* state, not the
++     * destination pixelmap's pm_row_bytes. Modern BRender memory pixelmaps
++     * align RGB888 rows to whole pixels (for example 782px => 2352 bytes),
++     * while OpenGL's default 4-byte pack alignment produces 2348 bytes for
++     * the same 782 RGB pixels. Writing with the latter stride and then walking
++     * the buffer with the former shears every subsequent row diagonally.
++     *
++     * If the destination has a positive whole-pixel stride, teach OpenGL the
++     * exact BRender row length and force byte alignment. Otherwise read into a
++     * tight temporary buffer and copy rows through DevicePixelmapMemAddress(),
++     * which also handles inverted/negative-stride memory pixelmaps correctly.
++     */
++    if(dest->pm_row_bytes > 0 &&
++       (dest->pm_row_bytes % (br_int_32)bytes_per_pixel) == 0) {
++        pack_row_pixels = dest->pm_row_bytes / (br_int_32)bytes_per_pixel;
++        if(pack_row_pixels >= srect.w)
++            direct_readback = BR_TRUE;
++    }
++
++    gl->GetIntegerv(GL_PACK_ALIGNMENT, &old_pack_alignment);
++    gl->GetIntegerv(GL_PACK_ROW_LENGTH, &old_pack_row_length);
++
++    if(direct_readback) {
++        gl->PixelStorei(GL_PACK_ALIGNMENT, 1);
++        gl->PixelStorei(GL_PACK_ROW_LENGTH, pack_row_pixels);
++        gl->ReadPixels(srect.x, self->pm_height - srect.y - srect.h, srect.w, srect.h,
++                       fmt->format, fmt->type, dst_pixels);
++    } else {
++        packed_bytes = bytes_per_subrow * (br_size_t)srect.h;
++        if(srect.h != 0 && packed_bytes / (br_size_t)srect.h != bytes_per_subrow) {
++            gl->PixelStorei(GL_PACK_ROW_LENGTH, old_pack_row_length);
++            gl->PixelStorei(GL_PACK_ALIGNMENT, old_pack_alignment);
++            return BRE_FAIL;
++        }
++
++        packed_pixels = BrMemAllocate(packed_bytes, BR_MEMORY_SCRATCH);
++        if(packed_pixels == NULL) {
++            gl->PixelStorei(GL_PACK_ROW_LENGTH, old_pack_row_length);
++            gl->PixelStorei(GL_PACK_ALIGNMENT, old_pack_alignment);
++            return BRE_FAIL;
++        }
++
++        gl->PixelStorei(GL_PACK_ALIGNMENT, 1);
++        gl->PixelStorei(GL_PACK_ROW_LENGTH, 0);
++        gl->ReadPixels(srect.x, self->pm_height - srect.y - srect.h, srect.w, srect.h,
++                       fmt->format, fmt->type, packed_pixels);
++    }
++
++    gl->PixelStorei(GL_PACK_ROW_LENGTH, old_pack_row_length);
++    gl->PixelStorei(GL_PACK_ALIGNMENT, old_pack_alignment);
++
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    {
++        static br_uint_32 readback_stride_diag_count;
++        if(readback_stride_diag_count < 64) {
++            BrWarning("3DMM glrend readback stride dst=%p wh=%ux%u row=%d bpp=%u rect=%d,%d,%d,%d dpoint=%d,%d pack_row_pixels=%d path=%s",
++                      (void *)dest, (unsigned)dest->pm_width, (unsigned)dest->pm_height,
++                      (int)dest->pm_row_bytes, (unsigned)bytes_per_pixel,
++                      (int)srect.x, (int)srect.y, (int)srect.w, (int)srect.h,
++                      (int)dpoint.x, (int)dpoint.y, (int)pack_row_pixels,
++                      direct_readback ? "direct-stride" : "tight-temp");
++            ++readback_stride_diag_count;
++        }
++    }
++#endif
+ 
+-    gl->PixelStorei(GL_PACK_ROW_LENGTH, srect.w);
+-    gl->ReadPixels(srect.x, self->pm_height - srect.y - srect.h, srect.w, srect.h, fmt->format, fmt->type, dst_pixels);
++    if(direct_readback) {
++        row_temp = BrScratchAllocate(bytes_per_subrow);
++        if(row_temp == NULL)
++            return BRE_FAIL;
+ 
+-    size_t bytes_per_subrow = srect.w * bytes_per_pixel;
+-    row_temp                = BrScratchAllocate(bytes_per_subrow);
+-    for(br_uint_16 j = 0; j < srect.h / 2; ++j) {
+-        void *top = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + j, bytes_per_pixel);
+-        void *bot = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + srect.h - j - 1, bytes_per_pixel);
++        for(br_uint_16 j = 0; j < srect.h / 2; ++j) {
++            void *top = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + j, bytes_per_pixel);
++            void *bot = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + srect.h - j - 1, bytes_per_pixel);
+ 
+-        memcpy(row_temp, top, bytes_per_subrow);
+-        memcpy(top, bot, bytes_per_subrow);
+-        memcpy(bot, row_temp, bytes_per_subrow);
++            memcpy(row_temp, top, bytes_per_subrow);
++            memcpy(top, bot, bytes_per_subrow);
++            memcpy(bot, row_temp, bytes_per_subrow);
++        }
++        BrScratchFree(row_temp);
++    } else {
++        for(br_uint_16 j = 0; j < srect.h; ++j) {
++            void *dst_row = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + j, bytes_per_pixel);
++            const void *src_row = packed_pixels + (br_size_t)(srect.h - j - 1) * bytes_per_subrow;
++            memcpy(dst_row, src_row, bytes_per_subrow);
++        }
++        BrMemFree(packed_pixels);
+     }
+ 
+     /* TODO: If on little-endian systems, swap the byte order. */
+-    BrScratchFree(row_temp);
+     return BRE_OK;
+ }
+ 

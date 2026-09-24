@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -14,43 +14,43 @@
 #include "sndampri.h"
 ASSERTNAME
 
-// CHECK_AUDIO_DEVCAPS turns on using waveOutGetDevCaps to check for
-// audio device characteristics, to workaround AudioMan 1.0 always returning
-// whatever device was asked for, regardless if device actually supports format.
-// In case of asking for a 16 bit device, and there is only an 8 bit device, the
-// open will succeed, causing sub-optimal audioman performance on an 8 bit card.
-// With AudioMan 1.5, this should go away.
+// 3DMMv1.0: CHECK_AUDIO_DEVCAPS turns on using waveOutGetDevCaps to check for
+// 3DMMv1.0: audio device characteristics, to workaround AudioMan 1.0 always returning
+// 3DMMv1.0: whatever device was asked for, regardless if device actually supports format.
+// 3DMMv1.0: In case of asking for a 16 bit device, and there is only an 8 bit device, the
+// 3DMMv1.0: open will succeed, causing sub-optimal audioman performance on an 8 bit card.
+// 3DMMv1.0: With AudioMan 1.5, this should go away.
 #define CHECK_AUDIO_DEVCAPS
 
-// Initialize the maximum mem footprint of wave sounds.
+// 3DMMv1.0: Initialize the maximum mem footprint of wave sounds.
 int32_t SDAM::vcbMaxMemWave = 40 * 1024;
 
-static IAMMixer *_pamix;   // the audioman mixer
-static DWORD _luGroup;     // the group number
-static bool _fGrouped;     // whether new sounds are grouped
-static int32_t _cactGroup; // group nesting count
+static IAMMixer *_pamix;   // 3DMMv1.0: the audioman mixer
+static DWORD _luGroup;     // 3DMMv1.0: the group number
+static bool _fGrouped;     // 3DMMv1.0: whether new sounds are grouped
+static int32_t _cactGroup; // 3DMMv1.0: group nesting count
 
-static uint32_t _luFormat;    // format mixer is in
-static uint32_t _luCacheTime; // buffer size for mixer
+static uint32_t _luFormat;    // 3DMMv1.0: format mixer is in
+static uint32_t _luCacheTime; // 3DMMv1.0: buffer size for mixer
 
 RTCLASS(SDAM)
 RTCLASS(CAMS)
 RTCLASS(AMQUE)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a streamed block.
 ***************************************************************************/
 STBL::STBL(void)
 {
     AssertThisMem();
 
-    // WARNING: this is not allocated using our NewObj because STBL is not
-    // based on BASE. So fields are not automatically initialized to 0.
+    // 3DMMv1.0: WARNING: this is not allocated using our NewObj because STBL is not
+    // 3DMMv1.0: based on BASE. So fields are not automatically initialized to 0.
     _cactRef = 1;
     _ib = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a streamed block.
 ***************************************************************************/
 STBL::~STBL(void)
@@ -58,7 +58,7 @@ STBL::~STBL(void)
     AssertThisMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     QueryInterface for STBL.
 ***************************************************************************/
 STDMETHODIMP STBL::QueryInterface(REFIID riid, void **ppv)
@@ -76,7 +76,7 @@ STDMETHODIMP STBL::QueryInterface(REFIID riid, void **ppv)
     return E_NOINTERFACE;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increment the reference count.
 ***************************************************************************/
 STDMETHODIMP_(ULONG) STBL::AddRef(void)
@@ -85,7 +85,7 @@ STDMETHODIMP_(ULONG) STBL::AddRef(void)
     return ++_cactRef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrement the reference count.
 ***************************************************************************/
 STDMETHODIMP_(ULONG) STBL::Release(void)
@@ -98,7 +98,7 @@ STDMETHODIMP_(ULONG) STBL::Release(void)
     return cactRef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read some stuff.
 ***************************************************************************/
 STDMETHODIMP STBL::Read(void *pv, ULONG cb, ULONG *pcb)
@@ -121,7 +121,7 @@ STDMETHODIMP STBL::Read(void *pv, ULONG cb, ULONG *pcb)
     return ResultFromScode(STG_E_READFAULT);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Seek to a place.
 ***************************************************************************/
 STDMETHODIMP STBL::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition)
@@ -156,7 +156,7 @@ STDMETHODIMP STBL::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *
     return S_OK;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new stream wrapper around a flo.
 ***************************************************************************/
 PSTBL STBL::PstblNew(FLO *pflo, bool fPacked)
@@ -172,7 +172,7 @@ PSTBL STBL::PstblNew(FLO *pflo, bool fPacked)
     pblck = &pstbl->_blck;
     if (fPacked)
     {
-        // unpack the block
+        // 3DMMv1.0: unpack the block
         pblck->Set(pflo, fPacked);
         if (!pblck->FUnpackData())
         {
@@ -180,10 +180,10 @@ PSTBL STBL::PstblNew(FLO *pflo, bool fPacked)
             return pvNil;
         }
 
-        // see if it's too big to keep in memory
+        // 3DMMv1.0: see if it's too big to keep in memory
         if (pstbl->CbMem() > SDAM::vcbMaxMemWave)
         {
-            // try to put the sound on disk
+            // 3DMMv1.0: try to put the sound on disk
             HQ hq = pblck->HqFree();
 
             AssertHq(hq);
@@ -197,13 +197,13 @@ PSTBL STBL::PstblNew(FLO *pflo, bool fPacked)
     }
     else
     {
-        // see if it's on a removeable disk
+        // 3DMMv1.0: see if it's on a removeable disk
         FNI fni;
 
         pflo->pfil->GetFni(&fni);
         if (fni.Grfvk() & (fvkFloppy | fvkCD | fvkRemovable))
         {
-            // cache to the hard drive or memory, depending on the size
+            // 3DMMv1.0: cache to the hard drive or memory, depending on the size
             BLCK blck(pflo);
 
             if (!pblck->FSetTemp(pflo->cb, blck.Cb() + SIZEOF(STBL) > SDAM::vcbMaxMemWave) || !blck.FWriteToBlck(pblck))
@@ -221,7 +221,7 @@ PSTBL STBL::PstblNew(FLO *pflo, bool fPacked)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a STBL.
 ***************************************************************************/
 void STBL::AssertValid(uint32_t grf)
@@ -231,7 +231,7 @@ void STBL::AssertValid(uint32_t grf)
     AssertIn(_ib, 0, _blck.Cb() + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the STBL.
 ***************************************************************************/
 void STBL::MarkMem(void)
@@ -239,9 +239,9 @@ void STBL::MarkMem(void)
     AssertValid(0);
     MarkMemObj(&_blck);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a cached AudioMan sound.
 ***************************************************************************/
 CAMS::CAMS(void)
@@ -249,7 +249,7 @@ CAMS::CAMS(void)
     AssertBaseThis(fobjAllocated);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a cached AudioMan sound.
 ***************************************************************************/
 CAMS::~CAMS(void)
@@ -259,7 +259,7 @@ CAMS::~CAMS(void)
     ReleasePpo(&_pstbl);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static BACO reader method to put together a Cached AudioMan sound.
 ***************************************************************************/
 bool CAMS::FReadCams(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -302,7 +302,7 @@ bool CAMS::FReadCams(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return pvNil != *ppbaco;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static BACO reader method to put together a Cached AudioMan sound.
 ***************************************************************************/
 PCAMS CAMS::PcamsNewLoop(PCAMS pcamsSrc, int32_t cactPlay)
@@ -327,7 +327,7 @@ PCAMS CAMS::PcamsNewLoop(PCAMS pcamsSrc, int32_t cactPlay)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CAMS.
 ***************************************************************************/
 void CAMS::AssertValid(uint32_t grf)
@@ -337,7 +337,7 @@ void CAMS::AssertValid(uint32_t grf)
     Assert(psnd != pvNil, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CAMS.
 ***************************************************************************/
 void CAMS::MarkMem(void)
@@ -347,9 +347,9 @@ void CAMS::MarkMem(void)
     if (pvNil != _pstbl)
         _pstbl->MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for our notify sink.
 ***************************************************************************/
 AMNOT::AMNOT(void)
@@ -358,7 +358,7 @@ AMNOT::AMNOT(void)
     _pamque = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the AMQUE that we're to notify.
 ***************************************************************************/
 void AMNOT::Set(PAMQUE pamque)
@@ -368,7 +368,7 @@ void AMNOT::Set(PAMQUE pamque)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a AMNOT.
 ***************************************************************************/
 void AMNOT::AssertValid(uint32_t grf)
@@ -376,9 +376,9 @@ void AMNOT::AssertValid(uint32_t grf)
     AssertThisMem();
     AssertNilOrVarMem(_pamque);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     QueryInterface for AMNOT.
 ***************************************************************************/
 STDMETHODIMP AMNOT::QueryInterface(REFIID riid, void **ppv)
@@ -396,7 +396,7 @@ STDMETHODIMP AMNOT::QueryInterface(REFIID riid, void **ppv)
     return E_NOINTERFACE;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increment the reference count.
 ***************************************************************************/
 STDMETHODIMP_(ULONG) AMNOT::AddRef(void)
@@ -405,7 +405,7 @@ STDMETHODIMP_(ULONG) AMNOT::AddRef(void)
     return ++_cactRef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrement the reference count.
 ***************************************************************************/
 STDMETHODIMP_(ULONG) AMNOT::Release(void)
@@ -418,7 +418,7 @@ STDMETHODIMP_(ULONG) AMNOT::Release(void)
     return cactRef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The indicated sound is done. Just tell the AMQUE that we got a notify.
 ***************************************************************************/
 STDMETHODIMP_(void) AMNOT::OnCompletion(LPSOUND pSound, DWORD dwPosition)
@@ -429,14 +429,14 @@ STDMETHODIMP_(void) AMNOT::OnCompletion(LPSOUND pSound, DWORD dwPosition)
         _pamque->Notify(pSound);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for an audioman queue.
 ***************************************************************************/
 AMQUE::AMQUE(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for an audioman queue.
 ***************************************************************************/
 AMQUE::~AMQUE(void)
@@ -447,7 +447,7 @@ AMQUE::~AMQUE(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a AMQUE.
 ***************************************************************************/
 void AMQUE::AssertValid(uint32_t grf)
@@ -455,9 +455,9 @@ void AMQUE::AssertValid(uint32_t grf)
     AMQUE_PAR::AssertValid(0);
     Assert(pvNil != _pchan, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new audioman queue.
 ***************************************************************************/
 PAMQUE AMQUE::PamqueNew(void)
@@ -474,7 +474,7 @@ PAMQUE AMQUE::PamqueNew(void)
     return pamque;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the audioman queue. Allocate the audioman channel and the
     _pglsndin.
 ***************************************************************************/
@@ -504,7 +504,7 @@ bool AMQUE::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enter the critical section protecting member variables.
 ***************************************************************************/
 void AMQUE::_Enter(void)
@@ -512,7 +512,7 @@ void AMQUE::_Enter(void)
     _mutx.Enter();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Leave the critical section protecting member variables.
 ***************************************************************************/
 void AMQUE::_Leave(void)
@@ -520,7 +520,7 @@ void AMQUE::_Leave(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the given sound chunk as a CAMS.
 ***************************************************************************/
 PBACO AMQUE::_PbacoFetch(PRCA prca, CTG ctg, CNO cno)
@@ -531,7 +531,7 @@ PBACO AMQUE::_PbacoFetch(PRCA prca, CTG ctg, CNO cno)
     return prca->PbacoFetch(ctg, cno, &CAMS::FReadCams);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     An item was added to or deleted from the queue.
 ***************************************************************************/
 void AMQUE::_Queue(int32_t isndinMin)
@@ -553,10 +553,10 @@ void AMQUE::_Queue(int32_t isndinMin)
             if (1 == sndin.cactPlay)
                 continue;
 
-            // put a loop filter around it to get seamless sample based looping
+            // 3DMMv1.0: put a loop filter around it to get seamless sample based looping
             if (pvNil != (pcams = CAMS::PcamsNewLoop((PCAMS)sndin.pbaco, sndin.cactPlay)))
             {
-                sndin.cactPlay = 1; // now it's just one sound
+                sndin.cactPlay = 1; // 3DMMv1.0: now it's just one sound
                 ReleasePpo(&sndin.pbaco);
                 sndin.pbaco = pcams;
                 _pglsndin->Put(isndin, &sndin);
@@ -575,16 +575,16 @@ void AMQUE::_Queue(int32_t isndinMin)
 
         if (_isndinCur < _pglsndin->IvMac() && 0 == sndin.cactPause)
         {
-            // stop the channel
+            // 3DMMv1.0: stop the channel
             _pchan->Stop();
 
-            // set the volume
+            // 3DMMv1.0: set the volume
             _pchan->SetVolume(LuVolScale((uint32_t)(-1), sndin.vlm));
 
-            // if the sound is in memory
+            // 3DMMv1.0: if the sound is in memory
             if (((PCAMS)sndin.pbaco)->FInMemory())
             {
-                // set the sound source, with no cache (Since it's in memory)
+                // 3DMMv1.0: set the sound source, with no cache (Since it's in memory)
                 _pchan->SetSoundSrc(((PCAMS)sndin.pbaco)->psnd);
             }
             else
@@ -596,17 +596,17 @@ void AMQUE::_Queue(int32_t isndinMin)
                 cc.dwFormat = _luFormat;
                 cc.dwCacheTime = 2 * _luCacheTime;
 
-                // set the sound src, using cache cause it's not in memory
+                // 3DMMv1.0: set the sound src, using cache cause it's not in memory
                 _pchan->SetCachedSrc(((PCAMS)sndin.pbaco)->psnd, &cc);
             }
 
-            // if there is a starting offset, apply it
+            // 3DMMv1.0: if there is a starting offset, apply it
             if (sndin.dtsStart != 0)
                 _pchan->SetTimePos(sndin.dtsStart);
 
             if (!_fGrouped || FAILED(_pamix->EnlistGroup(_pchan, _luGroup)))
             {
-                // start the channel
+                // 3DMMv1.0: start the channel
                 _pchan->Play();
             }
 
@@ -622,7 +622,7 @@ void AMQUE::_Queue(int32_t isndinMin)
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     One or more items in the queue were paused.
 ***************************************************************************/
 void AMQUE::_PauseQueue(int32_t isndinMin)
@@ -644,7 +644,7 @@ void AMQUE::_PauseQueue(int32_t isndinMin)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     One or more items in the queue were resumed.
 ***************************************************************************/
 void AMQUE::_ResumeQueue(int32_t isndinMin)
@@ -654,7 +654,7 @@ void AMQUE::_ResumeQueue(int32_t isndinMin)
     _Queue(isndinMin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Called by our notify sink to tell us that the indicated sound is done.
     WARNING: this is called in an auxillary thread.
 ***************************************************************************/
@@ -677,7 +677,7 @@ void AMQUE::Notify(LPSOUND psnd)
             }
             else
             {
-                // play the sound again
+                // 3DMMv1.0: play the sound again
                 _pglsndin->Put(_isndinCur, &sndin);
                 _pchan->SetSoundSrc(((PCAMS)sndin.pbaco)->psnd);
                 _tsStart = TsCurrentSystem();
@@ -688,7 +688,7 @@ void AMQUE::Notify(LPSOUND psnd)
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the audioman device.
 ***************************************************************************/
 SDAM::SDAM(void)
@@ -697,7 +697,7 @@ SDAM::SDAM(void)
     _luVolSys = (uint32_t)(-1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the audioman device.
 ***************************************************************************/
 SDAM::~SDAM(void)
@@ -708,13 +708,13 @@ SDAM::~SDAM(void)
         _pamix = pvNil;
 
 #ifdef DEBUG
-    // check for Audioman memory leaks
+    // 3DMMEx: check for Audioman memory leaks
     DetectLeaks(fTrue, fFalse);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a SDAM.
 ***************************************************************************/
 void SDAM::AssertValid(uint32_t grf)
@@ -722,9 +722,9 @@ void SDAM::AssertValid(uint32_t grf)
     SDAM_PAR::AssertValid(0);
     Assert(_pamix != pvNil, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create the audioman device.
 ***************************************************************************/
 PSDAM SDAM::PsdamNew(int32_t wav)
@@ -747,7 +747,7 @@ static int32_t _mpwavfmt[] = {
 };
 
 #ifdef CHECK_AUDIO_DEVCAPS
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wHaveWaveDevice |
 
@@ -767,34 +767,34 @@ bool FHaveWaveDevice(DWORD dwReqFormats)
     WORD wDevID;
     WORD wErr;
 
-    // Determine how many WAVE devices are in the user's system
+    // 3DMMv1.0: Determine how many WAVE devices are in the user's system
     wNumWavDev = waveOutGetNumDevs();
 
-    // If there are none, return indicating that
+    // 3DMMv1.0: If there are none, return indicating that
     if (0 == wNumWavDev)
         return (fFalse);
 
-    // Cycle through the WAVE devices to determine if any support
-    // the desired format.
+    // 3DMMv1.0: Cycle through the WAVE devices to determine if any support
+    // 3DMMv1.0: the desired format.
     for (wDevID = 0; wDevID < wNumWavDev; wDevID++)
     {
         wErr = waveOutGetDevCaps(wDevID, &WOC, sizeof(WAVEOUTCAPS));
 
-        // If we obtain a WAVE device's capabilities OK
-        // and it supports the desired format
+        // 3DMMv1.0: If we obtain a WAVE device's capabilities OK
+        // 3DMMv1.0: and it supports the desired format
         if ((0 == wErr) && ((WOC.dwFormats & dwReqFormats) == dwReqFormats))
         {
-            // then return success - we have a device that supports what we want
+            // 3DMMv1.0: then return success - we have a device that supports what we want
             return fTrue;
         }
     }
 
-    // it doesn't support this device
+    // 3DMMv1.0: it doesn't support this device
     return fFalse;
 }
 #endif
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the audioman device.
 ***************************************************************************/
 bool SDAM::_FInit(int32_t wav)
@@ -806,7 +806,7 @@ bool SDAM::_FInit(int32_t wav)
     if (!SDAM_PAR::_FInit())
         return fFalse;
 
-    // get IAMMixer interface
+    // 3DMMv1.0: get IAMMixer interface
     if (pvNil != _pamix)
     {
         _pamix->AddRef();
@@ -818,7 +818,7 @@ bool SDAM::_FInit(int32_t wav)
             return fFalse;
         _fAudioManInited = fTrue;
 
-        // REVIEW shonk: what values should we use?
+        // 3DMMv1.0: REVIEW shonk: what values should we use?
         mixc.dwSize = SIZEOF(mixc);
         mixc.lpFormat = pvNil;
         if (!FIn(wav, 0, kwavLim))
@@ -830,33 +830,33 @@ bool SDAM::_FInit(int32_t wav)
         amxc.uBufferTime = 600;
 
 #ifdef CHECK_AUDIO_DEVCAPS
-        // if we don't have a device of this format...
+        // 3DMMv1.0: if we don't have a device of this format...
         if (!FHaveWaveDevice(mixc.dwFormat))
         {
-            // failed, so try dropping to 8 bit
+            // 3DMMv1.0: failed, so try dropping to 8 bit
             wav += kwav22M8 - kwav22M16;
             if (!FIn(wav, 0, kwavLim))
                 return fFalse;
             mixc.dwFormat = _mpwavfmt[wav];
-            // we'll try to open at 8, cause if the card doesn't
-            // support it, then WAVE_MAPPER will actually convert
-            // to the 8 bit format.
+            // 3DMMv1.0: we'll try to open at 8, cause if the card doesn't
+            // 3DMMv1.0: support it, then WAVE_MAPPER will actually convert
+            // 3DMMv1.0: to the 8 bit format.
         }
 
         _luFormat = mixc.dwFormat;
         _luCacheTime = amxc.uBufferTime;
 
-        // initialize it (done only once...)
+        // 3DMMv1.0: initialize it (done only once...)
         if (FAILED(_pamix->Init(vwig.hinst, pvNil, &mixc, &amxc)))
             return fFalse;
 #else
         _luFormat = mixc.dwFormat;
         _luCacheTime = amxc.uBufferTime;
 
-        // initialize it (done only once...)
+        // 3DMMv1.0: initialize it (done only once...)
         if (FAILED(_pamix->Init(vwig.hinst, pvNil, &mixc, &amxc)))
         {
-            // failed, so try at 8 bit
+            // 3DMMv1.0: failed, so try at 8 bit
             wav += kwav22M8 - kwav22M16;
             if (!FIn(wav, 0, kwavLim))
                 return fFalse;
@@ -874,7 +874,7 @@ bool SDAM::_FInit(int32_t wav)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new audioman queue.
 ***************************************************************************/
 PSNQUE SDAM::_PsnqueNew(void)
@@ -884,7 +884,7 @@ PSNQUE SDAM::_PsnqueNew(void)
     return AMQUE::PamqueNew();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Activate or deactivate audioman.
 ***************************************************************************/
 void SDAM::_Suspend(bool fSuspend)
@@ -898,14 +898,14 @@ void SDAM::_Suspend(bool fSuspend)
         PushErc(ercSndamWaveDeviceBusy);
     else if (!fSuspend)
     {
-        // becoming active
+        // 3DMMv1.0: becoming active
         _pamix->GetMixerVolume(&_luVolSys);
         vluSysVolFake = _luVolSys;
         _pamix->SetMixerVolume(LuVolScale(_luVolSys, _vlm));
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the volume.
 ***************************************************************************/
 void SDAM::SetVlm(int32_t vlm)
@@ -920,7 +920,7 @@ void SDAM::SetVlm(int32_t vlm)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current volume.
 ***************************************************************************/
 int32_t SDAM::VlmCur(void)
@@ -930,7 +930,7 @@ int32_t SDAM::VlmCur(void)
     return _vlm;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Begin a synchronization group.
 ***************************************************************************/
 void SDAM::BeginSynch(void)
@@ -941,7 +941,7 @@ void SDAM::BeginSynch(void)
         _fGrouped = SUCCEEDED(_pamix->AllocGroup(&_luGroup));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     End a synchronization group.
 ***************************************************************************/
 void SDAM::EndSynch(void)

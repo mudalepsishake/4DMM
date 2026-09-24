@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tdf.cpp: Three-D Font class
 
@@ -32,11 +32,11 @@ ASSERTNAME
 
 RTCLASS(TDF)
 
-const int32_t kcchTdfDefault = 256;     // for size estimates and authoring
-const BRS kdxrSpacing = BR_SCALAR(0.0); // horizontal space between chars
-const BRS kdyrLeading = BR_SCALAR(0.5); // vertical space between chars
+const int32_t kcchTdfDefault = 256;     // 3DMMv1.0: for size estimates and authoring
+const BRS kdxrSpacing = BR_SCALAR(0.0); // 3DMMv1.0: horizontal space between chars
+const BRS kdyrLeading = BR_SCALAR(0.5); // 3DMMv1.0: vertical space between chars
 
-/****************************************
+/** 3DMMv1.0: **************************************
     3-D Font On File
 ****************************************/
 struct TDFF
@@ -45,14 +45,14 @@ struct TDFF
     int16_t osk;
     int32_t cch;
     BRS dyrMax;
-    // These variable-length arrays follow the TDFF in the TDF chunk
-    //  BRS rgdxr[cch];
-    //  BRS rgdyr[cch];
+    // 3DMMv1.0: These variable-length arrays follow the TDFF in the TDF chunk
+    // 3DMMv1.0:  BRS rgdxr[cch];
+    // 3DMMv1.0:  BRS rgdyr[cch];
 };
 VERIFY_STRUCT_SIZE(TDFF, 12);
-const BOM kbomTdff = 0x5F000000; // don't forget to swap rgdxr & rgdyr!
+const BOM kbomTdff = 0x5F000000; // 3DMMv1.0: don't forget to swap rgdxr & rgdyr!
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A PFNRPO to read a TDF from a file.
 ***************************************************************************/
 bool TDF::FReadTdf(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -64,7 +64,7 @@ bool TDF::FReadTdf(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int3
 
     TDF *ptdf;
 
-    // Estimate TDF size in memory.
+    // 3DMMv1.0: Estimate TDF size in memory.
     if (pblck->FPacked())
         *pcb = SIZEOF(TDF) + LwMul(kcchTdfDefault, SIZEOF(BRS) + SIZEOF(BRS));
     else
@@ -85,7 +85,7 @@ bool TDF::FReadTdf(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int3
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the font.  Does not clean up on failure because the
     destructor will.
 ***************************************************************************/
@@ -95,7 +95,7 @@ bool TDF::_FInit(PBLCK pblck)
     AssertPo(pblck, 0);
 
     TDFF tdff;
-    int32_t cbrgdwr; // space taken by rgdxr or rgdyr
+    int32_t cbrgdwr; // 3DMMv1.0: space taken by rgdxr or rgdyr
 
     if (!pblck->FUnpackData())
         return fFalse;
@@ -118,7 +118,7 @@ bool TDF::_FInit(PBLCK pblck)
     }
     _dyrMax = tdff.dyrMax;
 
-    // Read _prgdxr
+    // 3DMMv1.0: Read _prgdxr
     if (!FAllocPv((void **)&_prgdxr, cbrgdwr, fmemNil, mprNormal))
         return fFalse;
     if (!pblck->FReadRgb(_prgdxr, cbrgdwr, SIZEOF(TDFF)))
@@ -127,7 +127,7 @@ bool TDF::_FInit(PBLCK pblck)
     if (kboCur != tdff.bo)
         SwapBytesRglw(_prgdxr, _cch);
 
-    // Read _prgdyr
+    // 3DMMv1.0: Read _prgdyr
     if (!FAllocPv((void **)&_prgdyr, cbrgdwr, fmemNil, mprNormal))
         return fFalse;
     if (!pblck->FReadRgb(_prgdyr, cbrgdwr, SIZEOF(TDFF) + cbrgdwr))
@@ -139,7 +139,7 @@ bool TDF::_FInit(PBLCK pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     TDF destructor
 ***************************************************************************/
 TDF::~TDF(void)
@@ -150,7 +150,7 @@ TDF::~TDF(void)
     FreePpv((void **)&_prgdyr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This authoring-only API creates a new TDF chunk in pcrf, with child
     models as specified in pglkid.  This function does not create a new
     TDF instance in memory...to do that, call FReadTdf with the values
@@ -171,13 +171,13 @@ bool TDF::FCreate(PCRF pcrf, PGL pglkid, STN *pstn, CKI *pckiTdf)
     BRS *prgdyr = pvNil;
     PMODL pmodl;
     BLCK blck;
-    int32_t cbrgdwr; // space taken by rgdxr or rgdyr
+    int32_t cbrgdwr; // 3DMMv1.0: space taken by rgdxr or rgdyr
     int32_t ikid;
     int32_t ckid;
     CHID chidMax = 0;
     int32_t ikidLetteri = -1;
 
-    // Find chidMax
+    // 3DMMv1.0: Find chidMax
     ckid = pglkid->IvMac();
     for (ikid = 0; ikid < ckid; ikid++)
     {
@@ -198,14 +198,14 @@ bool TDF::FCreate(PCRF pcrf, PGL pglkid, STN *pstn, CKI *pckiTdf)
     if (!FAllocPv((void **)&prgdyr, cbrgdwr, fmemClear, mprNormal))
         goto LFail;
 
-    // Create the TDF chunk
+    // 3DMMv1.0: Create the TDF chunk
     ckiTdf.ctg = kctgTdf;
     if (!pcrf->Pcfl()->FAdd(SIZEOF(TDFF) + cbrgdwr + cbrgdwr, ckiTdf.ctg, &ckiTdf.cno, &blck))
     {
         goto LFail;
     }
 
-    // Add the BMDL kids and remember widths, heights, and maximum height
+    // 3DMMv1.0: Add the BMDL kids and remember widths, heights, and maximum height
     for (ikid = 0; ikid < ckid; ikid++)
     {
         pglkid->Get(ikid, &kid);
@@ -218,8 +218,8 @@ bool TDF::FCreate(PCRF pcrf, PGL pglkid, STN *pstn, CKI *pckiTdf)
         }
         if (pmodl->Dxr() == 0 && kid.chid == (CHID)ChLit(' ') && ikidLetteri != -1)
         {
-            // Hack to turn null models into space characters:
-            // space is the width and height of an "i"
+            // 3DMMv1.0: Hack to turn null models into space characters:
+            // 3DMMv1.0: space is the width and height of an "i"
             ReleasePpo(&pmodl);
             pglkid->Get(ikidLetteri, &kid2);
             pmodl = (PMODL)pcrf->PbacoFetch(kid2.cki.ctg, kid2.cki.cno, MODL::FReadModl);
@@ -250,7 +250,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a model for a character from the font.  The chid is equal to the
     ASCII (or Unicode) value of the desired character.
 ***************************************************************************/
@@ -268,10 +268,51 @@ PMODL TDF::PmodlFetch(CHID chid)
         PushErc(ercSocNoModlForChar);
         return pvNil;
     }
-    return (PMODL)Pcrf()->PbacoFetch(kid.cki.ctg, kid.cki.cno, MODL::FReadModl);
+    PMODL pmodl = (PMODL)Pcrf()->PbacoFetch(kid.cki.ctg, kid.cki.cno, MODL::FReadModl);
+#if defined(BRENDER_MODERN_14)
+    if (pmodl != pvNil)
+    {
+        PBMDL pbmdl = pmodl->Pbmdl();
+        if (pbmdl != pvNil && pbmdl->prepared != pvNil &&
+            (pbmdl->pivot.v[0] != rZero || pbmdl->pivot.v[1] != rZero || pbmdl->pivot.v[2] != rZero))
+        {
+            // TDF BMDLs on disk are already BRender-1.x *prepared* glyphs.
+            // Their serialized vertex positions already include the glyph
+            // centering/variable-spacing adjustment performed by
+            // MODL::AdjustTdfCharacter().  Our BR1.4 bridge necessarily loads
+            // those prepared vertices as source vertices and re-prepares them;
+            // ordinary BrModelUpdate then subtracts the serialized pivot a
+            // second time.  That moves each glyph by a different amount even
+            // though TDT's character advances are correct, producing the
+            // irregular inter-letter spacing visible only in Modern BRender.
+            //
+            // Rebuild the Modern private prepared/stored geometry once with a
+            // zero pivot, then restore the public legacy pivot without another
+            // update.  3DMM keeps seeing its original model metadata while
+            // glrend receives the exact legacy prepared glyph coordinates.
+            br_vector3 bvec3Pivot = pbmdl->pivot;
+            BrVector3Set(&pbmdl->pivot, rZero, rZero, rZero);
+            BrModelUpdate(pbmdl, BR_MODU_PIVOT);
+            pbmdl->pivot = bvec3Pivot;
+            pmodl->MarkLegacyTdfPivotBridge();
+
+            static int32_t cdiagPivotFix = 0;
+            if (cdiagPivotFix < 96)
+            {
+                BrModernLog("TDF::PmodlFetch legacy prepared pivot bridge chid=%ld model=%p pivot=(%.5f,%.5f,%.5f)",
+                            (long)chid, pbmdl,
+                            (double)BrScalarToFloat(bvec3Pivot.v[0]),
+                            (double)BrScalarToFloat(bvec3Pivot.v[1]),
+                            (double)BrScalarToFloat(bvec3Pivot.v[2]));
+                cdiagPivotFix++;
+            }
+        }
+    }
+#endif
+    return pmodl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the width of the given character
 ***************************************************************************/
 BRS TDF::DxrChar(int32_t ich)
@@ -282,7 +323,7 @@ BRS TDF::DxrChar(int32_t ich)
     return _prgdxr[ich];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the height of the given character
 ***************************************************************************/
 BRS TDF::DyrChar(int32_t ich)
@@ -294,7 +335,7 @@ BRS TDF::DyrChar(int32_t ich)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TDF.
 ***************************************************************************/
 void TDF::AssertValid(uint32_t grf)
@@ -306,7 +347,7 @@ void TDF::AssertValid(uint32_t grf)
     AssertPvCb(_prgdyr, LwMul(_cch, SIZEOF(BRS)));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the TDF
 ***************************************************************************/
 void TDF::MarkMem(void)
@@ -316,4 +357,4 @@ void TDF::MarkMem(void)
     MarkPv(_prgdxr);
     MarkPv(_prgdyr);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -20,7 +20,7 @@ RTCLASS(MIDP)
 const int32_t kdtsMinSlip = kdtsSecond / 30;
 const int32_t klwInfinite = klwMax;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Midi output object.
 ***************************************************************************/
 enum
@@ -40,21 +40,21 @@ class MIDO : public MIDO_PAR
   protected:
     typedef HMIDIOUT HMO;
 
-    MUTX _mutx; // restricts access to member variables
-    HMO _hmo;   // the output device
+    MUTX _mutx; // 3DMMv1.0: restricts access to member variables
+    HMO _hmo;   // 3DMMv1.0: the output device
 
-    // system volume level - to be saved and restored. The volume we set
-    // is always relative to this
+    // 3DMMv1.0: system volume level - to be saved and restored. The volume we set
+    // 3DMMv1.0: is always relative to this
     DWORD _luVolSys;
 
-    int32_t _vlmBase; // our current volume relative to _luVolSys.
-    int32_t _vlm;     // our current volume relative to _vlmBase
+    int32_t _vlmBase; // 3DMMv1.0: our current volume relative to _luVolSys.
+    int32_t _vlm;     // 3DMMv1.0: our current volume relative to _vlmBase
 
-    int32_t _sii; // the sound that owns the _hmo
-    int32_t _spr; // the priority of sound that owns the _hmo
+    int32_t _sii; // 3DMMv1.0: the sound that owns the _hmo
+    int32_t _spr; // 3DMMv1.0: the priority of sound that owns the _hmo
 
-    bool _fRestart : 1; // whether the device needs reset
-    bool _fSetVol : 1;  // whether the volume needs set
+    bool _fRestart : 1; // 3DMMv1.0: whether the device needs reset
+    bool _fSetVol : 1;  // 3DMMv1.0: whether the volume needs set
 
     void _GetSysVol(void);
     void _SetSysVol(uint32_t luVol);
@@ -78,7 +78,7 @@ static MIDO _mido;
 
 RTCLASS(MIDO)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the low level midi output device.
 ***************************************************************************/
 MIDO::MIDO(void)
@@ -92,7 +92,7 @@ MIDO::MIDO(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the low level midi output device.
 ***************************************************************************/
 MIDO::~MIDO(void)
@@ -104,7 +104,7 @@ MIDO::~MIDO(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the system volume level.
 ***************************************************************************/
 void MIDO::_GetSysVol(void)
@@ -113,12 +113,12 @@ void MIDO::_GetSysVol(void)
 
     if (0 != midiOutGetVolume(_hmo, &_luVolSys))
     {
-        // failed - assume full volume
+        // 3DMMv1.0: failed - assume full volume
         _luVolSys = ULONG_MAX;
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the system volume level.
 ***************************************************************************/
 void MIDO::_SetSysVol(uint32_t luVol)
@@ -127,7 +127,7 @@ void MIDO::_SetSysVol(uint32_t luVol)
     midiOutSetVolume(_hmo, luVol);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the system volume level from the current values of _vlm, _vlmBase
     and _luVolSys. We set the system volume to the result of scaling
     _luVolSys by _vlm and _vlmBase.
@@ -141,7 +141,7 @@ void MIDO::_SetSysVlm(void)
     _SetSysVol(luVol);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reset the midi device. Assumes that the mutx is already ours.
 ***************************************************************************/
 void MIDO::_Reset(void)
@@ -150,7 +150,7 @@ void MIDO::_Reset(void)
 
     if (hNil != _hmo)
     {
-        // Reset channel pressure and pitch wheel on all channels
+        // 3DMMv1.0: Reset channel pressure and pitch wheel on all channels
         MIDEV midev;
         int32_t iv;
 
@@ -169,7 +169,7 @@ void MIDO::_Reset(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Release or grab the midi output device depending on fSuspend.
 ***************************************************************************/
 void MIDO::Suspend(bool fSuspend)
@@ -181,10 +181,10 @@ void MIDO::Suspend(bool fSuspend)
     {
         if (fSuspend)
         {
-            // kill all notes
+            // 3DMMv1.0: kill all notes
             _Reset();
 
-            // restore the volume level and free the device
+            // 3DMMv1.0: restore the volume level and free the device
             _SetSysVol(_luVolSys);
             midiOutClose(_hmo);
             _hmo = hNil;
@@ -207,7 +207,7 @@ void MIDO::Suspend(bool fSuspend)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the master volume for the device.
 ***************************************************************************/
 void MIDO::SetVlm(int32_t vlm)
@@ -221,7 +221,7 @@ void MIDO::SetVlm(int32_t vlm)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current master volume.
 ***************************************************************************/
 int32_t MIDO::VlmCur(void)
@@ -231,7 +231,7 @@ int32_t MIDO::VlmCur(void)
     return _vlmBase;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play the given midi event. Returns false iff the midi stream should be
     started over from the beginning in fast forward mode.
 ***************************************************************************/
@@ -240,30 +240,30 @@ bool MIDO::FPlay(int32_t sii, int32_t spr, MIDEV *pmidev, int32_t vlm, uint32_t 
     AssertThis(0);
     AssertVarMem(pmidev);
 
-    // assume we don't have to restart
+    // 3DMMv1.0: assume we don't have to restart
     bool fRet = fTrue;
 
     _mutx.Enter();
 
-    // see if this sound has higher priority than the current one
+    // 3DMMv1.0: see if this sound has higher priority than the current one
     if (_sii == sii)
         Assert(_spr == spr, 0);
     else if (siiNil == _sii || spr >= _spr && (sii > _sii || spr > _spr))
     {
-        // this sound is higher priority so play it.
+        // 3DMMv1.0: this sound is higher priority so play it.
         _sii = sii;
         _spr = spr;
         _fRestart = fTrue;
     }
 
-    // if this sound isn't the current one or the output we're deactivated
-    // just pretend we played the event
+    // 3DMMv1.0: if this sound isn't the current one or the output we're deactivated
+    // 3DMMv1.0: just pretend we played the event
     if (_sii != sii || hNil == _hmo)
         goto LDone;
 
-    // If we need to restart, reset the device. If this is the first event
-    // in the stream, go ahead and play it - otherwise, return false to tell
-    // the client to restart.
+    // 3DMMv1.0: If we need to restart, reset the device. If this is the first event
+    // 3DMMv1.0: in the stream, go ahead and play it - otherwise, return false to tell
+    // 3DMMv1.0: the client to restart.
     if (_fRestart)
     {
         _Reset();
@@ -276,25 +276,25 @@ bool MIDO::FPlay(int32_t sii, int32_t spr, MIDEV *pmidev, int32_t vlm, uint32_t 
         }
     }
 
-    // do fast forward filtering
+    // 3DMMv1.0: do fast forward filtering
     if (grfmido & fmidoFastFwd)
     {
-        // don't play notes or do other stuff that doesn't affect
-        // the (int32_t term) device state.
+        // 3DMMv1.0: don't play notes or do other stuff that doesn't affect
+        // 3DMMEx: the (int32_t term) device state.
         switch (pmidev->rgbSend[0] & 0xF0)
         {
         default:
             goto LDone;
 
-        case 0xB0: // control change
-        case 0xC0: // program change
-        case 0xD0: // channel pressure
-        case 0xF0: // special stuff
+        case 0xB0: // 3DMMv1.0: control change
+        case 0xC0: // 3DMMv1.0: program change
+        case 0xD0: // 3DMMv1.0: channel pressure
+        case 0xF0: // 3DMMv1.0: special stuff
             break;
         }
     }
 
-    // make sure the volume is set correctly
+    // 3DMMv1.0: make sure the volume is set correctly
     if (_fSetVol || _vlm != vlm)
     {
         _vlm = vlm;
@@ -302,7 +302,7 @@ bool MIDO::FPlay(int32_t sii, int32_t spr, MIDEV *pmidev, int32_t vlm, uint32_t 
         _SetSysVlm();
     }
 
-    // finally, we can play the event
+    // 3DMMv1.0: finally, we can play the event
     midiOutShortMsg(_hmo, pmidev->lwSend);
 
 LDone:
@@ -311,7 +311,7 @@ LDone:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     siiOld is being replaced by siiNew.
 ***************************************************************************/
 void MIDO::Transition(int32_t siiOld, int32_t siiNew, int32_t sprNew)
@@ -328,7 +328,7 @@ void MIDO::Transition(int32_t siiOld, int32_t siiNew, int32_t sprNew)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     sii is going away.
 ***************************************************************************/
 void MIDO::Close(int32_t sii)
@@ -345,7 +345,7 @@ void MIDO::Close(int32_t sii)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Midi player queue.
 ***************************************************************************/
 typedef class MPQUE *PMPQUE;
@@ -358,22 +358,22 @@ class MPQUE : public MPQUE_PAR
     MARKMEM
 
   protected:
-    HN _hevtQueue;  // the queue event object - to signal new input
-    bool _fChanged; // also signals new input - for extra protection
-    HN _hth;        // the thread handle
+    HN _hevtQueue;  // 3DMMv1.0: the queue event object - to signal new input
+    bool _fChanged; // 3DMMv1.0: also signals new input - for extra protection
+    HN _hth;        // 3DMMv1.0: the thread handle
 
-    MUTX _mutx;       // mutex to restrict access to member variables
-    MSTP _mstp;       // midi stream parser
-    int32_t _dtsSlip; // amount of time we've slipped by
-    int32_t _sii;     // id and priority of sound we're currently serving
+    MUTX _mutx;       // 3DMMv1.0: mutex to restrict access to member variables
+    MSTP _mstp;       // 3DMMv1.0: midi stream parser
+    int32_t _dtsSlip; // 3DMMv1.0: amount of time we've slipped by
+    int32_t _sii;     // 3DMMv1.0: id and priority of sound we're currently serving
     int32_t _spr;
-    int32_t _vlm;      // volume to play back at
-    MIDEV _midev;      // current midi event
-    uint32_t _tsStart; // time current sound was started
-    uint32_t _grfmido; // options for midi output device
+    int32_t _vlm;      // 3DMMv1.0: volume to play back at
+    MIDEV _midev;      // 3DMMv1.0: current midi event
+    uint32_t _tsStart; // 3DMMv1.0: time current sound was started
+    uint32_t _grfmido; // 3DMMv1.0: options for midi output device
 
-    bool _fMidevValid : 1; // is _midev valid?
-    bool _fDone : 1;       // should the thread terminate?
+    bool _fMidevValid : 1; // 3DMMv1.0: is _midev valid?
+    bool _fDone : 1;       // 3DMMv1.0: should the thread terminate?
 
     MPQUE(void);
 
@@ -401,14 +401,14 @@ class MPQUE : public MPQUE_PAR
 
 RTCLASS(MPQUE)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     MT: Constructor for a midi player queue.
 ***************************************************************************/
 MPQUE::MPQUE(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     MP: Destructor for a midi player queue.
 ***************************************************************************/
 MPQUE::~MPQUE(void)
@@ -417,7 +417,7 @@ MPQUE::~MPQUE(void)
 
     if (hNil != _hth)
     {
-        // tell the thread to end and wait for it to finish
+        // 3DMMv1.0: tell the thread to end and wait for it to finish
         _fDone = fTrue;
         SetEvent(_hevtQueue);
         WaitForSingleObject(_hth, INFINITE);
@@ -428,14 +428,14 @@ MPQUE::~MPQUE(void)
     if (hNil != _hevtQueue)
         CloseHandle(_hevtQueue);
 
-    // clear the midi stream parser
+    // 3DMMv1.0: clear the midi stream parser
     _mstp.Init(pvNil);
 
     _mutx.Leave();
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MPQUE.
 ***************************************************************************/
 void MPQUE::AssertValid(uint32_t grf)
@@ -448,7 +448,7 @@ void MPQUE::AssertValid(uint32_t grf)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MPQUE.
 ***************************************************************************/
 void MPQUE::MarkMem(void)
@@ -460,9 +460,9 @@ void MPQUE::MarkMem(void)
     MarkMemObj(&_mstp);
     _mutx.Leave();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     MT: Static method to create a new midi player queue.
 ***************************************************************************/
 PMPQUE MPQUE::PmpqueNew(void)
@@ -479,7 +479,7 @@ PMPQUE MPQUE::PmpqueNew(void)
     return pmpque;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     MT: Initialize the midi queue.
 ***************************************************************************/
 bool MPQUE::_FInit(void)
@@ -490,29 +490,29 @@ bool MPQUE::_FInit(void)
     if (!MPQUE_PAR::_FInit())
         return fFalse;
 
-    // create an auto-reset event to signal that the midi stream at
-    // the head of the queue has changed.
+    // 3DMMv1.0: create an auto-reset event to signal that the midi stream at
+    // 3DMMv1.0: the head of the queue has changed.
     _hevtQueue = CreateEvent(pvNil, fFalse, fFalse, pvNil);
     if (hNil == _hevtQueue)
         return fFalse;
 
-    // create the thread in a suspended state
+    // 3DMMv1.0: create the thread in a suspended state
     _hth = CreateThread(pvNil, 1024, MPQUE::_ThreadProc, this, CREATE_SUSPENDED, &luThread);
     if (hNil == _hth)
         return fFalse;
     SetThreadPriority(_hth, THREAD_PRIORITY_TIME_CRITICAL);
 
-    // set other members
+    // 3DMMv1.0: set other members
     _sii = siiNil;
 
-    // start the thread
+    // 3DMMv1.0: start the thread
     ResumeThread(_hth);
 
     AssertThis(0);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enter the critical section protecting member variables.
 ***************************************************************************/
 void MPQUE::_Enter(void)
@@ -520,7 +520,7 @@ void MPQUE::_Enter(void)
     _mutx.Enter();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Leave the critical section protecting member variables.
 ***************************************************************************/
 void MPQUE::_Leave(void)
@@ -528,7 +528,7 @@ void MPQUE::_Leave(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     MT: Fetch the given sound chunk as a midi stream.
 ***************************************************************************/
 PBACO MPQUE::_PbacoFetch(PRCA prca, CTG ctg, CNO cno)
@@ -539,7 +539,7 @@ PBACO MPQUE::_PbacoFetch(PRCA prca, CTG ctg, CNO cno)
     return prca->PbacoFetch(ctg, cno, &MIDS::FReadMids);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The element at the head of the queue changed, notify the thread.
 ***************************************************************************/
 void MPQUE::_Queue(int32_t isndinMin)
@@ -550,7 +550,7 @@ void MPQUE::_Queue(int32_t isndinMin)
 
     if (_isndinCur == isndinMin)
     {
-        // signal the thread that data changed
+        // 3DMMv1.0: signal the thread that data changed
         SetEvent(_hevtQueue);
         _fChanged = fTrue;
     }
@@ -558,7 +558,7 @@ void MPQUE::_Queue(int32_t isndinMin)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pause the sound at the head of the queue.
 ***************************************************************************/
 void MPQUE::_PauseQueue(int32_t isndinMin)
@@ -580,7 +580,7 @@ void MPQUE::_PauseQueue(int32_t isndinMin)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resume the sound at the head of the queue.
 ***************************************************************************/
 void MPQUE::_ResumeQueue(int32_t isndinMin)
@@ -590,7 +590,7 @@ void MPQUE::_ResumeQueue(int32_t isndinMin)
     _Queue(isndinMin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     AT: Static method. Thread function for the midi thread object.
 ***************************************************************************/
 DWORD __stdcall MPQUE::_ThreadProc(LPVOID pv)
@@ -602,7 +602,7 @@ DWORD __stdcall MPQUE::_ThreadProc(LPVOID pv)
     return pmpque->_LuThread();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     AT: The midi playback thread.
 ***************************************************************************/
 DWORD MPQUE::_LuThread(void)
@@ -613,11 +613,11 @@ DWORD MPQUE::_LuThread(void)
 
     for (;;)
     {
-        // wait until our time has expired or there is new data
+        // 3DMMv1.0: wait until our time has expired or there is new data
         fRestart =
             dtsWait > 0 && WAIT_TIMEOUT != WaitForSingleObject(_hevtQueue, dtsWait == klwInfinite ? INFINITE : dtsWait);
 
-        // check to see if this thread should end
+        // 3DMMv1.0: check to see if this thread should end
         if (_fDone)
             return 0;
 
@@ -633,7 +633,7 @@ DWORD MPQUE::_LuThread(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Called when it's time to send the next midi event or when the queue
     has changed. Assumes the mutx is already checked out.
 ***************************************************************************/
@@ -643,17 +643,17 @@ void MPQUE::_DoEvent(bool fRestart, int32_t *pdtsWait)
         *pdtsWait = klwInfinite;
     else if (!_FGetEvt())
     {
-        // we're done playing this tune, so start the next one
+        // 3DMMv1.0: we're done playing this tune, so start the next one
         _isndinCur++;
         *pdtsWait = _FStartQueue() ? 0 : klwInfinite;
     }
     else
     {
-        // we have a valid midi event
+        // 3DMMv1.0: we have a valid midi event
         *pdtsWait = (int32_t)(_midev.ts - TsCurrentSystem());
         if (*pdtsWait <= 0)
         {
-            // go ahead and send it
+            // 3DMMv1.0: go ahead and send it
             if (*pdtsWait < -kdtsMinSlip && !(_grfmido & fmidoFastFwd))
             {
                 _dtsSlip -= *pdtsWait;
@@ -666,7 +666,7 @@ void MPQUE::_DoEvent(bool fRestart, int32_t *pdtsWait)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     AT: Start playing the sound at the head of the queue. Return non-zero
     iff the queue wasn't empty. Note that the sound is left in the queue.
 ***************************************************************************/
@@ -676,7 +676,7 @@ bool MPQUE::_FStartQueue(void)
 
     _mutx.Enter();
 
-    // set up the midi stream parser (_mstp).
+    // 3DMMv1.0: set up the midi stream parser (_mstp).
     for (; _isndinCur < _pglsndin->IvMac(); _isndinCur++)
     {
         _pglsndin->Get(_isndinCur, &sndin);
@@ -687,7 +687,7 @@ bool MPQUE::_FStartQueue(void)
 
     if (_isndinCur < _pglsndin->IvMac() && 0 == sndin.cactPause)
     {
-        // transition to the new tune
+        // 3DMMv1.0: transition to the new tune
         _mido.Transition(_sii, sndin.sii, sndin.spr);
 
         _sii = sndin.sii;
@@ -706,7 +706,7 @@ bool MPQUE::_FStartQueue(void)
     }
     else
     {
-        // close the old tune
+        // 3DMMv1.0: close the old tune
         _mido.Close(_sii);
         _sii = siiNil;
 
@@ -720,7 +720,7 @@ bool MPQUE::_FStartQueue(void)
     return sndin.pbaco != pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     AT: Get the next event. Assumes we already have the mutex.
 ***************************************************************************/
 bool MPQUE::_FGetEvt(void)
@@ -737,7 +737,7 @@ bool MPQUE::_FGetEvt(void)
     {
         _midev.ts += _dtsSlip;
 
-        // skip empty events
+        // 3DMMv1.0: skip empty events
         if (_midev.cb > 0)
         {
             _fMidevValid = fTrue;
@@ -746,7 +746,7 @@ bool MPQUE::_FGetEvt(void)
         ts = _midev.ts;
     }
 
-    // see if we should repeat the current midi stream
+    // 3DMMv1.0: see if we should repeat the current midi stream
     _pglsndin->Get(_isndinCur, &sndin);
     if (--sndin.cactPlay == 0)
         return fFalse;
@@ -760,7 +760,7 @@ bool MPQUE::_FGetEvt(void)
     _dtsSlip = TsCurrentSystem() - _tsStart;
     if (!_mstp.FGetEvent(&_midev))
     {
-        // there's nothing in this midi stream
+        // 3DMMv1.0: there's nothing in this midi stream
         return fFalse;
     }
     _midev.ts += _dtsSlip;
@@ -769,7 +769,7 @@ bool MPQUE::_FGetEvt(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     AT: Play the current event. Assumes we have the member mutex (_mutx).
 ***************************************************************************/
 void MPQUE::_PlayEvt(void)
@@ -779,7 +779,7 @@ void MPQUE::_PlayEvt(void)
 
     if (!_mido.FPlay(_sii, _spr, &_midev, _vlm, _grfmido))
     {
-        // restart the stream in fast forward mode
+        // 3DMMv1.0: restart the stream in fast forward mode
         SNDIN sndin;
 
         _pglsndin->Get(_isndinCur, &sndin);
@@ -790,14 +790,14 @@ void MPQUE::_PlayEvt(void)
     _grfmido &= ~fmidoFirst;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the midi player device.
 ***************************************************************************/
 MIDP::MIDP(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the midi player device.
 ***************************************************************************/
 MIDP::~MIDP(void)
@@ -805,7 +805,7 @@ MIDP::~MIDP(void)
     _Suspend(fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create the midiplayer device.
 ***************************************************************************/
 PMIDP MIDP::PmidpNew(void)
@@ -824,7 +824,7 @@ PMIDP MIDP::PmidpNew(void)
     return pmidp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new midi queue.
 ***************************************************************************/
 PSNQUE MIDP::_PsnqueNew(void)
@@ -834,7 +834,7 @@ PSNQUE MIDP::_PsnqueNew(void)
     return MPQUE::PmpqueNew();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get or release the HMIDIOUT depending on fSuspend.
 ***************************************************************************/
 void MIDP::_Suspend(bool fSuspend)
@@ -842,7 +842,7 @@ void MIDP::_Suspend(bool fSuspend)
     _mido.Suspend(fSuspend);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the volume.
 ***************************************************************************/
 void MIDP::SetVlm(int32_t vlm)
@@ -852,7 +852,7 @@ void MIDP::SetVlm(int32_t vlm)
     _mido.SetVlm(vlm);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the volume.
 ***************************************************************************/
 int32_t MIDP::VlmCur(void)

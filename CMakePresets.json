@@ -28,6 +28,10 @@
             "architecture": {
                 "value": "x86",
                 "strategy": "external"
+            },
+            "installDir": "${sourceDir}/dist/x86-msvc-debug",
+            "cacheVariables": {
+                "3DMM_BRENDER_LIBRARY": "Source"
             }
         },
         {
@@ -51,7 +55,18 @@
             "name": "x86-msvc-relwithdebinfo",
             "inherits": "msvc-x86-base",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "3DMM_BRENDER_LIBRARY": "Source"
+            }
+        },
+        {
+            "displayName": "MSVC x86 RelWithDebInfo - BRender 1.4 OpenGL",
+            "name": "x86-msvc-modern-relwithdebinfo",
+            "inherits": "msvc-x86-base",
+            "installDir": "${sourceDir}/dist/x86-msvc-modern-relwithdebinfo",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "3DMM_BRENDER_LIBRARY": "Modern"
             }
         },
         {

@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -11,7 +11,7 @@
 #include "resource.h"
 ASSERTNAME
 
-// Background GOB class
+// 3DMMEx: Background GOB class
 #define BackgroundGob_PAR GOB
 #define kclsBackgroundGob KLCONST4('k', 'b', 'k', 'g')
 class BackgroundGob : public BackgroundGob_PAR
@@ -23,20 +23,20 @@ class BackgroundGob : public BackgroundGob_PAR
     {
     }
 
-    // Render the GOB
+    // 3DMMEx: Render the GOB
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 
-    // Set the background to a pattern
+    // 3DMMEx: Set the background to a pattern
     void TogglePattern();
 
   private:
     bool _fPattern = fFalse;
 };
 
-// Maximum number of messages to display in the message logger GOB
+// 3DMMEx: Maximum number of messages to display in the message logger GOB
 const int32_t kcstnCmdMax = 24;
 
-// GOB that shows mouse and keyboard messages
+// 3DMMEx: GOB that shows mouse and keyboard messages
 #define MessageLogGob_PAR GOB
 #define kclsMessageLogGob KLCONST4('k', 'm', 's', 'g')
 class MessageLogGob : public MessageLogGob_PAR
@@ -53,7 +53,7 @@ class MessageLogGob : public MessageLogGob_PAR
         }
     }
 
-    // Render the GOB
+    // 3DMMEx: Render the GOB
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 
     virtual bool FCmdMouseMove(PCMD_MOUSE cmd) override;
@@ -63,10 +63,10 @@ class MessageLogGob : public MessageLogGob_PAR
     void AddCmd(STN stnCmd);
 
   private:
-    // List of last command entries
+    // 3DMMEx: List of last command entries
     STN stnLastCmd[kcstnCmdMax];
 
-    // Position in list
+    // 3DMMEx: Position in list
     int32_t _istnNextCmd = 0;
 };
 
@@ -78,7 +78,7 @@ END_CMD_MAP_NIL()
 #define KhelloApp_PAR APPB
 #define kclsKhelloApp KLCONST4('k', 'h', 'l', 'o')
 
-// Hello World application class
+// 3DMMEx: Hello World application class
 class KhelloApp : public KhelloApp_PAR
 {
     RTCLASS_DEC
@@ -92,7 +92,7 @@ class KhelloApp : public KhelloApp_PAR
   public:
     virtual void GetStnAppName(PSTN pstn) override;
 
-    // Commands
+    // 3DMMEx: Commands
     bool FCmdExit(PCMD pcmd);
 
     bool FCmdKey(PCMD_KEY pcmd);
@@ -116,26 +116,26 @@ ON_CID_GEN(cidDissolve, &KhelloApp::FCmdDissolve, pvNil)
 ON_CID_GEN(cidPattern, &KhelloApp::FCmdPattern, pvNil)
 END_CMD_MAP_NIL()
 
-// Globals
+// 3DMMEx: Globals
 KhelloApp vapp;
 
-// Define reference counting and runtime type functions for app classes
+// 3DMMEx: Define reference counting and runtime type functions for app classes
 RTCLASS(KhelloApp)
 RTCLASS(BackgroundGob)
 RTCLASS(MessageLogGob)
 
-// Map of cursor state bitmask values to strings
+// 3DMMEx: Map of cursor state bitmask values to strings
 PCSZ mpfcustpsz[] = {
-    PszLit("CTRL"),  // fcustCmd
-    PszLit("SHIFT"), // fcustShift
-    PszLit("ALT"),   // fcustOption
-    PszLit("MOUSE"), // fcustMouse
+    PszLit("CTRL"),  // 3DMMEx: fcustCmd
+    PszLit("SHIFT"), // 3DMMEx: fcustShift
+    PszLit("ALT"),   // 3DMMEx: fcustOption
+    PszLit("MOUSE"), // 3DMMEx: fcustMouse
 };
 
-// Entrypoint
+// 3DMMEx: Entrypoint
 void FrameMain(void)
 {
-    // TODO: offscreen drawing is broken?
+    // 3DMMEx: TODO: offscreen drawing is broken?
     bool fOffscreenDrawing = fFalse;
 
     uint32_t grfApp = fappNil;
@@ -152,25 +152,25 @@ void FrameMain(void)
     vapp.Run(grfApp, fgobNil, kginDefault);
 }
 
-// Returns the name of the application
+// 3DMMEx: Returns the name of the application
 void KhelloApp::GetStnAppName(PSTN pstn)
 {
     *pstn = PszLit("Kauai Hello World");
 }
 
-// App initialization
+// 3DMMEx: App initialization
 bool KhelloApp::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
 {
     if (!KhelloApp_PAR::_FInit(grfapp, grfgob, ginDef))
         return fFalse;
 
-    // Create background GOB
+    // 3DMMEx: Create background GOB
     RC rcRel(0, 0, krelOne, krelOne);
     GCB gcbBack(CMH::HidUnique(), GOB::PgobScreen(), fgobNil, kginMark, pvNil, &rcRel);
 
     _gobBackground = NewObj BackgroundGob(&gcbBack);
 
-    // Create message log GOB
+    // 3DMMEx: Create message log GOB
     RC rcAbs(0, 0, 480, 384);
 
     RC rcBackground;
@@ -181,7 +181,7 @@ bool KhelloApp::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
 
     _gobTest = NewObj MessageLogGob(&gcb);
 
-    // Create accelerator table
+    // 3DMMEx: Create accelerator table
     _patbl = ATBL::PatblNew(HidUnique(), vpcex);
     if (_patbl != pvNil)
     {
@@ -212,7 +212,7 @@ void KhelloApp::MarkMem()
     MarkMemObj(_patbl);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Unmarks all hqs, marks all hqs known to be in use, then asserts
     on all unmarked hqs.
 ***************************************************************************/
@@ -221,15 +221,15 @@ void CheckForLostMem(BASE *po)
     UnmarkAllMem();
     UnmarkAllObjs();
 
-    MarkMemObj(&vapp); // marks all frame-work memory
-    MarkUtilMem();     // marks all util memory
+    MarkMemObj(&vapp); // 3DMMEx: marks all frame-work memory
+    MarkUtilMem();     // 3DMMEx: marks all util memory
     if (pvNil != po)
         po->MarkMem();
 
     AssertUnmarkedMem();
     AssertUnmarkedObjs();
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 bool KhelloApp::FCmdExit(PCMD pcmd)
 {
@@ -303,12 +303,12 @@ void MessageLogGob::Draw(PGNV pgnv, RC *prcClip)
 {
     pgnv->FillRc(prcClip, kacrLtGray);
 
-    // Set font
+    // 3DMMEx: Set font
     pgnv->SetOnn(0);
 
     STN stnText;
 
-    // Get the height of a line
+    // 3DMMEx: Get the height of a line
     RC rcText;
     pgnv->GetRcFromRgch(&rcText, PszLit("test"), 4);
     const int32_t dypText = rcText.ypBottom;
@@ -319,7 +319,7 @@ void MessageLogGob::Draw(PGNV pgnv, RC *prcClip)
         istnLastCmd = kcstnCmdMax - 1;
     }
 
-    // Draw each line in reverse order
+    // 3DMMEx: Draw each line in reverse order
     int32_t istn = istnLastCmd;
     for (int32_t cact = 0; cact < kcstnCmdMax; cact++)
     {
@@ -427,7 +427,7 @@ void MessageLogGob::AddCmd(STN stnCmd)
     stnLastCmd[_istnNextCmd].FFormatSz(PszLit("%d: %s"), TsCurrent(), &stnCmd);
     _istnNextCmd = (_istnNextCmd + 1) % kcstnCmdMax;
 
-    // mark this region as invalid: will be repainted soon
+    // 3DMMEx: mark this region as invalid: will be repainted soon
     InvalRc(pvNil, kginMark);
 }
 

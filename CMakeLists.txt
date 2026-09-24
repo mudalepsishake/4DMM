@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 cmake_policy(SET CMP0141 NEW)
-project(3DMMEx LANGUAGES CXX C VERSION 0.7.0)
+project(3DMMEx LANGUAGES CXX C VERSION 0.6.0)
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -31,10 +31,6 @@ if(MSVC)
   endif()
 endif()
 
-if(APPLE)
-    enable_language(OBJCXX)
-endif()
-
 include(CMakeDependentOption)
 include(FetchContent)
 include(TargetChompSources)
@@ -61,7 +57,7 @@ else()
 endif()
 
 set(3DMM_BRENDER_LIBRARY "${3DMM_BRENDER_LIBRARY_DEFAULT}" CACHE STRING "Argonaut BRender library to use for rendering 3D images")
-set_property(CACHE 3DMM_BRENDER_LIBRARY PROPERTY STRINGS "Original" "Source")
+set_property(CACHE 3DMM_BRENDER_LIBRARY PROPERTY STRINGS "Original" "Source" "Modern")
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # AudioMan is only supported on Windows
@@ -96,11 +92,6 @@ elseif("${3DMM_GUI}" STREQUAL "SDL")
     if (WIN32)
         include(FetchSDL2)
         include(FetchFluidSynth)
-    endif()
-
-    # Download SDL2 frameworks when building for Mac
-    if (APPLE)
-        include(FetchSDL2)
     endif()
 
     find_package(SDL2 CONFIG REQUIRED)
@@ -156,13 +147,23 @@ if (3DMM_UNICODE)
     )
 endif()
 
-# Configure version header
-execute_process(
-  COMMAND git describe --tags --always
-  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_VERSION
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+# Configure version header. Exported 4DMM source trees are intentionally not
+# Git working copies, so do not invoke Git at all unless .git is actually here.
+if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  execute_process(
+    COMMAND git describe --tags --always
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE GIT_DESCRIBE_RESULT
+    ERROR_QUIET
+  )
+  if(NOT GIT_DESCRIBE_RESULT EQUAL 0)
+    set(GIT_VERSION "source-archive")
+  endif()
+else()
+  set(GIT_VERSION "source-archive")
+endif()
 configure_file(
   "${PROJECT_SOURCE_DIR}/inc/version.h.in"
   "${PROJECT_BINARY_DIR}/inc/version.h"
@@ -187,6 +188,71 @@ elseif("${3DMM_BRENDER_LIBRARY}" STREQUAL "Source")
     set(BRENDER_ASAN OFF)
     FetchContent_MakeAvailable(3DMM-BRender)
 
+    # actorlight29: Source BRender's original framework has fixed-size active
+    # light tables sized by BR_MAX_LIGHTS (16).  Raise that compile-time table
+    # alongside 4DMM's Light Lab record arrays so city-scale authoring is not
+    # stopped by the 1995 ceiling.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND}
+                -DBRENDER_SOURCE_DIR=${BRender_SOURCE_DIR}
+                -P ${PROJECT_SOURCE_DIR}/cmake/brender-patches/PatchLightLimit.cmake
+        RESULT_VARIABLE ACTORLIGHT_LIGHT_LIMIT_PATCH_RESULT
+    )
+    if(NOT ACTORLIGHT_LIGHT_LIMIT_PATCH_RESULT EQUAL 0)
+        message(FATAL_ERROR "actorlight29: failed to raise Source BRender light limit")
+    endif()
+
+    # actorlight2: Ben Stone's source BRender RGB888 lit-texture entry
+    # selects the right triangle family, but its shared scanline routine still
+    # performs INDEX_8 shade-table lookup for bpp == 3. Patch the fetched source
+    # in place before it is compiled so RGB888 textures are modulated directly.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND}
+                -DBRENDER_SOURCE_DIR=${BRender_SOURCE_DIR}
+                -P ${PROJECT_SOURCE_DIR}/cmake/brender-patches/PatchActorLitRgb888.cmake
+        RESULT_VARIABLE ACTORLIGHT_BRENDER_PATCH_RESULT
+    )
+    if(NOT ACTORLIGHT_BRENDER_PATCH_RESULT EQUAL 0)
+        message(FATAL_ERROR "actorlight2: failed to patch source BRender RGB888 textured lighting")
+    endif()
+
+    # logperf17: instrument the exact Source BRender lighting/model update
+    # pipeline used by -a so performance.csv can identify pathological tween
+    # frames without relying on verbose per-actor breadcrumbs.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND}
+                -DBRENDER_SOURCE_DIR=${BRender_SOURCE_DIR}
+                -P ${PROJECT_SOURCE_DIR}/cmake/brender-patches/PatchLightingPerf.cmake
+        RESULT_VARIABLE LIGHTING_PERF_BRENDER_PATCH_RESULT
+    )
+    if(NOT LIGHTING_PERF_BRENDER_PATCH_RESULT EQUAL 0)
+        message(FATAL_ERROR "logperf17: failed to instrument Source BRender lighting performance")
+    endif()
+
+    # actorlight34: keep full projected depth for RGB888, resolve only true
+    # legacy-depth ties by draw order, and guard giant/off-screen raster spans.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND}
+                -DBRENDER_SOURCE_DIR=${BRender_SOURCE_DIR}
+                -P ${PROJECT_SOURCE_DIR}/cmake/brender-patches/PatchDepthPrecision.cmake
+        RESULT_VARIABLE ACTORLIGHT_DEPTH_PRECISION_PATCH_RESULT
+    )
+    if(NOT ACTORLIGHT_DEPTH_PRECISION_PATCH_RESULT EQUAL 0)
+        message(FATAL_ERROR "actorlight34: failed to patch Source BRender depth/raster safety")
+    endif()
+
+    # actorlight39: optional -3dfix projection/depth probe.  This patch is
+    # runtime-gated; normal rendering remains the v36/v38 path.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND}
+                -DBRENDER_SOURCE_DIR=${BRender_SOURCE_DIR}
+                -P ${PROJECT_SOURCE_DIR}/cmake/brender-patches/Patch3DFixProbe.cmake
+        RESULT_VARIABLE ACTORLIGHT_3DFIX_PROBE_PATCH_RESULT
+    )
+    if(NOT ACTORLIGHT_3DFIX_PROBE_PATCH_RESULT EQUAL 0)
+        message(FATAL_ERROR "actorlight39: failed to patch Source BRender 3dfix probe")
+    endif()
+
     add_library(brender INTERFACE)
     target_link_libraries(
         brender
@@ -199,6 +265,45 @@ elseif("${3DMM_BRENDER_LIBRARY}" STREQUAL "Source")
         "${BRender_SOURCE_DIR}/INC"
     )
     add_library(BRender::Libraries ALIAS brender)
+
+elseif("${3DMM_BRENDER_LIBRARY}" STREQUAL "Modern")
+
+    message("Building vendored BRender 1.4 Modern/OpenGL compatibility source")
+
+    # BRender 1.4 is part of the 4DMM source tree. Do not FetchContent it and
+    # do not mutate it with configure-time patch files. All compatibility work
+    # is ordinary source editing under source/brender14.
+    set(BRENDER_MODERN_SOURCE_DIR "${PROJECT_SOURCE_DIR}/brender14")
+    if(NOT EXISTS "${BRENDER_MODERN_SOURCE_DIR}/CMakeLists.txt")
+        message(FATAL_ERROR
+            "Vendored BRender 1.4 source is missing: ${BRENDER_MODERN_SOURCE_DIR}. "
+            "4DMM Modern builds require source/brender14 to be present.")
+    endif()
+
+    # Set BRender options before add_subdirectory() so the vendored project is
+    # configured with 3DMM's fixed-point ABI and legacy model compatibility.
+    set(BRENDER_LEGACY_FIXED_ABI ON CACHE BOOL "" FORCE)
+    set(BRENDER_LEGACY_3DMM_MODEL_ABI ON CACHE BOOL "" FORCE)
+    set(BRENDER_BUILD_DRIVERS ON CACHE BOOL "" FORCE)
+    # 4DMM supplies its own Win32/WGL window bridge for glrend; do not pull
+    # BRender's optional SDL device/window backends into this experiment.
+    set(BRENDER_DISABLE_FINDSDL ON CACHE BOOL "" FORCE)
+    set(BRENDER_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+    set(BRENDER_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(BRENDER_BUILD_CONTRIB OFF CACHE BOOL "" FORCE)
+    set(BRENDER_DISABLE_INSTALL ON CACHE BOOL "" FORCE)
+    set(BRENDER_BUILD_SOFT OFF CACHE BOOL "" FORCE)
+
+    # Keep dependency build products out of the checked-in source directory.
+    add_subdirectory(
+        "${BRENDER_MODERN_SOURCE_DIR}"
+        "${CMAKE_BINARY_DIR}/brender14-build"
+    )
+
+    add_library(brender_3dmm_modern INTERFACE)
+    target_link_libraries(brender_3dmm_modern INTERFACE BRender::Full)
+    add_library(BRender::Libraries ALIAS brender_3dmm_modern)
+    add_compile_definitions(BRENDER_MODERN_14=1)
 else()
     message(FATAL_ERROR "Invalid BRender library selected: ${3DMM_BRENDER_LIBRARY}")
 endif()
@@ -221,6 +326,19 @@ elseif("${3DMM_AUDIOMAN_LIBRARY}" STREQUAL "Decompilation")
     set(AUDIOMAN_BUILD_DEMO_APPS OFF)
     set(AUDIOMAN_USE_DEBUG_ALLOCATOR OFF)
     FetchContent_MakeAvailable(AudioManDecomp)
+
+    # AudioMan's decompiled converter skips its temporary source buffer when
+    # source and destination byte counts are equal. Some valid 3DMM sounds
+    # still need ACM conversion in that case, so patch the fetched filter at
+    # the call site before AudioMan is compiled.
+    FetchContent_GetProperties(AudioManDecomp SOURCE_DIR AUDIOMAN_DECOMP_SOURCE_DIR)
+    execute_process(
+        COMMAND "${CMAKE_COMMAND}"
+            "-DAUDIOMAN_SOURCE_DIR=${AUDIOMAN_DECOMP_SOURCE_DIR}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/PatchAudioManEqualSizeConversion.cmake"
+        COMMAND_ERROR_IS_FATAL ANY
+    )
+
     add_library(3DMMForever::AudioMan ALIAS AudioMan)
 
 elseif("${3DMM_AUDIOMAN_LIBRARY}" STREQUAL "None")
@@ -244,11 +362,6 @@ if (BUILD_TESTS)
     include(FetchGoogleTest)
     include(GoogleTest)
     add_custom_target(tests)
-
-    if (APPLE)
-        # We need to set this as otherwise Xcode will try to run the test binary for discovery before it is code signed.
-        set(CMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
-    endif()
 endif()
 
 add_subdirectory(kauai)
@@ -280,6 +393,5 @@ if (BUILD_PACKAGES)
       list(APPEND CPACK_GENERATOR ${generator})
     endif()
   endforeach()
-
   include(CPack)
 endif()

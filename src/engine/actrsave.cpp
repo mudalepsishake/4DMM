@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     actrsave.cpp: Actor load/save code
 
@@ -24,20 +24,20 @@ ASSERTNAME
 const CHID kchidPath = 0;
 const CHID kchidGgae = 0;
 
-struct ACTF // Actor chunk on file
+struct ACTF // 3DMMv1.0: Actor chunk on file
 {
-    int16_t bo;        // Byte order
-    int16_t osk;       // OS kind
-    XYZ dxyzFullRte;   // Translation of the route
-    int32_t arid;      // Unique id assigned to this actor.
-    int32_t nfrmFirst; // First frame in this actor's stage life
-    int32_t nfrmLast;  // Last frame in this actor's stage life
-    TAGF tagTmpl;      // Tag to actor's template
+    int16_t bo;        // 3DMMv1.0: Byte order
+    int16_t osk;       // 3DMMv1.0: OS kind
+    XYZ dxyzFullRte;   // 3DMMv1.0: Translation of the route
+    int32_t arid;      // 3DMMv1.0: Unique id assigned to this actor.
+    int32_t nfrmFirst; // 3DMMv1.0: First frame in this actor's stage life
+    int32_t nfrmLast;  // 3DMMv1.0: Last frame in this actor's stage life
+    TAGF tagTmpl;      // 3DMMv1.0: Tag to actor's template
 };
 VERIFY_STRUCT_SIZE(ACTF, 44)
 const BOM kbomActf = 0x5ffc0000 | kbomTag;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Deserialize all events in pggaev
 ***************************************************************************/
 PGG DeserializeAEVs(int16_t bo, PGG pggaevf)
@@ -152,7 +152,7 @@ PGG DeserializeAEVs(int16_t bo, PGG pggaevf)
             }
             break;
         case aetRem:
-            // no var data
+            // 3DMMv1.0: no var data
             break;
         default:
             Bug("Unknown AET");
@@ -163,7 +163,7 @@ PGG DeserializeAEVs(int16_t bo, PGG pggaevf)
     return pggaev;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Serialize all events in pggaev
 ***************************************************************************/
 PGG SerializeAEVs(PGG pggaev)
@@ -224,7 +224,7 @@ PGG SerializeAEVs(PGG pggaev)
         case aetTweak:
         case aetStep:
         case aetRem:
-            // no var data
+            // 3DMMv1.0: no var data
             break;
         default:
             Bug("Unknown AET");
@@ -239,7 +239,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the actor out to disk.  Store the root chunk in the given CNO.
     If this function returns false, it is the client's responsibility to
     delete the actor chunks.
@@ -261,41 +261,80 @@ bool ACTR::FWrite(PCFL pcfl, CNO cnoActr, CNO cnoScene)
     int32_t nfrmFirst;
     int32_t nfrmLast;
     PGG pggaev = pvNil;
+    PMVIE pmvieDiag = _pscen != pvNil ? _pscen->Pmvie() : pvNil;
 
-    // Validate the actor's lifetime if not done already
+    MVIE::MultiLog(pmvieDiag,
+        "actor_write begin arid=%ld actor_cno=%ld scene_cno=%ld sid=%ld ctg=0x%08lX tmpl_cno=%ld events=%ld route_points=%ld first=%ld last=%ld life_dirty=%d onstage=%d",
+        (long)_arid, (long)cnoActr, (long)cnoScene, (long)_tagTmpl.sid,
+        (unsigned long)_tagTmpl.ctg, (long)_tagTmpl.cno,
+        _pggaev != pvNil ? (long)_pggaev->IvMac() : -1L,
+        _pglrpt != pvNil ? (long)_pglrpt->IvMac() : -1L,
+        (long)_nfrmFirst, (long)_nfrmLast, (int)_fLifeDirty, (int)_fOnStage);
+
+    // 3DMMv1.0: Validate the actor's lifetime if not done already
     if (knfrmInvalid != _nfrmFirst)
     {
         if (!FGetLifetime(&nfrmFirst, &nfrmLast))
+        {
+            MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=lifetime arid=%ld", (long)_arid);
             return fFalse;
+        }
     }
 #ifdef DEBUG
     if (knfrmInvalid == _nfrmFirst)
         Warn("Dev: Why are we saving an actor who has no first frame number?");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-    // Save and adopt TMPL chunk if it's a ksidUseCrf chunk
+    // Save and adopt TMPL chunk if it's a ksidUseCrf chunk. Historically
+    // only TDTs were embedded in user documents. Actor Studio now also makes
+    // complete writable copies of normal actor/prop TMPL trees before adding
+    // custom actions; those trees already exist in this CFL and must simply be
+    // rooted beneath the ACTR when the scene is serialized.
     if (_tagTmpl.sid == ksidUseCrf)
     {
-        Assert(_ptmpl->FIsTdt(), "only TDTs should be embedded in user doc");
-        if (!pcfl->FFind(_tagTmpl.ctg, _tagTmpl.cno))
+        const bool fTmplExists = pcfl->FFind(_tagTmpl.ctg, _tagTmpl.cno);
+        MVIE::MultiLog(pmvieDiag,
+            "actor_write template arid=%ld cno=%ld exists=%d tdt=%d",
+            (long)_arid, (long)_tagTmpl.cno, (int)fTmplExists,
+            _ptmpl != pvNil ? (int)_ptmpl->FIsTdt() : -1);
+        if (!fTmplExists)
         {
-            if (!((PTDT)_ptmpl)->FWrite(pcfl, _tagTmpl.ctg, &cnoTmpl))
+            if (_ptmpl == pvNil || !_ptmpl->FIsTdt())
+            {
+                MVIE::MultiLog(pmvieDiag,
+                    "actor_write FAIL stage=template_missing arid=%ld tmpl_cno=%ld",
+                    (long)_arid, (long)_tagTmpl.cno);
                 return fFalse;
-            // Keep CNO the same
+            }
+            if (!((PTDT)_ptmpl)->FWrite(pcfl, _tagTmpl.ctg, &cnoTmpl))
+            {
+                MVIE::MultiLog(pmvieDiag,
+                    "actor_write FAIL stage=tdt_template_write arid=%ld tmpl_cno=%ld el=%ld",
+                    (long)_arid, (long)_tagTmpl.cno, (long)pcfl->ElError());
+                return fFalse;
+            }
+            // 3DMMv1.0: Keep CNO the same
             pcfl->Move(_tagTmpl.ctg, cnoTmpl, _tagTmpl.ctg, _tagTmpl.cno);
         }
 
-        if (tNo == pcfl->TIsDescendent(kctgActr, cnoActr, _tagTmpl.ctg, _tagTmpl.cno))
+        const int32_t tDesc = (int32_t)pcfl->TIsDescendent(kctgActr, cnoActr, _tagTmpl.ctg, _tagTmpl.cno);
+        MVIE::MultiLog(pmvieDiag,
+            "actor_write template_link arid=%ld actor_cno=%ld tmpl_cno=%ld desc=%ld",
+            (long)_arid, (long)cnoActr, (long)_tagTmpl.cno, (long)tDesc);
+        if (tNo == tDesc)
         {
             if (!pcfl->FAdoptChild(kctgActr, cnoActr, _tagTmpl.ctg,
-                                   _tagTmpl.cno)) // clears loner bit
+                                   _tagTmpl.cno)) // 3DMMv1.0: clears loner bit
             {
+                MVIE::MultiLog(pmvieDiag,
+                    "actor_write FAIL stage=template_adopt arid=%ld actor_cno=%ld tmpl_cno=%ld el=%ld",
+                    (long)_arid, (long)cnoActr, (long)_tagTmpl.cno, (long)pcfl->ElError());
                 return fFalse;
             }
         }
     }
 
-    // Write the ACTR chunk:
+    // 3DMMv1.0: Write the ACTR chunk:
     actf.bo = kboCur;
     actf.osk = koskCur;
     actf.dxyzFullRte = _dxyzFullRte;
@@ -304,35 +343,52 @@ bool ACTR::FWrite(PCFL pcfl, CNO cnoActr, CNO cnoScene)
     actf.nfrmLast = _nfrmLast;
     SerializeTagToTagf(&_tagTmpl, &actf.tagTmpl);
     if (!pcfl->FPutPv(&actf, SIZEOF(ACTF), kctgActr, cnoActr))
+    {
+        MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=actor_header arid=%ld el=%ld",
+                       (long)_arid, (long)pcfl->ElError());
         return fFalse;
+    }
 
-    // Now write the PATH chunk:
+    // 3DMMv1.0: Now write the PATH chunk:
     if (!pcfl->FAddChild(kctgActr, cnoActr, kchidPath, _pglrpt->CbOnFile(), kctgPath, &cnoPath, &blck))
     {
+        MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=path_add arid=%ld el=%ld",
+                       (long)_arid, (long)pcfl->ElError());
         return fFalse;
     }
     if (!_pglrpt->FWrite(&blck))
+    {
+        MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=path_write arid=%ld path_cno=%ld el=%ld",
+                       (long)_arid, (long)cnoPath, (long)pcfl->ElError());
         return fFalse;
+    }
 
-    // Now write the GGAE chunk:
+    // 3DMMv1.0: Now write the GGAE chunk:
     pggaev = SerializeAEVs(_pggaev);
     if (pggaev == pvNil)
+    {
+        MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=event_serialize arid=%ld", (long)_arid);
         return fFalse;
+    }
 
     if (!pcfl->FAddChild(kctgActr, cnoActr, kchidGgae, pggaev->CbOnFile(), kctgGgae, &cnoGgae, &blck))
     {
+        MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=event_chunk_add arid=%ld el=%ld",
+                       (long)_arid, (long)pcfl->ElError());
         ReleasePpo(&pggaev);
         return fFalse;
     }
     if (!pggaev->FWrite(&blck))
     {
+        MVIE::MultiLog(pmvieDiag, "actor_write FAIL stage=event_write arid=%ld event_cno=%ld el=%ld",
+                       (long)_arid, (long)cnoGgae, (long)pcfl->ElError());
         ReleasePpo(&pggaev);
         return fFalse;
     }
 
     ReleasePpo(&pggaev);
 
-    // Adopt actor sounds into the scene
+    // 3DMMv1.0: Adopt actor sounds into the scene
     for (iaev = 0; iaev < _pggaev->IvMac(); iaev++)
     {
         paev = (AEV *)(_pggaev->QvFixedGet(iaev));
@@ -342,29 +398,35 @@ bool ACTR::FWrite(PCFL pcfl, CNO cnoActr, CNO cnoScene)
         if (aevsnd.tag.sid != ksidUseCrf)
             continue;
 
-        // For user sounds, the tag's cno must already be correct.
-        // Moreover, FResolveSndTag can't succeed if the msnd chunk is
-        // not yet a child of the current scene.
+        // 3DMMv1.0: For user sounds, the tag's cno must already be correct.
+        // 3DMMv1.0: Moreover, FResolveSndTag can't succeed if the msnd chunk is
+        // 3DMMv1.0: not yet a child of the current scene.
 
-        // If the msnd chunk already exists as this chid of this scene, continue
+        // 3DMMv1.0: If the msnd chunk already exists as this chid of this scene, continue
         if (pcfl->FGetKidChidCtg(kctgScen, cnoScene, aevsnd.chid, kctgMsnd, &kid))
             continue;
 
-        // If the msnd does not exist in this file, it exists in the main movie
+        // 3DMMv1.0: If the msnd does not exist in this file, it exists in the main movie
         if (!pcfl->FFind(kctgMsnd, aevsnd.tag.cno))
             continue;
 
-        // The msnd chunk has not been adopted into the scene as the specified chid
+        // 3DMMv1.0: The msnd chunk has not been adopted into the scene as the specified chid
         if (!pcfl->FAdoptChild(kctgScen, cnoScene, kctgMsnd, aevsnd.tag.cno, aevsnd.chid))
         {
+            MVIE::MultiLog(pmvieDiag,
+                "actor_write FAIL stage=sound_adopt arid=%ld sound_cno=%ld chid=%ld el=%ld",
+                (long)_arid, (long)aevsnd.tag.cno, (long)aevsnd.chid, (long)pcfl->ElError());
             return fFalse;
         }
     }
 
+    MVIE::MultiLog(pmvieDiag,
+        "actor_write ok arid=%ld actor_cno=%ld tmpl_cno=%ld path_cno=%ld event_cno=%ld",
+        (long)_arid, (long)cnoActr, (long)_tagTmpl.cno, (long)cnoPath, (long)cnoGgae);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the actor data from disk, (re-)construct the actor, and return a
     pointer to it.
 ***************************************************************************/
@@ -395,7 +457,7 @@ PACTR ACTR::PactrRead(PCRF pcrf, CNO cnoActr)
         goto LFail;
     pactr->_pglsmm->SetMinGrow(kcsmmGrow);
 
-    // Now that the tags are open, fetch the TMPL
+    // 3DMMv1.0: Now that the tags are open, fetch the TMPL
     pactr->_ptmpl = (PTMPL)vptagm->PbacoFetch(&pactr->_tagTmpl, TMPL::FReadTmpl);
     if (pvNil == pactr->_ptmpl)
         goto LFail;
@@ -416,7 +478,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the ACTF. This handles converting an ACTF that doesn't have an
     nfrmLast.
 ***************************************************************************/
@@ -457,7 +519,7 @@ bool _FReadActf(PBLCK pblck, ACTF *pactf)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the ACTR chunk
 ***************************************************************************/
 bool ACTR::_FReadActor(PCFL pcfl, CNO cno)
@@ -481,14 +543,14 @@ bool ACTR::_FReadActor(PCFL pcfl, CNO cno)
 
     if (_tagTmpl.sid == ksidUseCrf)
     {
-        // Actor is a TDT.  Tag might be wrong if this actor was imported,
-        // so look for child TMPL.
+        // 3DMMv1.0: Actor is a TDT.  Tag might be wrong if this actor was imported,
+        // 3DMMv1.0: so look for child TMPL.
         KID kid;
 
         if (!pcfl->FGetKidChidCtg(kctgActr, cno, 0, kctgTmpl, &kid))
         {
             Bug("where's the child TMPL?");
-            return fTrue; // hope the tag is correct
+            return fTrue; // 3DMMv1.0: hope the tag is correct
         }
         _tagTmpl.cno = kid.cki.cno;
     }
@@ -496,7 +558,7 @@ bool ACTR::_FReadActor(PCFL pcfl, CNO cno)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FAdjustAridOnFile
         Given a chunky file, a CNO and a delta for the arid, updates the
         arid for the actor on file.
@@ -525,7 +587,7 @@ bool ACTR::FAdjustAridOnFile(PCFL pcfl, CNO cno, int32_t darid)
     return pcfl->FPutPv(&actf, SIZEOF(ACTF), kctgActr, cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the PATH (_pglrpt) chunk
 ***************************************************************************/
 bool ACTR::_FReadRoute(PCFL pcfl, CNO cno)
@@ -549,7 +611,7 @@ bool ACTR::_FReadRoute(PCFL pcfl, CNO cno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the GGAE (_pggaev) chunk
 ***************************************************************************/
 bool ACTR::_FReadEvents(PCFL pcfl, CNO cno)
@@ -571,7 +633,7 @@ bool ACTR::_FReadEvents(PCFL pcfl, CNO cno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open all tags for this actor
 ***************************************************************************/
 bool ACTR::_FOpenTags(PCRF pcrf)
@@ -597,7 +659,7 @@ bool ACTR::_FOpenTags(PCRF pcrf)
     _pggaev->Unlock();
     return fTrue;
 LFail:
-    // Close the tags that were opened before failure
+    // 3DMMv1.0: Close the tags that were opened before failure
     while (--iaev >= 0)
     {
         if (_FIsIaevTag(_pggaev, iaev, &ptag))
@@ -607,12 +669,12 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close all tags in this actor's event stream
 ***************************************************************************/
 void ACTR::_CloseTags(void)
 {
-    AssertBaseThis(0); // because destructor calls this function
+    AssertBaseThis(0); // 3DMMv1.0: because destructor calls this function
 
     int32_t iaev;
     PTAG ptag;
@@ -632,7 +694,7 @@ void ACTR::_CloseTags(void)
     return;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get all the tags that the actor uses
 ***************************************************************************/
 PGL ACTR::PgltagFetch(PCFL pcfl, CNO cno, bool *pfError)
@@ -655,7 +717,7 @@ PGL ACTR::PgltagFetch(PCFL pcfl, CNO cno, bool *pfError)
     if (pvNil == pgltag)
         goto LFail;
 
-    // Read the ACTF so we can insert tagTmpl:
+    // 3DMMv1.0: Read the ACTF so we can insert tagTmpl:
     if (!pcfl->FFind(kctgActr, cno, &blck) || !_FReadActf(&blck, &actf))
         goto LFail;
 
@@ -663,8 +725,8 @@ PGL ACTR::PgltagFetch(PCFL pcfl, CNO cno, bool *pfError)
     {
         PGL pgltagTmpl;
 
-        // Actor is a TDT.  Tag might be wrong if this actor was imported,
-        // so look for child TMPL.
+        // 3DMMv1.0: Actor is a TDT.  Tag might be wrong if this actor was imported,
+        // 3DMMv1.0: so look for child TMPL.
         if (pcfl->FGetKidChidCtg(kctgActr, cno, 0, kctgTmpl, &kid))
         {
             actf.tagTmpl.cno = kid.cki.cno;
@@ -701,7 +763,7 @@ PGL ACTR::PgltagFetch(PCFL pcfl, CNO cno, bool *pfError)
     if (!pgltag->FInsert(0, &tag))
         goto LFail;
 
-    // Pull all tags out of the event list:
+    // 3DMMv1.0: Pull all tags out of the event list:
     if (!pcfl->FGetKidChidCtg(kctgActr, cno, kchidGgae, kctgGgae, &kid))
         goto LFail;
     if (!pcfl->FFind(kctgGgae, kid.cki.cno, &blck))
@@ -735,7 +797,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the iaev'th event of pggaev has a tag, sets *pptag to point to it.
     WARNING: unless you locked pggaev, *pptag is a qtag!
 ***************************************************************************/

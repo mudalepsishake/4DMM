@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef UTILRND_H
 #define UTILRND_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A pseudo-random number generator. LwNext returns values from 0 to
     (lwLim - 1), inclusive.
 ***************************************************************************/
@@ -36,7 +36,7 @@ class RND : public RND_PAR
     virtual int32_t LwNext(int32_t lwLim);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A shuffled array of numbers.
 ***************************************************************************/
 typedef class SFL *PSFL;
@@ -53,7 +53,7 @@ class SFL : public SFL_PAR
     int32_t _clw;
     int32_t _ilw;
     HQ _hqrglw;
-    bool _fCustom; // false iff the values in the hq are [0, _clw)
+    bool _fCustom; // 3DMMv1.0: false iff the values in the hq are [0, _clw)
 
     bool _FEnsureHq(int32_t clw);
     void _ShuffleCore(void);
@@ -67,4 +67,4 @@ class SFL : public SFL_PAR
     virtual int32_t LwNext(int32_t lwLim = 0) override;
 };
 
-#endif // UTILRND_H
+#endif // 3DMMv1.0: UTILRND_H

@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef CLIP_H
 #define CLIP_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clipboard object.
 ***************************************************************************/
 typedef class CLIP *PCLIP;
@@ -66,7 +66,7 @@ class CLIP : public CLIP_PAR
 extern PCLIP vpclip;
 
 const int32_t clfmNil = 0;
-// REVIEW shonk: Mac unicode
+// 3DMMv1.0: REVIEW shonk: Mac unicode
 #ifdef MAC
 const int32_t kclfmUniText = KLCONST4('W', 'T', 'X', 'T');
 const int32_t kclfmSbText = KLCONST4('T', 'E', 'X', 'T');
@@ -86,8 +86,8 @@ const int32_t kclfmSbText = CF_TEXT;
 
 #ifdef UNICODE
 const int32_t kclfmText = kclfmUniText;
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
 const int32_t kclfmText = kclfmSbText;
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 
-#endif //! CLIP_H
+#endif //! 3DMMv1.0: CLIP_H

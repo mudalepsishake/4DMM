@@ -369,7 +369,7 @@ CREATE_SCRIPT( "create slidepath")
 ENDCHUNK
 REP_ANIM( CHID1( krepMouseDnOn), "slider")	
 	// repeat up to 30000 times.
-	.siiLoop = PlaySoundThis( kcctgWave, kwavDing, 2, 0x00010000, 30000, 1, 4 );
+	.siiLoop = PlaySoundThis( kcctgWave, kwavDing, 2, 0x00010000, 30000, 1, ksclUISound);
 	While( 1 );
 		y = YMouseThis();
 		If( y < 0 );
@@ -418,6 +418,9 @@ OBJECTTTREG("Help Book Voice Toggle", kgobHelpBookVoice, 350, kcrsHand1, ttBookV
 		If (StateThis() == kst1);	// audio on (suppress = FALSE)
 			flg |= kflgMcZeeAudio;	// switch to audio off (suppress = TRUE)
 			SetProp( kpridMcZeeAudio, flg );
+			StopSoundClass(0, ksclUISound);
+			StopSoundClass(0, sclHelpSoundClass);
+			ENDVOICE();
 			ChangeStateThis(kst2);	
 		Else;
 			flg &= ~kflgMcZeeAudio;	// opposite of above

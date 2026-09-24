@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Handles editing a chunk consisting of a group
     (GL, AL, GG, AG, GST, AST)
@@ -29,7 +29,7 @@ RTCLASS(DCGL)
 RTCLASS(DCGG)
 RTCLASS(DCST)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a group document.  cls indicates which group class
     the edited chunk belongs to.  cls should be one of GL, AL, GG, AG,
     GST, AST.
@@ -40,7 +40,7 @@ DOCG::DOCG(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno, int32_t cls) : DOCE(pdocb, 
     _cls = cls;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for DOCG.  Free the GRPB.
 ***************************************************************************/
 DOCG::~DOCG(void)
@@ -48,7 +48,7 @@ DOCG::~DOCG(void)
     ReleasePpo(&_pgrpb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new document based on a group in a chunk.
     Asserts that there are no other editing docs open on this chunk.
 ***************************************************************************/
@@ -79,7 +79,7 @@ enum
     kiditLimGrpbNew
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dialog proc for Adopt Chunk dialog.
 ***************************************************************************/
 bool _FDlgGrpbNew(PDLG pdlg, int32_t *pidit, void *pv)
@@ -92,7 +92,7 @@ bool _FDlgGrpbNew(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelGrpbNew:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
 
     case kiditOkGrpbNew:
         if (!pdlg->FGetValues(0, kiditLimGrpbNew))
@@ -101,7 +101,7 @@ bool _FDlgGrpbNew(PDLG pdlg, int32_t *pidit, void *pv)
             return fTrue;
         }
 
-        // check the size
+        // 3DMMv1.0: check the size
         if (!pdlg->FGetLwFromEdit(kiditSizeGrpbNew, &cb, &fEmpty) && !fEmpty || !FIn(cb, *(int32_t *)pv, kcbMax))
         {
             vpappb->TGiveAlertSz(PszLit("Bad Size"), bkOk, cokStop);
@@ -117,7 +117,7 @@ bool _FDlgGrpbNew(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the group from the given flo.
 ***************************************************************************/
 bool DOCG::_FRead(PBLCK pblck)
@@ -127,13 +127,13 @@ bool DOCG::_FRead(PBLCK pblck)
 
     if (0 == pblck->Cb(fTrue))
     {
-        // create a new one - need to ask for a size from the user
+        // 3DMMv1.0: create a new one - need to ask for a size from the user
         PDLG pdlg;
         int32_t dlid, idit;
         int32_t cb, cbMin;
         bool fEmpty;
 
-        // determine which dialog to use
+        // 3DMMv1.0: determine which dialog to use
         cbMin = 0;
         switch (_cls)
         {
@@ -230,7 +230,7 @@ bool DOCG::_FRead(PBLCK pblck)
     return pvNil != _pgrpb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG onto the document.
 ***************************************************************************/
 PDDG DOCG::PddgNew(PGCB pgcb)
@@ -260,7 +260,7 @@ PDDG DOCG::PddgNew(PGCB pgcb)
     return pddg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the group to disk.
 ***************************************************************************/
 bool DOCG::_FWrite(PBLCK pblck, bool fRedirect)
@@ -270,7 +270,7 @@ bool DOCG::_FWrite(PBLCK pblck, bool fRedirect)
     return _pgrpb->FWrite(pblck, _bo, _osk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the size of the group on file.
 ***************************************************************************/
 int32_t DOCG::_CbOnFile(void)
@@ -280,7 +280,7 @@ int32_t DOCG::_CbOnFile(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void DOCG::AssertValid(uint32_t grf)
@@ -303,7 +303,7 @@ void DOCG::AssertValid(uint32_t grf)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DOCG.
 ***************************************************************************/
 void DOCG::MarkMem(void)
@@ -312,9 +312,9 @@ void DOCG::MarkMem(void)
     DOCG_PAR::MarkMem();
     MarkMemObj(_pgrpb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a DCGB.
 ***************************************************************************/
 DCGB::DCGB(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t clnItem, PGCB pgcb) : DCLB(pdocb, pgcb)
@@ -335,7 +335,7 @@ DCGB::DCGB(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t clnItem, PGCB pgcb) : 
     case kclsGL:
     case kclsGG:
     case kclsGST:
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
         _fAllocated = fFalse;
         break;
     case kclsAL:
@@ -346,7 +346,7 @@ DCGB::DCGB(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t clnItem, PGCB pgcb) : 
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to invalidate all DCGB's on this GRPB.  Also dirties the
     document.  Should be called by any code that edits the document.
 ***************************************************************************/
@@ -356,10 +356,10 @@ void DCGB::InvalAllDcgb(PDOCB pdocb, PGRPB pgrpb, int32_t iv, int32_t cvIns, int
     PDDG pddg;
     PDCGB pdcgb;
 
-    // mark the document dirty
+    // 3DMMv1.0: mark the document dirty
     pdocb->SetDirty();
 
-    // inform the DCGB's
+    // 3DMMv1.0: inform the DCGB's
     for (ipddg = 0; pvNil != (pddg = pdocb->PddgGet(ipddg)); ipddg++)
     {
         if (!pddg->FIs(kclsDCGB))
@@ -370,7 +370,7 @@ void DCGB::InvalAllDcgb(PDOCB pdocb, PGRPB pgrpb, int32_t iv, int32_t cvIns, int
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the display from iv to the end of the display.  If we're
     the active DCGB, also redraw.
 ***************************************************************************/
@@ -382,7 +382,7 @@ void DCGB::_InvalIv(int32_t iv, int32_t cvIns, int32_t cvDel)
     AssertIn(cvDel, 0, kcbMax);
     RC rc;
 
-    // adjust the sel
+    // 3DMMv1.0: adjust the sel
     if (_ivCur > iv)
     {
         if (_ivCur < iv + cvDel)
@@ -394,7 +394,7 @@ void DCGB::_InvalIv(int32_t iv, int32_t cvIns, int32_t cvDel)
             _ivCur += cvIns - cvDel;
     }
 
-    // caclculate the invalid rectangle
+    // 3DMMv1.0: caclculate the invalid rectangle
     GetRc(&rc, cooLocal);
     rc.ypTop = _YpFromIvDln(iv, 0);
     if (cvIns == cvDel)
@@ -412,7 +412,7 @@ void DCGB::_InvalIv(int32_t iv, int32_t cvIns, int32_t cvDel)
         InvalRc(&rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     We're being activated or deactivated so invert the sel.
 ***************************************************************************/
 void DCGB::_Activate(bool fActive)
@@ -424,7 +424,7 @@ void DCGB::_Activate(bool fActive)
     _DrawSel(&gnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the max for the scroll bar.
 ***************************************************************************/
 int32_t DCGB::_ScvMax(bool fVert)
@@ -443,7 +443,7 @@ int32_t DCGB::_ScvMax(bool fVert)
     return LwMax(0, ichLim - rc.Dxp() / _dxpChar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to the given line.
 ***************************************************************************/
 void DCGB::_SetSel(int32_t ln)
@@ -470,11 +470,11 @@ void DCGB::_SetSel(int32_t ln)
     {
         GNV gnv(this);
 
-        // erase the old sel
+        // 3DMMv1.0: erase the old sel
         if (_fActive)
             _DrawSel(&gnv);
 
-        // set the new sel and draw it
+        // 3DMMv1.0: set the new sel and draw it
         _ivCur = iv;
         _dlnCur = dln;
         if (_fActive)
@@ -482,13 +482,13 @@ void DCGB::_SetSel(int32_t ln)
     }
     else
     {
-        // just set the new selection
+        // 3DMMv1.0: just set the new selection
         _ivCur = iv;
         _dlnCur = dln;
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the sel into view.
 ***************************************************************************/
 void DCGB::_ShowSel(void)
@@ -512,7 +512,7 @@ void DCGB::_ShowSel(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hilite the selection (if there is one)
 ***************************************************************************/
 void DCGB::_DrawSel(PGNV pgnv)
@@ -530,7 +530,7 @@ void DCGB::_DrawSel(PGNV pgnv)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle key input.
 ***************************************************************************/
 bool DCGB::FCmdKey(PCMD_KEY pcmd)
@@ -599,7 +599,7 @@ bool DCGB::FCmdKey(PCMD_KEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle mouse-down in a DCGB - track the mouse and select the last
     item the mouse is over.
 ***************************************************************************/
@@ -611,7 +611,7 @@ void DCGB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     int32_t ln, ivCur, dlnCur;
     RC rc;
 
-    // do this before the activate to avoid flashing the selection
+    // 3DMMv1.0: do this before the activate to avoid flashing the selection
     ivCur = _ivCur;
     dlnCur = _dlnCur;
     ln = _LnFromYp(yp);
@@ -624,7 +624,7 @@ void DCGB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
 
     if (cact > 1 && ivCur == _ivCur && dlnCur == _dlnCur && _ivCur != ivNil && !_pgrpb->FFree(_ivCur))
     {
-        // edit the thing
+        // 3DMMv1.0: edit the thing
         _EditIvDln(_ivCur, _dlnCur);
         return;
     }
@@ -635,7 +635,7 @@ void DCGB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     {
         if (!rc.FPtIn(pt.xp, pt.yp))
         {
-            // do autoscroll
+            // 3DMMv1.0: do autoscroll
             ptT = pt;
             rc.PinPt(&pt);
             _Scroll(scaToVal, scaToVal, _scvHorz + LwDivAway(ptT.xp - pt.xp, _dxpChar),
@@ -647,7 +647,7 @@ void DCGB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle enabling/disabling commands.
 ***************************************************************************/
 bool DCGB::FEnableDcgbCmd(PCMD pcmd, uint32_t *pgrfeds)
@@ -676,7 +676,7 @@ bool DCGB::FEnableDcgbCmd(PCMD pcmd, uint32_t *pgrfeds)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles commands to edit the current line of the group.
 ***************************************************************************/
 bool DCGB::FCmdEditItem(PCMD pcmd)
@@ -688,7 +688,7 @@ bool DCGB::FCmdEditItem(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Edit the indicated line of the group.
 ***************************************************************************/
 void DCGB::_EditIvDln(int32_t iv, int32_t dln)
@@ -702,7 +702,7 @@ void DCGB::_EditIvDln(int32_t iv, int32_t dln)
     ReleasePpo(&pdoci);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle cidDeleteItem.
 ***************************************************************************/
 bool DCGB::FCmdDeleteItem(PCMD pcmd)
@@ -711,7 +711,7 @@ bool DCGB::FCmdDeleteItem(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the indicated item.
 ***************************************************************************/
 void DCGB::_DeleteIv(int32_t iv)
@@ -721,7 +721,7 @@ void DCGB::_DeleteIv(int32_t iv)
     if (ivNil == iv || _pgrpb->FFree(iv))
         return;
 
-    // turn off the selection, delete the element and invalidate stuff
+    // 3DMMv1.0: turn off the selection, delete the element and invalidate stuff
     _SetSel(lnNil);
     _pgrpb->Delete(iv);
     ivMac = _pgrpb->IvMac();
@@ -740,17 +740,17 @@ void DCGB::_DeleteIv(int32_t iv)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DCGB.
 ***************************************************************************/
 void DCGB::AssertValid(uint32_t grf)
 {
-    // REVIEW shonk: fill out
+    // 3DMMv1.0: REVIEW shonk: fill out
     DCGB_PAR::AssertValid(0);
     AssertPo(_pgrpb, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DCGB.
 ***************************************************************************/
 void DCGB::MarkMem(void)
@@ -759,9 +759,9 @@ void DCGB::MarkMem(void)
     DCGB_PAR::MarkMem();
     MarkMemObj(_pgrpb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the DCGL class.  This class displays (and allows
     editing of) a GL or AL.
 ***************************************************************************/
@@ -769,7 +769,7 @@ DCGL::DCGL(PDOCB pdocb, PGLB pglb, int32_t cls, PGCB pgcb) : DCGB(pdocb, pglb, c
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DCGL for the GL or AL.
 ***************************************************************************/
 PDCGL DCGL::PdcglNew(PDOCB pdocb, PGLB pglb, int32_t cls, PGCB pgcb)
@@ -791,7 +791,7 @@ PDCGL DCGL::PdcglNew(PDOCB pdocb, PGLB pglb, int32_t cls, PGCB pgcb)
     return pdcgl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the contents of the DCGL.
 ***************************************************************************/
 void DCGL::Draw(PGNV pgnv, RC *prcClip)
@@ -817,8 +817,8 @@ void DCGL::Draw(PGNV pgnv, RC *prcClip)
     cbDisp = cbEntry = pglb->CbEntry();
     if (cbDisp > kcbMaxDispGrp)
     {
-        // the rest will be filled with periods to indicate that
-        // not everything is displayed
+        // 3DMMv1.0: the rest will be filled with periods to indicate that
+        // 3DMMv1.0: not everything is displayed
         cbDisp = kcbMaxDispGrp - 2;
     }
 
@@ -835,10 +835,10 @@ void DCGL::Draw(PGNV pgnv, RC *prcClip)
 
         CopyPb(pglb->QvGet(iv), rgb, cbDisp);
 
-        // first comes the item number
+        // 3DMMv1.0: first comes the item number
         stn.FFormatSz(PszLit("%5d) "), iv);
 
-        // now add the bytes in hex, with a space after every four bytes
+        // 3DMMv1.0: now add the bytes in hex, with a space after every four bytes
         for (ibT = 0; ibT < cbDisp; ibT++)
         {
             bT = rgb[ibT];
@@ -847,12 +847,12 @@ void DCGL::Draw(PGNV pgnv, RC *prcClip)
             stn.FAppendCh(vrgchHex[(bT >> 4) & 0x0F]);
             stn.FAppendCh(vrgchHex[bT & 0x0F]);
         }
-        // add the periods
+        // 3DMMv1.0: add the periods
         if (cbDisp < cbEntry)
             stn.FAppendSz(PszLit("...."));
         stn.FAppendSz(PszLit("  "));
 
-        // now comes the ascii characters.
+        // 3DMMv1.0: now comes the ascii characters.
         for (ibT = 0; ibT < cbDisp; ibT++)
         {
             bT = rgb[ibT];
@@ -860,7 +860,7 @@ void DCGL::Draw(PGNV pgnv, RC *prcClip)
                 bT = '?';
             stn.FAppendCh((achar)bT);
         }
-        // add the periods
+        // 3DMMv1.0: add the periods
         if (cbDisp < cbEntry)
             stn.FAppendSz(PszLit(".."));
 
@@ -869,12 +869,12 @@ void DCGL::Draw(PGNV pgnv, RC *prcClip)
         yp += _dypLine;
     }
 
-    // draw the selection
+    // 3DMMv1.0: draw the selection
     if (_fActive)
         _DrawSel(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle cidAddItem and cidInsertItem.
 ***************************************************************************/
 bool DCGL::FCmdAddItem(PCMD pcmd)
@@ -909,7 +909,7 @@ bool DCGL::FCmdAddItem(PCMD pcmd)
     if (!fT)
         return fTrue;
 
-    // turn off the selection and invalidate stuff
+    // 3DMMv1.0: turn off the selection and invalidate stuff
     _SetSel(lnNil);
     InvalAllDcgb(_pdocb, pglb, ivNew, 1, (_fAllocated && ivNew == pglb->IvMac() - 1) ? 1 : 0);
     _SetSel(_LnFromIvDln(ivNew, 0));
@@ -918,7 +918,7 @@ bool DCGL::FCmdAddItem(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the DCGG class.  This class displays (and allows
     editing of) a GG or AG.
 ***************************************************************************/
@@ -926,7 +926,7 @@ DCGG::DCGG(PDOCB pdocb, PGGB pggb, int32_t cls, PGCB pgcb) : DCGB(pdocb, pggb, c
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DCGG for the GG or AG.
 ***************************************************************************/
 PDCGG DCGG::PdcggNew(PDOCB pdocb, PGGB pggb, int32_t cls, PGCB pgcb)
@@ -948,7 +948,7 @@ PDCGG DCGG::PdcggNew(PDOCB pdocb, PGGB pggb, int32_t cls, PGCB pgcb)
     return pdcgg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the contents of the DCGL.
 ***************************************************************************/
 void DCGG::Draw(PGNV pgnv, RC *prcClip)
@@ -995,8 +995,8 @@ void DCGG::Draw(PGNV pgnv, RC *prcClip)
                 cbEntry = pggb->CbFixed();
             if ((cbDisp = cbEntry) > kcbMaxDispGrp)
             {
-                // the rest will be filled with periods to indicate that
-                // not everything is displayed
+                // 3DMMv1.0: the rest will be filled with periods to indicate that
+                // 3DMMv1.0: not everything is displayed
                 cbDisp = kcbMaxDispGrp - 2;
             }
 
@@ -1011,7 +1011,7 @@ void DCGG::Draw(PGNV pgnv, RC *prcClip)
                 stn = PszLit("       ");
             }
 
-            // now add the bytes in hex, with a space after every four bytes
+            // 3DMMv1.0: now add the bytes in hex, with a space after every four bytes
             for (ibT = 0; ibT < cbDisp; ibT++)
             {
                 bT = rgb[ibT];
@@ -1020,7 +1020,7 @@ void DCGG::Draw(PGNV pgnv, RC *prcClip)
                 stn.FAppendCh(vrgchHex[(bT >> 4) & 0x0F]);
                 stn.FAppendCh(vrgchHex[bT & 0x0F]);
             }
-            // add the periods
+            // 3DMMv1.0: add the periods
             if (cbDisp < cbEntry)
                 stn.FAppendSz(PszLit("...."));
             else if (cbDisp < kcbMaxDispGrp)
@@ -1032,7 +1032,7 @@ void DCGG::Draw(PGNV pgnv, RC *prcClip)
             }
             stn.FAppendSz(PszLit("  "));
 
-            // now comes the ascii characters.
+            // 3DMMv1.0: now comes the ascii characters.
             for (ibT = 0; ibT < cbDisp; ibT++)
             {
                 bT = rgb[ibT];
@@ -1040,7 +1040,7 @@ void DCGG::Draw(PGNV pgnv, RC *prcClip)
                     bT = '?';
                 stn.FAppendCh((achar)bT);
             }
-            // add the periods
+            // 3DMMv1.0: add the periods
             if (cbDisp < cbEntry)
                 stn.FAppendSz(PszLit(".."));
 
@@ -1053,12 +1053,12 @@ void DCGG::Draw(PGNV pgnv, RC *prcClip)
         pgnv->FillRc(&rc, kacrBlack);
     }
 
-    // draw the selection
+    // 3DMMv1.0: draw the selection
     if (_fActive)
         _DrawSel(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle cidAddItem and cidInsertItem.
 ***************************************************************************/
 bool DCGG::FCmdAddItem(PCMD pcmd)
@@ -1093,7 +1093,7 @@ bool DCGG::FCmdAddItem(PCMD pcmd)
     else
         ClearPb(pggb->QvFixedGet(ivNew), pggb->CbFixed());
 
-    // turn off the selection and invalidate stuff
+    // 3DMMv1.0: turn off the selection and invalidate stuff
     _SetSel(lnNil);
     InvalAllDcgb(_pdocb, pggb, ivNew, 1, (_fAllocated && ivNew == pggb->IvMac() - 1) ? 1 : 0);
     _SetSel(_LnFromIvDln(ivNew, 0));
@@ -1102,7 +1102,7 @@ bool DCGG::FCmdAddItem(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the DCST class.  This class displays (and allows
     editing of) a GST or AST.
 ***************************************************************************/
@@ -1111,7 +1111,7 @@ DCST::DCST(PDOCB pdocb, PGSTB pgstb, int32_t cls, PGCB pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DCST for the GST or AST.
 ***************************************************************************/
 PDCST DCST::PdcstNew(PDOCB pdocb, PGSTB pgstb, int32_t cls, PGCB pgcb)
@@ -1133,7 +1133,7 @@ PDCST DCST::PdcstNew(PDOCB pdocb, PGSTB pgstb, int32_t cls, PGCB pgcb)
     return pdcst;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the contents of the DCGL.
 ***************************************************************************/
 void DCST::Draw(PGNV pgnv, RC *prcClip)
@@ -1170,8 +1170,8 @@ void DCST::Draw(PGNV pgnv, RC *prcClip)
 
     if ((cbDisp = cbExtra) > kcbMaxDispGrp)
     {
-        // the rest will be filled with periods to indicate that
-        // not everything is displayed
+        // 3DMMv1.0: the rest will be filled with periods to indicate that
+        // 3DMMv1.0: not everything is displayed
         cbDisp = kcbMaxDispGrp - 2;
     }
 
@@ -1199,7 +1199,7 @@ void DCST::Draw(PGNV pgnv, RC *prcClip)
             pgstb->GetExtra(iv, pbExtra);
             stn = PszLit("       ");
 
-            // now add the bytes in hex, with a space after every four bytes
+            // 3DMMv1.0: now add the bytes in hex, with a space after every four bytes
             for (ibT = 0; ibT < cbDisp; ibT++)
             {
                 bT = pbExtra[ibT];
@@ -1208,12 +1208,12 @@ void DCST::Draw(PGNV pgnv, RC *prcClip)
                 stn.FAppendCh(vrgchHex[(bT >> 4) & 0x0F]);
                 stn.FAppendCh(vrgchHex[bT & 0x0F]);
             }
-            // add the periods
+            // 3DMMv1.0: add the periods
             if (cbDisp < cbExtra)
                 stn.FAppendSz(PszLit("...."));
             stn.FAppendSz(PszLit("  "));
 
-            // now comes the ascii characters.
+            // 3DMMv1.0: now comes the ascii characters.
             for (ibT = 0; ibT < cbDisp; ibT++)
             {
                 bT = pbExtra[ibT];
@@ -1221,7 +1221,7 @@ void DCST::Draw(PGNV pgnv, RC *prcClip)
                     bT = '?';
                 stn.FAppendCh((achar)bT);
             }
-            // add the periods
+            // 3DMMv1.0: add the periods
             if (cbDisp < cbExtra)
                 stn.FAppendSz(PszLit(".."));
 
@@ -1241,12 +1241,12 @@ void DCST::Draw(PGNV pgnv, RC *prcClip)
         FreePhq(&hqExtra);
     }
 
-    // draw the selection
+    // 3DMMv1.0: draw the selection
     if (_fActive)
         _DrawSel(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle cidAddItem and cidInsertItem.
 ***************************************************************************/
 bool DCST::FCmdAddItem(PCMD pcmd)
@@ -1284,7 +1284,7 @@ bool DCST::FCmdAddItem(PCMD pcmd)
         FreePhq(&hq);
     }
 
-    // turn off the selection and invalidate stuff
+    // 3DMMv1.0: turn off the selection and invalidate stuff
     _SetSel(lnNil);
     InvalAllDcgb(_pdocb, pgstb, ivNew, 1, (_fAllocated && ivNew == pgstb->IvMac() - 1) ? 1 : 0);
     _SetSel(_LnFromIvDln(ivNew, 0));
@@ -1293,7 +1293,7 @@ bool DCST::FCmdAddItem(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for DOCI.  DOCI holds an item in a GRPB contained in a
     chunky file.  Doesn't free the GRPB when the doc goes away.
 ***************************************************************************/
@@ -1308,7 +1308,7 @@ DOCI::DOCI(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t iv, int32_t dln) : DOC
     _dln = dln;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static member to create a new DOCI.
 ***************************************************************************/
 PDOCI DOCI::PdociNew(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t iv, int32_t dln)
@@ -1329,7 +1329,7 @@ PDOCI DOCI::PdociNew(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t iv, int32_t 
     return pdoci;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reads the data (from the GRPB) and initializes the stream.
 ***************************************************************************/
 bool DOCI::_FInit(void)
@@ -1352,7 +1352,7 @@ bool DOCI::_FInit(void)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG for this doc.
 ***************************************************************************/
 PDDG DOCI::PddgNew(PGCB pgcb)
@@ -1360,7 +1360,7 @@ PDDG DOCI::PddgNew(PGCB pgcb)
     return DCH::PdchNew(this, &_bsf, _fFixed, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the document's name.
 ***************************************************************************/
 void DOCI::GetName(PSTN pstn)
@@ -1374,7 +1374,7 @@ void DOCI::GetName(PSTN pstn)
     pstn->FAppendStn(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle saving.  This is a virtual member of DOCB.
 ***************************************************************************/
 bool DOCI::FSave(int32_t cid)
@@ -1390,7 +1390,7 @@ bool DOCI::FSave(int32_t cid)
 
     case cidSaveAs:
     case cidSaveCopy:
-        RawRtn(); // REVIEW shonk: implement
+        RawRtn(); // 3DMMv1.0: REVIEW shonk: implement
         return fFalse;
 
     default:
@@ -1400,7 +1400,7 @@ bool DOCI::FSave(int32_t cid)
     return _FSaveToItem(iv, cid != cidSaveCopy);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the data to an item.
 ***************************************************************************/
 bool DOCI::_FSaveToItem(int32_t iv, bool fRedirect)
@@ -1408,7 +1408,7 @@ bool DOCI::_FSaveToItem(int32_t iv, bool fRedirect)
     if (!_FWrite(iv))
         return fFalse;
 
-    // REVIEW shonk: update window names
+    // 3DMMv1.0: REVIEW shonk: update window names
     if (fRedirect)
     {
         _iv = iv;
@@ -1419,7 +1419,7 @@ bool DOCI::_FSaveToItem(int32_t iv, bool fRedirect)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the data to the GRPB at the given item number.
 ***************************************************************************/
 bool DOCI::_FWrite(int32_t iv)
@@ -1475,7 +1475,7 @@ bool DOCI::_FWrite(int32_t iv)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the data from the GRPB and return it in an hq.  Also set the
     _fFixed flag (which indicates if the data is fixed length).
 ***************************************************************************/
@@ -1549,7 +1549,7 @@ HQ DOCI::_HqRead(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DOCI.
 ***************************************************************************/
 void DOCI::AssertValid(uint32_t grf)
@@ -1558,7 +1558,7 @@ void DOCI::AssertValid(uint32_t grf)
     AssertPo(_pgrpb, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DOCI.
 ***************************************************************************/
 void DOCI::MarkMem(void)
@@ -1567,4 +1567,4 @@ void DOCI::MarkMem(void)
     DOCI_PAR::MarkMem();
     MarkMemObj(_pgrpb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

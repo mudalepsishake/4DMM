@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: compiler.h 1.20 1995/05/25 13:37:28 sam Exp $
@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Fixed bitsize integers
      */
     typedef signed long br_int_32;
@@ -26,12 +26,12 @@ extern "C"
     typedef signed char br_int_8;
     typedef unsigned char br_uint_8;
 
-    /*
+    /* BRender:
      * Generic size type (in case target environment does not have size_t)
      */
     typedef unsigned int br_size_t;
 
-    /*
+    /* BRender:
      * Boolean type
      */
     typedef int br_boolean;
@@ -41,7 +41,7 @@ extern "C"
 
 #define BR_BOOLEAN(a) ((a) != 0)
 
-/**
+/** BRender:
  ** Compiler specific declarations
  **
  *
@@ -64,12 +64,12 @@ extern "C"
  * BR_HAS_FAR is !0 if language supports __far pointers
  */
 
-/*
+/* BRender:
  * WATCOM C/C++ 32
  */
 #if defined(__WATCOMC__)
 
-/*
+/* BRender:
  * Use the current default calling convention
  */
 #if defined(__TARGET_MSC__)
@@ -100,13 +100,13 @@ extern "C"
 #define BR_SUFFIX_HOST "-WTC"
 
 #define BR_HAS_FAR 1
-/*
+/* BRender:
  * Stop unreferenced variables producing a warning
  * Things like "rcsid" and unused fucntion arguments
  */
 #pragma off(unreferenced);
 
-/*
+/* BRender:
  * Zortech C++
  */
 #elif defined(__ZTC__)
@@ -121,7 +121,7 @@ extern "C"
 
 #define BR_HAS_FAR 1
 
-/*
+/* BRender:
  * GNU C
  */
 #elif defined(__GNUC__)
@@ -137,7 +137,7 @@ extern "C"
 
 #define BR_HAS_FAR 0
 
-/*
+/* BRender:
  * Apple MPW C
  */
 #elif defined(__MPW__)
@@ -152,7 +152,7 @@ extern "C"
 
 #define BR_HAS_FAR 0
 
-/*
+/* BRender:
  * Intel Proton
  */
 #elif defined(__PROTONC__)
@@ -167,7 +167,7 @@ extern "C"
 
 #define BR_HAS_FAR 1
 
-/*
+/* BRender:
  * Microsoft Visual C++
  */
 #elif defined(_MSC_VER)
@@ -182,7 +182,7 @@ extern "C"
 
 #define BR_HAS_FAR 0
 
-/*
+/* BRender:
  * Metaware High-C Version 1
  */
 #elif defined(__HIGHC_V1__)
@@ -202,7 +202,7 @@ extern "C"
 
 #define stricmp _stricmp
 
-/*
+/* BRender:
  * Metaware High-C Version 3
  */
 #elif defined(__HIGHC__)
@@ -222,7 +222,7 @@ extern "C"
 
 #define stricmp _stricmp
 
-/*
+/* BRender:
  * Borland BC 4
  */
 #elif defined(__BORLANDC__)
@@ -237,7 +237,7 @@ extern "C"
 
 #define BR_HAS_FAR 0
 
-/*
+/* BRender:
  * IBM CSet++
  */
 #elif defined(__IBMC__)
@@ -255,7 +255,7 @@ extern "C"
 #endif
 
 #if defined(__H2INC__)
-/*
+/* BRender:
  * Avoid some tokens that masm chokes on
  */
 #define type _type
@@ -265,7 +265,7 @@ extern "C"
 #define width _width
 #define end _end
 
-/*
+/* BRender:
  * Supress compiler specific declarators
  */
 #undef BR_CALLBACK
@@ -286,7 +286,7 @@ extern "C"
 #define BR_SUFFIX_DEBUG ""
 #endif
 
-/*
+/* BRender:
  * Macros for producing banners & copyright messages
  */
 #define BR_BANNER(title, year, revision)                                                                               \
@@ -298,7 +298,7 @@ extern "C"
         fprintf(stderr, "Copyright (C) " year " by Argonaut Technologies Limited\n");                                  \
     } while (0);
 
-/*
+/* BRender:
  * Useful macro for sizing an array
  */
 #define BR_ASIZE(a) (sizeof(a) / sizeof((a)[0]))

@@ -217,10 +217,12 @@
 // --------------------------------------------------------------
 
 #define VOICE( w, t )\
-	If( ::siiVoice );\
-		StopSound( ::siiVoice );\
-	End;\
-	::siiVoice = PlaySoundThis(kcctgWave, w, 0, 0x00010000, 1, 0, ksclBldgSound)
+	If( !(GetProp( kpridMcZeeAudio ) & kflgMcZeeAudio) );\
+		If( ::siiVoice );\
+			StopSound( ::siiVoice );\
+		End;\
+		::siiVoice = PlaySoundThis(kcctgWave, w, 0, 0x00010000, 1, 0, ksclBldgSound);\
+	End
 
 //	CreateHelpGob( GET_CURRENTPLACE(), t )	Was used for putting up hearing impaired balloon
 

@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -20,7 +20,7 @@ const FTG kftgPict = KLCONST4('P', 'I', 'C', 'T');
 const FTG kftgMeta = KLCONST3('W', 'M', 'F');
 const FTG kftgEnhMeta = KLCONST3('E', 'M', 'F');
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Picture class.  This is a wrapper around a system picture (Mac Pict or
     Win MetaFile).
 ***************************************************************************/
@@ -45,7 +45,7 @@ class PIC : public PIC_PAR
     PIC(void);
 #ifdef WIN
     static HPIC _HpicReadWmf(FNI *pfni);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
   public:
     ~PIC(void);
@@ -66,7 +66,7 @@ class PIC : public PIC_PAR
     virtual bool FWrite(PBLCK pblck) override;
 };
 
-// a chunky resource reader to read picture 0 from a GRAF chunk
+// 3DMMv1.0: a chunky resource reader to read picture 0 from a GRAF chunk
 bool FReadMainPic(PCFL pcfl, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
 
-#endif //! PIC_H
+#endif //! 3DMMv1.0: PIC_H

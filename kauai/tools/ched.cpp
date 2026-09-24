@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Chunky editor.
 
@@ -20,7 +20,7 @@ APP vapp;
 
 RTCLASS(APP)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main for a frame app.
 ***************************************************************************/
 void FrameMain(void)
@@ -28,7 +28,7 @@ void FrameMain(void)
     vapp.Run(fappNil, fgobNil, kginDefault);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the APP - do the command line parsing thing.
 ***************************************************************************/
 bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
@@ -37,7 +37,7 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
         return fFalse;
 
 #ifdef WIN
-    // parse the command line and load any resource files and help files
+    // 3DMMv1.0: parse the command line and load any resource files and help files
     FNI fni;
     STN stn;
     bool fQuote, fScript, fSkip;
@@ -72,14 +72,14 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
 
         if (fSkip)
         {
-            // application path
+            // 3DMMv1.0: application path
             fSkip = fFalse;
             continue;
         }
 
         if (stn.Cch() == 2 && (stn.Psz()[0] == ChLit('/') || stn.Psz()[0] == ChLit('-')))
         {
-            // command line switch
+            // 3DMMv1.0: command line switch
             switch (stn.Psz()[1])
             {
             case ChLit('s'):
@@ -91,7 +91,7 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
 
         if (fScript)
         {
-            // this arg should be a cno
+            // 3DMMv1.0: this arg should be a cno
             fScript = fFalse;
             if (!stn.FGetLw(&lw))
                 continue;
@@ -119,11 +119,11 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
         pdocb->PdmdNew();
         ReleasePpo(&pdocb);
     }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the name for the frame tester app.
 ***************************************************************************/
 void APP::GetStnAppName(PSTN pstn)
@@ -138,12 +138,12 @@ void APP::GetStnAppName(PSTN pstn)
     stnDate.SetSzs(__DATE__);
     stnTime.SetSzs(__TIME__);
     pstn->FFormatSz(Debug(PszLit("Debug ")) PszLit("Ched (Unicode; %s; %s)"), &stnDate, &stnTime);
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
     *pstn = Debug("Debug ") "Ched (Ansi; " __DATE__ "; " __TIME__ ")";
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update the given window.  *prc is the bounding rectangle of the update
     region.
 ***************************************************************************/
@@ -155,14 +155,14 @@ void APP::UpdateHwnd(KWND hwnd, RC *prc, uint32_t grfapp)
     if (pvNil == (pgob = GOB::PgobFromHwnd(hwnd)))
         return;
 
-    // for script windows, do offscreen updating
+    // 3DMMv1.0: for script windows, do offscreen updating
     if (pgob->FIs(kclsTSCG))
         grfapp |= fappOffscreen;
 
     APP_PAR::UpdateHwnd(hwnd, prc, grfapp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a fast update of the gob and its descendents into the given gpt.
 ***************************************************************************/
 void APP::_FastUpdate(PGOB pgob, PREGN pregnClip, uint32_t grfapp, PGPT pgpt)
@@ -178,7 +178,7 @@ void APP::_FastUpdate(PGOB pgob, PREGN pregnClip, uint32_t grfapp, PGPT pgpt)
     APP_PAR::_FastUpdate(pgob, pregnClip, grfapp, pgpt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open an existing or new chunky file for editing.
     Handles cidNew and cidOpen.
 ***************************************************************************/
@@ -196,7 +196,7 @@ bool APP::FCmdOpen(PCMD pcmd)
         return fTrue;
 
     case cidOpen:
-        // do the standard dialog
+        // 3DMMv1.0: do the standard dialog
         if (!FGetFniOpenMacro(&fni, pvNil, 0, PszLit("Chunky Files\0*.chk;*.cfl\0All Files\0*.*\0"), vwig.hwndApp))
         {
             return fTrue;
@@ -207,13 +207,13 @@ bool APP::FCmdOpen(PCMD pcmd)
             pdocb->ActivateDmd();
             return fTrue;
         }
-        // fall through
+        // 3DMMv1.0: fall through
     case cidNew:
         pdocb = (PDOCB)DOC::PdocNew(pfni);
         break;
 
     case cidOpenText:
-        // do the standard dialog
+        // 3DMMv1.0: do the standard dialog
         if (!FGetFniOpenMacro(&fni, pvNil, 0, PszLit("Text Files\0*.txt;*.cht\0All Files\0*.*\0"), vwig.hwndApp))
         {
             return fTrue;
@@ -224,7 +224,7 @@ bool APP::FCmdOpen(PCMD pcmd)
             pdocb->ActivateDmd();
             return fTrue;
         }
-        // fall through
+        // 3DMMv1.0: fall through
     case cidNewText:
         pdocb = (PDOCB)CHTXD::PchtxdNew(pfni, pvNil, oskNil);
         break;

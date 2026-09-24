@@ -1,0 +1,1887 @@
+/* BRenderModern:
+ * Automatically generated from fntp7x9.asm, do not edit.
+ */
+#include <brender.h>
+
+enum {
+    width_space = 3,
+    width_exclam = 1,
+    width_dquote = 3,
+    width_hash = 5,
+    width_dollar = 5,
+    width_percent = 7,
+    width_ampersand = 5,
+    width_quote = 2,
+    width_lparen = 3,
+    width_rparen = 3,
+    width_asterisk = 5,
+    width_plus = 5,
+    width_comma = 2,
+    width_minus = 5,
+    width_period = 2,
+    width_slash = 7,
+    width_0 = 5,
+    width_1 = 5,
+    width_2 = 5,
+    width_3 = 5,
+    width_4 = 5,
+    width_5 = 5,
+    width_6 = 5,
+    width_7 = 5,
+    width_8 = 5,
+    width_9 = 5,
+    width_colon = 2,
+    width_semicolon = 2,
+    width_langle = 4,
+    width_equal = 5,
+    width_rangle = 4,
+    width_query = 5,
+    width_comat = 6,
+    width_A = 5,
+    width_B = 5,
+    width_C = 6,
+    width_D = 6,
+    width_E = 5,
+    width_F = 5,
+    width_G = 6,
+    width_H = 6,
+    width_I = 1,
+    width_J = 5,
+    width_K = 5,
+    width_L = 5,
+    width_M = 7,
+    width_N = 7,
+    width_O = 7,
+    width_P = 5,
+    width_Q = 7,
+    width_R = 5,
+    width_S = 5,
+    width_T = 7,
+    width_U = 5,
+    width_V = 5,
+    width_W = 9,
+    width_X = 7,
+    width_Y = 7,
+    width_Z = 6,
+    width_lsquare = 3,
+    width_bslash = 7,
+    width_rsquare = 3,
+    width_caret = 5,
+    width_underbar = 6,
+    width_bquote = 2,
+    width_a = 5,
+    width_b = 5,
+    width_c = 4,
+    width_d = 5,
+    width_e = 5,
+    width_f = 4,
+    width_g = 5,
+    width_h = 5,
+    width_i = 1,
+    width_j = 2,
+    width_k = 4,
+    width_l = 1,
+    width_m = 7,
+    width_n = 5,
+    width_o = 5,
+    width_p = 5,
+    width_q = 5,
+    width_r = 4,
+    width_s = 5,
+    width_t = 4,
+    width_u = 5,
+    width_v = 5,
+    width_w = 7,
+    width_x = 5,
+    width_y = 5,
+    width_z = 5,
+    width_lbrace = 4,
+    width_vbar = 1,
+    width_rbrace = 4,
+    width_tilde = 7,
+    width_bullet = 6,
+    width_cross = 7,
+    width_tick = 7,
+    width_uparrow = 7,
+    width_downarrow = 7,
+    width_rightarrow = 7,
+    width_leftarrow = 7,
+    width_solidbox = 7,
+    width_cursor = 3,
+};
+
+static const br_int_8 widths[256] = {
+    [0] = width_space,
+    [1] = width_space,
+    [2] = width_space,
+    [3] = width_space,
+    [4] = width_space,
+    [5] = width_space,
+    [6] = width_space,
+    [7] = width_bullet,
+    [8] = width_space,
+    [9] = width_space,
+    [10] = width_space,
+    [11] = width_space,
+    [12] = width_space,
+    [13] = width_space,
+    [14] = width_space,
+    [15] = width_space,
+    [16] = width_space,
+    [17] = width_space,
+    [18] = width_space,
+    [19] = width_space,
+    [20] = width_space,
+    [21] = width_space,
+    [22] = width_space,
+    [23] = width_space,
+    [24] = width_uparrow,
+    [25] = width_downarrow,
+    [26] = width_rightarrow,
+    [27] = width_leftarrow,
+    [28] = width_space,
+    [29] = width_space,
+    [30] = width_space,
+    [31] = width_space,
+    [32] = width_space,
+    [33] = width_exclam,
+    [34] = width_dquote,
+    [35] = width_hash,
+    [36] = width_dollar,
+    [37] = width_percent,
+    [38] = width_ampersand,
+    [39] = width_quote,
+    [40] = width_lparen,
+    [41] = width_rparen,
+    [42] = width_asterisk,
+    [43] = width_plus,
+    [44] = width_comma,
+    [45] = width_minus,
+    [46] = width_period,
+    [47] = width_slash,
+    [48] = width_0,
+    [49] = width_1,
+    [50] = width_2,
+    [51] = width_3,
+    [52] = width_4,
+    [53] = width_5,
+    [54] = width_6,
+    [55] = width_7,
+    [56] = width_8,
+    [57] = width_9,
+    [58] = width_colon,
+    [59] = width_semicolon,
+    [60] = width_langle,
+    [61] = width_equal,
+    [62] = width_rangle,
+    [63] = width_query,
+    [64] = width_comat,
+    [65] = width_A,
+    [66] = width_B,
+    [67] = width_C,
+    [68] = width_D,
+    [69] = width_E,
+    [70] = width_F,
+    [71] = width_G,
+    [72] = width_H,
+    [73] = width_I,
+    [74] = width_J,
+    [75] = width_K,
+    [76] = width_L,
+    [77] = width_M,
+    [78] = width_N,
+    [79] = width_O,
+    [80] = width_P,
+    [81] = width_Q,
+    [82] = width_R,
+    [83] = width_S,
+    [84] = width_T,
+    [85] = width_U,
+    [86] = width_V,
+    [87] = width_W,
+    [88] = width_X,
+    [89] = width_Y,
+    [90] = width_Z,
+    [91] = width_lsquare,
+    [92] = width_bslash,
+    [93] = width_rsquare,
+    [94] = width_caret,
+    [95] = width_underbar,
+    [96] = width_bquote,
+    [97] = width_a,
+    [98] = width_b,
+    [99] = width_c,
+    [100] = width_d,
+    [101] = width_e,
+    [102] = width_f,
+    [103] = width_g,
+    [104] = width_h,
+    [105] = width_i,
+    [106] = width_j,
+    [107] = width_k,
+    [108] = width_l,
+    [109] = width_m,
+    [110] = width_n,
+    [111] = width_o,
+    [112] = width_p,
+    [113] = width_q,
+    [114] = width_r,
+    [115] = width_s,
+    [116] = width_t,
+    [117] = width_u,
+    [118] = width_v,
+    [119] = width_w,
+    [120] = width_x,
+    [121] = width_y,
+    [122] = width_z,
+    [123] = width_lbrace,
+    [124] = width_vbar,
+    [125] = width_rbrace,
+    [126] = width_tilde,
+    [127] = width_space,
+    [128] = width_space,
+    [129] = width_space,
+    [130] = width_space,
+    [131] = width_space,
+    [132] = width_space,
+    [133] = width_space,
+    [134] = width_space,
+    [135] = width_space,
+    [136] = width_space,
+    [137] = width_space,
+    [138] = width_space,
+    [139] = width_space,
+    [140] = width_space,
+    [141] = width_space,
+    [142] = width_space,
+    [143] = width_space,
+    [144] = width_space,
+    [145] = width_space,
+    [146] = width_space,
+    [147] = width_space,
+    [148] = width_space,
+    [149] = width_space,
+    [150] = width_space,
+    [151] = width_space,
+    [152] = width_space,
+    [153] = width_space,
+    [154] = width_space,
+    [155] = width_space,
+    [156] = width_space,
+    [157] = width_space,
+    [158] = width_space,
+    [159] = width_space,
+    [160] = width_space,
+    [161] = width_space,
+    [162] = width_space,
+    [163] = width_space,
+    [164] = width_space,
+    [165] = width_space,
+    [166] = width_space,
+    [167] = width_space,
+    [168] = width_space,
+    [169] = width_space,
+    [170] = width_space,
+    [171] = width_space,
+    [172] = width_space,
+    [173] = width_space,
+    [174] = width_space,
+    [175] = width_space,
+    [176] = width_space,
+    [177] = width_space,
+    [178] = width_space,
+    [179] = width_cursor,
+    [180] = width_space,
+    [181] = width_space,
+    [182] = width_space,
+    [183] = width_space,
+    [184] = width_space,
+    [185] = width_space,
+    [186] = width_space,
+    [187] = width_space,
+    [188] = width_space,
+    [189] = width_space,
+    [190] = width_space,
+    [191] = width_space,
+    [192] = width_space,
+    [193] = width_space,
+    [194] = width_space,
+    [195] = width_space,
+    [196] = width_space,
+    [197] = width_space,
+    [198] = width_space,
+    [199] = width_space,
+    [200] = width_space,
+    [201] = width_space,
+    [202] = width_space,
+    [203] = width_space,
+    [204] = width_space,
+    [205] = width_space,
+    [206] = width_space,
+    [207] = width_space,
+    [208] = width_space,
+    [209] = width_space,
+    [210] = width_space,
+    [211] = width_space,
+    [212] = width_space,
+    [213] = width_space,
+    [214] = width_space,
+    [215] = width_space,
+    [216] = width_space,
+    [217] = width_space,
+    [218] = width_space,
+    [219] = width_solidbox,
+    [220] = width_space,
+    [221] = width_space,
+    [222] = width_space,
+    [223] = width_space,
+    [224] = width_space,
+    [225] = width_space,
+    [226] = width_space,
+    [227] = width_space,
+    [228] = width_space,
+    [229] = width_space,
+    [230] = width_space,
+    [231] = width_space,
+    [232] = width_space,
+    [233] = width_space,
+    [234] = width_space,
+    [235] = width_space,
+    [236] = width_space,
+    [237] = width_space,
+    [238] = width_space,
+    [239] = width_space,
+    [240] = width_space,
+    [241] = width_space,
+    [242] = width_space,
+    [243] = width_space,
+    [244] = width_space,
+    [245] = width_space,
+    [246] = width_space,
+    [247] = width_space,
+    [248] = width_space,
+    [249] = width_space,
+    [250] = width_space,
+    [251] = width_tick,
+    [252] = width_space,
+    [253] = width_space,
+    [254] = width_space,
+    [255] = width_space,
+};
+
+static const br_uint_8 glyph_space[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_exclam[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_dquote[9] = {
+    0xa0, /* BRenderModern: 0b10100000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_hash[9] = {
+    0x50, /* BRenderModern: 0b01010000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_dollar[9] = {
+    0x20, /* BRenderModern: 0b00100000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_percent[9] = {
+    0x42, /* BRenderModern: 0b01000010 */
+    0xa4, /* BRenderModern: 0b10100100 */
+    0x48, /* BRenderModern: 0b01001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x24, /* BRenderModern: 0b00100100 */
+    0x4a, /* BRenderModern: 0b01001010 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_ampersand[9] = {
+    0x20, /* BRenderModern: 0b00100000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x60, /* BRenderModern: 0b01100000 */
+    0x98, /* BRenderModern: 0b10011000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0x68, /* BRenderModern: 0b01101000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_quote[9] = {
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_lparen[9] = {
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_rparen[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_asterisk[9] = {
+    0x50, /* BRenderModern: 0b01010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_plus[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_comma[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_minus[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_period[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_slash[9] = {
+    0x02, /* BRenderModern: 0b00000010 */
+    0x04, /* BRenderModern: 0b00000100 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_0[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_1[9] = {
+    0x20, /* BRenderModern: 0b00100000 */
+    0x60, /* BRenderModern: 0b01100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_2[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_3[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x30, /* BRenderModern: 0b00110000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_4[9] = {
+    0x10, /* BRenderModern: 0b00010000 */
+    0x30, /* BRenderModern: 0b00110000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_5[9] = {
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_6[9] = {
+    0x30, /* BRenderModern: 0b00110000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_7[9] = {
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_8[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_9[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x60, /* BRenderModern: 0b01100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_colon[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_semicolon[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_langle[9] = {
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_equal[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_rangle[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_query[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_comat[9] = {
+    0x78, /* BRenderModern: 0b01111000 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0xa4, /* BRenderModern: 0b10100100 */
+    0xa4, /* BRenderModern: 0b10100100 */
+    0xb8, /* BRenderModern: 0b10111000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_A[9] = {
+    0x20, /* BRenderModern: 0b00100000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_B[9] = {
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_C[9] = {
+    0x38, /* BRenderModern: 0b00111000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_D[9] = {
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_E[9] = {
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_F[9] = {
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_G[9] = {
+    0x38, /* BRenderModern: 0b00111000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x8c, /* BRenderModern: 0b10001100 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x3c, /* BRenderModern: 0b00111100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_H[9] = {
+    0x84, /* BRenderModern: 0b10000100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x84, /* BRenderModern: 0b10000100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_I[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_J[9] = {
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_K[9] = {
+    0x88, /* BRenderModern: 0b10001000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0xc0, /* BRenderModern: 0b11000000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_L[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_M[9] = {
+    0x82, /* BRenderModern: 0b10000010 */
+    0xc6, /* BRenderModern: 0b11000110 */
+    0xaa, /* BRenderModern: 0b10101010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_N[9] = {
+    0x82, /* BRenderModern: 0b10000010 */
+    0xc2, /* BRenderModern: 0b11000010 */
+    0xa2, /* BRenderModern: 0b10100010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x8a, /* BRenderModern: 0b10001010 */
+    0x86, /* BRenderModern: 0b10000110 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_O[9] = {
+    0x38, /* BRenderModern: 0b00111000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_P[9] = {
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_Q[9] = {
+    0x38, /* BRenderModern: 0b00111000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x0e, /* BRenderModern: 0b00001110 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_R[9] = {
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_S[9] = {
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_T[9] = {
+    0xfe, /* BRenderModern: 0b11111110 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_U[9] = {
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_V[9] = {
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_W[18] = {
+    0x88, 0x80, /* BRenderModern: 0b10001000, 0b10000000 */
+    0x88, 0x80, /* BRenderModern: 0b10001000, 0b10000000 */
+    0x88, 0x80, /* BRenderModern: 0b10001000, 0b10000000 */
+    0x88, 0x80, /* BRenderModern: 0b10001000, 0b10000000 */
+    0x88, 0x80, /* BRenderModern: 0b10001000, 0b10000000 */
+    0x55, 0x00, /* BRenderModern: 0b01010101, 0b00000000 */
+    0x22, 0x00, /* BRenderModern: 0b00100010, 0b00000000 */
+    0x00, 0x00, /* BRenderModern: 0b00000000, 0b00000000 */
+    0x00, 0x00, /* BRenderModern: 0b00000000, 0b00000000 */
+};
+
+static const br_uint_8 glyph_X[9] = {
+    0x82, /* BRenderModern: 0b10000010 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x28, /* BRenderModern: 0b00101000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x28, /* BRenderModern: 0b00101000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x82, /* BRenderModern: 0b10000010 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_Y[9] = {
+    0x82, /* BRenderModern: 0b10000010 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x28, /* BRenderModern: 0b00101000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_Z[9] = {
+    0xfc, /* BRenderModern: 0b11111100 */
+    0x04, /* BRenderModern: 0b00000100 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_lsquare[9] = {
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_bslash[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x04, /* BRenderModern: 0b00000100 */
+    0x02, /* BRenderModern: 0b00000010 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_rsquare[9] = {
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_caret[9] = {
+    0x20, /* BRenderModern: 0b00100000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_underbar[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xfc, /* BRenderModern: 0b11111100 */
+};
+
+static const br_uint_8 glyph_bquote[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_a[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_b[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_c[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_d[9] = {
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_e[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_f[9] = {
+    0x30, /* BRenderModern: 0b00110000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_g[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+};
+
+static const br_uint_8 glyph_h[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_i[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_j[9] = {
+    0x40, /* BRenderModern: 0b01000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+};
+
+static const br_uint_8 glyph_k[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0xc0, /* BRenderModern: 0b11000000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+    0x90, /* BRenderModern: 0b10010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_l[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_m[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xec, /* BRenderModern: 0b11101100 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_n[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xb0, /* BRenderModern: 0b10110000 */
+    0xc8, /* BRenderModern: 0b11001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_o[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_p[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0xf0, /* BRenderModern: 0b11110000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+};
+
+static const br_uint_8 glyph_q[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x08, /* BRenderModern: 0b00001000 */
+};
+
+static const br_uint_8 glyph_r[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xb0, /* BRenderModern: 0b10110000 */
+    0xc0, /* BRenderModern: 0b11000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_s[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_t[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0xe0, /* BRenderModern: 0b11100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x30, /* BRenderModern: 0b00110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_u[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x98, /* BRenderModern: 0b10011000 */
+    0x68, /* BRenderModern: 0b01101000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_v[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_w[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x92, /* BRenderModern: 0b10010010 */
+    0x6c, /* BRenderModern: 0b01101100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_x[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_y[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x08, /* BRenderModern: 0b00001000 */
+    0x70, /* BRenderModern: 0b01110000 */
+};
+
+static const br_uint_8 glyph_z[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0xf8, /* BRenderModern: 0b11111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_lbrace[9] = {
+    0x30, /* BRenderModern: 0b00110000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x30, /* BRenderModern: 0b00110000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_vbar[9] = {
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x80, /* BRenderModern: 0b10000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_rbrace[9] = {
+    0xc0, /* BRenderModern: 0b11000000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0xc0, /* BRenderModern: 0b11000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_tilde[9] = {
+    0x76, /* BRenderModern: 0b01110110 */
+    0xdc, /* BRenderModern: 0b11011100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_bullet[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0x78, /* BRenderModern: 0b01111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_cross[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x28, /* BRenderModern: 0b00101000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x28, /* BRenderModern: 0b00101000 */
+    0x44, /* BRenderModern: 0b01000100 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_tick[9] = {
+    0x00, /* BRenderModern: 0b00000000 */
+    0x02, /* BRenderModern: 0b00000010 */
+    0x04, /* BRenderModern: 0b00000100 */
+    0x88, /* BRenderModern: 0b10001000 */
+    0x50, /* BRenderModern: 0b01010000 */
+    0x20, /* BRenderModern: 0b00100000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_uparrow[9] = {
+    0x10, /* BRenderModern: 0b00010000 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x7c, /* BRenderModern: 0b01111100 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_downarrow[9] = {
+    0x38, /* BRenderModern: 0b00111000 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0x7c, /* BRenderModern: 0b01111100 */
+    0x38, /* BRenderModern: 0b00111000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_rightarrow[9] = {
+    0x10, /* BRenderModern: 0b00010000 */
+    0x18, /* BRenderModern: 0b00011000 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfc, /* BRenderModern: 0b11111100 */
+    0x18, /* BRenderModern: 0b00011000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_leftarrow[9] = {
+    0x10, /* BRenderModern: 0b00010000 */
+    0x30, /* BRenderModern: 0b00110000 */
+    0x7e, /* BRenderModern: 0b01111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0x7e, /* BRenderModern: 0b01111110 */
+    0x30, /* BRenderModern: 0b00110000 */
+    0x10, /* BRenderModern: 0b00010000 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_solidbox[9] = {
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0xfe, /* BRenderModern: 0b11111110 */
+    0x00, /* BRenderModern: 0b00000000 */
+    0x00, /* BRenderModern: 0b00000000 */
+};
+
+static const br_uint_8 glyph_cursor[9] = {
+    0xa0, /* BRenderModern: 0b10100000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0x40, /* BRenderModern: 0b01000000 */
+    0xa0, /* BRenderModern: 0b10100000 */
+};
+
+static const br_uint_8 *encodings[256] = {
+    [0] = glyph_space,
+    [1] = glyph_space,
+    [2] = glyph_space,
+    [3] = glyph_space,
+    [4] = glyph_space,
+    [5] = glyph_space,
+    [6] = glyph_space,
+    [7] = glyph_bullet,
+    [8] = glyph_space,
+    [9] = glyph_space,
+    [10] = glyph_space,
+    [11] = glyph_space,
+    [12] = glyph_space,
+    [13] = glyph_space,
+    [14] = glyph_space,
+    [15] = glyph_space,
+    [16] = glyph_space,
+    [17] = glyph_space,
+    [18] = glyph_space,
+    [19] = glyph_space,
+    [20] = glyph_space,
+    [21] = glyph_space,
+    [22] = glyph_space,
+    [23] = glyph_space,
+    [24] = glyph_uparrow,
+    [25] = glyph_downarrow,
+    [26] = glyph_rightarrow,
+    [27] = glyph_leftarrow,
+    [28] = glyph_space,
+    [29] = glyph_space,
+    [30] = glyph_space,
+    [31] = glyph_space,
+    [32] = glyph_space,
+    [33] = glyph_exclam,
+    [34] = glyph_dquote,
+    [35] = glyph_hash,
+    [36] = glyph_dollar,
+    [37] = glyph_percent,
+    [38] = glyph_ampersand,
+    [39] = glyph_quote,
+    [40] = glyph_lparen,
+    [41] = glyph_rparen,
+    [42] = glyph_asterisk,
+    [43] = glyph_plus,
+    [44] = glyph_comma,
+    [45] = glyph_minus,
+    [46] = glyph_period,
+    [47] = glyph_slash,
+    [48] = glyph_0,
+    [49] = glyph_1,
+    [50] = glyph_2,
+    [51] = glyph_3,
+    [52] = glyph_4,
+    [53] = glyph_5,
+    [54] = glyph_6,
+    [55] = glyph_7,
+    [56] = glyph_8,
+    [57] = glyph_9,
+    [58] = glyph_colon,
+    [59] = glyph_semicolon,
+    [60] = glyph_langle,
+    [61] = glyph_equal,
+    [62] = glyph_rangle,
+    [63] = glyph_query,
+    [64] = glyph_comat,
+    [65] = glyph_A,
+    [66] = glyph_B,
+    [67] = glyph_C,
+    [68] = glyph_D,
+    [69] = glyph_E,
+    [70] = glyph_F,
+    [71] = glyph_G,
+    [72] = glyph_H,
+    [73] = glyph_I,
+    [74] = glyph_J,
+    [75] = glyph_K,
+    [76] = glyph_L,
+    [77] = glyph_M,
+    [78] = glyph_N,
+    [79] = glyph_O,
+    [80] = glyph_P,
+    [81] = glyph_Q,
+    [82] = glyph_R,
+    [83] = glyph_S,
+    [84] = glyph_T,
+    [85] = glyph_U,
+    [86] = glyph_V,
+    [87] = glyph_W,
+    [88] = glyph_X,
+    [89] = glyph_Y,
+    [90] = glyph_Z,
+    [91] = glyph_lsquare,
+    [92] = glyph_bslash,
+    [93] = glyph_rsquare,
+    [94] = glyph_caret,
+    [95] = glyph_underbar,
+    [96] = glyph_bquote,
+    [97] = glyph_a,
+    [98] = glyph_b,
+    [99] = glyph_c,
+    [100] = glyph_d,
+    [101] = glyph_e,
+    [102] = glyph_f,
+    [103] = glyph_g,
+    [104] = glyph_h,
+    [105] = glyph_i,
+    [106] = glyph_j,
+    [107] = glyph_k,
+    [108] = glyph_l,
+    [109] = glyph_m,
+    [110] = glyph_n,
+    [111] = glyph_o,
+    [112] = glyph_p,
+    [113] = glyph_q,
+    [114] = glyph_r,
+    [115] = glyph_s,
+    [116] = glyph_t,
+    [117] = glyph_u,
+    [118] = glyph_v,
+    [119] = glyph_w,
+    [120] = glyph_x,
+    [121] = glyph_y,
+    [122] = glyph_z,
+    [123] = glyph_lbrace,
+    [124] = glyph_vbar,
+    [125] = glyph_rbrace,
+    [126] = glyph_tilde,
+    [127] = glyph_space,
+    [128] = glyph_space,
+    [129] = glyph_space,
+    [130] = glyph_space,
+    [131] = glyph_space,
+    [132] = glyph_space,
+    [133] = glyph_space,
+    [134] = glyph_space,
+    [135] = glyph_space,
+    [136] = glyph_space,
+    [137] = glyph_space,
+    [138] = glyph_space,
+    [139] = glyph_space,
+    [140] = glyph_space,
+    [141] = glyph_space,
+    [142] = glyph_space,
+    [143] = glyph_space,
+    [144] = glyph_space,
+    [145] = glyph_space,
+    [146] = glyph_space,
+    [147] = glyph_space,
+    [148] = glyph_space,
+    [149] = glyph_space,
+    [150] = glyph_space,
+    [151] = glyph_space,
+    [152] = glyph_space,
+    [153] = glyph_space,
+    [154] = glyph_space,
+    [155] = glyph_space,
+    [156] = glyph_space,
+    [157] = glyph_space,
+    [158] = glyph_space,
+    [159] = glyph_space,
+    [160] = glyph_space,
+    [161] = glyph_space,
+    [162] = glyph_space,
+    [163] = glyph_space,
+    [164] = glyph_space,
+    [165] = glyph_space,
+    [166] = glyph_space,
+    [167] = glyph_space,
+    [168] = glyph_space,
+    [169] = glyph_space,
+    [170] = glyph_space,
+    [171] = glyph_space,
+    [172] = glyph_space,
+    [173] = glyph_space,
+    [174] = glyph_space,
+    [175] = glyph_space,
+    [176] = glyph_space,
+    [177] = glyph_space,
+    [178] = glyph_space,
+    [179] = glyph_cursor,
+    [180] = glyph_space,
+    [181] = glyph_space,
+    [182] = glyph_space,
+    [183] = glyph_space,
+    [184] = glyph_space,
+    [185] = glyph_space,
+    [186] = glyph_space,
+    [187] = glyph_space,
+    [188] = glyph_space,
+    [189] = glyph_space,
+    [190] = glyph_space,
+    [191] = glyph_space,
+    [192] = glyph_space,
+    [193] = glyph_space,
+    [194] = glyph_space,
+    [195] = glyph_space,
+    [196] = glyph_space,
+    [197] = glyph_space,
+    [198] = glyph_space,
+    [199] = glyph_space,
+    [200] = glyph_space,
+    [201] = glyph_space,
+    [202] = glyph_space,
+    [203] = glyph_space,
+    [204] = glyph_space,
+    [205] = glyph_space,
+    [206] = glyph_space,
+    [207] = glyph_space,
+    [208] = glyph_space,
+    [209] = glyph_space,
+    [210] = glyph_space,
+    [211] = glyph_space,
+    [212] = glyph_space,
+    [213] = glyph_space,
+    [214] = glyph_space,
+    [215] = glyph_space,
+    [216] = glyph_space,
+    [217] = glyph_space,
+    [218] = glyph_space,
+    [219] = glyph_solidbox,
+    [220] = glyph_space,
+    [221] = glyph_space,
+    [222] = glyph_space,
+    [223] = glyph_space,
+    [224] = glyph_space,
+    [225] = glyph_space,
+    [226] = glyph_space,
+    [227] = glyph_space,
+    [228] = glyph_space,
+    [229] = glyph_space,
+    [230] = glyph_space,
+    [231] = glyph_space,
+    [232] = glyph_space,
+    [233] = glyph_space,
+    [234] = glyph_space,
+    [235] = glyph_space,
+    [236] = glyph_space,
+    [237] = glyph_space,
+    [238] = glyph_space,
+    [239] = glyph_space,
+    [240] = glyph_space,
+    [241] = glyph_space,
+    [242] = glyph_space,
+    [243] = glyph_space,
+    [244] = glyph_space,
+    [245] = glyph_space,
+    [246] = glyph_space,
+    [247] = glyph_space,
+    [248] = glyph_space,
+    [249] = glyph_space,
+    [250] = glyph_space,
+    [251] = glyph_tick,
+    [252] = glyph_space,
+    [253] = glyph_space,
+    [254] = glyph_space,
+    [255] = glyph_space,
+};
+
+br_font _FontProp7x9 = {
+	.flags     = BR_FONTF_PROPORTIONAL,
+	.glyph_x   = 7,
+	.glyph_y   = 9,
+	.spacing_x = 8,
+	.spacing_y = 10,
+	.width     = widths,
+	.encoding  = encodings,
+};

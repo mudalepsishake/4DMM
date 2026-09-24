@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -16,7 +16,7 @@
 #ifndef MSSIO_H
 #define MSSIO_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Standard i/o message sink.
 ***************************************************************************/
 typedef class MSSIO *PMSSIO;
@@ -34,4 +34,4 @@ class MSSIO : public MSSIO_PAR
     virtual bool FError(void) override;
 };
 
-#endif //! MSSIO_H
+#endif //! 3DMMv1.0: MSSIO_H

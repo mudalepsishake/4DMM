@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,25 +15,25 @@ ASSERTNAME
 
 struct HQH
 {
-    int32_t cb;       // size of client area
-    int32_t cactLock; // lock count
+    int32_t cb;       // 3DMMv1.0: size of client area
+    int32_t cactLock; // 3DMMv1.0: lock count
 #ifdef DEBUG
-    int32_t lwMagic; // for detecting memory trashing
-#endif               // DEBUG
+    int32_t lwMagic; // 3DMMv1.0: for detecting memory trashing
+#endif               // 3DMMv1.0: DEBUG
 };
 
 #ifdef DEBUG
 int32_t vcactSuspendCheckPointers = 0;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocates a new moveable block.
 ***************************************************************************/
 #ifdef DEBUG
 bool FAllocHqDebug(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr, PSZS pszsFile, int32_t lwLine)
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertVarMem(phq);
     AssertIn(cb, 0, kcbMax);
@@ -55,7 +55,7 @@ bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
     return pvNil != *phq;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resizes the given hq.  *phq may change.  If fmemClear, clears any
     newly added space.
 ***************************************************************************/
@@ -88,7 +88,7 @@ bool FResizePhq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If hq is not nil, frees it.
 ***************************************************************************/
 void FreePhq(HQ *phq)
@@ -106,7 +106,7 @@ void FreePhq(HQ *phq)
     FreePpvDebug((void **)&phqh, &vdmglob.dmaglHq);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new HQ the same size as hqSrc and copy hqSrc into it.
 ***************************************************************************/
 bool FCopyHq(HQ hqSrc, HQ *phqDst, int32_t mpr)
@@ -121,7 +121,7 @@ bool FCopyHq(HQ hqSrc, HQ *phqDst, int32_t mpr)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the size of the hq (the client area of the block).
 ***************************************************************************/
 int32_t CbOfHq(HQ hq)
@@ -132,7 +132,7 @@ int32_t CbOfHq(HQ hq)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns a volatile pointer from an hq.
 ***************************************************************************/
 void *QvFromHq(HQ hq)
@@ -140,9 +140,9 @@ void *QvFromHq(HQ hq)
     AssertHq(hq);
     return (void *)hq;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Lock the hq and return a pointer to the data.
 ***************************************************************************/
 void *PvLockHq(HQ hq)
@@ -154,7 +154,7 @@ void *PvLockHq(HQ hq)
     return (void *)hq;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlock the hq.  Asserts and does nothing if the lock count is zero.
 ***************************************************************************/
 void UnlockHq(HQ hq)
@@ -167,19 +167,19 @@ void UnlockHq(HQ hq)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that a given hq is valid.
 ***************************************************************************/
 void AssertHq(HQ hq)
 {
-    // make sure hq isn't nil
+    // 3DMMv1.0: make sure hq isn't nil
     if (hq == hqNil)
     {
         Bug("hq is nil");
         return;
     }
 
-    // verify the HQH
+    // 3DMMv1.0: verify the HQH
     HQH *phqh = (HQH *)PvSubBv(hq, SIZEOF(HQH));
     if (phqh->lwMagic != klwMagicMem)
     {
@@ -190,7 +190,7 @@ void AssertHq(HQ hq)
     AssertPvAlloced(phqh, phqh->cb + SIZEOF(HQH));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increment the ref count on an hq.
 ***************************************************************************/
 void MarkHq(HQ hq)
@@ -202,7 +202,7 @@ void MarkHq(HQ hq)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure we can access a pointer's memory.  If cb is 0, pv can be
     anything (including nil).
 ***************************************************************************/
@@ -210,13 +210,13 @@ void AssertPvCb(const void *pv, int32_t cb)
 {
     if (vcactSuspendCheckPointers == 0 && cb != 0)
     {
-        // This assert has been disabled because AssertPvCb is called on pointers to
-        // globals which were previously read/write but are now read-only.
+        // 3DMMEx: This assert has been disabled because AssertPvCb is called on pointers to
+        // 3DMMEx: globals which were previously read/write but are now read-only.
 
-        // AssertVar(!IsBadWritePtr(pv, cb), "no write access to ptr", &pv);
-        //  I (ShonK) am assuming that write access implies read access for
-        //  memory, so it would just be a waste of time to call this.
-        //  AssertVar(!IsBadReadPtr(pv, cb), "no read access to ptr", &pv);
+        // 3DMMEx: AssertVar(!IsBadWritePtr(pv, cb), "no write access to ptr", &pv);
+        // 3DMMv1.0:  I (ShonK) am assuming that write access implies read access for
+        // 3DMMv1.0:  memory, so it would just be a waste of time to call this.
+        // 3DMMv1.0:  AssertVar(!IsBadReadPtr(pv, cb), "no read access to ptr", &pv);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

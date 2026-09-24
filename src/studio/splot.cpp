@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     splot.cpp: Splot machine class
 
@@ -22,7 +22,7 @@ ON_CID_GEN(cidSplotOk, &SPLOT::FCmdDismiss, pvNil)
 ON_CID_GEN(cidSplotCancel, &SPLOT::FCmdDismiss, pvNil)
 END_CMD_MAP_NIL()
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     PsplotNew
         Creates a new SPLOT instance.
 
@@ -65,7 +65,7 @@ PSPLOT SPLOT::PsplotNew(int32_t hidPar, int32_t hid, PRCA prca)
         goto LFail;
     }
 
-    /* Copy random number generator and palette */
+    /* 3DMMv1.0: Copy random number generator and palette */
     psplot->_pglclrSav = pglclr;
     psplot->_pglclrSav->AddRef();
 
@@ -74,7 +74,7 @@ LFail:
     return psplot;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdInit
         Initializes the splot machine; right now, just sets up the movie
         and MVU for the splot machine, inside the given GOK parent.  In the
@@ -127,7 +127,7 @@ LFail:
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdSplot
         Actually generates some random content for the splot machine.  Grab
         content here, since sometimes we'll have to retrieve content here
@@ -153,10 +153,10 @@ bool SPLOT::FCmdSplot(PCMD pcmd)
 
     vapp.BeginLongOp();
 
-    /* On failure, pretend that we didn't change anything */
+    /* 3DMMv1.0: On failure, pretend that we didn't change anything */
     _fDirty = fFalse;
 
-    /* Background.  New background implies new camera view */
+    /* 3DMMv1.0: Background.  New background implies new camera view */
     if (_pbclBkgd == pvNil)
     {
         cki.ctg = kctgBkth;
@@ -181,7 +181,7 @@ bool SPLOT::FCmdSplot(PCMD pcmd)
         fDirty = fTrue;
     }
 
-    /* Camera */
+    /* 3DMMv1.0: Camera */
     if (_pbclCam == pvNil)
     {
         _pbclBkgd->GetThd(_ithdBkgd, &thd);
@@ -202,7 +202,7 @@ bool SPLOT::FCmdSplot(PCMD pcmd)
         fDirty = fTrue;
     }
 
-    /* Actor & Props */
+    /* 3DMMv1.0: Actor & Props */
     if (_pbclActr == pvNil)
     {
         cki.ctg = kctgTmth;
@@ -234,7 +234,7 @@ bool SPLOT::FCmdSplot(PCMD pcmd)
         fDirty = fTrue;
     }
 
-    /* Background music */
+    /* 3DMMv1.0: Background music */
     if (_pbclSound == pvNil)
     {
         cki.ctg = kctgSmth;
@@ -260,7 +260,7 @@ LFail:
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdUpdate
         Show the new movie on the screen.
 
@@ -287,26 +287,26 @@ bool SPLOT::FCmdUpdate(PCMD pcmd)
         _pmvie->Pmsq()->SndOff();
 
 #ifdef BUG1907
-        // We will run out of disk space eventually if the HD cache is not
-        // periodically cleared.  We don't want to do it on every pull of the
-        // lever, because there's a significant time hit (especially if you're
-        // only pulling a "small lever", which only has to cache one new thing
-        // unless you clear the cache).  Ideally, this algorithm would only
-        // purge the cache if disk space is getting low on the volume that
-        // tagman is caching to, but there's currently no way to do that, so
-        // just purge every five pulls.
+        // 3DMMv1.0: We will run out of disk space eventually if the HD cache is not
+        // 3DMMv1.0: periodically cleared.  We don't want to do it on every pull of the
+        // 3DMMv1.0: lever, because there's a significant time hit (especially if you're
+        // 3DMMv1.0: only pulling a "small lever", which only has to cache one new thing
+        // 3DMMv1.0: unless you clear the cache).  Ideally, this algorithm would only
+        // 3DMMv1.0: purge the cache if disk space is getting low on the volume that
+        // 3DMMv1.0: tagman is caching to, but there's currently no way to do that, so
+        // 3DMMv1.0: just purge every five pulls.
         static int32_t _cactPullTilClearCache = 5;
 
-        _pmvie->Pmsq()->StopAll(); // Make sure no sounds are streaming from HD cache
+        _pmvie->Pmsq()->StopAll(); // 3DMMv1.0: Make sure no sounds are streaming from HD cache
         if (--_cactPullTilClearCache == 0)
         {
-            vptagm->ClearCache(sidNil, ftagmFile); // Clear content out of HD cache
+            vptagm->ClearCache(sidNil, ftagmFile); // 3DMMv1.0: Clear content out of HD cache
             _cactPullTilClearCache = 5;
         }
-#endif // BUG1907
+#endif // 3DMMv1.0: BUG1907
 
-        /* No tags need to be opened, because all are from installed content */
-        /* Still need to ensure on HD though */
+        /* 3DMMv1.0: No tags need to be opened, because all are from installed content */
+        /* 3DMMv1.0: Still need to ensure on HD though */
         _pbclBkgd->GetThd(_ithdBkgd, &thd);
         Assert(thd.tag.sid != ksidUseCrf, "Need to open tag before using it");
         if (!BKGD::FCacheToHD(&thd.tag))
@@ -359,7 +359,7 @@ LFail:
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdDismiss
         Okays or Cancels the Splot Machine.
 
@@ -375,7 +375,7 @@ bool SPLOT::FCmdDismiss(PCMD pcmd)
 
     if (pcmd->cid == cidSplotOk)
     {
-        /* Attempt to release the current scene so that we'll force a palette
+        /* 3DMMv1.0: Attempt to release the current scene so that we'll force a palette
             update when we come back into the studio. Don't sweat a failure */
         _pmvie->FSwitchScen(ivNil);
         _pmvie->ClearUndo();
@@ -384,12 +384,12 @@ bool SPLOT::FCmdDismiss(PCMD pcmd)
 #ifdef BUG1907
     else
     {
-        _pmvie->Pmsq()->StopAll();             // Make sure no sounds are streaming from HD cache
-        vptagm->ClearCache(sidNil, ftagmFile); // Clear content out of HD cache
-        // Note: could clear out the RAM cache too, but I'm keeping this change
-        // as small as possible.
+        _pmvie->Pmsq()->StopAll();             // 3DMMv1.0: Make sure no sounds are streaming from HD cache
+        vptagm->ClearCache(sidNil, ftagmFile); // 3DMMv1.0: Clear content out of HD cache
+        // 3DMMv1.0: Note: could clear out the RAM cache too, but I'm keeping this change
+        // 3DMMv1.0: as small as possible.
     }
-#endif // BUG1907
+#endif // 3DMMv1.0: BUG1907
 
     Release();
 
@@ -400,7 +400,7 @@ SPLOT::~SPLOT(void)
 {
     if (_pmvie != pvNil)
     {
-        /* This should be freed when its parent, the Splot Machine View gob, is
+        /* 3DMMv1.0: This should be freed when its parent, the Splot Machine View gob, is
             freed */
         Assert(_pmvie->PddgGet(0) == pvNil, "MVU wasn't freed");
 
@@ -453,4 +453,4 @@ void SPLOT::MarkMem(void)
     _sflProp.MarkMem();
     _sflSound.MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -20,13 +20,13 @@ ASSERTNAME
 
 #include "chtrans.h"
 
-// Check sizes of character types that are used in the file format
+// 3DMMEx: Check sizes of character types that are used in the file format
 VERIFY_STRUCT_SIZE(schar, 1);
 VERIFY_STRUCT_SIZE(wchar, 2);
 
 const achar vrgchHex[] = PszLit("0123456789ABCDEF");
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a string based on another string.
 ***************************************************************************/
 STN::STN(STN &stnSrc)
@@ -37,7 +37,7 @@ STN::STN(STN &stnSrc)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a string based on an sz.
 ***************************************************************************/
 STN::STN(PCSZ pszSrc)
@@ -51,7 +51,7 @@ STN::STN(PCSZ pszSrc)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assignment of one string to another.
 ***************************************************************************/
 STN &STN::operator=(STN &stnSrc)
@@ -64,7 +64,7 @@ STN &STN::operator=(STN &stnSrc)
     return *this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the string to the given array of characters.
 ***************************************************************************/
 void STN::SetRgch(const achar *prgchSrc, int32_t cch)
@@ -79,14 +79,14 @@ void STN::SetRgch(const achar *prgchSrc, int32_t cch)
     if (cch > 0)
         CopyPb(prgchSrc, _rgch + 1, cch * SIZEOF(achar));
     else
-        cch = 0; // for safety
+        cch = 0; // 3DMMv1.0: for safety
 
     _rgch[0] = (achar)cch;
     _rgch[cch + 1] = 0;
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the zero terminated short character string into the STN.
 ***************************************************************************/
 void STN::SetSzs(PSZS pszsSrc)
@@ -114,16 +114,16 @@ void STN::SetSzs(PSZS pszsSrc)
         _rgch[cch] = 0;
     }
 
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement
-#endif        // MAC
-#else         //! UNICODE
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement
+#endif        // 3DMMv1.0: MAC
+#else         //! 3DMMv1.0: UNICODE
     SetSz(pszsSrc);
-#endif        // UNICODE
+#endif        // 3DMMv1.0: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Put the zero terminated UTF-8 string into the STN.
 ***************************************************************************/
 void STN::SetUtf8Sz(PU8SZ pu8szSrc)
@@ -141,7 +141,7 @@ void STN::SetUtf8Sz(PU8SZ pu8szSrc)
     int32_t cb;
     wchar wszT[kcchMaxSz];
 
-    // Convert the string to Unicode
+    // 3DMMEx: Convert the string to Unicode
     cch = MultiByteToWideChar(CP_UTF8, 0, pu8szSrc, -1, wszT, kcchMaxSz);
     if (cch == 0)
     {
@@ -151,11 +151,11 @@ void STN::SetUtf8Sz(PU8SZ pu8szSrc)
     }
 
 #ifdef UNICODE
-    // No more conversion needed
+    // 3DMMEx: No more conversion needed
     SetSz(wszT);
-#else // !UNICODE
+#else // 3DMMEx: !UNICODE
 
-    // Convert the string to the current code page
+    // 3DMMEx: Convert the string to the current code page
     char szT[kcchMaxSz];
     cch = WideCharToMultiByte(CP_ACP, 0, wszT, -1, szT, kcchMaxSz, pvNil, pvNil);
     if (cch == 0)
@@ -166,9 +166,9 @@ void STN::SetUtf8Sz(PU8SZ pu8szSrc)
     }
     SetSz(szT);
 
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
 
-#else  // !WIN
+#else  // 3DMMEx: !WIN
     int32_t cb;
     iconv_t ic;
     char szT[kcchMaxSz];
@@ -190,10 +190,10 @@ void STN::SetUtf8Sz(PU8SZ pu8szSrc)
     szT[cb] = 0;
 
     SetSz(szT);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete (at most) cch characters starting at position ich.
 ***************************************************************************/
 void STN::Delete(int32_t ich, int32_t cch)
@@ -210,7 +210,7 @@ void STN::Delete(int32_t ich, int32_t cch)
 
     if (ich + cch >= cchCur)
     {
-        // delete to the end of the string
+        // 3DMMv1.0: delete to the end of the string
         _rgch[0] = (achar)ich;
         _rgch[ich + 1] = 0;
     }
@@ -223,7 +223,7 @@ void STN::Delete(int32_t ich, int32_t cch)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append some characters to the end of the string.
 ***************************************************************************/
 bool STN::FAppendRgch(const achar *prgchSrc, int32_t cch)
@@ -251,7 +251,7 @@ bool STN::FAppendRgch(const achar *prgchSrc, int32_t cch)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert some characters into the middle of a string.
 ***************************************************************************/
 bool STN::FInsertRgch(int32_t ich, const achar *prgchSrc, int32_t cch)
@@ -291,7 +291,7 @@ bool STN::FInsertRgch(int32_t ich, const achar *prgchSrc, int32_t cch)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test whether the given rgch is equal to this string.  This does bytewise
     compare - not user level comparison.
 ***************************************************************************/
@@ -304,7 +304,7 @@ bool STN::FEqualRgch(const achar *prgch, int32_t cch)
     return cch == Cch() && FEqualRgb(_rgch + 1, prgch, cch * SIZEOF(achar));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do user level string equality testing with the options given in grfstn.
 ***************************************************************************/
 bool STN::FEqualUserRgch(const achar *prgch, int32_t cch, uint32_t grfstn)
@@ -316,7 +316,7 @@ bool STN::FEqualUserRgch(const achar *prgch, int32_t cch, uint32_t grfstn)
     return ::FEqualUserRgch(Prgch(), Cch(), prgch, cch, grfstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the buffer size needed by GetData, or the block size needed
     by STN::FWrite.
 ***************************************************************************/
@@ -327,7 +327,7 @@ int32_t STN::CbData(void)
     return SIZEOF(int16_t) + (Cch() + 2) * SIZEOF(achar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the streamed data for the stn. pv should point to a buffer
     CbData() bytes long.
 ***************************************************************************/
@@ -341,7 +341,7 @@ void STN::GetData(void *pv)
     CopyPb(_rgch, PvAddBv(pv, SIZEOF(int16_t)), (Cch() + 2) * SIZEOF(achar));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Writes the string data to the given block starting at position ib.
 ***************************************************************************/
 bool STN::FWrite(PBLCK pblck, int32_t ib)
@@ -366,7 +366,7 @@ bool STN::FWrite(PBLCK pblck, int32_t ib)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the string from the given data.
 ***************************************************************************/
 bool STN::FSetData(void *pv, int32_t cbMax, int32_t *pcbRead)
@@ -387,7 +387,7 @@ bool STN::FSetData(void *pv, int32_t cbMax, int32_t *pcbRead)
 
     if (osk == koskCur)
     {
-        // no translation needed - read the length prefix
+        // 3DMMv1.0: no translation needed - read the length prefix
         if (cbMax < ibT + SIZEOF(achar))
             goto LFail;
         CopyPb(PvAddBv(pv, ibT), &_rgch[0], SIZEOF(achar));
@@ -396,14 +396,14 @@ bool STN::FSetData(void *pv, int32_t cbMax, int32_t *pcbRead)
         if (!FIn(cch, 0, kcchMaxStn + 1))
             goto LFail;
 
-        // read the rest of the string
+        // 3DMMv1.0: read the rest of the string
         cbT = SIZEOF(achar) * (cch + 1);
         if (cbMax < ibT + cbT)
             goto LFail;
         CopyPb(PvAddBv(pv, ibT), _rgch + 1, cbT);
         ibT += cbT;
 
-        // make sure the terminating zero is there
+        // 3DMMv1.0: make sure the terminating zero is there
         if (_rgch[cch + 1] != 0)
             goto LFail;
 
@@ -450,7 +450,7 @@ bool STN::FSetData(void *pv, int32_t cbMax, int32_t *pcbRead)
         _rgch[cch + 1] = 0;
 
     LCheck:
-        // make sure there aren't any other zeros.
+        // 3DMMv1.0: make sure there aren't any other zeros.
         for (ich = 1; ich <= cch; ich++)
         {
             if (_rgch[ich] == 0)
@@ -473,7 +473,7 @@ bool STN::FSetData(void *pv, int32_t cbMax, int32_t *pcbRead)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a string from a block.
 ***************************************************************************/
 bool STN::FRead(PBLCK pblck, int32_t ib, int32_t *pcbRead)
@@ -499,7 +499,7 @@ bool STN::FRead(PBLCK pblck, int32_t ib, int32_t *pcbRead)
 
     if (osk == koskCur)
     {
-        // no translation needed - read the length prefix
+        // 3DMMv1.0: no translation needed - read the length prefix
         if (cbMax < ibT + SIZEOF(achar) || !pblck->FReadRgb(&_rgch[0], SIZEOF(achar), ibT))
         {
             goto LFail;
@@ -509,13 +509,13 @@ bool STN::FRead(PBLCK pblck, int32_t ib, int32_t *pcbRead)
         if (!FIn(cch, 0, kcchMaxStn + 1))
             goto LFail;
 
-        // read the rest of the string
+        // 3DMMv1.0: read the rest of the string
         cbT = SIZEOF(achar) * (cch + 1);
         if (cbMax < ibT + cbT || !pblck->FReadRgb(_rgch + 1, cbT, ibT))
             goto LFail;
         ibT += cbT;
 
-        // make sure the terminating zero is there
+        // 3DMMv1.0: make sure the terminating zero is there
         if (_rgch[cch + 1] != 0)
             goto LFail;
 
@@ -562,7 +562,7 @@ bool STN::FRead(PBLCK pblck, int32_t ib, int32_t *pcbRead)
         _rgch[cch + 1] = 0;
 
     LCheck:
-        // make sure there aren't any other zeros.
+        // 3DMMv1.0: make sure there aren't any other zeros.
         for (ich = 1; ich <= cch; ich++)
         {
             if (_rgch[ich] == 0)
@@ -585,7 +585,7 @@ bool STN::FRead(PBLCK pblck, int32_t ib, int32_t *pcbRead)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a zero terminated short string from this string.
 ***************************************************************************/
 void STN::GetSzs(PSZS pszs)
@@ -613,17 +613,17 @@ void STN::GetSzs(PSZS pszs)
         }
     }
 
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement
     pszs[0] = 0;
-#endif // MAC
-#else  //! UNICODE
+#endif // 3DMMv1.0: MAC
+#else  //! 3DMMv1.0: UNICODE
     CopyPb(_rgch + 1, pszs, Cch() + 1);
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get a zero terminated UTF-8 string from this string.
 ***************************************************************************/
 void STN::GetUtf8Sz(PU8SZ pu8sz)
@@ -643,11 +643,11 @@ void STN::GetUtf8Sz(PU8SZ pu8sz)
     const wchar *pwcsT;
 
 #ifdef UNICODE
-    // The string is already Unicode, so we can convert it directly to UTF-8
+    // 3DMMEx: The string is already Unicode, so we can convert it directly to UTF-8
     pwcsT = Psz();
     cch = Cch();
-#else  // !UNICODE
-    // We have to convert the string to Unicode, then to UTF-8
+#else  // 3DMMEx: !UNICODE
+    // 3DMMEx: We have to convert the string to Unicode, then to UTF-8
     wchar wszT[kcchMaxSz];
     cch = MultiByteToWideChar(CP_ACP, 0, Psz(), Cch(), wszT, kcchMaxSz);
     Assert(cch == Cch(), "MultiByteToWideChar did not convert all characters");
@@ -658,14 +658,14 @@ void STN::GetUtf8Sz(PU8SZ pu8sz)
     }
     wszT[cch] = 0;
     pwcsT = wszT;
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
 
-    // Convert the string to UTF-8
+    // 3DMMEx: Convert the string to UTF-8
     cb = WideCharToMultiByte(CP_UTF8, 0, pwcsT, cch, pu8sz, kcchMaxUtf8Sz, pvNil, pvNil);
     Assert(cb != 0, "WideCharToMultiByte failed to convert characters");
     pu8sz[cb] = 0;
 
-#else  // !WIN32
+#else  // 3DMMEx: !WIN32
     int32_t cb;
     iconv_t ic;
     char *pT;
@@ -686,10 +686,10 @@ void STN::GetUtf8Sz(PU8SZ pu8sz)
     cb = kcchMaxUtf8Sz - cchLeft;
     Assert(cb != 0, "iconv failed to convert characters");
     pu8sz[cb] = 0;
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Format this string using the given template string and any additional
     parameters (ala sprintf).  All parameters are assumed to be 4 bytes long.
 
@@ -735,7 +735,7 @@ bool STN::FFormat(PSTN pstnFormat, ...)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See comments for STN::FFormat
 ***************************************************************************/
 bool STN::FFormatSz(const PCSZ pszFormat, ...)
@@ -751,7 +751,7 @@ bool STN::FFormatSz(const PCSZ pszFormat, ...)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Core routine for sprintf functionality.
 ***************************************************************************/
 bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valData)
@@ -760,7 +760,7 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
     AssertIn(cchFormat, 0, kcchMaxStn + 1);
     AssertPvCb(prgchFormat, cchFormat * SIZEOF(achar));
 
-    // Data Write Order - these dwo values are pcode for when to add what
+    // 3DMMv1.0: Data Write Order - these dwo values are pcode for when to add what
     enum
     {
         dwoPadFirst = 0x0321,
@@ -794,7 +794,7 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
             continue;
         }
 
-        // pre-fetch the next character
+        // 3DMMv1.0: pre-fetch the next character
         if (pchIn >= pchInLim)
             goto LBug;
         ch = *pchIn++;
@@ -817,7 +817,7 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
                     break;
                 ivArg = ivArg * 10 + ch - ChLit('0');
 
-                // pre-fetch the next character
+                // 3DMMv1.0: pre-fetch the next character
                 if (pchIn >= pchInLim)
                     goto LBug;
                 ch = *pchIn++;
@@ -826,7 +826,7 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
                 goto LBug;
         }
 
-        // get qualifiers (print sign, left justify, etc)
+        // 3DMMv1.0: get qualifiers (print sign, left justify, etc)
         for (;;)
         {
             switch (ch)
@@ -845,7 +845,7 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
                 break;
             }
 
-            // pre-fetch the next character
+            // 3DMMv1.0: pre-fetch the next character
             if (pchIn >= pchInLim)
                 goto LBug;
             ch = *pchIn++;
@@ -859,14 +859,14 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
                 break;
             cchMin = cchMin * 10 + ch - ChLit('0');
 
-            // pre-fetch the next character
+            // 3DMMv1.0: pre-fetch the next character
             if (pchIn >= pchInLim)
                 goto LBug;
             ch = *pchIn++;
         }
 
-        // code after the switch assumes that prgchTerm points to the
-        // characters to add to the stream and cch is the number of characters
+        // 3DMMv1.0: code after the switch assumes that prgchTerm points to the
+        // 3DMMv1.0: characters to add to the stream and cch is the number of characters
         lu = 0;
         prgchTerm = rgchT;
         switch (ch)
@@ -904,7 +904,7 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
 
         case ChLit('x'):
             lu = va_arg(valData, uint32_t);
-            // if cchMin is not 0, don't make it longer than cchMin
+            // 3DMMv1.0: if cchMin is not 0, don't make it longer than cchMin
             if (cchMin > 0 && cchMin < 8)
                 lu &= (1L << (cchMin * 4)) - 1;
             luRad = 16;
@@ -942,30 +942,30 @@ bool STN::FFormatRgch(const achar *prgchFormat, int32_t cchFormat, va_list valDa
             goto LFail;
         }
 
-        // set cchMin to the number of characters to pad
+        // 3DMMv1.0: set cchMin to the number of characters to pad
         cchMin = LwMax(0, cchMin - cch - (chSign != 0));
         if (pchOutLim - pchOut <= cch + cchMin + (chSign != 0))
         {
-            // overflowed the output buffer
+            // 3DMMv1.0: overflowed the output buffer
             goto LFail;
         }
 
-        // arrange the sign, padding and rgch according to dwo
+        // 3DMMv1.0: arrange the sign, padding and rgch according to dwo
         while (dwo != 0)
         {
             switch (dwo & 0x0F)
             {
-            case 1: // add padding
+            case 1: // 3DMMv1.0: add padding
                 for (; cchMin > 0; cchMin--)
                     *pchOut++ = chPad;
                 break;
 
-            case 2: // add the sign
+            case 2: // 3DMMv1.0: add the sign
                 if (chSign != 0)
                     *pchOut++ = chSign;
                 break;
 
-            case 3: // add the text
+            case 3: // 3DMMv1.0: add the text
                 CopyPb(prgchTerm, pchOut, cch * SIZEOF(achar));
                 pchOut += cch;
                 break;
@@ -990,7 +990,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parses the STN as a number.  If lwBase is 0, automatically determines
     the base as one of 10, 8 or 16 (as in standard C) and allows leading
     spaces, '+' and '-' signs, and trailing spaces.  Doesn't deal with
@@ -1029,10 +1029,10 @@ bool STN::FGetLw(int32_t *plw, int32_t lwBase)
     if (*psz == 0)
         goto LFail;
 
-    // determine the base if lwBase is zero
+    // 3DMMv1.0: determine the base if lwBase is zero
     if (0 == lwBase)
     {
-        // determine the base
+        // 3DMMv1.0: determine the base
         if (ChLit('0') == psz[0])
         {
             psz++;
@@ -1058,7 +1058,7 @@ bool STN::FGetLw(int32_t *plw, int32_t lwBase)
                 ch += ChLit('a') - ChLit('A');
             else if (!FIn(ch, ChLit('a'), ChLit('z') + 1))
             {
-                // not a letter, so only spaces should follow
+                // 3DMMv1.0: not a letter, so only spaces should follow
                 for (; ch != 0; ch = *psz++)
                 {
                     if (ch != kchSpace)
@@ -1084,7 +1084,7 @@ bool STN::FGetLw(int32_t *plw, int32_t lwBase)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Doubles any backslash characters in the string and replaces " literals
     with \".
 ***************************************************************************/
@@ -1135,7 +1135,7 @@ LFail:
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a STN.
 ***************************************************************************/
 void STN::AssertValid(uint32_t grf)
@@ -1153,9 +1153,9 @@ void STN::AssertValid(uint32_t grf)
 
     Assert(pch - _rgch == cch + 1, "internal null characters");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an st (make sure no zeros are in it).
 ***************************************************************************/
 bool FValidSt(PST pst)
@@ -1173,7 +1173,7 @@ bool FValidSt(PST pst)
     return (cch == 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an stz
 ***************************************************************************/
 bool FValidStz(PSTZ pstz)
@@ -1182,12 +1182,12 @@ bool FValidStz(PSTZ pstz)
     return FValidSt(pstz) && 0 == PszStz(pstz)[CchSt(pstz)];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the length of a zero terminated string.
 ***************************************************************************/
 int32_t CchSz(const PCSZ psz)
 {
-    // WARNING: don't call AssertSz, since AssertSz calls CchSz!
+    // 3DMMv1.0: WARNING: don't call AssertSz, since AssertSz calls CchSz!
     AssertVarMem(psz);
     const achar *pch;
 
@@ -1198,7 +1198,7 @@ int32_t CchSz(const PCSZ psz)
     return pch - psz;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do string equality testing.  This does byte-wise comparison for
     internal (non-user) use only!
 ***************************************************************************/
@@ -1212,7 +1212,7 @@ bool FEqualRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t 
     return cch1 == cch2 && FEqualRgb(prgch1, prgch2, cch1 * SIZEOF(achar));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do string comparison for sorting.  This is byte-wise for internal
     (non-user) sorting only!  The sorting is byte-order independent.
     fcmpLt means that string 1 is less than string 2.
@@ -1242,7 +1242,7 @@ uint32_t FcmpCompareRgch(const achar *prgch1, int32_t cch1, const achar *prgch2,
     return prgch1[ich] < prgch2[ich] ? fcmpLt : fcmpGt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     User level equality testing of strings.
 ***************************************************************************/
 bool FEqualUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t cch2, uint32_t grfstn)
@@ -1255,7 +1255,7 @@ bool FEqualUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int3
     achar rgch1[kcchMaxStn];
     achar rgch2[kcchMaxStn];
 
-    // REVIEW shonk: implement for real
+    // 3DMMv1.0: REVIEW shonk: implement for real
     if (!(grfstn & fstnIgnoreCase))
         return cch1 == cch2 && FEqualRgb(prgch1, prgch2, cch1 * SIZEOF(achar));
 
@@ -1270,15 +1270,15 @@ bool FEqualUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int3
 #ifdef WIN
         CharUpperBuff(rgch1, cchBuf);
         CharUpperBuff(rgch2, cchBuf);
-#elif defined(MAC) // MAC
-        RawRtn(); // REVIEW shonk: Mac: implement
+#elif defined(MAC) // 3DMMv1.0: MAC
+        RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement
 #else
         for (int ichs = 0; ichs < cchBuf; ichs++)
         {
             rgch1[ichs] = toupper(rgch1[ichs]);
             rgch2[ichs] = toupper(rgch2[ichs]);
         }
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
         if (!FEqualRgb(rgch1, rgch2, cchBuf * SIZEOF(achar)))
             return fFalse;
         prgch1 += cchBuf;
@@ -1289,7 +1289,7 @@ bool FEqualUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int3
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do user level string comparison with the given options.
 ***************************************************************************/
 uint32_t FcmpCompareUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t cch2, uint32_t grfstn)
@@ -1316,7 +1316,7 @@ uint32_t FcmpCompareUserRgch(const achar *prgch1, int32_t cch1, const achar *prg
         Bug("why did CompareString fail?");
         return FcmpCompareRgch(prgch1, cch1, prgch2, cch2);
     }
-#else  //! WIN
+#else  //! 3DMMv1.0: WIN
     int res;
 
     int32_t cch = LwMin(cch1, cch2);
@@ -1336,10 +1336,10 @@ uint32_t FcmpCompareUserRgch(const achar *prgch1, int32_t cch1, const achar *prg
         Bug("why did the string comparison fail?");
         return FcmpCompareRgch(prgch1, cch1, prgch2, cch2);
     }
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an array of short characters to upper case equivalents.
 ***************************************************************************/
 void UpperRgchs(schar *prgchs, int32_t cchs)
@@ -1368,7 +1368,7 @@ void UpperRgchs(schar *prgchs, int32_t cchs)
         *prgchs = _mpchschsUpper[(uint8_t)*prgchs];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an array of characters to lower case equivalents.
 ***************************************************************************/
 void LowerRgchs(schar *prgchs, int32_t cchs)
@@ -1397,7 +1397,7 @@ void LowerRgchs(schar *prgchs, int32_t cchs)
         *prgchs = _mpchschsLower[(uint8_t)*prgchs];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an array of unicode characters to upper case equivalents.
 ***************************************************************************/
 void UpperRgchw(wchar *prgchw, int32_t cchw)
@@ -1410,13 +1410,13 @@ void UpperRgchw(wchar *prgchw, int32_t cchw)
     CharUpperBuffW(prgchw, cchw);
 #else
     CharUpperBuffA(reinterpret_cast<char *>(prgchw), cchw);
-#endif //! UNICODE
-#else  //! WIN
-    RawRtn(); // REVIEW shonk: Mac: implement UpperRgchw
-#endif //! WIN
+#endif //! 3DMMv1.0: UNICODE
+#else  //! 3DMMv1.0: WIN
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement UpperRgchw
+#endif //! 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an array of unicode characters to lower case equivalents.
 ***************************************************************************/
 void LowerRgchw(wchar *prgchw, int32_t cchw)
@@ -1433,12 +1433,12 @@ void LowerRgchw(wchar *prgchw, int32_t cchw)
 #else
     CharLowerBuffA(reinterpret_cast<char *>(prgchw), cchw);
 #endif
-#else  //! WIN
-    RawRtn(); // REVIEW shonk: Mac: implement UpperRgchw
-#endif //! WIN
+#else  //! 3DMMv1.0: WIN
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement UpperRgchw
+#endif //! 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translate text from the indicated source character set to koskCur.
 ***************************************************************************/
 int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar *prgchDst, int32_t cchMaxDst)
@@ -1476,7 +1476,7 @@ int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar 
         return cchT;
     }
 
-#else //! UNICODE
+#else //! 3DMMv1.0: UNICODE
 
     achar *pchSrc, *pchDst;
 
@@ -1507,19 +1507,19 @@ int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar 
         if (cbSrc % SIZEOF(wchar) != 0)
             return 0;
 
-        // TODO: Refactor to make a copy of the string instead of modifying it in-place
-        // swap byte order
+        // 3DMMEx: TODO: Refactor to make a copy of the string instead of modifying it in-place
+        // 3DMMv1.0: swap byte order
         if (oskSrc == koskUniMac)
-            RawRtn(); // SwapBytesRgsw(pvSrc, cbSrc / SIZEOF(wchar));
+            RawRtn(); // 3DMMEx: SwapBytesRgsw(pvSrc, cbSrc / SIZEOF(wchar));
 
         cchT = WideCharToMultiByte(CP_ACP, 0, (LPWSTR)pvSrc, cbSrc / SIZEOF(wchar), prgchDst, cchMaxDst, pvNil, pvNil);
 
-        // if (oskSrc == koskUniMac)
-        // SwapBytesRgsw(pvSrc, cbSrc / SIZEOF(wchar));
+        // 3DMMEx: if (oskSrc == koskUniMac)
+        // 3DMMEx: SwapBytesRgsw(pvSrc, cbSrc / SIZEOF(wchar));
         return cchT;
     }
 
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 
 #elif defined(MAC)
 #ifdef UNICODE
@@ -1577,7 +1577,7 @@ int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar 
         return cchT;
     }
 
-#else //! UNICODE
+#else //! 3DMMv1.0: UNICODE
 
     achar *pchSrc, *pchDst;
 
@@ -1605,14 +1605,14 @@ int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar 
 
     case koskUniWin:
     case koskUniMac:
-        RawRtn(); // REVIEW shonk: Mac: implement koskUniWin, koskUniMac -> koskSbMac
+        RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement koskUniWin, koskUniMac -> koskSbMac
         return 0;
     }
 
-#endif //! UNICODE
-#else  // !WIN && !MAC
+#endif //! 3DMMv1.0: UNICODE
+#else  // 3DMMEx: !WIN && !MAC
 
-    // FIXME: Implement CchTranslateRgb properly for non-Windows platforms
+    // 3DMMEx: FIXME: Implement CchTranslateRgb properly for non-Windows platforms
     const wchar *pwszSrc = pvNil;
     int32_t cch = 0;
 
@@ -1645,7 +1645,7 @@ int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar 
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translates a string between the current platform and another.  If fToCur
     is true, the translation is from osk to koskCur, otherwise from koskCur
     to osk.
@@ -1660,9 +1660,9 @@ void TranslateRgch(achar *prgch, int32_t cch, int16_t osk, bool fToCur)
         return;
 
 #ifdef UNICODE
-    // for unicode, we just have to change the byte ordering
+    // 3DMMv1.0: for unicode, we just have to change the byte ordering
     SwapBytesRgsw(prgch, cch);
-#else //! UNICODE
+#else //! 3DMMv1.0: UNICODE
 #ifdef MAC
 #define FTOCUR !fToCur
 #else
@@ -1675,10 +1675,10 @@ void TranslateRgch(achar *prgch, int32_t cch, int16_t osk, bool fToCur)
         if ((uint8_t)*prgch >= (uint8_t)0x80)
             *prgch = pmpchschs[(uint8_t)*prgch - (uint8_t)0x80];
     }
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the type of the character.
     This must follow these implications:
         fchBreak -> fchMayBreak
@@ -1703,9 +1703,9 @@ uint32_t GrfchFromCh(achar ch)
     case kchSpace:
         return fchWhiteOverhang | fchMayBreak;
 
-#ifdef REVIEW // shonk: implement correctly once we get the tables from MSKK.
+#ifdef REVIEW // 3DMMv1.0: shonk: implement correctly once we get the tables from MSKK.
 #ifdef UNICODE
-    // REVIEW shonk: others? 148
+    // 3DMMv1.0: REVIEW shonk: others? 148
     case (uchar)',':
     case (uchar)'.':
     case (uchar)')':
@@ -1718,8 +1718,8 @@ uint32_t GrfchFromCh(achar ch)
     case (uchar)'.':
     case (uchar)',':
         return fchTestBreak;
-#endif // UNICODE
-#endif // REVIEW
+#endif // 3DMMv1.0: UNICODE
+#endif // 3DMMv1.0: REVIEW
 
     case 0x7F:
         return fchControl;
@@ -1733,7 +1733,7 @@ uint32_t GrfchFromCh(achar ch)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate an osk.
 ***************************************************************************/
 void AssertOsk(int16_t osk)
@@ -1750,7 +1750,7 @@ void AssertOsk(int16_t osk)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an st (make sure no zeros are in it).
 ***************************************************************************/
 void AssertSt(PST pst)
@@ -1758,7 +1758,7 @@ void AssertSt(PST pst)
     Assert(FValidSt(pst), "bad st");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an stz.
 ***************************************************************************/
 void AssertStz(PSTZ pstz)
@@ -1766,16 +1766,16 @@ void AssertStz(PSTZ pstz)
     Assert(FValidStz(pstz), "bad stz");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the sz isn't too long.
 ***************************************************************************/
 void AssertSz(PCSZ psz)
 {
-    // CchSz does all the asserting we need
+    // 3DMMv1.0: CchSz does all the asserting we need
     int32_t cch = CchSz(psz);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an st, nil is allowed.
 ***************************************************************************/
 void AssertNilOrSt(PST pst)
@@ -1784,7 +1784,7 @@ void AssertNilOrSt(PST pst)
         AssertSt(pst);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an stz, nil is allowed.
 ***************************************************************************/
 void AssertNilOrStz(PSTZ pstz)
@@ -1793,7 +1793,7 @@ void AssertNilOrStz(PSTZ pstz)
         AssertStz(pstz);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an sz, nil is allowed.
 ***************************************************************************/
 void AssertNilOrSz(PSZ psz)
@@ -1801,4 +1801,4 @@ void AssertNilOrSz(PSZ psz)
     if (psz != pvNil)
         AssertSz(psz);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

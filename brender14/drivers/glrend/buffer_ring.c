@@ -1,0 +1,137 @@
+#include "drv.h"
+#include "brassert.h"
+
+void BufferRingGLInit(br_buffer_ring_gl *self, const GladGLContext *gl, const char *tag, size_t offset_alignment, size_t num_draws,
+                      GLuint buffer_index, size_t elem_size, GLenum binding_point, uint32_t flags)
+{
+    size_t aligned_size;
+    size_t buffer_size;
+    assert((flags & ~BUFFER_RING_GL_FLAG_MASK) == 0);
+
+    if(flags & BUFFER_RING_GL_FLAG_ORPHAN)
+        num_draws = 1;
+
+    aligned_size = ((elem_size + offset_alignment - 1) / offset_alignment) * offset_alignment;
+    buffer_size  = aligned_size * num_draws;
+
+    assert(aligned_size >= elem_size);
+
+    self->gl    = gl;
+    self->flags = flags;
+
+    gl->GenBuffers(BR_ASIZE(self->buffers), self->buffers);
+    for(int i = 0; i < BR_ASIZE(self->buffers); ++i) {
+        gl->BindBuffer(binding_point, self->buffers[i]);
+        gl->BufferData(binding_point, (GLsizeiptr)buffer_size, NULL, GL_DYNAMIC_DRAW);
+        DeviceGLObjectLabelF(gl, GL_BUFFER, self->buffers[i], BR_GLREND_DEBUG_INTERNAL_PREFIX "ring:%s:%d", tag, i);
+
+        self->fences[i] = NULL;
+    }
+
+    self->frame_index       = BR_GLREND_MODEL_RB_FRAMES;
+    self->offset            = 0;
+    self->buffer_size       = buffer_size;
+    self->aligned_elem_size = (GLsizeiptr)aligned_size;
+    self->buffer_index      = buffer_index;
+    self->binding_point     = binding_point;
+}
+
+void BufferRingGLFini(br_buffer_ring_gl *self)
+{
+    const GladGLContext *gl = self->gl;
+
+    gl->DeleteBuffers(BR_ASIZE(self->buffers), self->buffers);
+
+    for(size_t i = 0; i < BR_ASIZE(self->fences); ++i) {
+        if(self->fences[i] != NULL) {
+            gl->DeleteSync(self->fences[i]);
+        }
+    }
+}
+
+void BufferRingGLBegin(br_buffer_ring_gl *self)
+{
+    const GladGLContext *gl = self->gl;
+
+    ++self->frame_index;
+    if(self->frame_index >= BR_GLREND_MODEL_RB_FRAMES)
+        self->frame_index = 0;
+
+    self->offset = 0;
+
+    if(self->fences[self->frame_index] != NULL) {
+        GLenum result;
+        do {
+            result = gl->ClientWaitSync(self->fences[self->frame_index], 0, UINT64_MAX);
+        } while(result == GL_TIMEOUT_EXPIRED || result == GL_WAIT_FAILED);
+
+        gl->DeleteSync(self->fences[self->frame_index]);
+        self->fences[self->frame_index] = NULL;
+    }
+
+    if(self->flags & BUFFER_RING_GL_FLAG_ORPHAN) {
+        gl->BindBufferBase(self->binding_point, self->buffer_index, self->buffers[self->frame_index]);
+    } else {
+        gl->BindBuffer(self->binding_point, self->buffers[self->frame_index]);
+    }
+}
+
+void BufferRingGLEnd(br_buffer_ring_gl *self)
+{
+    const GladGLContext *gl         = self->gl;
+    self->fences[self->frame_index] = gl->FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+}
+
+br_boolean BufferRingGLPush(br_buffer_ring_gl *self, const void *data, GLsizeiptr size)
+{
+    const GladGLContext *gl  = self->gl;
+    GLuint               ubo = self->buffers[self->frame_index];
+
+    /*
+     * v221: indexed UBO binds (BindBufferBase/BindBufferRange) also affect the
+     * generic GL_UNIFORM_BUFFER binding.  The shadow pass binds the scene UBO
+     * immediately before the first model upload, so relying on the generic
+     * binding left by BufferRingGLBegin() can send BufferSubData to the scene
+     * buffer while the draw still reads stale model data from this ring.
+     *
+     * Always restore the ring's actual buffer before writing.  With three ring
+     * buffers in flight, stale offset-zero model data presented as exactly the
+     * observed three repeating shadow orientations.
+     */
+#if BRENDER_LEGACY_3DMM_MODEL_ABI
+    if(self->binding_point == GL_UNIFORM_BUFFER) {
+        static br_uint_32 diag_rebind_count;
+        GLint actual_ubo = 0;
+        gl->GetIntegerv(GL_UNIFORM_BUFFER_BINDING, &actual_ubo);
+        if((GLuint)actual_ubo != ubo && diag_rebind_count < 96) {
+            BrWarning("3DMM model_ring rebind_v221 n=%u frame_slot=%u offset=%u expected=%u actual=%u",
+                      (unsigned)diag_rebind_count++, (unsigned)self->frame_index,
+                      (unsigned)self->offset, (unsigned)ubo, (unsigned)actual_ubo);
+        }
+    }
+#endif
+
+    gl->BindBuffer(self->binding_point, ubo);
+
+#if DEBUG
+    if(self->binding_point == GL_UNIFORM_BUFFER) {
+        GLint actual_ubo;
+        gl->GetIntegerv(GL_UNIFORM_BUFFER_BINDING, &actual_ubo);
+        ASSERT(actual_ubo == ubo);
+    }
+#endif
+
+    if(self->flags & BUFFER_RING_GL_FLAG_ORPHAN) {
+        gl->BufferData(self->binding_point, size, data, GL_STATIC_DRAW);
+    } else {
+        if(self->offset >= self->buffer_size)
+            return BR_FALSE;
+
+        gl->BufferSubData(self->binding_point, self->offset, size, data);
+        gl->BindBufferRange(self->binding_point, self->buffer_index, ubo, self->offset, size);
+
+        self->offset += self->aligned_elem_size;
+    }
+
+    return BR_TRUE;
+}

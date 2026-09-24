@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
 
@@ -10,7 +10,7 @@
 
 #include <miniaudio.h>
 
-// Manages a single instance of the miniaudio engine
+// 3DMMEx: Manages a single instance of the miniaudio engine
 typedef class MiniaudioManager *PMiniaudioManager;
 #define MiniaudioManager_PAR BASE
 #define kclsMiniaudioManager KLCONST4('m', 'a', 'm', 'a')
@@ -23,7 +23,7 @@ class MiniaudioManager : public MiniaudioManager_PAR
     MiniaudioManager();
     virtual ~MiniaudioManager();
 
-    // Get the Miniaudio engine
+    // 3DMMEx: Get the Miniaudio engine
     ma_engine *Pengine();
 
     static PMiniaudioManager Pmanager();
@@ -35,7 +35,7 @@ class MiniaudioManager : public MiniaudioManager_PAR
     MUTX _mutxInit;
 };
 
-// Audio stream
+// 3DMMEx: Audio stream
 typedef class MiniaudioStream *PMiniaudioStream;
 #define MiniaudioStream_PAR BASE
 #define kclsMiniaudioStream KLCONST4('m', 'a', 's', 't')
@@ -47,22 +47,22 @@ class MiniaudioStream : public MiniaudioStream_PAR
   public:
     virtual ~MiniaudioStream();
 
-    // Create a new audio stream
-    // If format/cchannel are not set, the stream will match the audio playback device
+    // 3DMMEx: Create a new audio stream
+    // 3DMMEx: If format/cchannel are not set, the stream will match the audio playback device
     static PMiniaudioStream PastreamNew(PMiniaudioManager pmanager, ma_format format = ma_format_unknown,
                                         ma_uint32 cchannel = 0, ma_uint32 csample = 0);
 
     bool FPlay();
     bool FStop();
 
-    // Return the number of frames queued in the ringbuffer
+    // 3DMMEx: Return the number of frames queued in the ringbuffer
     int GetPendingFrames();
 
-    // Write audio into the ring buffer
-    // NOTE: the input data needs to be the same format as the ma_engine uses for playback
+    // 3DMMEx: Write audio into the ring buffer
+    // 3DMMEx: NOTE: the input data needs to be the same format as the ma_engine uses for playback
     bool FWriteAudio(const void *pvframe, int32_t cframe);
 
-    // Volume control
+    // 3DMMEx: Volume control
     int32_t GetVlm();
     void SetVlm(int32_t vlm);
 
@@ -85,17 +85,17 @@ class MiniaudioStream : public MiniaudioStream_PAR
 
 typedef class MiniaudioCachedSound *PMiniaudioCachedSound;
 
-// Size of block read cache
+// 3DMMEx: Size of block read cache
 #define kcbCache 4096
 
-// Decoder callbacks to read data from a BLCK
+// 3DMMEx: Decoder callbacks to read data from a BLCK
 struct BLCKReadContext
 {
     BLCK *pblck;
     int32_t ib;
     int32_t cb;
 
-    // Read cache
+    // 3DMMEx: Read cache
     int32_t ibCache;
     int32_t cbCache;
     uint8_t rgbCache[kcbCache];
@@ -103,17 +103,17 @@ struct BLCKReadContext
 
 struct MiniaudioSoundInstance
 {
-    PMiniaudioCachedSound pbaco; // the sound to play
-    int32_t sii;                 // the sound instance id
-    int32_t vlm;                 // volume to play at
-    int32_t cactPlay;            // how many times to play
-    uint32_t dtsStart;           // offset to start at
-    int32_t spr;                 // sound priority
-    int32_t scl;                 // sound class
-    int32_t sqn;                 // sound queue number
-    int32_t tsStart;             // time when sound started playing
+    PMiniaudioCachedSound pbaco; // 3DMMEx: the sound to play
+    int32_t sii;                 // 3DMMEx: the sound instance id
+    int32_t vlm;                 // 3DMMEx: volume to play at
+    int32_t cactPlay;            // 3DMMEx: how many times to play
+    uint32_t dtsStart;           // 3DMMEx: offset to start at
+    int32_t spr;                 // 3DMMEx: sound priority
+    int32_t scl;                 // 3DMMEx: sound class
+    int32_t sqn;                 // 3DMMEx: sound queue number
+    int32_t tsStart;             // 3DMMEx: time when sound started playing
 
-    bool fLoaded; // sound was successfully loaded
+    bool fLoaded; // 3DMMEx: sound was successfully loaded
 
     BLCKReadContext readctx;
     ma_decoder decoder;
@@ -133,7 +133,7 @@ class MiniaudioDevice : public MiniaudioDevice_PAR
   protected:
     MiniaudioDevice();
 
-    // Initialise the sound device
+    // 3DMMEx: Initialise the sound device
     virtual bool _FInit();
 
     bool _fInitialised = fFalse;
@@ -144,23 +144,23 @@ class MiniaudioDevice : public MiniaudioDevice_PAR
     PMiniaudioManager _pmanager = pvNil;
     ma_sound_group _soundgroup;
 
-    // TODO: Replace with a dynamic array?
+    // 3DMMEx: TODO: Replace with a dynamic array?
     MiniaudioSoundInstance _rgsndin[32] = {0};
     int32_t _csndinCur = 0;
 
-    // Find a sound instance by ID
+    // 3DMMEx: Find a sound instance by ID
     MiniaudioSoundInstance *PsndinFromSii(int32_t sii, int32_t *pisndin);
 
     void Lock();
     void Unlock();
 
-    // Returns True if there has been a sufficient delay since TsCurrentSystem() and tsStart.
+    // 3DMMEx: Returns True if there has been a sufficient delay since TsCurrentSystem() and tsStart.
     bool FDebounce(int32_t tsStart);
 
     bool FLoadSoundFromBlock(PBLCK pblck, BLCKReadContext *preadctx, ma_decoder *pdecoder, ma_sound *psound);
 
   public:
-    // Create a new instance of the miniaudio sound device
+    // 3DMMEx: Create a new instance of the miniaudio sound device
     static PMiniaudioDevice PmadevNew();
 
     virtual ~MiniaudioDevice();
@@ -190,4 +190,4 @@ class MiniaudioDevice : public MiniaudioDevice_PAR
     virtual void Flush(void) override;
 };
 
-#endif // SNDMA_H
+#endif // 3DMMEx: SNDMA_H

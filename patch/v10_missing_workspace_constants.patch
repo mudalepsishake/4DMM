@@ -1,0 +1,10 @@
+--- a/src/studio/utest.cpp
++++ b/src/studio/utest.cpp
+@@
+-bool APP::_FSaveScreenshot(void)
++static const int32_t kxpWorkspace = 640;
++static const int32_t kypWorkspace = 480;
++
++bool APP::_FSaveScreenshot(void)
+ {
+     AssertThis(0);

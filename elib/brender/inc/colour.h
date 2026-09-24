@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: colour.h 1.3 1995/02/22 21:37:03 sam Exp $

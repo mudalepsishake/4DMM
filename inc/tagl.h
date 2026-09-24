@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tagl.h: Tag List class
 
@@ -14,7 +14,7 @@
 #ifndef TAGL_H
 #define TAGL_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     The tag list class
 ****************************************/
 typedef class TAGL *PTAGL;
@@ -27,7 +27,7 @@ class TAGL : public TAGL_PAR
     MARKMEM
 
   protected:
-    PGG _pggtagf; // TAGF for fixed part, array of cc's for variable part
+    PGG _pggtagf; // 3DMMv1.0: TAGF for fixed part, array of cc's for variable part
 
   protected:
     bool _FInit(void);
@@ -46,4 +46,4 @@ class TAGL : public TAGL_PAR
     bool FCacheTags(void);
 };
 
-#endif // TAGL_H
+#endif // 3DMMEx: TAGL_H

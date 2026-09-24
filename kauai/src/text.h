@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-// edit control parameters
+// 3DMMv1.0: edit control parameters
 typedef class EDPAR *PEDPAR;
 class EDPAR
 {
@@ -45,7 +45,7 @@ class EDPAR
                  ACR acrFore = kacrBlack, ACR acrBack = kacrWhite);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Edit control base class.
 ***************************************************************************/
 typedef class EDCB *PEDCB;
@@ -58,10 +58,10 @@ class EDCB : public EDCB_PAR
     MARKMEM
 
   protected:
-    // handler level
+    // 3DMMv1.0: handler level
     int32_t _cmhl;
 
-    // the selection
+    // 3DMMv1.0: the selection
     PGNV _pgnv;
     int32_t _ichAnchor;
     int32_t _ichOther;
@@ -72,9 +72,9 @@ class EDCB : public EDCB_PAR
     bool _fClear : 1;
 
     uint32_t _tsSel;
-    int32_t _xpSel; // for avoiding migration when changing selection by lines
+    int32_t _xpSel; // 3DMMv1.0: for avoiding migration when changing selection by lines
 
-    // the origin
+    // 3DMMv1.0: the origin
     int32_t _xp;
     int32_t _yp;
 
@@ -82,7 +82,7 @@ class EDCB : public EDCB_PAR
 
     virtual bool _FInit(void);
 
-    // pure virtual functions
+    // 3DMMv1.0: pure virtual functions
     virtual int32_t _LnFromIch(int32_t ich) = 0;
     virtual int32_t _IchMinLn(int32_t ln) = 0;
     virtual int32_t _XpFromIch(int32_t ich) = 0;
@@ -135,7 +135,7 @@ class EDCB : public EDCB_PAR
     virtual int32_t CchFetch(achar *prgch, int32_t ich, int32_t cchWant) = 0;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Plain edit control - virtual class supporting single line and multi
     line edit controls with a single font.
 ***************************************************************************/
@@ -148,7 +148,7 @@ class EDPL : public EDPL_PAR
     ASSERT
 
   protected:
-    // drawing parameters
+    // 3DMMv1.0: drawing parameters
     int32_t _onn;
     uint32_t _grfont;
     int32_t _dypFont;
@@ -160,7 +160,7 @@ class EDPL : public EDPL_PAR
 
     EDPL(PEDPAR pedpar);
 
-    // methods of EDCB
+    // 3DMMv1.0: methods of EDCB
     virtual bool _FInit(void) override;
     virtual int32_t _XpFromIch(int32_t ich) override;
     virtual int32_t _YpFromLn(int32_t ln) override;
@@ -174,7 +174,7 @@ class EDPL : public EDPL_PAR
     virtual void _UnlockLn(int32_t ln, achar *prgch) = 0;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Single line edit control.
 ***************************************************************************/
 const int32_t kcchMaxEdsl = kcchMaxStn;
@@ -188,19 +188,19 @@ class EDSL : public EDSL_PAR
     ASSERT
 
   protected:
-    // the text
+    // 3DMMv1.0: the text
     int32_t _cch;
     achar _rgch[kcchMaxEdsl];
 
     EDSL(PEDPAR pedpar);
 
-    // methods of EDCB
+    // 3DMMv1.0: methods of EDCB
     virtual int32_t _LnFromIch(int32_t ich) override;
     virtual int32_t _IchMinLn(int32_t ln) override;
     virtual int32_t _LnMac(void) override;
     virtual bool _FFilterCh(achar ch) override;
 
-    // methods of EDPL
+    // 3DMMv1.0: methods of EDPL
     virtual bool _FLockLn(int32_t ln, achar **pprgch, int32_t *pcch) override;
     virtual void _UnlockLn(int32_t ln, achar *prgch) override;
 
@@ -212,12 +212,12 @@ class EDSL : public EDSL_PAR
                           int32_t gin = kginDraw) override;
     virtual int32_t CchFetch(achar *prgch, int32_t ich, int32_t cchWant) override;
 
-    // additional text APIs
+    // 3DMMv1.0: additional text APIs
     void GetStn(PSTN pstn);
     void SetStn(PSTN pstn, int32_t gin = kginDraw);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Multi line edit control.
 ***************************************************************************/
 typedef class EDML *PEDML;
@@ -230,20 +230,20 @@ class EDML : public EDML_PAR
     MARKMEM
 
   protected:
-    // the text
+    // 3DMMv1.0: the text
     BSM _bsm;
     PGL _pglich;
 
     EDML(PEDPAR pedpar);
 
-    // methods of EDCB
+    // 3DMMv1.0: methods of EDCB
     virtual bool _FInit(void) override;
     virtual int32_t _LnFromIch(int32_t ich) override;
     virtual int32_t _IchMinLn(int32_t ln) override;
     virtual int32_t _LnMac(void) override;
     virtual bool _FFilterCh(achar ch) override;
 
-    // methods of EDPL
+    // 3DMMv1.0: methods of EDPL
     virtual bool _FLockLn(int32_t ln, achar **pprgch, int32_t *pcch) override;
     virtual void _UnlockLn(int32_t ln, achar *prgch) override;
 
@@ -261,7 +261,7 @@ class EDML : public EDML_PAR
     virtual int32_t CchFetch(achar *prgch, int32_t ich, int32_t cchWant) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Multi line wrapping edit control.
 ***************************************************************************/
 typedef class EDMW *PEDMW;
@@ -274,7 +274,7 @@ class EDMW : public EDMW_PAR
   protected:
     EDMW(PEDPAR pedpar);
 
-    // methods EDMW
+    // 3DMMv1.0: methods EDMW
     virtual int32_t _ClnEstimate(achar *prgch, int32_t cch);
     virtual int32_t _LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns) override;
 
@@ -285,4 +285,4 @@ class EDMW : public EDMW_PAR
     static PEDMW PedmwNew(PEDPAR pedpar);
 };
 
-#endif //! TEXT_H
+#endif //! 3DMMv1.0: TEXT_H

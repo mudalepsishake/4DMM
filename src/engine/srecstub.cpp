@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     srecstub.cpp: Sound recording stub class
 
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(SREC)
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new SREC
 ***************************************************************************/
 PSREC SREC::PsrecNew(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax)
@@ -34,7 +34,7 @@ PSREC SREC::PsrecNew(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t
     return psrec;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Init this SREC
 ***************************************************************************/
 bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax)
@@ -52,27 +52,27 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
     _fRecording = fFalse;
     _fHaveSound = fFalse;
 
-    vpsndm->Suspend(fTrue); // turn off sndm so we can get wavein device
+    vpsndm->Suspend(fTrue); // 3DMMEx: turn off sndm so we can get wavein device
 
     PushErc(ercSocNoWaveIn);
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Clean up and delete this SREC
 ***************************************************************************/
 SREC::~SREC(void)
 {
     AssertBaseThis(0);
 
-    // make sure nothing is playing or recording
+    // 3DMMEx: make sure nothing is playing or recording
     if (_fRecording || _fPlaying)
         FStop();
 
-    vpsndm->Suspend(fFalse); // restore sound mgr
+    vpsndm->Suspend(fFalse); // 3DMMEx: restore sound mgr
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Figure out if we're recording or not
 ***************************************************************************/
 void SREC::_UpdateStatus(void)
@@ -83,7 +83,7 @@ void SREC::_UpdateStatus(void)
     _fPlaying = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Start recording
 ***************************************************************************/
 bool SREC::FStart(void)
@@ -94,7 +94,7 @@ bool SREC::FStart(void)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Stop recording or playing
 ***************************************************************************/
 bool SREC::FStop(void)
@@ -105,7 +105,7 @@ bool SREC::FStop(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Start playing the current sound
 ***************************************************************************/
 bool SREC::FPlay(void)
@@ -116,7 +116,7 @@ bool SREC::FPlay(void)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Are we recording?
 ***************************************************************************/
 bool SREC::FRecording(void)
@@ -127,7 +127,7 @@ bool SREC::FRecording(void)
     return _fRecording;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Are we playing the current sound?
 ***************************************************************************/
 bool SREC::FPlaying(void)
@@ -138,7 +138,7 @@ bool SREC::FPlaying(void)
     return _fPlaying;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Save the current sound to the given FNI
 ***************************************************************************/
 bool SREC::FSave(PFNI pfni)
@@ -150,7 +150,7 @@ bool SREC::FSave(PFNI pfni)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of the SREC.
 ***************************************************************************/
 void SREC::AssertValid(uint32_t grf)
@@ -158,7 +158,7 @@ void SREC::AssertValid(uint32_t grf)
     SREC_PAR::AssertValid(fobjAllocated);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory used by the SREC
 ***************************************************************************/
 void SREC::MarkMem(void)
@@ -166,4 +166,4 @@ void SREC::MarkMem(void)
     AssertThis(0);
     SREC_PAR::MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

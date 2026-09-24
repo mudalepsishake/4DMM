@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     configwin.cpp: Store app configuration in the Windows registry
 
@@ -41,7 +41,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
         STN stnErr;
         stnErr.FFormatSz(PszLit("Could not open Socrates key: lwRet=0x%x"), lwRet);
         Warn(stnErr.Psz());
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
         goto LFail;
     }
 
@@ -73,7 +73,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
             STN stnErr;
             stnErr.FFormatSz(PszLit("Could not set value %z: lwRet=0x%x"), pszValueName, lwRet);
             Warn(stnErr.Psz());
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
             goto LFail;
         }
     }
@@ -84,7 +84,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
         {
             if (lwRet == ERROR_FILE_NOT_FOUND && fSetDefault)
                 goto LWriteValue;
-            /* If the caller gave us a way to differentiate a genuine registry
+            /* 3DMMEx: If the caller gave us a way to differentiate a genuine registry
                 failure from simply not having set the value yet, do so */
             if (pfNoValue != pvNil)
                 fRet = *pfNoValue = (lwRet == ERROR_FILE_NOT_FOUND);
@@ -98,9 +98,9 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
 LFail:
     if (hkey != 0)
         RegCloseKey(hkey);
-#else  // WIN
+#else  // 3DMMEx: WIN
     RawRtn();
-#endif // !WIN
+#endif // 3DMMEx: !WIN
 
     return fRet;
 }

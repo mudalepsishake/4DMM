@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tdfmake.cpp: Three-D Font authoring tool
 
@@ -28,7 +28,7 @@ const CTG kctgTdfMake = 'TDFM';
 
 bool FMakeTdf(PFNI pfniSrc, PCFL pcflDst);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main routine.  Returns non-zero	if there's an error.
 ***************************************************************************/
 int __cdecl main(int cpsz, achar *prgpsz[])
@@ -90,14 +90,14 @@ int __cdecl main(int cpsz, achar *prgpsz[])
         goto LFail;
     }
     BrEnd();
-    return 0; // no error
+    return 0; // 3DMMv1.0: no error
 LFail:
     BrEnd();
     fprintf(stderr, "TDF Maker failed.\n\n");
-    return 1; // error
+    return 1; // 3DMMv1.0: error
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Writes a TDF chunk and child BMDL chunks based on all DAT files in
     pfniSrcDir to the destination file pcflDst.
 ***************************************************************************/
@@ -121,8 +121,8 @@ bool FMakeTdf(PFNI pfniSrcDir, PCFL pcflDst)
     long lw;
     PGL pglkid;
     KID kid;
-    bool fFoundSpace = fFalse;  // 0x20
-    bool fFoundSpace2 = fFalse; // 0xa0
+    bool fFoundSpace = fFalse;  // 3DMMv1.0: 0x20
+    bool fFoundSpace2 = fFalse; // 3DMMv1.0: 0xa0
     long cmodl = 0;
 
     pglkid = GL::PglNew(size(KID));
@@ -131,7 +131,7 @@ bool FMakeTdf(PFNI pfniSrcDir, PCFL pcflDst)
     pcrf = CRF::PcrfNew(pcflDst, 0);
     if (pvNil == pcrf)
         goto LFail;
-    // get directory name (don't actually move up a dir)
+    // 3DMMv1.0: get directory name (don't actually move up a dir)
     if (!pfniSrcDir->FUpDir(&stn, 0))
         goto LFail;
     if (stn.Psz()[0] == ChLit('\\'))
@@ -161,7 +161,7 @@ bool FMakeTdf(PFNI pfniSrcDir, PCFL pcflDst)
             chidMax = chid;
         if (chid == (CHID)ChLit(' '))
             fFoundSpace = fTrue;
-        if (chid == 0xa0) // nonbreaking space
+        if (chid == 0xa0) // 3DMMv1.0: nonbreaking space
             fFoundSpace2 = fTrue;
         pmodl = MODL::PmodlReadFromDat(&fni);
         if (pvNil == pmodl)
@@ -182,7 +182,7 @@ bool FMakeTdf(PFNI pfniSrcDir, PCFL pcflDst)
     }
     fprintf(stderr, "Converted %d characters\n", cmodl);
 
-    // Hack to insert a space character if none specified
+    // 3DMMv1.0: Hack to insert a space character if none specified
     if (!fFoundSpace)
     {
         pmodl = MODL::PmodlNew(0, pvNil, 0, pvNil);
@@ -199,7 +199,7 @@ bool FMakeTdf(PFNI pfniSrcDir, PCFL pcflDst)
             goto LFail;
         fprintf(stderr, "Added a space character\n");
     }
-    // Hack to insert a nonbreaking space character if none specified
+    // 3DMMv1.0: Hack to insert a nonbreaking space character if none specified
     if (!fFoundSpace2)
     {
         pmodl = MODL::PmodlNew(0, pvNil, 0, pvNil);
@@ -231,7 +231,7 @@ LFail:
 #ifdef DEBUG
 bool _fEnableWarnings = fTrue;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Warning proc called by Warn() macro
 ***************************************************************************/
 void WarnProc(PSZ pszFile, long lwLine, PSZ pszMessage)
@@ -247,7 +247,7 @@ void WarnProc(PSZ pszFile, long lwLine, PSZ pszMessage)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returning true breaks into the debugger.
 ***************************************************************************/
 bool FAssertProc(PSZ pszFile, long lwLine, PSZ pszMessage, void *pv, long cb)

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Author: ******
     Project: Socrates
     Review Status: Reviewed
@@ -26,21 +26,21 @@ class SCRT : public SCRT_PAR
   protected:
     static const TRANS _mplwtrans[];
 
-    /* Obtained from the script */
-    int32_t _kidFrameMin;  // kid of first frame GOK in the easel
-    int32_t _kidScbtnsMin; // kid of the first scroll button (scroll up)
-    int32_t _cfrmPage;     // number of frame GOKs on the easel
-    int32_t _cgokFrame;    // number of pieces to a frame GOK
+    /* 3DMMv1.0: Obtained from the script */
+    int32_t _kidFrameMin;  // 3DMMv1.0: kid of first frame GOK in the easel
+    int32_t _kidScbtnsMin; // 3DMMv1.0: kid of the first scroll button (scroll up)
+    int32_t _cfrmPage;     // 3DMMv1.0: number of frame GOKs on the easel
+    int32_t _cgokFrame;    // 3DMMv1.0: number of pieces to a frame GOK
 
-    /* Hidden from the script */
-    int32_t _iscenCur; // currently selected scene
-    int32_t _iscenTop; // first scene visible in the browser
-    int32_t _iscenMac; // number of scenes
-    PMVIE _pmvie;      // pointer to movie we're editing
-    CMVI _cmvi;        // Composite movie
-    bool _fError : 1,  // Did an error occur during the easel?
-        _fInited : 1;  // Have I seen the cidSceneSortInit yet?
-    PSTDIO _pstdio;    // The STDIO that instantiated me
+    /* 3DMMv1.0: Hidden from the script */
+    int32_t _iscenCur; // 3DMMv1.0: currently selected scene
+    int32_t _iscenTop; // 3DMMv1.0: first scene visible in the browser
+    int32_t _iscenMac; // 3DMMv1.0: number of scenes
+    PMVIE _pmvie;      // 3DMMv1.0: pointer to movie we're editing
+    CMVI _cmvi;        // 3DMMv1.0: Composite movie
+    bool _fError : 1,  // 3DMMv1.0: Did an error occur during the easel?
+        _fInited : 1;  // 3DMMv1.0: Have I seen the cidSceneSortInit yet?
+    PSTDIO _pstdio;    // 3DMMv1.0: The STDIO that instantiated me
 
   protected:
     int32_t _IscenFromKid(int32_t kid)
@@ -68,7 +68,7 @@ class SCRT : public SCRT_PAR
     static PSCRT PscrtNew(int32_t hid, PMVIE pmvie, PSTDIO pstdio, PRCA prca);
     static bool FSceneSortMovie(int32_t hid, PMVIE pmvie);
 
-    /* Command API */
+    /* 3DMMv1.0: Command API */
     bool FCmdInit(PCMD pcmd);
     bool FCmdSelect(PCMD pcmd);
     bool FCmdInsert(PCMD pcmd);
@@ -79,7 +79,7 @@ class SCRT : public SCRT_PAR
     bool FCmdTransition(PCMD pcmd);
 };
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
     GOMP class -- wraps an MBMP in a GOB for display in the Scene Sorter
 
@@ -93,7 +93,7 @@ class GOMP : public GOMP_PAR
     RTCLASS_DEC
     ASSERT
     MARKMEM
-    /* REVIEW peted: do I need to declare a command map? */
+    /* 3DMMv1.0: REVIEW peted: do I need to declare a command map? */
 
   protected:
     PMBMP _pmbmp;
@@ -110,7 +110,7 @@ class GOMP : public GOMP_PAR
     static PGOMP PgompFromHidScr(int32_t hid);
     bool FSetMbmp(PMBMP pmbmp);
 
-    /* Makes the GOMP invisible to mouse actions */
+    /* 3DMMv1.0: Makes the GOMP invisible to mouse actions */
     virtual bool FPtIn(int32_t xp, int32_t yp) override
     {
         return fFalse;
@@ -123,4 +123,4 @@ class GOMP : public GOMP_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-#endif /* SCNSORT_H */
+#endif /* 3DMMv1.0: SCNSORT_H */

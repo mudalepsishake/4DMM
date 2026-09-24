@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Classes for the hex editor.
 
@@ -11,7 +11,7 @@ ASSERTNAME
 
 #define kcbMaxLineDch 16
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A document class that holds a stream and is naturally displayed by the
     hex editor (DCH).  Used for the clipboard.
 ***************************************************************************/
@@ -46,7 +46,7 @@ RTCLASS(DCH)
 RTCLASS(DOCH)
 RTCLASS(DHEX)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new text stream document to be displayed
     by the hex editor.
 ***************************************************************************/
@@ -60,7 +60,7 @@ PDHEX DHEX::PdhexNew(void)
     return pdhex;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DCH displaying this stream.
 ***************************************************************************/
 PDDG DHEX::PddgNew(PGCB pgcb)
@@ -69,7 +69,7 @@ PDDG DHEX::PddgNew(PGCB pgcb)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DHEX.
 ***************************************************************************/
 void DHEX::AssertValid(uint32_t grf)
@@ -78,7 +78,7 @@ void DHEX::AssertValid(uint32_t grf)
     AssertPo(&_bsf, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DHEX.
 ***************************************************************************/
 void DHEX::MarkMem(void)
@@ -87,9 +87,9 @@ void DHEX::MarkMem(void)
     DHEX_PAR::MarkMem();
     MarkMemObj(&_bsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the DCH.
 ***************************************************************************/
 DCH::DCH(PDOCB pdocb, PBSF pbsf, bool fFixed, PGCB pgcb) : DCLB(pdocb, pgcb)
@@ -100,7 +100,7 @@ DCH::DCH(PDOCB pdocb, PBSF pbsf, bool fFixed, PGCB pgcb) : DCLB(pdocb, pgcb)
     _fFixed = FPure(fFixed);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DCH.
 ***************************************************************************/
 PDCH DCH::PdchNew(PDOCB pdocb, PBSF pbsf, bool fFixed, PGCB pgcb)
@@ -121,7 +121,7 @@ PDCH DCH::PdchNew(PDOCB pdocb, PBSF pbsf, bool fFixed, PGCB pgcb)
     return pdch;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     We're being activated or deactivated, invert the sel.
 ***************************************************************************/
 void DCH::_Activate(bool fActive)
@@ -136,7 +136,7 @@ void DCH::_Activate(bool fActive)
     _SwitchSel(fActive);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the Hex doc in the port.
 ***************************************************************************/
 void DCH::Draw(PGNV pgnv, RC *prcClip)
@@ -169,7 +169,7 @@ void DCH::Draw(PGNV pgnv, RC *prcClip)
     pgnv->FillRc(&rc, kacrWhite);
     if (xp > 0)
     {
-        // erase to the left of the text
+        // 3DMMv1.0: erase to the left of the text
         rc.xpLeft = 0;
         rc.xpRight = xp;
         pgnv->FillRc(&rc, kacrWhite);
@@ -180,11 +180,11 @@ void DCH::Draw(PGNV pgnv, RC *prcClip)
         cbT = LwMin(_cbLine, cb - ib);
         _pbsf->FetchRgb(ib, cbT, rgb);
 
-        // first comes the address of the first byte of the line
+        // 3DMMv1.0: first comes the address of the first byte of the line
         stn.FFormatSz(PszLit("%08x "), ib);
 
-        // now add the line's bytes in hex, with a space after every
-        // four bytes
+        // 3DMMv1.0: now add the line's bytes in hex, with a space after every
+        // 3DMMv1.0: four bytes
         for (ibT = 0; ibT < cbT; ibT++)
         {
             bT = rgb[ibT];
@@ -193,7 +193,7 @@ void DCH::Draw(PGNV pgnv, RC *prcClip)
             stn.FAppendCh(vrgchHex[(bT >> 4) & 0x0F]);
             stn.FAppendCh(vrgchHex[bT & 0x0F]);
         }
-        // pad the line with spaces
+        // 3DMMv1.0: pad the line with spaces
         if (ibT < _cbLine)
         {
             ibT = _cbLine - ibT;
@@ -203,7 +203,7 @@ void DCH::Draw(PGNV pgnv, RC *prcClip)
         }
         stn.FAppendSz(PszLit("  "));
 
-        // now comes the ascii characters.
+        // 3DMMv1.0: now comes the ascii characters.
         for (ibT = 0; ibT < cbT; ibT++)
         {
             bT = rgb[ibT];
@@ -211,7 +211,7 @@ void DCH::Draw(PGNV pgnv, RC *prcClip)
                 bT = '?';
             stn.FAppendCh((achar)bT);
         }
-        // pad the line with spaces
+        // 3DMMv1.0: pad the line with spaces
         while (ibT++ < _cbLine)
             stn.FAppendCh(kchSpace);
 
@@ -225,12 +225,12 @@ void DCH::Draw(PGNV pgnv, RC *prcClip)
         pgnv->FillRc(&rc, kacrWhite);
     }
 
-    // draw the selection
+    // 3DMMv1.0: draw the selection
     if (_fSelOn)
         _InvertSel(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the header for the DCH.
 ***************************************************************************/
 void DCH::_DrawHeader(PGNV pgnv)
@@ -241,23 +241,23 @@ void DCH::_DrawHeader(PGNV pgnv)
     pgnv->SetOnn(_onn);
     pgnv->GetRcSrc(&rcSrc);
 
-    // erase the first part of the line
+    // 3DMMv1.0: erase the first part of the line
     rc.xpLeft = 0;
     rc.xpRight = _XpFromIch(0);
     rc.ypTop = 0;
     rc.ypBottom = _dypLine;
     pgnv->FillRc(&rc, kacrWhite);
 
-    // draw the text
+    // 3DMMv1.0: draw the text
     stn.FFormatSz(PszLit("%08x"), _pbsf->IbMac());
     pgnv->DrawStn(&stn, rc.xpRight, 0, kacrBlack, kacrWhite);
 
-    // erase the rest of the line
+    // 3DMMv1.0: erase the rest of the line
     rc.xpLeft = _XpFromIch(8);
     rc.xpRight = rcSrc.xpRight;
     pgnv->FillRc(&rc, kacrWhite);
 
-    // draw the _fHex Marker
+    // 3DMMv1.0: draw the _fHex Marker
     rc.xpLeft = _XpFromCb(0, _fHexSel);
     rc.xpRight = rc.xpLeft + rc.Dyp();
     rc.Inset(rc.Dyp() / 6, rc.Dyp() / 6);
@@ -266,14 +266,14 @@ void DCH::_DrawHeader(PGNV pgnv)
     else
         pgnv->FillRcApt(&rc, &vaptGray, kacrBlack, kacrWhite);
 
-    // draw the line seperating the header from the data
+    // 3DMMv1.0: draw the line seperating the header from the data
     rc = rcSrc;
     rc.ypTop = _dypHeader - 1;
     rc.ypBottom = _dypHeader;
     pgnv->FillRc(&rc, kacrBlack);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle key input.
 ***************************************************************************/
 bool DCH::FCmdKey(PCMD_KEY pcmd)
@@ -286,8 +286,8 @@ bool DCH::FCmdKey(PCMD_KEY pcmd)
     uint8_t rgb[64], bT;
     bool fRight = fFalse;
 
-    // keep fetching characters until we get a cursor key, delete key or
-    // until the buffer is full.
+    // 3DMMv1.0: keep fetching characters until we get a cursor key, delete key or
+    // 3DMMv1.0: until the buffer is full.
     dibSel = 0;
     dibDel = 0;
     ibLim = 0;
@@ -333,7 +333,7 @@ bool DCH::FCmdKey(PCMD_KEY pcmd)
                 bT = (uint8_t)pcmd->ch;
             else
             {
-                // hex typing
+                // 3DMMv1.0: hex typing
                 if (FIn(pcmd->ch, '0', '9' + 1))
                     bT = pcmd->ch - '0';
                 else if (FIn(pcmd->ch, 'A', 'F' + 1))
@@ -354,22 +354,22 @@ bool DCH::FCmdKey(PCMD_KEY pcmd)
 
     if (ibLim > 0)
     {
-        // have some characters to insert
+        // 3DMMv1.0: have some characters to insert
         if (!_fHexSel)
         {
-            // just straight characters to insert
+            // 3DMMv1.0: just straight characters to insert
             _FReplace(rgb, ibLim, _ibAnchor, _ibOther);
         }
         else
         {
-            // hex typing
+            // 3DMMv1.0: hex typing
             uint8_t bT;
             int32_t ibSrc, ibDst;
             int32_t ibAnchor = _ibAnchor;
 
             if (_fHalfSel && ibAnchor > 0)
             {
-                // complete the byte
+                // 3DMMv1.0: complete the byte
                 _pbsf->FetchRgb(--ibAnchor, 1, &bT);
                 rgb[0] = (bT & 0xF0) | (rgb[0] & 0x0F);
                 ibSrc = 1;
@@ -392,10 +392,10 @@ bool DCH::FCmdKey(PCMD_KEY pcmd)
 
     if (dibSel != 0)
     {
-        // move the selection
+        // 3DMMv1.0: move the selection
         if (grfcust & fcustShift)
         {
-            // extend selection
+            // 3DMMv1.0: extend selection
             _SetSel(_ibAnchor, _ibOther + dibSel, fRight);
             _ShowSel();
         }
@@ -438,7 +438,7 @@ bool DCH::FCmdKey(PCMD_KEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replaces the bytes between ib1 and ib2 with the given bytes.
 ***************************************************************************/
 bool DCH::_FReplace(uint8_t *prgb, int32_t cb, int32_t ib1, int32_t ib2, bool fHalfSel)
@@ -458,12 +458,12 @@ bool DCH::_FReplace(uint8_t *prgb, int32_t cb, int32_t ib1, int32_t ib2, bool fH
     if (fHalfSel)
         _SetHalfSel(ib1);
     else
-        _SetSel(ib1, ib1, fFalse /*REVIEW shonk*/);
+        _SetSel(ib1, ib1, fFalse /* 3DMMv1.0: REVIEW shonk*/);
     _ShowSel();
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate all DCHs on this byte stream.  Also dirties the document.
     Should be called by any code that edits the document.
 ***************************************************************************/
@@ -473,10 +473,10 @@ void DCH::_InvalAllDch(int32_t ib, int32_t cbIns, int32_t cbDel)
     int32_t ipddg;
     PDDG pddg;
 
-    // mark the document dirty
+    // 3DMMv1.0: mark the document dirty
     _pdocb->SetDirty();
 
-    // inform the DCDs
+    // 3DMMv1.0: inform the DCDs
     for (ipddg = 0; pvNil != (pddg = _pdocb->PddgGet(ipddg)); ipddg++)
     {
         if (pddg->FIs(kclsDCH))
@@ -484,7 +484,7 @@ void DCH::_InvalAllDch(int32_t ib, int32_t cbIns, int32_t cbDel)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the display from ib to the end of the display.  If we're
     the active DCH, also redraw.
 ***************************************************************************/
@@ -495,7 +495,7 @@ void DCH::_InvalIb(int32_t ib, int32_t cbIns, int32_t cbDel)
     RC rc;
     int32_t ibAnchor, ibOther;
 
-    // adjust the sel
+    // 3DMMv1.0: adjust the sel
     ibAnchor = _ibAnchor;
     ibOther = _ibOther;
     FAdjustIv(&ibAnchor, ib, cbIns, cbDel);
@@ -503,7 +503,7 @@ void DCH::_InvalIb(int32_t ib, int32_t cbIns, int32_t cbDel)
     if (ibAnchor != _ibAnchor || ibOther != _ibOther)
         _SetSel(ibAnchor, ibOther, _fRightSel);
 
-    // caclculate the invalid rectangle
+    // 3DMMv1.0: caclculate the invalid rectangle
     GetRc(&rc, cooLocal);
     rc.ypTop = _YpFromIb(ib);
     if (cbIns == cbDel)
@@ -522,7 +522,7 @@ void DCH::_InvalIb(int32_t ib, int32_t cbIns, int32_t cbDel)
 
     if (cbIns != cbDel)
     {
-        // invalidate the length
+        // 3DMMv1.0: invalidate the length
         GetRc(&rc, cooLocal);
         rc.xpLeft = _XpFromIch(0);
         rc.xpRight = _XpFromIch(8);
@@ -532,7 +532,7 @@ void DCH::_InvalIb(int32_t ib, int32_t cbIns, int32_t cbDel)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Turn the selection on or off.
 ***************************************************************************/
 void DCH::_SwitchSel(bool fOn)
@@ -545,7 +545,7 @@ void DCH::_SwitchSel(bool fOn)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the ibOther of the selection is visible.  If possible, show
     both ends of the selection.
 ***************************************************************************/
@@ -554,26 +554,26 @@ void DCH::_ShowSel(void)
     int32_t ln, lnHope, cln, dscv;
     RC rc;
 
-    // find the line we definitely need to show
+    // 3DMMv1.0: find the line we definitely need to show
     ln = _ibOther / _cbLine;
     if (_ibOther % _cbLine == 0 && ln > 0)
     {
-        // may have to adjust ln down by one
+        // 3DMMv1.0: may have to adjust ln down by one
         if (_ibAnchor < _ibOther || _ibAnchor == _ibOther && _fRightSel)
             ln--;
     }
 
-    // find the other end of the selection - which we hope to be able to show
+    // 3DMMv1.0: find the other end of the selection - which we hope to be able to show
     lnHope = _ibAnchor / _cbLine;
 
     _GetContent(&rc);
     cln = LwMax(1, rc.Dyp() / _dypLine);
     if (LwAbs(ln - lnHope) >= cln)
-        lnHope = ln; // can't show both
+        lnHope = ln; // 3DMMv1.0: can't show both
 
     if (FIn(ln, _scvVert, _scvVert + cln) && FIn(lnHope, _scvVert, _scvVert + cln))
     {
-        // both are showing
+        // 3DMMv1.0: both are showing
         return;
     }
 
@@ -589,7 +589,7 @@ void DCH::_ShowSel(void)
     _Scroll(scaNil, scaToVal, 0, _scvVert + dscv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert the selection.  Doesn't touch _fSelOn.
 ***************************************************************************/
 void DCH::_InvertSel(PGNV pgnv)
@@ -616,7 +616,7 @@ void DCH::_InvertSel(PGNV pgnv)
     }
     else if (_ibAnchor == _ibOther)
     {
-        // insertion or half sel
+        // 3DMMv1.0: insertion or half sel
         Assert(!_fHalfSel || _fRightSel, "_fHalfSel set but not _fRightSel");
         cb = _ibAnchor % _cbLine;
         if (_fRightSel && cb == 0 && _ibAnchor > 0)
@@ -628,7 +628,7 @@ void DCH::_InvertSel(PGNV pgnv)
             rc.ypTop = _YpFromIb(_ibAnchor);
         rc.ypBottom = rc.ypTop + _dypLine;
 
-        // do the hex sel
+        // 3DMMv1.0: do the hex sel
         rc.xpLeft = _XpFromCb(cb, fTrue, _fRightSel);
         if (_fHalfSel && _ibAnchor > 0)
         {
@@ -644,7 +644,7 @@ void DCH::_InvertSel(PGNV pgnv)
                 pgnv->FillRc(&rcT, kacrInvert);
         }
 
-        // do the ascii sel
+        // 3DMMv1.0: do the ascii sel
         rc.xpLeft = _XpFromCb(cb, fFalse) - 1;
         rc.xpRight = rc.xpLeft + 2;
         if (rcT.FIntersect(&rc, &rcClip))
@@ -657,7 +657,7 @@ void DCH::_InvertSel(PGNV pgnv)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Inverts a range on screen.  Does not mark insertion bars or half sels.
 ***************************************************************************/
 void DCH::_InvertIbRange(PGNV pgnv, int32_t ib1, int32_t ib2, bool fHex)
@@ -684,26 +684,26 @@ void DCH::_InvertIbRange(PGNV pgnv, int32_t ib1, int32_t ib2, bool fHex)
     rc.ypBottom = rc.ypTop + _dypLine;
     if (yp2 == rc.ypTop)
     {
-        // only one line involved
+        // 3DMMv1.0: only one line involved
         rc.xpRight = xp2;
         if (rcT.FIntersect(&rc, &rcClip))
             pgnv->HiliteRc(&rcT, kacrWhite);
         return;
     }
 
-    // invert the sel on the first line
+    // 3DMMv1.0: invert the sel on the first line
     rc.xpRight = _XpFromCb(_cbLine, fHex);
     if (rcT.FIntersect(&rc, &rcClip))
         pgnv->HiliteRc(&rcT, kacrWhite);
 
-    // invert the main rectangular block
+    // 3DMMv1.0: invert the main rectangular block
     rc.xpLeft = _XpFromCb(0, fHex);
     rc.ypTop += _dypLine;
     rc.ypBottom = yp2;
     if (rcT.FIntersect(&rc, &rcClip))
         pgnv->HiliteRc(&rcT, kacrWhite);
 
-    // invert the last line
+    // 3DMMv1.0: invert the last line
     rc.ypTop = yp2;
     rc.ypBottom = yp2 + _dypLine;
     rc.xpRight = xp2;
@@ -711,7 +711,7 @@ void DCH::_InvertIbRange(PGNV pgnv, int32_t ib1, int32_t ib2, bool fHex)
         pgnv->HiliteRc(&rcT, kacrWhite);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Select the second half of the byte before ib.
 ***************************************************************************/
 void DCH::_SetHalfSel(int32_t ib)
@@ -726,7 +726,7 @@ void DCH::_SetHalfSel(int32_t ib)
     GNV gnv(this);
     if (_fSelOn)
     {
-        // turn off the sel
+        // 3DMMv1.0: turn off the sel
         _InvertSel(&gnv);
         _fSelOn = fFalse;
     }
@@ -740,7 +740,7 @@ void DCH::_SetHalfSel(int32_t ib)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection.  fRight is ignored for non-insertion bar selections.
 ***************************************************************************/
 void DCH::_SetSel(int32_t ibAnchor, int32_t ibOther, bool fRight)
@@ -782,7 +782,7 @@ void DCH::_SetSel(int32_t ibAnchor, int32_t ibOther, bool fRight)
         }
         else
         {
-            // they have the same anchor and neither is an insertion
+            // 3DMMv1.0: they have the same anchor and neither is an insertion
             _InvertIbRange(&gnv, _ibOther, ibOther, fTrue);
             _InvertIbRange(&gnv, _ibOther, ibOther, fFalse);
         }
@@ -801,7 +801,7 @@ LDrawSel:
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Changes the selection type from hex to ascii or vice versa.
 ***************************************************************************/
 void DCH::_SetHexSel(bool fHex)
@@ -814,7 +814,7 @@ void DCH::_SetHexSel(bool fHex)
     _DrawHeader(&gnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the column for the given horizontal byte position.  cb is the number
     of bytes in from the left edge.  fHex indicates whether we want the
     position in the hex area or the ascii area.  fNoTrailSpace is ignored if
@@ -825,25 +825,25 @@ int32_t DCH::_IchFromCb(int32_t cb, bool fHex, bool fNoTrailSpace)
 {
     AssertIn(cb, 0, _cbLine + 1);
 
-    // skip over the address
+    // 3DMMv1.0: skip over the address
     int32_t ich = 10;
 
     if (fHex)
     {
-        // account for the spaces every four hex digits
+        // 3DMMv1.0: account for the spaces every four hex digits
         ich += 2 * cb + cb / 4;
         if (fNoTrailSpace && (cb % 4) == 0 && cb > 0)
             ich--;
     }
     else
     {
-        // skip over the hex area
+        // 3DMMv1.0: skip over the hex area
         ich += 2 * _cbLine + _cbLine / 4 + 1 + cb;
     }
     return ich;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the xp for the given byte.  fHex indicates whether we want the
     postion in the hex area or the ascii area.
 ***************************************************************************/
@@ -852,7 +852,7 @@ int32_t DCH::_XpFromIb(int32_t ib, bool fHex)
     return _XpFromIch(_IchFromCb(ib % _cbLine, fHex));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the xp for the given horizontal byte position.  cb is the number
     of bytes in from the left edge.  fHex indicates whether we want the
     postion in the hex area or the ascii area.
@@ -862,7 +862,7 @@ int32_t DCH::_XpFromCb(int32_t cb, bool fHex, bool fNoTrailSpace)
     return _XpFromIch(_IchFromCb(cb, fHex, fNoTrailSpace));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the yp for the given byte.
 ***************************************************************************/
 int32_t DCH::_YpFromIb(int32_t ib)
@@ -871,7 +871,7 @@ int32_t DCH::_YpFromIb(int32_t ib)
     return LwMul((ib / _cbLine) - _scvVert, _dypLine) + _dypHeader;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the byte that the given point is over.  *ptHex is both input and
     output.  If *ptHex is tMaybe on input, it will be set to tYes or tNo on
     output (unless the point is not in the edit area of the DCH).  If *ptHex
@@ -932,7 +932,7 @@ int32_t DCH::_IbFromPt(int32_t xp, int32_t yp, tribool *ptHex, bool *pfRight)
     return ib;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mouse down in our content.
 ***************************************************************************/
 void DCH::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -944,7 +944,7 @@ void DCH::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     int32_t ib;
     RC rc;
 
-    // doing this before the activate avoids flashing the old selection
+    // 3DMMv1.0: doing this before the activate avoids flashing the old selection
     tHex = tMaybe;
     ib = _IbFromPt(xp, yp, &tHex, &fRight);
     if (ivNil != ib)
@@ -964,7 +964,7 @@ void DCH::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     {
         if (!rc.FPtIn(pt.xp, pt.yp))
         {
-            // do autoscroll
+            // 3DMMv1.0: do autoscroll
             ptT = pt;
             rc.PinPt(&pt);
             _Scroll(scaToVal, scaToVal, _scvHorz + LwDivAway(ptT.xp - pt.xp, _dxpChar),
@@ -977,7 +977,7 @@ void DCH::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the maximum for the indicated scroll bar.
 ***************************************************************************/
 int32_t DCH::_ScvMax(bool fVert)
@@ -989,7 +989,7 @@ int32_t DCH::_ScvMax(bool fVert)
                           : _IchFromCb(_cbLine, fFalse) + 2 - rc.Dxp() / _dxpChar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the selection.
 ***************************************************************************/
 bool DCH::_FCopySel(PDOCB *ppdocb)
@@ -1016,7 +1016,7 @@ bool DCH::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clear (delete) the selection.
 ***************************************************************************/
 void DCH::_ClearSel(void)
@@ -1024,7 +1024,7 @@ void DCH::_ClearSel(void)
     _FReplace(pvNil, 0, _ibAnchor, _ibOther, fFalse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paste over the selection.
 ***************************************************************************/
 bool DCH::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
@@ -1080,7 +1080,7 @@ bool DCH::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
 
     _InvalAllDch(ib1, cb, ib2 - ib1);
     ib1 += cb;
-    _SetSel(ib1, ib1, fFalse /*REVIEW shonk*/);
+    _SetSel(ib1, ib1, fFalse /* 3DMMv1.0: REVIEW shonk*/);
     _ShowSel();
 
     ReleasePpo(&pdocb);
@@ -1088,7 +1088,7 @@ bool DCH::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void DCH::AssertValid(uint32_t grf)
@@ -1100,7 +1100,7 @@ void DCH::AssertValid(uint32_t grf)
     AssertIn(_ibOther, 0, kcbMax);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DCH.
 ***************************************************************************/
 void DCH::MarkMem(void)
@@ -1109,16 +1109,16 @@ void DCH::MarkMem(void)
     DCH_PAR::MarkMem();
     MarkMemObj(_pbsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a chunk hex editing doc.
 ***************************************************************************/
 DOCH::DOCH(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCE(pdocb, pcfl, ctg, cno)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Creates a new hex editing doc based on the given chunk.  Asserts that
     there are no open editing docs based on the chunk.
 ***************************************************************************/
@@ -1141,7 +1141,7 @@ PDOCH DOCH::PdochNew(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
     return pdoch;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the stream from the given flo.
 ***************************************************************************/
 bool DOCH::_FRead(PBLCK pblck)
@@ -1168,7 +1168,7 @@ bool DOCH::_FRead(PBLCK pblck)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG for the doc.
 ***************************************************************************/
 PDDG DOCH::PddgNew(PGCB pgcb)
@@ -1177,7 +1177,7 @@ PDDG DOCH::PddgNew(PGCB pgcb)
     return DCH::PdchNew(this, &_bsf, fFalse, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the length of the data on file
 ***************************************************************************/
 int32_t DOCH::_CbOnFile(void)
@@ -1186,7 +1186,7 @@ int32_t DOCH::_CbOnFile(void)
     return _bsf.IbMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Writes the data and returns success/failure.
 ***************************************************************************/
 bool DOCH::_FWrite(PBLCK pblck, bool fRedirect)
@@ -1199,7 +1199,7 @@ bool DOCH::_FWrite(PBLCK pblck, bool fRedirect)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void DOCH::AssertValid(uint32_t grf)
@@ -1208,7 +1208,7 @@ void DOCH::AssertValid(uint32_t grf)
     AssertPo(&_bsf, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the DOCH.
 ***************************************************************************/
 void DOCH::MarkMem(void)
@@ -1217,4 +1217,4 @@ void DOCH::MarkMem(void)
     DOCH_PAR::MarkMem();
     MarkMemObj(&_bsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

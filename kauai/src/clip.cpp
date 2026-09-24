@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,7 +18,7 @@ RTCLASS(CLIP)
 PCLIP vpclip;
 CLIP _clip;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the clipboard.
 ***************************************************************************/
 CLIP::CLIP(void)
@@ -27,7 +27,7 @@ CLIP::CLIP(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the given document is the clipboard document.  If pdocb
     is nil this returns true if the clipboard is empty and false if it's
     not empty.
@@ -43,7 +43,7 @@ bool CLIP::FDocIsClip(PDOCB pdocb)
     return pdocb == _pdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Show the clipboard document.
 ***************************************************************************/
 void CLIP::Show(void)
@@ -61,7 +61,7 @@ void CLIP::Show(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the given document the clipboard document.
 ***************************************************************************/
 void CLIP::Set(PDOCB pdocb, bool fExport)
@@ -82,7 +82,7 @@ void CLIP::Set(PDOCB pdocb, bool fExport)
     _fDelayImport = fFalse;
     _clfmImport = clfmNil;
 
-    // throw away the old clip document and replace it with the new one
+    // 3DMMv1.0: throw away the old clip document and replace it with the new one
     SwapVars(&pdocb, &_pdocb);
     if (pvNil != pdocb)
     {
@@ -105,7 +105,7 @@ void CLIP::Set(PDOCB pdocb, bool fExport)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the clipboard supports this format and if so, get it.
 ***************************************************************************/
 bool CLIP::FGetFormat(int32_t cls, PDOCB *ppdocb)
@@ -133,7 +133,7 @@ bool CLIP::FGetFormat(int32_t cls, PDOCB *ppdocb)
     return _pdocb->FGetFormat(cls, ppdocb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Import stuff from the external clipboard.
 ***************************************************************************/
 void CLIP::Import(void)
@@ -145,7 +145,7 @@ void CLIP::Import(void)
     _fDocCurrent = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the _pdocb is current - import the current system clipboard
     if it isn't.
 ***************************************************************************/
@@ -193,14 +193,14 @@ void CLIP::_EnsureDoc(void)
         GlobalUnlock(hn);
     }
     CloseClipboard();
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement CLIP::Import
-#endif        // MAC
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement CLIP::Import
+#endif        // 3DMMv1.0: MAC
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Import the actual data for the current clipboard (if importing was
     delayed).
 ***************************************************************************/
@@ -234,14 +234,14 @@ void CLIP::_ImportCur(void)
         ReleasePpo(&pdocb);
     }
     CloseClipboard();
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement CLIP::_ImportCur
-#endif        // MAC
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement CLIP::_ImportCur
+#endif        // 3DMMv1.0: MAC
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Import a particular format.
 ***************************************************************************/
 bool CLIP::_FImportFormat(int32_t clfm, void *pv, int32_t cb, PDOCB *ppdocb, bool *pfDelay)
@@ -256,9 +256,9 @@ bool CLIP::_FImportFormat(int32_t clfm, void *pv, int32_t cb, PDOCB *ppdocb, boo
 #ifdef WIN
     if (pvNil != pv && cb > 0)
     {
-        // adjust cb for text - remove the stupid trailing null and compensate
-        // for the fact that cb might be too big (GlobalSize(hn) might be bigger
-        // than what was allocated).
+        // 3DMMv1.0: adjust cb for text - remove the stupid trailing null and compensate
+        // 3DMMv1.0: for the fact that cb might be too big (GlobalSize(hn) might be bigger
+        // 3DMMv1.0: than what was allocated).
         switch (clfm)
         {
         case kclfmUniText:
@@ -282,7 +282,7 @@ bool CLIP::_FImportFormat(int32_t clfm, void *pv, int32_t cb, PDOCB *ppdocb, boo
             break;
         }
     }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
     _fImporting = fTrue;
     fRet = vpappb->FImportClip(clfm, pv, cb, ppdocb, pfDelay);
@@ -291,7 +291,7 @@ bool CLIP::_FImportFormat(int32_t clfm, void *pv, int32_t cb, PDOCB *ppdocb, boo
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start an export session.
 ***************************************************************************/
 bool CLIP::FInitExport(void)
@@ -315,16 +315,16 @@ bool CLIP::FInitExport(void)
         return fFalse;
     }
     _fExporting = fTrue;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement CLIP::FInitExport
-#endif        // MAC
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement CLIP::FInitExport
+#endif        // 3DMMv1.0: MAC
 
     return _fExporting;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a buffer to export to.
 ***************************************************************************/
 void *CLIP::PvExport(int32_t cb, int32_t clfm)
@@ -344,7 +344,7 @@ void *CLIP::PvExport(int32_t cb, int32_t clfm)
     switch (clfm)
     {
     case kclfmText:
-        // need to add SIZEOF(achar) for the terminating zero character
+        // 3DMMEx: need to add SIZEOF(achar) for the terminating zero character
         cb = LwRoundAway(cb + SIZEOF(achar), SIZEOF(achar));
         break;
     }
@@ -356,15 +356,15 @@ void *CLIP::PvExport(int32_t cb, int32_t clfm)
 
     _clfmExport = clfm;
     return GlobalLock(_hnExport);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement CLIP::PvExport
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement CLIP::PvExport
     return pvNil;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     End an exporting session.
 ***************************************************************************/
 void CLIP::EndExport(void)
@@ -378,15 +378,15 @@ void CLIP::EndExport(void)
 
 #ifdef WIN
     CloseClipboard();
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement CLIP::EndExport
-#endif        // MAC
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement CLIP::EndExport
+#endif        // 3DMMv1.0: MAC
     _fExporting = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Export the current format.
 ***************************************************************************/
 void CLIP::_ExportCur(void)
@@ -401,15 +401,15 @@ void CLIP::_ExportCur(void)
         SetClipboardData(_clfmExport, _hnExport);
         _hnExport = hNil;
     }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement CLIP::_ExportCur
-#endif        // MAC
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement CLIP::_ExportCur
+#endif        // 3DMMv1.0: MAC
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CLIP.
 ***************************************************************************/
 void CLIP::AssertValid(uint32_t grf)
@@ -419,7 +419,7 @@ void CLIP::AssertValid(uint32_t grf)
     Assert(!_fExporting || !_fImporting, "both importing and exporting!");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CLIP.
 ***************************************************************************/
 void CLIP::MarkMem(void)
@@ -428,4 +428,4 @@ void CLIP::MarkMem(void)
     CLIP_PAR::MarkMem();
     MarkMemObj(_pdocb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

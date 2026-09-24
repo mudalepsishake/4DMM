@@ -1,13 +1,13 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 //
-// KIDGSDEF.H  --- Cool defines for commonly used
-// information between code and script.
+// 3DMMv1.0: KIDGSDEF.H  --- Cool defines for commonly used
+// 3DMMv1.0: information between code and script.
 //
-// File is named kidgs, because it's a Glen-Sean
-// wrapper around kidspace to make scripting a bit
-// easier :-)
+// 3DMMv1.0: File is named kidgs, because it's a Glen-Sean
+// 3DMMv1.0: wrapper around kidspace to make scripting a bit
+// 3DMMv1.0: easier :-)
 //
 
 #ifndef KIDGSDEF_H
@@ -17,21 +17,21 @@
 #include "framedef.h"
 #include "kidsanim.h"
 
-// ---------------------------------------------------------
-// the default transparent color index for bitmaps and masks
-// ---------------------------------------------------------
+// 3DMMv1.0: ---------------------------------------------------------
+// 3DMMv1.0: the default transparent color index for bitmaps and masks
+// 3DMMv1.0: ---------------------------------------------------------
 #define kiTrans 0x00
 
-// ---------------------------------------------------------
-// cno of script to run when the application is started
-// ---------------------------------------------------------
+// 3DMMv1.0: ---------------------------------------------------------
+// 3DMMv1.0: cno of script to run when the application is started
+// 3DMMv1.0: ---------------------------------------------------------
 #define kcnoStartApp 0
 
-// ---------------------------------------------------------
-// The following are child id constants
-// ---------------------------------------------------------
+// 3DMMv1.0: ---------------------------------------------------------
+// 3DMMv1.0: The following are child id constants
+// 3DMMv1.0: ---------------------------------------------------------
 
-// predefined script child id's (utility values)
+// 3DMMv1.0: predefined script child id's (utility values)
 #define kchidScript0 0x0020
 #define kchidScript1 0x0021
 #define kchidScript2 0x0022
@@ -45,10 +45,10 @@
 #define kchidScript10 0x002A
 #define kchidScript11 0x002B
 
-// ---------------------------------------------------------
-// The following are constants for the state portion of the
-// above.  State 0 is an undefined state.
-// ---------------------------------------------------------
+// 3DMMv1.0: ---------------------------------------------------------
+// 3DMMv1.0: The following are constants for the state portion of the
+// 3DMMv1.0: above.  State 0 is an undefined state.
+// 3DMMv1.0: ---------------------------------------------------------
 #define kstNil 0x0000
 #define kst1 0x0001
 #define kst2 0x0002
@@ -83,11 +83,11 @@
 #define kst31 0x001f
 #define kst32 0x0020
 
-// Nil runtime Gob ID
+// 3DMMv1.0: Nil runtime Gob ID
 #define kidNil 0
 
-// Virtual key codes
-// NOTE: We cannot include Windows.h here
+// 3DMMEx: Virtual key codes
+// 3DMMEx: NOTE: We cannot include Windows.h here
 #define kvkeyEscape 0x1b
 #define kvkeyBackspace 0x8
 #define kvkeyLeft 0x25
@@ -95,5 +95,6 @@
 #define kvkeyRight 0x27
 #define kvkeyDown 0x28
 #define kvkeyDelete 0x2e
+#define kvkeyC 0x43
 
-#endif // !KIDGSDEF_H
+#endif // 3DMMv1.0: !KIDGSDEF_H

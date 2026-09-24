@@ -1,0 +1,32 @@
+/* BRenderModern:
+ * Private device driver structure
+ */
+#ifndef _DRV_H_
+#define _DRV_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// BRenderModern: #define BR_OBJECT_PRIVATE
+#define BR_DEVICE_PRIVATE
+#define BR_GEOMETRY_LIGHTING_PRIVATE
+
+#include "brddi.h"
+#include "template.h"
+#include "device.h"
+#include "glighting.h"
+
+/* BRenderModern:
+ * Pull in private prototypes
+ */
+#ifndef _NO_PROTOTYPES
+
+#include "drv_ip.h"
+
+#endif
+
+#ifdef __cplusplus
+};
+#endif
+#endif /* BRenderModern: _DRV_H_ */

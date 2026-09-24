@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -26,7 +26,7 @@ namespace fs = std::filesystem;
 
 #ifdef MAC
 typedef FSSpec FSS;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
 enum
 {
@@ -34,7 +34,7 @@ enum
     ffniCreateDir = 0x0001,
     ffniMoveToDir = 0x0002,
 
-// for FNI::AssertValid
+// 3DMMv1.0: for FNI::AssertValid
 #ifdef DEBUG
     ffniFile = 0x10000,
     ffniDir = 0x20000,
@@ -42,7 +42,7 @@ enum
 #endif
 };
 
-// Volume kinds:
+// 3DMMv1.0: Volume kinds:
 enum
 {
     fvkNil = 0x0000,
@@ -52,21 +52,21 @@ enum
     fvkRemovable = 0x0008,
 };
 
-typedef int32_t FTG; // file type
+typedef int32_t FTG; // 3DMMv1.0: file type
 
 const FTG ftgNil = KLCONST4('.', '.', '.', ',');
 const FTG kftgDir = KLCONST4('.', '.', '.', '.');
 
 #ifdef MAC
-const FTG kftgTemp = KLCONST4('t', 'e', 'm', 'p'); // the standard temp file ftg
+const FTG kftgTemp = KLCONST4('t', 'e', 'm', 'p'); // 3DMMv1.0: the standard temp file ftg
 const FTG kftgText = KLCONST4('T', 'E', 'X', 'T');
 #else
-const FTG kftgTemp = KLCONST3('t', 'm', 'p'); // the standard temp file ftg
+const FTG kftgTemp = KLCONST3('t', 'm', 'p'); // 3DMMv1.0: the standard temp file ftg
 const FTG kftgText = KLCONST3('t', 'x', 't');
 #endif
-extern FTG vftgTemp; // the ftg to use for temp files
+extern FTG vftgTemp; // 3DMMv1.0: the ftg to use for temp files
 
-/****************************************
+/** 3DMMv1.0: **************************************
     File name class
 ****************************************/
 typedef class FNI *PFNI;
@@ -83,11 +83,11 @@ class FNI : public FNI_PAR
   private:
     FTG _ftg;
 #ifdef MAC
-    int32_t _lwDir; // the directory id
+    int32_t _lwDir; // 3DMMv1.0: the directory id
     FSS _fss;
 #elif defined(WIN)
     STN _stnFile;
-#else // WIN
+#else // 3DMMv1.0: WIN
     STN _stnFile;
 #endif
 
@@ -95,12 +95,12 @@ class FNI : public FNI_PAR
     void _SetFtgFromName(void);
     int32_t _CchExt(void);
     bool _FChangeLeaf(PSTN pstn);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
   public:
     FNI(void);
 
-// building FNIs
+// 3DMMv1.0: building FNIs
 #ifdef MAC
     bool FGetOpen(FTG *prgftg, short cftg);
     bool FGetSave(FTG ftg, PST pstPrompt, PST pstDefault);
@@ -109,8 +109,8 @@ class FNI : public FNI_PAR
     bool FGetOpen(const achar *prgchFilter, KWND hwndOwner);
     bool FGetSave(const achar *prgchFilter, KWND hwndOwner);
     bool FSearchInPath(PSTN pstn, PCSZ pcszEnv = pvNil);
-#endif                                                   // WIN
-    bool FBuildFromPath(PSTN pstn, FTG ftgDef = ftgNil); // REVIEW shonk: Mac: implement
+#endif                                                   // 3DMMv1.0: WIN
+    bool FBuildFromPath(PSTN pstn, FTG ftgDef = ftgNil); // 3DMMv1.0: REVIEW shonk: Mac: implement
     bool FGetUnique(FTG ftg);
     bool FGetCwd();
     bool FGetExe();
@@ -119,7 +119,7 @@ class FNI : public FNI_PAR
     void SetNil(void);
 
     FTG Ftg(void);
-    uint32_t Grfvk(void); // volume kind (floppy/net/CD/etc)
+    uint32_t Grfvk(void); // 3DMMv1.0: volume kind (floppy/net/CD/etc)
     bool FChangeFtg(FTG ftg);
 
     bool FSetLeaf(PSTN pstn, FTG ftg = ftgNil);
@@ -141,12 +141,12 @@ class FNI : public FNI_PAR
 #ifdef MAC
 #define FGetFniOpenMacro(pfni, prgftg, cftg, prgchFilter, hwndOwner) (pfni)->FGetOpen(prgftg, cftg)
 #define FGetFniSaveMacro(pfni, ftg, pstPrompt, pstDef, prgchFilter, hwndOwner) (pfni)->FGetSave(ftg, pstPrompt, pstDef)
-#else // MAC
+#else // 3DMMv1.0: MAC
 #define FGetFniOpenMacro(pfni, prgftg, cftg, prgchFilter, hwndOwner) (pfni)->FGetOpen(prgchFilter, hwndOwner)
 #define FGetFniSaveMacro(pfni, ftg, pstPrompt, pstDef, prgchFilter, hwndOwner) (pfni)->FGetSave(prgchFilter, hwndOwner)
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-/****************************************
+/** 3DMMv1.0: **************************************
     File name enumerator.
 ****************************************/
 const int32_t kcftgFneBase = 20;
@@ -156,7 +156,7 @@ enum
     ffneNil = 0,
     ffneRecurse = 1,
 
-    // for FNextFni
+    // 3DMMv1.0: for FNextFni
     ffnePre = 0x10,
     ffnePost = 0x20,
     ffneSkipDir = 0x80,
@@ -172,7 +172,7 @@ class FNE : public FNE_PAR
     NOCOPY(FNE)
 
   private:
-    // file enumeration state
+    // 3DMMv1.0: file enumeration state
     struct FES
     {
 #ifdef MAC
@@ -180,16 +180,16 @@ class FNE : public FNE_PAR
         int32_t lwDir;
         int32_t iv;
 #elif defined(WIN)
-        FNI fni; // directory fni
-        HN hn;   // for enumerating files/directories
+        FNI fni; // 3DMMv1.0: directory fni
+        HN hn;   // 3DMMv1.0: for enumerating files/directories
         WIN32_FIND_DATA wfd;
-        uint32_t grfvol; // which volumes are available (for enumerating volumes)
-        int32_t chVol;   // which volume we're on (for enumerating volumes)
-#else  // WIN
+        uint32_t grfvol; // 3DMMv1.0: which volumes are available (for enumerating volumes)
+        int32_t chVol;   // 3DMMv1.0: which volume we're on (for enumerating volumes)
+#else  // 3DMMv1.0: WIN
         FNI fni;
         fs::directory_iterator it;
         bool it_init;
-#endif // Other
+#endif // 3DMMEx: Other
     };
 
     FTG _rgftg[kcftgFneBase];
@@ -203,7 +203,7 @@ class FNE : public FNE_PAR
     void _Free(void);
 #ifndef MAC
     bool _FPop(void);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
   public:
     FNE(void);
@@ -213,4 +213,4 @@ class FNE : public FNE_PAR
     bool FNextFni(FNI *pfni, uint32_t *pgrffneOut = pvNil, uint32_t grffneIn = ffneNil);
 };
 
-#endif //! FNI_H
+#endif //! 3DMMv1.0: FNI_H

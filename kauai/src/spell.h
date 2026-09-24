@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -15,17 +15,17 @@
 #ifndef SPELL_H
 #define SPELL_H
 
-// REVIEW shonk: dictionary type on Mac
+// 3DMMv1.0: REVIEW shonk: dictionary type on Mac
 #ifdef MAC
 const FTG kftgDictionary = KLCONST4('D', 'I', 'C', 'T');
 #else
 const FTG kftgDictionary = KLCONST3('d', 'i', 'c');
 #endif
 
-// include the standard spell checker API header
+// 3DMMv1.0: include the standard spell checker API header
 #ifdef WIN
 #define NT
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 extern "C"
 {
@@ -92,23 +92,23 @@ class SPLC : public SPLC_PAR
     SC_SEC(__cdecl *_pfnCloseMdr)(SC_SPLID splid, LPSC_MDRS pmdrs);
     SC_SEC(__cdecl *_pfnCloseUdr)(SC_SPLID splid, SC_UDR udr, SC_BOOL fForce);
 
-    // SC_SEC SpellVer(SC_WORD *pwVer, SC_WORD *pwEngine, SC_WORD *pwType);
+    // 3DMMv1.0: SC_SEC SpellVer(SC_WORD *pwVer, SC_WORD *pwEngine, SC_WORD *pwType);
     SC_SEC SpellInit(SC_SPLID *psplid, SC_WSC *pwsc);
     SC_SEC SpellOptions(SC_SPLID splid, int32_t grfso);
     SC_SEC SpellCheck(SC_SPLID splid, SC_CC sccc, LPSC_SIB psib, LPSC_SRB psrb);
     SC_SEC SpellTerminate(SC_SPLID splid, SC_BOOL fForce);
-    // SC_SEC SpellVerifyMdr(LPSC_PATH ppath, SC_LID lidExpected, SC_LID *plid);
+    // 3DMMv1.0: SC_SEC SpellVerifyMdr(LPSC_PATH ppath, SC_LID lidExpected, SC_LID *plid);
     SC_SEC SpellOpenMdr(SC_SPLID splid, LPSC_PATH ppath, LPSC_PATH ppathExclude, SC_BOOL fCreateExclude, SC_BOOL fCache,
                         SC_LID lidExpected, LPSC_MDRS pmdrs);
     SC_SEC SpellOpenUdr(SC_SPLID splid, LPSC_PATH ppath, SC_BOOL fCreate, SC_WORD udrprop, SC_UDR *pudr,
                         SC_BOOL *pfReadOnly);
     SC_SEC SpellAddUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd);
     SC_SEC SpellAddChangeUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszAdd, SC_CHAR *pszChange);
-    // SC_SEC SpellDelUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszDel);
+    // 3DMMv1.0: SC_SEC SpellDelUdr(SC_SPLID splid, SC_UDR udr, SC_CHAR *pszDel);
     SC_SEC SpellClearUdr(SC_SPLID splid, SC_UDR udr);
-    // SC_SEC SpellGetSizeUdr(SC_SPLID splid, SC_UDR udr, int *pcsz);
-    // SC_SEC SpellGetListUdr(SC_SPLID splid, SC_UDR udr, SC_WORD iszStart,
-    //	LPSC_SRB psrb);
+    // 3DMMv1.0: SC_SEC SpellGetSizeUdr(SC_SPLID splid, SC_UDR udr, int *pcsz);
+    // 3DMMv1.0: SC_SEC SpellGetListUdr(SC_SPLID splid, SC_UDR udr, SC_WORD iszStart,
+    // 3DMMv1.0:	LPSC_SRB psrb);
     SC_SEC SpellCloseMdr(SC_SPLID splid, LPSC_MDRS pmdrs);
     SC_SEC SpellCloseUdr(SC_SPLID splid, SC_UDR udr, SC_BOOL fForce);
 
@@ -136,4 +136,4 @@ class SPLC : public SPLC_PAR
     virtual void FlushChangeList(bool fAll);
 };
 
-#endif //! SPELL_H
+#endif //! 3DMMv1.0: SPELL_H

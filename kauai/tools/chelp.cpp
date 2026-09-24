@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Help authoring tool.
 
@@ -36,7 +36,7 @@ PSTRG vpstrg;
 SC_LID vsclid = ksclidAmerican;
 PSPLC vpsplc;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main for a frame app.
 ***************************************************************************/
 void FrameMain(void)
@@ -47,7 +47,7 @@ void FrameMain(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a APP.
 ***************************************************************************/
 void APP::AssertValid(uint32_t grf)
@@ -58,7 +58,7 @@ void APP::AssertValid(uint32_t grf)
     AssertNilOrPo(_plidButton, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the APP.
 ***************************************************************************/
 void APP::MarkMem(void)
@@ -71,9 +71,9 @@ void APP::MarkMem(void)
     MarkMemObj(&_strg);
     MarkMemObj(vpsplc);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the app.  Add some stuff to the menus and do the command
     line parsing thing.
 ***************************************************************************/
@@ -127,12 +127,12 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
     }
 
 #ifdef WIN
-    // parse the command line and load any resource files and help files
+    // 3DMMv1.0: parse the command line and load any resource files and help files
     FNI fni;
     bool fQuote, fRes, fSkip;
     PCSZ psz = vwig.pszCmdLine;
 
-    // skip the first token since it is the path
+    // 3DMMv1.0: skip the first token since it is the path
     fSkip = fTrue;
     fRes = fFalse;
     for (;;)
@@ -164,7 +164,7 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
 
         if (stn.Cch() == 2 && (stn.Psz()[0] == ChLit('/') || stn.Psz()[0] == ChLit('-')))
         {
-            // command line switch
+            // 3DMMv1.0: command line switch
             switch (stn.Psz()[1])
             {
             case ChLit('r'):
@@ -187,11 +187,11 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
             FOpenDocFile(&fni);
         fRes = fFalse;
     }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the name for the help editor app.
 ***************************************************************************/
 void APP::GetStnAppName(PSTN pstn)
@@ -206,12 +206,12 @@ void APP::GetStnAppName(PSTN pstn)
     stnDate.SetSzs(__DATE__);
     stnTime.SetSzs(__TIME__);
     pstn->FFormatSz(Debug(PszLit("Debug ")) PszLit("Chelp (Unicode; %s; %s)"), &stnDate, &stnTime);
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
     *pstn = Debug("Debug ") "Chelp (Ansi; " __DATE__ "; " __TIME__ ")";
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update the given window.  *prc is the bounding rectangle of the update
     region.
 ***************************************************************************/
@@ -223,28 +223,28 @@ void APP::UpdateHwnd(KWND hwnd, RC *prc, uint32_t grfapp)
     if (pvNil == (pgob = GOB::PgobFromHwnd(hwnd)))
         return;
 
-    // for text windows, do offscreen updating
+    // 3DMMv1.0: for text windows, do offscreen updating
     if (pgob->FIs(kclsDMD) && ((PDMD)pgob)->Pdocb()->FIs(kclsTXRD))
         grfapp |= fappOffscreen;
 
     APP_PAR::UpdateHwnd(hwnd, prc, grfapp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a fast update of the gob and its descendents into the given gpt.
 ***************************************************************************/
 void APP::_FastUpdate(PGOB pgob, PREGN pregnClip, uint32_t grfapp, PGPT pgpt)
 {
     AssertThis(0);
 
-    // for text windows, do offscreen updating
+    // 3DMMv1.0: for text windows, do offscreen updating
     if (pgob->FIs(kclsDMD) && ((PDMD)pgob)->Pdocb()->FIs(kclsTXRD))
         grfapp |= fappOffscreen;
 
     APP_PAR::_FastUpdate(pgob, pregnClip, grfapp, pgpt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open an existing or new chunky file for editing.
     Handles cidNew and cidOpen.
 ***************************************************************************/
@@ -263,7 +263,7 @@ bool APP::FCmdOpen(PCMD pcmd)
         return fTrue;
 
     case cidOpen:
-        // do the standard dialog
+        // 3DMMv1.0: do the standard dialog
         if (!FGetFniOpenMacro(&fni, pvNil, 0, PszLit("Kid Help Files\0*.khp;*.chk\0All Files\0*.*\0"), vwig.hwndApp))
         {
             return fTrue;
@@ -272,7 +272,7 @@ bool APP::FCmdOpen(PCMD pcmd)
         break;
 
     case cidOpenText:
-        // do the standard dialog
+        // 3DMMv1.0: do the standard dialog
         if (!FGetFniOpenMacro(&fni, pvNil, 0, PszLit("Text files\0*.txt\0All Files\0*.*\0"), vwig.hwndApp))
         {
             return fTrue;
@@ -281,7 +281,7 @@ bool APP::FCmdOpen(PCMD pcmd)
         break;
 
     case cidOpenRichText:
-        // do the standard dialog
+        // 3DMMv1.0: do the standard dialog
         if (!FGetFniOpenMacro(&fni, pvNil, 0, PszLit("Rich Text files\0*.rtx\0All Files\0*.*\0"), vwig.hwndApp))
         {
             return fTrue;
@@ -297,7 +297,7 @@ bool APP::FCmdOpen(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load a document file.
 ***************************************************************************/
 bool APP::FOpenDocFile(PFNI pfni, int32_t cid)
@@ -375,7 +375,7 @@ bool APP::FOpenDocFile(PFNI pfni, int32_t cid)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open an existing or new chunky file for editing.
     Handles cidNew and cidOpen.
 ***************************************************************************/
@@ -394,7 +394,7 @@ bool APP::FCmdLoadResFile(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load a resource file.
 ***************************************************************************/
 bool APP::FLoadResFile(PFNI pfni)
@@ -415,7 +415,7 @@ bool APP::FLoadResFile(PFNI pfni)
         return fFalse;
     }
 
-    // see if it's already in the crm.
+    // 3DMMv1.0: see if it's already in the crm.
     for (ipcrf = _pcrm->Ccrf(); ipcrf-- > 0;)
     {
         pcrf = _pcrm->PcrfGet(ipcrf);
@@ -449,7 +449,7 @@ bool APP::FLoadResFile(PFNI pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check or uncheck the language as appropriate.
 ***************************************************************************/
 bool APP::FEnableChooseLanguage(PCMD pcmd, uint32_t *pgrfeds)
@@ -473,7 +473,7 @@ enum
     kiditLimLang
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command to choose the language (for spelling).
 ***************************************************************************/
 bool APP::FCmdChooseLanguage(PCMD pcmd)
@@ -483,7 +483,7 @@ bool APP::FCmdChooseLanguage(PCMD pcmd)
 
     if (pcmd->rglw[0] == 0)
     {
-        // ask the user
+        // 3DMMv1.0: ask the user
         PDLG pdlg;
         bool fRet;
 
@@ -512,7 +512,7 @@ bool APP::FCmdChooseLanguage(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new LIG for the given help text document.
 ***************************************************************************/
 PLIG APP::PligNew(bool fButton, PGCB pgcb, PTXHD ptxhd)
@@ -524,14 +524,14 @@ PLIG APP::PligNew(bool fButton, PGCB pgcb, PTXHD ptxhd)
     return LIG::PligNew(plid, pgcb, ptxhd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the list display gob.
 ***************************************************************************/
 LID::LID(void) : LID_PAR()
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Desctructor for the list display gob.
 ***************************************************************************/
 LID::~LID(void)
@@ -541,7 +541,7 @@ LID::~LID(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a LID.
 ***************************************************************************/
 void LID::AssertValid(uint32_t grf)
@@ -551,7 +551,7 @@ void LID::AssertValid(uint32_t grf)
     AssertPo(_pglcach, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the LIG.
 ***************************************************************************/
 void LID::MarkMem(void)
@@ -561,9 +561,9 @@ void LID::MarkMem(void)
     MarkMemObj(_pcrm);
     MarkMemObj(_pglcach);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new list document.
 ***************************************************************************/
 PLID LID::PlidNew(PCRM pcrm, CTG ctg, CHID chid)
@@ -580,7 +580,7 @@ PLID LID::PlidNew(PCRM pcrm, CTG ctg, CHID chid)
     return plid;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialization for the list document.
 ***************************************************************************/
 bool LID::_FInit(PCRM pcrm, CTG ctg, CHID chid)
@@ -600,7 +600,7 @@ bool LID::_FInit(PCRM pcrm, CTG ctg, CHID chid)
     return FRefresh();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rebuild the list and update the DDGs.  The pcrm has changed.
 ***************************************************************************/
 bool LID::FRefresh(void)
@@ -633,7 +633,7 @@ bool LID::FRefresh(void)
                 cach.cnoMbmp = kid.cki.cno;
             }
 
-            // determine where this cno goes.
+            // 3DMMv1.0: determine where this cno goes.
             for (ivMin = 0, ivLim = _pglcach->IvMac(); ivMin < ivLim;)
             {
                 iv = (ivMin + ivLim) / 2;
@@ -656,7 +656,7 @@ bool LID::FRefresh(void)
     fRet = fTrue;
 LFail:
 
-    // invalidate the LIGs
+    // 3DMMv1.0: invalidate the LIGs
     for (ipddg = 0; pvNil != (pddg = PddgGet(ipddg)); ipddg++)
     {
         Assert(pddg->FIs(kclsLIG), 0);
@@ -666,7 +666,7 @@ LFail:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of items in the list.
 ***************************************************************************/
 int32_t LID::Ccki(void)
@@ -675,7 +675,7 @@ int32_t LID::Ccki(void)
     return _pglcach->IvMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the CKI for the indicated item.
 ***************************************************************************/
 void LID::GetCki(int32_t icki, CKI *pcki, PCRF *ppcrf)
@@ -693,7 +693,7 @@ void LID::GetCki(int32_t icki, CKI *pcki, PCRF *ppcrf)
         *ppcrf = cach.pcrf;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get an MBMP for the indicated item.
 ***************************************************************************/
 PMBMP LID::PmbmpGet(int32_t icki)
@@ -706,7 +706,7 @@ PMBMP LID::PmbmpGet(int32_t icki)
     return (PMBMP)cach.pcrf->PbacoFetch(kctgMbmp, cach.cnoMbmp, MBMP::FReadMbmp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the list display gob.
 ***************************************************************************/
 LIG::LIG(PLID plid, GCB *pgcb) : LIG_PAR(plid, pgcb)
@@ -714,7 +714,7 @@ LIG::LIG(PLID plid, GCB *pgcb) : LIG_PAR(plid, pgcb)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a LIG.
 ***************************************************************************/
 void LIG::AssertValid(uint32_t grf)
@@ -725,7 +725,7 @@ void LIG::AssertValid(uint32_t grf)
     AssertIn(_dypCell, 1, kswMax);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the LIG.
 ***************************************************************************/
 void LIG::MarkMem(void)
@@ -734,9 +734,9 @@ void LIG::MarkMem(void)
     LIG_PAR::MarkMem();
     MarkMemObj(_ptxhd);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new list display gob.
 ***************************************************************************/
 PLIG LIG::PligNew(PLID plid, GCB *pgcb, PTXHD ptxhd, int32_t dypCell)
@@ -756,7 +756,7 @@ PLIG LIG::PligNew(PLID plid, GCB *pgcb, PTXHD ptxhd, int32_t dypCell)
     return plig;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the LID for this LIG.
 ***************************************************************************/
 PLID LIG::Plid(void)
@@ -766,7 +766,7 @@ PLID LIG::Plid(void)
     return (PLID)_pdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialization for the list display gob.
 ***************************************************************************/
 bool LIG::_FInit(PTXHD ptxhd, int32_t dypCell)
@@ -793,7 +793,7 @@ bool LIG::_FInit(PTXHD ptxhd, int32_t dypCell)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The LID has changed, reset the scroll bounds and invalidate the display
     area.
 ***************************************************************************/
@@ -807,7 +807,7 @@ void LIG::Refresh(void)
     _pscb->SetValMinMax(val, 0, Plid()->Ccki() - 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the list.
 ***************************************************************************/
 void LIG::Draw(PGNV pgnv, RC *prcClip)
@@ -855,7 +855,7 @@ void LIG::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles a scroll command.
 ***************************************************************************/
 bool LIG::FCmdScroll(PCMD pcmd)
@@ -909,7 +909,7 @@ bool LIG::FCmdScroll(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The mouse was clicked in the LIG.  Insert the object in the active
     DDG.
 ***************************************************************************/
@@ -954,7 +954,7 @@ void LIG::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the CCG.
 ***************************************************************************/
 CCG::CCG(GCB *pgcb, PTXHD ptxhd, bool fForeColor, int32_t cacrRow) : CCG_PAR(pgcb)
@@ -966,7 +966,7 @@ CCG::CCG(GCB *pgcb, PTXHD ptxhd, bool fForeColor, int32_t cacrRow) : CCG_PAR(pgc
     _fForeColor = FPure(fForeColor);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle mousedown in a CCG.  Set the foreground or background color of
     the text in the active of DDG of the ptxhd.
 ***************************************************************************/
@@ -984,7 +984,7 @@ void CCG::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
         phetg->FSetColor(_fForeColor ? &acr : pvNil, _fForeColor ? pvNil : &acr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the Color chooser gob.
 ***************************************************************************/
 void CCG::Draw(PGNV pgnv, RC *prcClip)
@@ -1032,7 +1032,7 @@ void CCG::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map the given point to a color.
 ***************************************************************************/
 bool CCG::_FGetAcrFromPt(int32_t xp, int32_t yp, ACR *pacr, RC *prc, int32_t *piscr)
@@ -1087,7 +1087,7 @@ bool CCG::_FGetAcrFromPt(int32_t xp, int32_t yp, ACR *pacr, RC *prc, int32_t *pi
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up the CCG's tool tip.
 ***************************************************************************/
 bool CCG::FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse)
@@ -1106,7 +1106,7 @@ bool CCG::FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     When the mouse moves over the CCG, update the tool tip.
 ***************************************************************************/
 bool CCG::FCmdMouseMove(PCMD_MOUSE pcmd)
@@ -1154,7 +1154,7 @@ bool CCG::FCmdMouseMove(PCMD_MOUSE pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CCG.
 ***************************************************************************/
 void CCG::AssertValid(uint32_t grf)
@@ -1163,9 +1163,9 @@ void CCG::AssertValid(uint32_t grf)
     AssertPo(_ptxhd, 0);
     AssertIn(_cacrRow, 1, 257);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for color chooser tool tip.
 ***************************************************************************/
 CCGT::CCGT(PGCB pgcb, ACR acr, PSTN pstn) : CCGT_PAR(pgcb)
@@ -1176,7 +1176,7 @@ CCGT::CCGT(PGCB pgcb, ACR acr, PSTN pstn) : CCGT_PAR(pgcb)
         _stn = *pstn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the color for the tool tip.
 ***************************************************************************/
 void CCGT::SetAcr(ACR acr, PSTN pstn)
@@ -1196,7 +1196,7 @@ void CCGT::SetAcr(ACR acr, PSTN pstn)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the color tool tip.
 ***************************************************************************/
 void CCGT::Draw(PGNV pgnv, RC *prcClip)

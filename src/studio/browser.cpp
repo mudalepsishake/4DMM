@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
   browser.cpp
 
@@ -104,7 +104,7 @@ ON_CID_GEN(cidBrowserChangeCel, &BRWD::FCmdChangeCel, pvNil)
 ON_CID_GEN(cidBrowserDel, &BRWD::FCmdDel, pvNil)
 END_CMD_MAP_NIL()
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a browser display object
  *
@@ -125,7 +125,7 @@ PBRWD BRWD::PbrwdNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     if ((pbrwd = NewObj BRWD(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwd->_FInitGok(prca, kidGlass))
     {
         ReleasePpo(&pbrwd);
@@ -135,7 +135,7 @@ PBRWD BRWD::PbrwdNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     return pbrwd;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Build the GOB creation block
  *
@@ -161,14 +161,14 @@ bool BRWD::_FBuildGcb(GCB *pgcb, int32_t kidPar, int32_t kidGlass)
 
         Assert(pgob == pvNil, "GOK already exists with given ID");
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     rcRel.Set(krelZero, krelZero, krelOne, krelOne);
     pgcb->Set(kidGlass, pgobPar, fgobNil, kginDefault, pvNil, &rcRel);
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialize the Gok :
  * Do everything PgokNew would have done but didn't
@@ -186,7 +186,7 @@ bool BRWD::_FInitGok(PRCA prca, int32_t kid)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialize a new browser object
  * Init knows how to either initialize or reinitialize
@@ -211,16 +211,16 @@ void BRWD::Init(PCMD pcmd, int32_t ithumSelect, int32_t ithumDisplay, PSTDIO pst
     AssertThis(0);
     AssertVarMem(pcmd);
 
-    // Split the initialization into two parts. The first part initializes the
-    // state variables and can be done before the number of thumbnails on the
-    // browser is known. The second part of the initialization relates to
-    // browser display and requires the number of thumbnails to be known.
+    // 3DMMv1.0: Split the initialization into two parts. The first part initializes the
+    // 3DMMv1.0: state variables and can be done before the number of thumbnails on the
+    // 3DMMv1.0: browser is known. The second part of the initialization relates to
+    // 3DMMv1.0: browser display and requires the number of thumbnails to be known.
 
     _InitStateVars(pcmd, pstdio, fWrapScroll, cthumScroll);
     _InitFromData(pcmd, ithumSelect, ithumDisplay);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialize state variables for a new browser object.
  * A call will be made later to InitFromData to finish
@@ -240,7 +240,7 @@ void BRWD::_InitStateVars(PCMD pcmd, PSTDIO pstdio, bool fWrapScroll, int32_t ct
     AssertThis(0);
     AssertVarMem(pcmd);
 
-    // Save parameters for this browser
+    // 3DMMv1.0: Save parameters for this browser
     _pstdio = pstdio;
     _kidFrmFirst = pcmd->rglw[1];
     _kidControlFirst = pcmd->rglw[2];
@@ -251,7 +251,7 @@ void BRWD::_InitStateVars(PCMD pcmd, PSTDIO pstdio, bool fWrapScroll, int32_t ct
     _fNoRepositionSel = fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Complete the initialization of  a new browser object.
  * The number of thumbnails for this browser has
@@ -269,29 +269,29 @@ void BRWD::_InitFromData(PCMD pcmd, int32_t ithumSelect, int32_t ithumDisplay)
     AssertThis(0);
     int32_t cthum;
 
-    // Context carryover
+    // 3DMMv1.0: Context carryover
     if (_pbrcn != pvNil)
     {
         _pbrcn->brwdid = pcmd->rglw[0];
     }
 
-    // Initialize variables
+    // 3DMMv1.0: Initialize variables
     cthum = _Cthum();
     AssertIn(ithumDisplay, -1, cthum);
     AssertIn(ithumSelect, -1, cthum);
     _ithumSelect = ithumSelect;
     _cfrmPageCur = 0;
     _cfrm = _CfrmCalc();
-    _SetScrollState(); // Set the state of the scroll arrows
+    _SetScrollState(); // 3DMMv1.0: Set the state of the scroll arrows
 
-    // Adjust the display ifrm to begin at a page boundary
+    // 3DMMv1.0: Adjust the display ifrm to begin at a page boundary
     if (ithumDisplay != ivNil)
         _ithumPageFirst = ithumDisplay;
     _SetVarForOverride();
     _CalcIthumPageFirst();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * _SetVarForOverride : Projects may override kids
  *
@@ -302,7 +302,7 @@ void BRWD::_SetVarForOverride(void)
     int32_t thumOverride = -1;
     int32_t thumSidOverride = -1;
 
-    // Projects need to be able to hard wire one of the gob id's
+    // 3DMMv1.0: Projects need to be able to hard wire one of the gob id's
     if (vpappb->FGetProp(kpridBrwsOverrideThum, &thumOverride) &&
         vpappb->FGetProp(kpridBrwsOverrideSidThum, &thumSidOverride) &&
         vpappb->FGetProp(kpridBrwsOverrideKidThum, &_kidThumOverride))
@@ -311,7 +311,7 @@ void BRWD::_SetVarForOverride(void)
         {
             _ithumOverride = _IthumFromThum(thumOverride, thumSidOverride);
 
-            // Make sure this thum is on the displayed page
+            // 3DMMv1.0: Make sure this thum is on the displayed page
             _ithumPageFirst = _ithumOverride;
         }
         else
@@ -322,7 +322,7 @@ void BRWD::_SetVarForOverride(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * _GetThumFromIthum
  *
@@ -338,7 +338,7 @@ void BRWD::_GetThumFromIthum(int32_t ithum, void *pThumSelect, int32_t *psid)
     TrashVar(psid);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Count the number of frames possible per page
  *
@@ -353,8 +353,8 @@ int32_t BRWD::_CfrmCalc(void)
     for (ifrm = 0;; ifrm++)
     {
         //
-        // If there is no GOKD parent, there are no more thumbnail
-        // slots on this page
+        // 3DMMv1.0: If there is no GOKD parent, there are no more thumbnail
+        // 3DMMv1.0: slots on this page
         //
         pgob = vapp.Pkwa()->PgobFromHid(_kidFrmFirst + ifrm);
         if (pvNil == pgob)
@@ -366,7 +366,7 @@ int32_t BRWD::_CfrmCalc(void)
     return 0;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Determine the first thumbnail to display on the page
  *
@@ -376,7 +376,7 @@ void BRWD::_CalcIthumPageFirst(void)
     AssertThis(0);
     int32_t cthum = _Cthum();
 
-    // Place the selection as close to the top as _cthumScroll permits
+    // 3DMMv1.0: Place the selection as close to the top as _cthumScroll permits
     if (!_fNoRepositionSel || _cthumScroll == ivNil)
     {
         if (_cthumScroll != ivNil)
@@ -385,7 +385,7 @@ void BRWD::_CalcIthumPageFirst(void)
             _ithumPageFirst = _ithumPageFirst - (_ithumPageFirst % _cfrm);
     }
 
-    // Verify that the viewed thumbnail is within range
+    // 3DMMv1.0: Verify that the viewed thumbnail is within range
     if (_ithumPageFirst >= cthum)
     {
         if (cthum == 0)
@@ -396,7 +396,7 @@ void BRWD::_CalcIthumPageFirst(void)
             _ithumPageFirst = (cthum - 1) - ((cthum - 1) % _cfrm);
     }
 
-    // Display a full last page if not wrapping around
+    // 3DMMv1.0: Display a full last page if not wrapping around
     if (!_fWrapScroll && (_ithumPageFirst + _cfrm > cthum) && _cthumScroll != ivNil)
     {
         while ((_ithumPageFirst - _cthumScroll) + _cfrm >= cthum)
@@ -406,7 +406,7 @@ void BRWD::_CalcIthumPageFirst(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Display
  *
@@ -423,13 +423,19 @@ bool BRWD::FDraw(void)
 
     _CalcIthumPageFirst();
 
-    // Begin a new page
+#if defined(BRENDER_MODERN_14)
+    if (FBrModernLogEnabled())
+        BrModernLog("BRWD::FDraw page first=%ld total=%ld frames=%ld scroll=%ld wrap=%d",
+                    (long)_ithumPageFirst, (long)cthum, (long)_cfrm, (long)_cthumScroll, (int)_fWrapScroll);
+#endif
+
+    // 3DMMv1.0: Begin a new page
     _cfrmPageCur = 0;
 
     for (ifrm = 0; ifrm < _cfrm; ifrm++)
     {
         ithum = _ithumPageFirst + ifrm;
-        // Release the previouly attached thum from this frame
+        // 3DMMv1.0: Release the previouly attached thum from this frame
         _ReleaseThumFrame(ifrm);
 
         pgobPar = vapp.Pkwa()->PgobFromHid(_kidFrmFirst + ifrm);
@@ -439,15 +445,35 @@ bool BRWD::FDraw(void)
 
         if (ithum >= cthum)
         {
-            // Render invisible
-            ((PGOK)pgobPar)->FChangeState(kstBrowserInvisible); // Ignore error
-            _FClearHelp(ifrm);                                  // Clear rollover help
+            // 3DMMv1.0: Render invisible
+            ((PGOK)pgobPar)->FChangeState(kstBrowserInvisible); // 3DMMv1.0: Ignore error
+            _FClearHelp(ifrm);                                  // 3DMMv1.0: Clear rollover help
             continue;
         }
 
-        // Get next gob from list
+        // 3DMMv1.0: Get next gob from list
         if (!_FSetThumFrame(ithum, pgobPar))
+        {
+#if defined(BRENDER_MODERN_14)
+            if (FBrModernLogEnabled())
+                BrModernLog("BRWD::FDraw THUMB FAIL ifrm=%ld ithum=%ld page_first=%ld; hiding frame to prevent stale thumbnail",
+                            (long)ifrm, (long)ithum, (long)_ithumPageFirst);
+#endif
+            // The old browser left the frame in its previous state when a
+            // thumbnail failed to instantiate. That makes failed entries on
+            // a new page visually retain the previous page's image. Hide the
+            // frame explicitly so failures are visible as empty slots rather
+            // than convincing-looking duplicates.
+            ((PGOK)pgobPar)->FChangeState(kstBrowserInvisible);
+            _FClearHelp(ifrm);
             goto LContinue;
+        }
+
+#if defined(BRENDER_MODERN_14)
+        if (FBrModernLogEnabled())
+            BrModernLog("BRWD::FDraw THUMB OK ifrm=%ld ithum=%ld page_first=%ld",
+                        (long)ifrm, (long)ithum, (long)_ithumPageFirst);
+#endif
 
         if (ithum == _ithumSelect)
         {
@@ -462,7 +488,7 @@ bool BRWD::FDraw(void)
             _cfrmPageCur++;
     }
 
-    // Update page number
+    // 3DMMv1.0: Update page number
     if (pvNil != _ptgobPage)
     {
         int32_t pagen;
@@ -479,7 +505,7 @@ bool BRWD::FDraw(void)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Find a unique hid for the current frame
  *
@@ -497,7 +523,7 @@ int32_t BRWD::_KidThumFromIfrm(int32_t ifrm)
     return kidThum;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Compute the pgob of the parent for frame ifrm
  *
@@ -512,7 +538,7 @@ PGOB BRWD::_PgobFromIfrm(int32_t ifrm)
     return pgob->PgobLastChild();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Set the state of the scroll arrows for the Display
  *
@@ -541,7 +567,7 @@ void BRWD::_SetScrollState(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Browser Forward
  *
@@ -552,13 +578,13 @@ bool BRWD::FCmdFwd(PCMD pcmd)
     AssertVarMem(pcmd);
     int32_t cthumAdd;
 
-    // Default _cthumScroll -> page scrolling
+    // 3DMMv1.0: Default _cthumScroll -> page scrolling
     if (ivNil == _cthumScroll)
         cthumAdd = _cfrm;
     else
         cthumAdd = _cthumScroll;
 
-    // If either wrapping or there is more to see, increment first thumbnail index
+    // 3DMMv1.0: If either wrapping or there is more to see, increment first thumbnail index
     if (_fWrapScroll || (_ithumPageFirst + _cfrm < _Cthum()))
         _ithumPageFirst += cthumAdd;
 
@@ -567,12 +593,12 @@ bool BRWD::FCmdFwd(PCMD pcmd)
         _ithumPageFirst = 0;
     }
 
-    FDraw(); // Ignore failure
+    FDraw(); // 3DMMv1.0: Ignore failure
 
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler :
  * Set viewing page based on thumSelect == rglw[0]
@@ -598,12 +624,12 @@ bool BRWD::FCmdSelectThum(PCMD pcmd)
         _ithumSelect = -1;
     _ithumPageFirst = _ithumSelect - (_ithumSelect % _cfrm);
 
-    _SetScrollState(); // Set the state of the scroll arrows
-    FDraw();           // Ignore failure
+    _SetScrollState(); // 3DMMv1.0: Set the state of the scroll arrows
+    FDraw();           // 3DMMv1.0: Ignore failure
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Browser Back
  * Scroll back one page in the browser
@@ -618,25 +644,25 @@ bool BRWD::FCmdBack(PCMD pcmd)
     {
         if (_fWrapScroll)
         {
-            // Wrap back to the last page
+            // 3DMMv1.0: Wrap back to the last page
             _ithumPageFirst = _Cthum() - (_Cthum() % _cfrm);
         }
     }
     else
     {
-        // Normal non-wrap page scroll back
+        // 3DMMv1.0: Normal non-wrap page scroll back
         if (ivNil == _cthumScroll)
             _ithumPageFirst -= _cfrmPageCur;
         else
             _ithumPageFirst -= _cthumScroll;
     }
 
-    // FDraw updates _cfrmPageCur
-    FDraw(); // Ignore failure
+    // 3DMMv1.0: FDraw updates _cfrmPageCur
+    FDraw(); // 3DMMv1.0: Ignore failure
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Browser Frame Selected
  * (Thumbnail clicked)
@@ -658,12 +684,12 @@ bool BRWD::FCmdSelect(PCMD pcmd)
     _ithumSelect = _ithumPageFirst + ifrmSelect;
     _FHiliteFrm(ifrmSelect);
 
-    // Handle any derived class special actions (eg previews)
+    // 3DMMv1.0: Handle any derived class special actions (eg previews)
     _ProcessSelection();
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create Tgob's for any of the text based browsers
  * These will be destroyed when the browser exits
@@ -701,7 +727,7 @@ bool BRWD::FCreateAllTgob(void)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Hilite frame
  *
@@ -712,7 +738,7 @@ bool BRWD::_FHiliteFrm(int32_t ifrmSelect)
     AssertIn(ifrmSelect, 0, _cfrm);
     PGOB pgob;
 
-    // Hilite currently selected frame
+    // 3DMMv1.0: Hilite currently selected frame
     AssertIn(ifrmSelect, 0, _cfrmPageCur);
     pgob = vapp.Pkwa()->PgobFromHid(_kidFrmFirst + ifrmSelect);
     if (pvNil == pgob)
@@ -727,7 +753,7 @@ bool BRWD::_FHiliteFrm(int32_t ifrmSelect)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Unhilite currently selected Frame
  *
@@ -738,18 +764,18 @@ void BRWD::_UnhiliteCurFrm(void)
     PGOB pgob;
     int32_t ifrmSelectOld = _ithumSelect - _ithumPageFirst;
 
-    // Unhilite currently selected frame
+    // 3DMMv1.0: Unhilite currently selected frame
     if ((_ithumPageFirst <= _ithumSelect) && (_ithumPageFirst + _cfrmPageCur > _ithumSelect))
     {
         pgob = vapp.Pkwa()->PgobFromHid(_kidFrmFirst + ifrmSelectOld);
         if (pvNil == pgob)
             return;
         Assert(pgob->FIs(kclsGOK), "Invalid class");
-        ((PGOK)pgob)->FChangeState(kstBrowserEnabled); // Ignore failure
+        ((PGOK)pgob)->FChangeState(kstBrowserEnabled); // 3DMMv1.0: Ignore failure
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Browser Cancel
  * Exit without applying selection
@@ -761,12 +787,12 @@ bool BRWD::FCmdCancel(PCMD pcmd)
     AssertVarMem(pcmd);
 
     vpsndm->StopAll();
-    Release(); // OK/Cancel common cleanup
+    Release(); // 3DMMv1.0: OK/Cancel common cleanup
 
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser cleanup for OK & Cancel
  *
@@ -775,12 +801,12 @@ void BRWD::Release(void)
 {
     _CacheContext();
 
-    // Minimize the cache size on low mem machines
+    // 3DMMv1.0: Minimize the cache size on low mem machines
     _SetCbPcrmMin();
     BRWD_PAR::Release();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Browser Ok
  * Apply selection & exit
@@ -798,22 +824,22 @@ bool BRWD::FCmdOk(PCMD pcmd)
 
     if (ivNil != _ithumSelect)
     {
-        // Get Selection from virtual function
+        // 3DMMv1.0: Get Selection from virtual function
         _GetThumFromIthum(_ithumSelect, &thumSelect, &sid);
 
-        // Apply the selection (could take awhile)
+        // 3DMMv1.0: Apply the selection (could take awhile)
         vapp.BeginLongOp();
         _ApplySelection(thumSelect, sid);
         vapp.EndLongOp();
     }
 
-    // Cleanup & Dismiss browser
+    // 3DMMv1.0: Cleanup & Dismiss browser
     Release();
 
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * BRWD _CacheContext
  *
@@ -824,14 +850,14 @@ void BRWD::_CacheContext(void)
         _pbrcn->ithumPageFirst = _ithumPageFirst;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
    Browser Lists
    Derived from the BRWD display class
 
  ****************************************************/
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a browser list object
  *
@@ -853,7 +879,7 @@ PBRWL BRWL::PbrwlNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     if ((pbrwl = NewObj BRWL(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwl->_FInitGok(prca, kidGlass))
     {
         ReleasePpo(&pbrwl);
@@ -861,8 +887,8 @@ PBRWL BRWL::PbrwlNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     }
 
     //
-    // Stop the studio action button animation while
-    // any browser is up.
+    // 3DMMv1.0: Stop the studio action button animation while
+    // 3DMMv1.0: any browser is up.
     //
     pgok = (PGOK)vapp.Pkwa()->PgobFromHid(kidActorsActionBrowser);
 
@@ -875,7 +901,7 @@ PBRWL BRWL::PbrwlNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     return pbrwl;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialize a browser list object
  *
@@ -903,17 +929,17 @@ bool BRWL::FInit(PCMD pcmd, BWS bws, int32_t thumSelect, int32_t sidSelect, CKI 
     _kidFrmFirst = pcmd->rglw[1];
     _cfrm = _CfrmCalc();
 
-    // Initialize the state variables for the browser. This is required for
-    // the creation of the tgobs beneath the call to _FCreateBuildThd below.
-    // The call must be later followed by a call to BRWD::InitFromData().
+    // 3DMMv1.0: Initialize the state variables for the browser. This is required for
+    // 3DMMv1.0: the creation of the tgobs beneath the call to _FCreateBuildThd below.
+    // 3DMMv1.0: The call must be later followed by a call to BRWD::InitFromData().
     _InitStateVars(pcmd, pstdio, fWrapScroll, cthumScroll);
 
     if (pvNil == pbrcnl || pbrcnl->brwdid == 0 || pbrcnl->ckiRoot.cno != ckiRoot.cno)
     {
         fBuildGl = fTrue;
 
-        // Cache the GOKD's by first creating a
-        // chunky resource manager
+        // 3DMMv1.0: Cache the GOKD's by first creating a
+        // 3DMMv1.0: chunky resource manager
         Assert(pvNil == _pcrm, "Logic error releasing pcrm");
         _pcrm = CRM::PcrmNew(ccrf);
         if (pvNil == _pcrm)
@@ -927,7 +953,7 @@ bool BRWL::FInit(PCMD pcmd, BWS bws, int32_t thumSelect, int32_t sidSelect, CKI 
     }
     else
     {
-        // Reinitialize based on pbrcnl
+        // 3DMMv1.0: Reinitialize based on pbrcnl
         fBuildGl = fFalse;
 
         _cthumCD = pbrcnl->cthumCD;
@@ -944,15 +970,15 @@ bool BRWL::FInit(PCMD pcmd, BWS bws, int32_t thumSelect, int32_t sidSelect, CKI 
         for (int32_t icrf = 0; icrf < _pcrm->Ccrf(); icrf++)
             _pcrm->PcrfGet(icrf)->SetCbMax(kcbMaxCrm);
 
-        // First thumbnail on display page is inherited
+        // 3DMMv1.0: First thumbnail on display page is inherited
         _ithumPageFirst = pbrcnl->ithumPageFirst;
 
-        // This will make sure that we build any TGOBs
+        // 3DMMv1.0: This will make sure that we build any TGOBs
         if (!_FCreateBuildThd(ckiRoot, ctgContent, fBuildGl))
             goto LDismiss;
     }
 
-    // Context carryover
+    // 3DMMv1.0: Context carryover
     Assert(_pbrcn == pvNil, "Lost BRCN");
     _pbrcn = pbrcnl;
     if (pvNil != pbrcnl)
@@ -961,24 +987,24 @@ bool BRWL::FInit(PCMD pcmd, BWS bws, int32_t thumSelect, int32_t sidSelect, CKI 
         pbrcnl->ckiRoot = ckiRoot;
         if (fBuildGl)
         {
-            // Rebuilding the GL ->
-            // Remove old context
-            // Save new context later
+            // 3DMMv1.0: Rebuilding the GL ->
+            // 3DMMv1.0: Remove old context
+            // 3DMMv1.0: Save new context later
 
-            /* Release */
+            /* 3DMMv1.0: Release */
             ReleasePpo(&pbrcnl->pglthd);
             ReleasePpo(&pbrcnl->pgst);
             ReleasePpo(&pbrcnl->pcrm);
         }
     }
 
-    // Virtual function - used, eg., by sound browser to include user sounds
+    // 3DMMv1.0: Virtual function - used, eg., by sound browser to include user sounds
     _FUpdateLists();
 
     ithumSelect = _IthumFromThum(thumSelect, sidSelect);
     if (fBuildGl)
     {
-        // Display the selection if one exists
+        // 3DMMv1.0: Display the selection if one exists
         if (ithumSelect != ivNil)
             ithumDisplay = ithumSelect;
         else
@@ -986,11 +1012,11 @@ bool BRWL::FInit(PCMD pcmd, BWS bws, int32_t thumSelect, int32_t sidSelect, CKI 
     }
     else
     {
-        // Display last page shown
+        // 3DMMv1.0: Display last page shown
         ithumDisplay = ivNil;
     }
 
-    // Now initialize the display part of the browser.
+    // 3DMMv1.0: Now initialize the display part of the browser.
     _InitFromData(pcmd, ithumSelect, ithumDisplay);
 
     vapp.DisableAccel();
@@ -1002,7 +1028,7 @@ LDismiss:
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialization specific to the first time a list
  * browser is invoked
@@ -1012,10 +1038,10 @@ bool BRWL::_FInitNew(PCMD pcmd, BWS bws, int32_t thumSelect, CKI ckiRoot, CTG ct
 {
     AssertThis(0);
 
-    // Selection type
+    // 3DMMv1.0: Selection type
     _bws = bws;
 
-    // Set the display default
+    // 3DMMv1.0: Set the display default
     _sidDefault = ((APP *)vpappb)->SidProduct();
     if (!vpappb->FGetProp(kpridBrwsDefaultThum, &_thumDefault))
     {
@@ -1023,7 +1049,7 @@ bool BRWL::_FInitNew(PCMD pcmd, BWS bws, int32_t thumSelect, CKI ckiRoot, CTG ct
         _thumDefault = 0;
     }
 
-    // Build the Thd
+    // 3DMMv1.0: Build the Thd
     if (!_FCreateBuildThd(ckiRoot, ctgContent))
     {
         return fFalse;
@@ -1032,7 +1058,7 @@ bool BRWL::_FInitNew(PCMD pcmd, BWS bws, int32_t thumSelect, CKI ckiRoot, CTG ct
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialization
  * Called each time a browser is either first
@@ -1054,7 +1080,7 @@ bool BRWL::_FCreateBuildThd(CKI ckiRoot, CTG ctgContent, bool fBuildGl)
     if (fBuildGl)
     {
         //
-        // Create the gl's
+        // 3DMMv1.0: Create the gl's
         //
         if (pvNil == (_pglthd = GL::PglNew(SIZEOF(THD), kglthdGrow)))
             return fFalse;
@@ -1073,12 +1099,28 @@ bool BRWL::_FCreateBuildThd(CKI ckiRoot, CTG ctgContent, bool fBuildGl)
     if (fBuildGl)
         _SortThd();
 
+#if defined(BRENDER_MODERN_14)
+    if (fBuildGl && FIs(kclsBRWB) && FBrModernLogEnabled())
+    {
+        BrModernLog("BRWL background browser list built count=%ld root=(ctg=0x%08lX,cno=0x%08lX)",
+                    (long)_pglthd->IvMac(), (unsigned long)ckiRoot.ctg, (unsigned long)ckiRoot.cno);
+        for (int32_t ithum = 0; ithum < _pglthd->IvMac(); ++ithum)
+        {
+            THD thd{};
+            _pglthd->Get(ithum, &thd);
+            BrModernLog("BRWL BKGD THD[%ld] sid=%ld ctg=0x%08lX cno=0x%08lX chid=%ld",
+                        (long)ithum, (long)thd.tag.sid, (unsigned long)thd.tag.ctg,
+                        (unsigned long)thd.tag.cno, (long)thd.chid);
+        }
+    }
+#endif
+
     return fTrue;
 LFail:
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * BRWL _FGetContent : Enum files & build the THD
  *
@@ -1094,7 +1136,7 @@ bool BRWL::_FGetContent(PCRM pcrm, CKI *pcki, CTG ctg, bool fBuildGl)
         return fTrue;
 
     //
-    // Enumerate the files & build the THD
+    // 3DMMv1.0: Enumerate the files & build the THD
     //
     Assert(ctg != cnoNil || pcki->ctg == ctgNil, "Invalid browser call");
 
@@ -1102,7 +1144,7 @@ bool BRWL::_FGetContent(PCRM pcrm, CKI *pcki, CTG ctg, bool fBuildGl)
     if (pbcl == pvNil)
         goto LFail;
 
-    /* We passed the pglthd and pgst in, so no need to get them back before
+    /* 3DMMv1.0: We passed the pglthd and pgst in, so no need to get them back before
         releasing the BCLS */
     Assert(_pglthd->CactRef() > 1, "GL of THDs will be lost!");
 
@@ -1112,7 +1154,7 @@ LFail:
     return fRet;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Get list selection from the ithum
  * Virtual function
@@ -1152,7 +1194,7 @@ void BRWL::_GetThumFromIthum(int32_t ithum, void *pvthumSelect, int32_t *psid)
     return;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * BRWL _CacheContext for reentry into the browser
  *
@@ -1172,12 +1214,12 @@ void BRWL::_CacheContext(void)
             Assert(pbrcnl->pgst == pvNil, "Inconsistent state");
             Assert(pbrcnl->pcrm == pvNil, "Inconsistent state");
 
-            /* Copy */
+            /* 3DMMv1.0: Copy */
             pbrcnl->pglthd = _pglthd;
             pbrcnl->pgst = _pgst;
             pbrcnl->pcrm = _pcrm;
 
-            /* AddRef */
+            /* 3DMMv1.0: AddRef */
             pbrcnl->pglthd->AddRef();
             if (pbrcnl->pgst != pvNil)
                 pbrcnl->pgst->AddRef();
@@ -1190,8 +1232,8 @@ void BRWL::_CacheContext(void)
             Assert(pbrcnl->pcrm == _pcrm, "Inconsistent state");
         }
 
-        /* Munge */
-        /* Should never fail, since we should never be growing */
+        /* 3DMMv1.0: Munge */
+        /* 3DMMv1.0: Should never fail, since we should never be growing */
         AssertDo(pbrcnl->pglthd->FSetIvMac(_cthumCD), "Tried to grow pglthd (bad) and failed (also bad)");
         if (pbrcnl->pgst != pvNil)
         {
@@ -1208,7 +1250,7 @@ void BRWL::_CacheContext(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sort the Thd gl by _bws
  * Uses bubble sort
@@ -1248,6 +1290,54 @@ void BRWL::_SortThd(void)
         Bug("Illegal _bws value");
     }
 
+#if defined(BRENDER_MODERN_14)
+    // Background packs intentionally reuse the same content CNO across
+    // product SIDs.  The historical sorter says those entries should appear
+    // only once, but resetting jthdMin at every SID boundary prevents that
+    // duplicate test from ever comparing two products.  Remove only the
+    // cross-SID background duplicates here, before preserving the normal
+    // per-product sort order below.
+    if (fSortBySid && FIs(kclsBRWB) && _pglthd->IvMac() > 1)
+    {
+        for (ithd = 1; ithd < _pglthd->IvMac(); ++ithd)
+        {
+            _pglthd->Get(ithd, &thdi);
+            bool fDeleted = fFalse;
+            for (jthd = 0; jthd < ithd; ++jthd)
+            {
+                _pglthd->Get(jthd, &thdj);
+                if (thdj.tag.sid == thdi.tag.sid || thdj.tag.cno != thdi.tag.cno)
+                    continue;
+
+                BrModernLog("BRWL background cross-SID dedupe cno=0x%08lX keep_index=%ld keep_sid=%ld delete_index=%ld delete_sid=%ld",
+                            (unsigned long)thdi.tag.cno, (long)jthd, (long)thdj.tag.sid,
+                            (long)ithd, (long)thdi.tag.sid);
+
+                const int32_t ithdDeletedName = thdi.ithd;
+                if (pvNil != _pgst && ithdDeletedName >= 0 && ithdDeletedName < _pgst->IvMac())
+                {
+                    Assert(ithdDeletedName == ithd, "Background cross-SID dedupe name index drift");
+                    _pgst->Delete(ithdDeletedName);
+                }
+
+                for (int32_t ithdT = ithd + 1; ithdT < _pglthd->IvMac(); ++ithdT)
+                {
+                    THD thdT;
+                    _pglthd->Get(ithdT, &thdT);
+                    thdT.ithd--;
+                    _pglthd->Put(ithdT, &thdT);
+                }
+                _pglthd->Delete(ithd);
+                --ithd;
+                fDeleted = fTrue;
+                break;
+            }
+            if (fDeleted)
+                continue;
+        }
+    }
+#endif
+
     if (fSortBySid && _pglthd->IvMac() > 0)
     {
         _pglthd->Get(0, &thdi);
@@ -1268,8 +1358,8 @@ void BRWL::_SortThd(void)
             if (*plwJ < *plwI)
                 continue;
 
-            // Allow products to share identical content
-            // but only view it once
+            // 3DMMv1.0: Allow products to share identical content
+            // 3DMMv1.0: but only view it once
             if (*plwJ == *plwI)
             {
                 int32_t ithdT;
@@ -1287,16 +1377,16 @@ void BRWL::_SortThd(void)
                     _pglthd->Put(ithdT, &thdT);
                 }
 #ifdef DEBUG
-                // Note: Files for the current product was enumerated first.
-                // This determines precedence.
+                // 3DMMv1.0: Note: Files for the current product was enumerated first.
+                // 3DMMv1.0: This determines precedence.
                 if (thdj.tag.sid == _sidDefault || thdi.tag.sid == _sidDefault)
                     Assert(thdj.tag.sid == _sidDefault, "Browser deleting the wrong duplicate");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
                 _pglthd->Delete(ithd);
                 ithd--;
                 break;
             }
-            // Switch places
+            // 3DMMv1.0: Switch places
             _pglthd->Put(ithd, &thdj);
             _pglthd->Put(jthd, &thdi);
             _pglthd->Get(ithd, &thdi);
@@ -1304,7 +1394,7 @@ void BRWL::_SortThd(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Get the index to the Thi for the given selection
  * Note: The selection thumSelect is a cno, chid, etc,
@@ -1353,7 +1443,7 @@ int32_t BRWL::_IthumFromThum(int32_t thumSelect, int32_t sidSelect)
     return ivNil;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the ith Gob as a child of the current frame
  * Advance the gob (thumbnail) index
@@ -1370,13 +1460,27 @@ bool BRWL::_FSetThumFrame(int32_t ithd, PGOB pgobPar)
     RC rcRel;
     int32_t kidThum;
 
-    // Associate the gob with the current frame
+    // 3DMMv1.0: Associate the gob with the current frame
     _pglthd->Get(ithd, &thd);
 
     kidThum = _KidThumFromIfrm(_cfrmPageCur);
+#if defined(BRENDER_MODERN_14)
+    if (FBrModernLogEnabled())
+        BrModernLog("BRWL::_FSetThumFrame ithum=%ld slot=%ld kid=%ld thd_cno=0x%08lX sid=%ld tag_ctg=0x%08lX tag_cno=0x%08lX chid=%ld",
+                    (long)ithd, (long)_cfrmPageCur, (long)kidThum, (unsigned long)thd.cno,
+                    (long)thd.tag.sid, (unsigned long)thd.tag.ctg,
+                    (unsigned long)thd.tag.cno, (long)thd.chid);
+#endif
     pgok = vapp.Pkwa()->PgokNew(pgobPar, kidThum, thd.cno, _pcrm);
     if (pvNil == pgok)
+    {
+#if defined(BRENDER_MODERN_14)
+        if (FBrModernLogEnabled())
+            BrModernLog("BRWL::_FSetThumFrame FAIL PgokNew ithum=%ld thd_cno=0x%08lX",
+                        (long)ithd, (unsigned long)thd.cno);
+#endif
         return fFalse;
+    }
 
     ((PGOB)pgok)->GetPos(&rcAbs, &rcRel);
     rcAbs.Offset(_dxpFrmOffset, _dypFrmOffset);
@@ -1385,7 +1489,7 @@ bool BRWL::_FSetThumFrame(int32_t ithd, PGOB pgobPar)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Release previous thum from frame ifrm
  * Assumes gob based.
@@ -1396,7 +1500,7 @@ void BRWL::_ReleaseThumFrame(int32_t ifrm)
     AssertThis(0);
     PGOB pgob;
 
-    // Release previous gob associated with the current frame
+    // 3DMMv1.0: Release previous gob associated with the current frame
     pgob = _PgobFromIfrm(ifrm);
     if (pvNil != pgob)
     {
@@ -1404,7 +1508,7 @@ void BRWL::_ReleaseThumFrame(int32_t ifrm)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * BCL class routines
  *
@@ -1488,7 +1592,7 @@ LFail:
     return pbcls;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Enumerate thumbnail files & create the THD
  * (Thumbnail descriptor gl)
@@ -1521,27 +1625,27 @@ bool BCL::_FBuildThd(PCRM pcrm)
         pcfl = CFL::PcflOpen(&fniThd, fcflNil);
         if (pvNil == pcfl)
         {
-            // Error reported elsewhere
+            // 3DMMv1.0: Error reported elsewhere
             continue;
         }
 
-        /* Don't use this file if it doesn't have what we're looking for */
+        /* 3DMMv1.0: Don't use this file if it doesn't have what we're looking for */
         if (_fDescend ? !pcfl->FFind(_ctgRoot, _cnoRoot) : pcfl->CckiCtg(_ctgRoot) == 0)
         {
             goto LContinue;
         }
 
-        // Add the file to the crm
+        // 3DMMv1.0: Add the file to the crm
         if (pcrm != pvNil && !pcrm->FAddCfl(pcfl, kcbMaxCrm))
         {
-            // fatal error
+            // 3DMMv1.0: fatal error
             fRet = fFalse;
             goto LContinue;
         }
 
         if (!_FAddFileToThd(pcfl, sid))
         {
-            // Error issued elsewhere
+            // 3DMMv1.0: Error issued elsewhere
             fRet = fFalse;
             goto LContinue;
         }
@@ -1553,7 +1657,7 @@ bool BCL::_FBuildThd(PCRM pcrm)
     return fRet;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  *  Add the chunks of file pcfl to the THD
  *
@@ -1586,18 +1690,18 @@ bool BCL::_FAddFileToThd(PCFL pcfl, int32_t sid)
         cckiRoot = 1;
     }
 
-    // For each grandparent, define ckiRoot
+    // 3DMMv1.0: For each grandparent, define ckiRoot
     for (ickiRoot = 0; ickiRoot < cckiRoot; ickiRoot++)
     {
         if (!_fDescend)
         {
-            // Get the cki of the grandparent
+            // 3DMMv1.0: Get the cki of the grandparent
             if (!pcfl->FGetCkiCtg(_ctgRoot, ickiRoot, &ckiRoot))
                 return fFalse;
 
             //
-            // If only one level of parent specified in the search
-            // then add the gokd from this parent and continue
+            // 3DMMv1.0: If only one level of parent specified in the search
+            // 3DMMv1.0: then add the gokd from this parent and continue
             //
             if (!_FAddGokdToThd(pcfl, sid, &ckiRoot))
                 return fFalse;
@@ -1605,7 +1709,7 @@ bool BCL::_FAddFileToThd(PCFL pcfl, int32_t sid)
         }
 
         //
-        // Drop down one more level
+        // 3DMMv1.0: Drop down one more level
         //
         if (!pcfl->FFind(ckiRoot.ctg, ckiRoot.cno))
             continue;
@@ -1620,8 +1724,8 @@ bool BCL::_FAddFileToThd(PCFL pcfl, int32_t sid)
             if (kidPar.cki.ctg != _ctgContent)
                 continue;
 
-            // On failure, continue to add other files
-            // Error reported elsewhere
+            // 3DMMv1.0: On failure, continue to add other files
+            // 3DMMv1.0: Error reported elsewhere
             _FAddGokdToThd(pcfl, sid, &kidPar);
         }
     }
@@ -1638,7 +1742,7 @@ bool BCL::_FAddGokdToThd(PCFL pcfl, int32_t sid, CKI *pcki)
     return _FAddGokdToThd(pcfl, sid, &kid);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  *  Add a single GOKD to the THD
  *	The GOKD is a child of ckiPar.
@@ -1657,7 +1761,7 @@ bool BCL::_FAddGokdToThd(PCFL pcfl, int32_t sid, KID *pkid)
     BLCK blck;
     TFC tfc;
 
-    // Read the Par chunk to find the cno of the CD content
+    // 3DMMv1.0: Read the Par chunk to find the cno of the CD content
     if (!pcfl->FFind(cki.ctg, cki.cno, &blck) || !blck.FUnpackData())
     {
         goto LFail;
@@ -1689,8 +1793,8 @@ bool BCL::_FAddGokdToThd(PCFL pcfl, int32_t sid, KID *pkid)
         thd.cno = kid.cki.cno;
     else
     {
-        // If there are no GOKD children, enter the reference to the named
-        // parent chunk
+        // 3DMMv1.0: If there are no GOKD children, enter the reference to the named
+        // 3DMMv1.0: parent chunk
         thd.cno = tfc.cno;
     }
 
@@ -1720,7 +1824,7 @@ LFail:
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Save the name of the Par chunk in the Gst
  *
@@ -1738,7 +1842,7 @@ bool BCLS::_FSetNameGst(PCFL pcfl, CTG ctg, CNO cno)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Enumerate thumbnail files
  *
@@ -1751,7 +1855,7 @@ bool FNET::FInit(void)
 
     FTG ftgThd = kftgThumbDesc;
 
-    vapp.GetFniProduct(&_fniDirProduct); // look for THD files in the product FIRST
+    vapp.GetFniProduct(&_fniDirProduct); // 3DMMv1.0: look for THD files in the product FIRST
     _fniDir = _fniDirProduct;
     _fniDirMSK = _fniDirProduct;
     _fInitMSKDir = fTrue;
@@ -1764,7 +1868,7 @@ bool FNET::FInit(void)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Enumerate thumbnail files
  *
@@ -1785,9 +1889,9 @@ bool FNET::FNext(FNI *pfni, int32_t *psid)
     if (!_fInited)
         return fFalse;
 
-    // Return files from currently enumerated directory
-    // Note: This returns files from current product before
-    // initializing _fneDir
+    // 3DMMv1.0: Return files from currently enumerated directory
+    // 3DMMv1.0: Note: This returns files from current product before
+    // 3DMMv1.0: initializing _fneDir
     if (_FNextFni(pfni, psid))
         return fTrue;
 
@@ -1800,19 +1904,19 @@ bool FNET::FNext(FNI *pfni, int32_t *psid)
 
     while (_fneDir.FNextFni(&_fniDir))
     {
-        if (_fniDir.FSameDir(&_fniDirProduct)) // already enumerated
+        if (_fniDir.FSameDir(&_fniDirProduct)) // 3DMMv1.0: already enumerated
             continue;
 
-        if (!_fne.FInit(&_fniDir, &ftgThd, 1)) // Initialize the file enumeration
+        if (!_fne.FInit(&_fniDir, &ftgThd, 1)) // 3DMMv1.0: Initialize the file enumeration
             return fFalse;
         if (_FNextFni(pfni, psid))
             return fTrue;
     }
 
-    return fFalse; // all done
+    return fFalse; // 3DMMv1.0: all done
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Gets the file from the current FNET enumeration
  * This uses the current fne.
@@ -1835,7 +1939,7 @@ bool FNET::_FNextFni(FNI *pfni, int32_t *psid)
     return (_fne.FNextFni(pfni));
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * BRWN Initialization
  * -> BRWL Initialization plus tgob creation
@@ -1858,7 +1962,7 @@ bool BRWN::FInit(PCMD pcmd, BWS bws, int32_t thumSelect, int32_t sidSelect, CKI 
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Build the thd
  *
@@ -1879,7 +1983,7 @@ bool BRWN::_FGetContent(PCRM pcrm, CKI *pcki, CTG ctg, bool fBuildGl)
         goto LFail;
 
     //
-    // Enumerate the files & build the THD
+    // 3DMMv1.0: Enumerate the files & build the THD
     //
     Assert(ctg != cnoNil || pcki->ctg == ctgNil, "Invalid browser call");
 
@@ -1887,7 +1991,7 @@ bool BRWN::_FGetContent(PCRM pcrm, CKI *pcki, CTG ctg, bool fBuildGl)
     if (pbcls == pvNil)
         goto LFail;
 
-    /* We passed the pglthd and pgst in, so no need to get them back before
+    /* 3DMMv1.0: We passed the pglthd and pgst in, so no need to get them back before
         releasing the BCLS */
     Assert(_pglthd->CactRef() > 1, "GL of THDs will be lost!");
     Assert(_pgst->CactRef() > 1, "GST will be lost!");
@@ -1898,7 +2002,7 @@ LFail:
     return fRet;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Removes the text from the unused tgob
  *
@@ -1918,10 +2022,10 @@ void BRWN::_ReleaseThumFrame(int32_t ifrm)
         ((PTGOB)pgob)->SetText(&stn);
     }
 
-    // The BRWN class retains the tgob while the browser is up
+    // 3DMMv1.0: The BRWN class retains the tgob while the browser is up
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the ith text item in the child of the
  * current frame
@@ -1948,7 +2052,7 @@ bool BRWN::_FSetThumFrame(int32_t ithd, PGOB pgobPar)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Browser Ok
  * Apply selection & exit
@@ -1966,15 +2070,15 @@ bool BRWN::FCmdOk(PCMD pcmd)
         pmvu = (PMVU)(_pstdio->Pmvie()->PddgGet(0));
         tag.sid = ksidInvalid;
         tag.pcrf = pvNil;
-        pmvu->SetTagTool(&tag); // No need to close tag with ksidInvalid
+        pmvu->SetTagTool(&tag); // 3DMMv1.0: No need to close tag with ksidInvalid
     }
 
     if (BRWD::FCmdOk(pcmd))
     {
         //
-        // Stop any playing sounds in a sound browser.  We do
-        // not stop playing sounds in non-sound browsers,
-        // because the selection sound may be playing.
+        // 3DMMv1.0: Stop any playing sounds in a sound browser.  We do
+        // 3DMMv1.0: not stop playing sounds in non-sound browsers,
+        // 3DMMv1.0: because the selection sound may be playing.
         //
         vpsndm->StopAll();
         return fTrue;
@@ -1983,7 +2087,7 @@ bool BRWN::FCmdOk(PCMD pcmd)
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser Music Sound object
  *
@@ -2002,7 +2106,7 @@ PBRWM BRWM::PbrwmNew(PRCA prca, int32_t kidGlass, int32_t sty, PSTDIO pstdio)
     if ((pbrwm = NewObj BRWM(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwm->_FInitGok(prca, kidGlass))
     {
         ReleasePpo(&pbrwm);
@@ -2021,7 +2125,7 @@ PBRWM BRWM::PbrwmNew(PRCA prca, int32_t kidGlass, int32_t sty, PSTDIO pstdio)
     return pbrwm;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Add all of the sounds of the movie from _pcrf
  * to the current BRWL lists:
@@ -2049,30 +2153,30 @@ bool BRWM::_FUpdateLists(void)
     PMSND pmsnd = pvNil;
     PCFL pcfl = _pcrf->Pcfl();
 
-    // Enum through current movie for user sounds
-    // For each	one, extend the lists to include the new sound
+    // 3DMMv1.0: Enum through current movie for user sounds
+    // 3DMMv1.0: For each	one, extend the lists to include the new sound
 
     ccki = pcfl->CckiCtg(kctgMsnd);
     for (icki = 0; icki < ccki; icki++)
     {
         if (!pcfl->FGetCkiCtg(kctgMsnd, icki, &cki))
             goto LNext;
-        tag.sid = ksidUseCrf; // Non-CD-loaded content
+        tag.sid = ksidUseCrf; // 3DMMv1.0: Non-CD-loaded content
         tag.pcrf = _pcrf;
         tag.ctg = kctgMsnd;
         tag.cno = cki.cno;
 
-        // Read the msnd chunk and continue if sty's do not match
+        // 3DMMv1.0: Read the msnd chunk and continue if sty's do not match
         pmsnd = (PMSND)vptagm->PbacoFetch(&tag, MSND::FReadMsnd);
         if (pvNil == pmsnd)
             goto LNext;
 
-        // Don't add user sounds multiple times on mult reinstantiations
+        // 3DMMv1.0: Don't add user sounds multiple times on mult reinstantiations
         if (_FSndListed(cki.cno, &ithdOld))
         {
             if (pmsnd->FValid())
                 goto LNext;
-            // Remove invalid snds from the lists
+            // 3DMMv1.0: Remove invalid snds from the lists
             _pglthd->Delete(ithdOld);
             _pgst->Delete(ithdOld);
             for (ithd = ithdOld; ithd < _pglthd->IvMac(); ithd++)
@@ -2102,7 +2206,7 @@ bool BRWM::_FUpdateLists(void)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Test to see if a sound is already in the lists
  *
@@ -2127,7 +2231,7 @@ bool BRWM::_FSndListed(CNO cno, int32_t *pithd)
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Extend the BRWL lists
  *
@@ -2145,8 +2249,8 @@ bool BRWM::_FAddThd(STN *pstn, CKI *pcki)
     thd.tag.pcrf = _pcrf;
     thd.tag.ctg = pcki->ctg;
     thd.tag.cno = pcki->cno;
-    thd.cno = cnoNil;       // unused
-    thd.chidThum = chidNil; // unused
+    thd.cno = cnoNil;       // 3DMMv1.0: unused
+    thd.chidThum = chidNil; // 3DMMv1.0: unused
     thd.ithd = _pglthd->IvMac();
     if (!_pglthd->FAdd(&thd))
         goto LFail1;
@@ -2157,7 +2261,7 @@ LFail1:
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Process Browser Music Selection
  * Process selection from either main sound browser or
@@ -2172,7 +2276,7 @@ void BRWM::_ProcessSelection(void)
     int32_t thumSelect;
     int32_t sid;
 
-    // Get Selection from virtual function
+    // 3DMMv1.0: Get Selection from virtual function
     _GetThumFromIthum(_ithumSelect, &thumSelect, &sid);
 
     tag.sid = sid;
@@ -2196,7 +2300,7 @@ void BRWM::_ProcessSelection(void)
     return;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : (For importing sounds)
  * This command will be generated following portfolio
@@ -2210,8 +2314,8 @@ bool BRWM::FCmdFile(PCMD pcmd)
 
     FNI fni;
     int32_t kidBrws;
-    PFIL pfil = pvNil; // Wave or midi file
-    PCFL pcfl = pvNil; // Movie file
+    PFIL pfil = pvNil; // 3DMMv1.0: Wave or midi file
+    PCFL pcfl = pvNil; // 3DMMv1.0: Movie file
     int32_t icki;
     int32_t ccki;
     STN stn;
@@ -2224,7 +2328,7 @@ bool BRWM::FCmdFile(PCMD pcmd)
     switch (fni.Ftg())
     {
     case kftgMidi:
-        // The non-score browsers only import wav files
+        // 3DMMv1.0: The non-score browsers only import wav files
         Assert(_sty == styMidi, "Portfolio should filter out Wave for this browser");
         if (_sty != styMidi)
             goto LEnd;
@@ -2234,7 +2338,7 @@ bool BRWM::FCmdFile(PCMD pcmd)
     case kftgMP3:
     case kftgWave:
         Assert(_sty != styMidi, "Portfolio should filter out Midi for this browser");
-        // The score browser does not import wave files
+        // 3DMMv1.0: The score browser does not import wave files
         if (_sty == styMidi)
             goto LEnd;
         cki.ctg = kctgWave;
@@ -2242,26 +2346,26 @@ bool BRWM::FCmdFile(PCMD pcmd)
 
     case kftg3mm:
     default:
-        // Import <user> sounds from a movie
-        // Verify version numbers before accepting this file
+        // 3DMMv1.0: Import <user> sounds from a movie
+        // 3DMMv1.0: Verify version numbers before accepting this file
         pcfl = CFL::PcflOpen(&fni, fcflNil);
 
         if (pvNil == pcfl)
             goto LEnd;
         if (!_pstdio->Pmvie()->FVerifyVersion(pcfl))
         {
-            goto LEnd; // Erc already pushed
+            goto LEnd; // 3DMMv1.0: Erc already pushed
         }
 
         ccki = pcfl->CckiCtg(kctgMsnd);
         if (ccki == 0)
         {
-            // There may be sounds in the new movie, but no user sounds
+            // 3DMMv1.0: There may be sounds in the new movie, but no user sounds
             PushErc(ercSocNoKidSndsInMovie);
             goto LEnd;
         }
 
-        // Are the user sounds valid?
+        // 3DMMv1.0: Are the user sounds valid?
         for (icki = 0; icki < ccki; icki++)
         {
             bool fInvalid;
@@ -2272,15 +2376,15 @@ bool BRWM::FCmdFile(PCMD pcmd)
                 goto LEnd;
 
             if (!fInvalid && sty == _sty)
-                goto LValidSnds; // There are valid user snds
+                goto LValidSnds; // 3DMMv1.0: There are valid user snds
         }
 
         PushErc(ercSocNoKidSndsInMovie);
         goto LEnd;
 
     LValidSnds:
-        // Bring up a new import browser on top of this one
-        // Launch the script
+        // 3DMMv1.0: Bring up a new import browser on top of this one
+        // 3DMMv1.0: Launch the script
         switch (_sty)
         {
         case stySfx:
@@ -2296,34 +2400,34 @@ bool BRWM::FCmdFile(PCMD pcmd)
             Assert(0, "Invalid _sty in browser");
             break;
         }
-        // Tell the script to launch the import browser & send a
-        // cidBrowserReady to kidBrws when ready
+        // 3DMMv1.0: Tell the script to launch the import browser & send a
+        // 3DMMv1.0: cidBrowserReady to kidBrws when ready
         vpcex->EnqueueCid(cidLaunchImport, pvNil, pvNil, kidBrws);
         goto LEnd;
         break;
     }
 
-    // Import sound from a wave or midi file
+    // 3DMMv1.0: Import sound from a wave or midi file
     pfil = FIL::PfilOpen(&fni);
     if (pvNil == pfil)
-        goto LEnd; // Error will have been reported
+        goto LEnd; // 3DMMv1.0: Error will have been reported
 
-    // Read the file & store as a chunk	in the current movie
+    // 3DMMv1.0: Read the file & store as a chunk	in the current movie
     if (!_pstdio->Pmvie()->FCopySndFileToMvie(pfil, _sty, &cki.cno))
-        goto LEnd; // Error will have been reported
+        goto LEnd; // 3DMMv1.0: Error will have been reported
 
-    // Add (eg) the movie sounds from &fni to the current
-    // browser lists, which are BRWL derived.
+    // 3DMMv1.0: Add (eg) the movie sounds from &fni to the current
+    // 3DMMv1.0: browser lists, which are BRWL derived.
     cki.ctg = kctgMsnd;
-    fni.GetLeaf(&stn); // name of sound
+    fni.GetLeaf(&stn); // 3DMMv1.0: name of sound
     if (!_FAddThd(&stn, &cki))
         goto LEnd;
 
-    // Select the item, extend lists, hilite it	& redraw
+    // 3DMMv1.0: Select the item, extend lists, hilite it	& redraw
     cmd.rglw[0] = cki.cno;
     cmd.rglw[1] = ksidUseCrf;
-    cmd.rglw[2] = 1; // Hilite
-    cmd.rglw[3] = 0; // Lists already updated
+    cmd.rglw[2] = 1; // 3DMMv1.0: Hilite
+    cmd.rglw[3] = 0; // 3DMMv1.0: Lists already updated
     if (!FCmdSelectThum(&cmd))
         goto LEnd;
 
@@ -2334,7 +2438,7 @@ LEnd:
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : (For deleting user snds)
  *
@@ -2353,22 +2457,22 @@ bool BRWM::FCmdDel(PCMD pcmd)
     PMVU pmvu;
 
     if (_ithumSelect < _cthumCD)
-        return fTrue; // CD Sounds cannot be deleted
+        return fTrue; // 3DMMv1.0: CD Sounds cannot be deleted
 
     pmvu = (PMVU)(_pstdio->Pmvie()->PddgGet(0));
     AssertPo(pmvu, 0);
     _pgst->GetStn(_ithumSelect, &stnSnd);
 
-    // Display the sound name in the help topic.
+    // 3DMMv1.0: Display the sound name in the help topic.
     AssertDo(vapp.FGetStnApp(idsDeleteSound, &stnErr), "String not present");
     if (vapp.TModal(vapp.PcrmAll(), ktpcQuerySoundDelete, &stnErr, bkYesNo, kstidQuerySoundDelete, &stnSnd) != tYes)
     {
         return fTrue;
     }
 
-    // Delete the midi or wave child chunk from the msnd
-    // Invalidate the sound
-    tag.sid = ksidUseCrf; // Non-CD-loaded content
+    // 3DMMv1.0: Delete the midi or wave child chunk from the msnd
+    // 3DMMv1.0: Invalidate the sound
+    tag.sid = ksidUseCrf; // 3DMMv1.0: Non-CD-loaded content
     tag.pcrf = _pcrf;
     tag.ctg = kctgMsnd;
     _GetThumFromIthum(_ithumSelect, &tag.cno, &sid);
@@ -2383,7 +2487,7 @@ bool BRWM::FCmdDel(PCMD pcmd)
 
     if (!_FUpdateLists())
     {
-        Release(); // Release browser; labels might be wrong
+        Release(); // 3DMMv1.0: Release browser; labels might be wrong
         return fTrue;
     }
 
@@ -2394,26 +2498,26 @@ bool BRWM::FCmdDel(PCMD pcmd)
 
     _ithumSelect = ivNil;
 
-    // Clear the selection if deleted
+    // 3DMMv1.0: Clear the selection if deleted
     tag.sid = ksidInvalid;
     ptag = pmvu->PtagTool();
     if (ptag->sid == ksidUseCrf && ptag->cno == tag.cno)
     {
-        pmvu->SetTagTool(&tag); // No need to close tag with ksidInvalid
+        pmvu->SetTagTool(&tag); // 3DMMv1.0: No need to close tag with ksidInvalid
     }
     else if (ptag->sid != ksidInvalid)
     {
-        // Show current cursor selection
+        // 3DMMv1.0: Show current cursor selection
         _ithumSelect = _IthumFromThum(ptag->cno, ptag->sid);
     }
 
-    _SetScrollState(); // Set the state of the scroll arrows
+    _SetScrollState(); // 3DMMv1.0: Set the state of the scroll arrows
     _pstdio->Pmvie()->Pmsq()->StopAll();
     FDraw();
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a browser text object
  *
@@ -2434,7 +2538,7 @@ PBRWT BRWT::PbrwtNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     if ((pbrwt = NewObj BRWT(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwt->_FInitGok(prca, kidGlass))
     {
         ReleasePpo(&pbrwt);
@@ -2446,7 +2550,7 @@ PBRWT BRWT::PbrwtNew(PRCA prca, int32_t kidPar, int32_t kidGlass)
     return pbrwt;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Set the Gst for BRWT text
  *
@@ -2462,7 +2566,7 @@ void BRWT::SetGst(PGST pgst)
     _pgst->AddRef();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialize BRWT TGOB & text
  *
@@ -2476,7 +2580,7 @@ bool BRWT::FInit(PCMD pcmd, int32_t thumSelect, int32_t thumDisplay, PSTDIO pstd
     BRWD::Init(pcmd, thumSelect, thumDisplay, pstdio, fWrapScroll, cthumScroll);
 
     //
-    // Create the tgob's for each frame on the page
+    // 3DMMv1.0: Create the tgob's for each frame on the page
     //
     if (!FCreateAllTgob())
         return fFalse;
@@ -2487,7 +2591,7 @@ bool BRWT::FInit(PCMD pcmd, int32_t thumSelect, int32_t thumDisplay, PSTDIO pstd
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the ith text item in the child of the
  * current frame
@@ -2519,7 +2623,7 @@ bool BRWT::_FSetThumFrame(int32_t istn, PGOB pgobPar)
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser ActioN object
  *
@@ -2541,7 +2645,7 @@ PBRWA BRWA::PbrwaNew(PRCA prca)
     if ((pbrwa = NewObj BRWA(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwa->_FInitGok(prca, kidActionGlass))
     {
         ReleasePpo(&pbrwa);
@@ -2549,7 +2653,7 @@ PBRWA BRWA::PbrwaNew(PRCA prca)
     }
 
     //
-    // Stop the action browser animation while the browser is up.
+    // 3DMMv1.0: Stop the action browser animation while the browser is up.
     //
     pgok = (PGOK)vapp.Pkwa()->PgobFromHid(kidActorsActionBrowser);
 
@@ -2563,7 +2667,7 @@ PBRWA BRWA::PbrwaNew(PRCA prca)
     return pbrwa;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Build the ape
  *
@@ -2590,7 +2694,7 @@ bool BRWA::FBuildApe(PACTR pactr)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Build the string table for actions prior to action initialization
  * Transfer the string table to BRWA
@@ -2634,7 +2738,18 @@ bool BRWA::FBuildGst(PSCEN pscen)
         goto LFail;
 
     if (!ptmpl->FIsTdt())
+    {
+        // Action deliberately presents actors at a three-quarter angle. Keep
+        // the original -30 degree yaw in Modern as well as classic BRender;
+        // framing is recomputed after this transform by SetCustomView().
         _pape->SetCustomView(BR_ANGLE_DEG(0.0), BR_ANGLE_DEG(-30.0), BR_ANGLE_DEG(0.0));
+#if defined(BRENDER_MODERN_14)
+        PSTDIO pstdioAction = vapp.Pstdio();
+        MVIE::MultiLog(pstdioAction != pvNil ? pstdioAction->Pmvie() : pvNil,
+                       "ape_action perspective_view action=%ld yaw=-30",
+                       (long)pscen->PactrSelected()->AnidCur());
+#endif
+    }
 
     return fTrue;
 
@@ -2643,7 +2758,7 @@ LFail:
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Process Browser Action Selection
  *
@@ -2653,11 +2768,11 @@ void BRWA::_ProcessSelection(void)
     AssertThis(0);
     _pape->FSetAction(_ithumSelect);
     _pape->SetCycleCels(fTrue);
-    _pape->FDisplayCel(_celnStart); // Restart cycling at current display
-    _celnStart = 0;                 // When applying action, apply celn == 0
+    _pape->FDisplayCel(_celnStart); // 3DMMv1.0: Restart cycling at current display
+    _celnStart = 0;                 // 3DMMv1.0: When applying action, apply celn == 0
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Command Handler : Change cel (action brws)
  * pcmd->rglw[0] = kid of Change, Fwd, Back
@@ -2709,7 +2824,7 @@ bool BRWA::FCmdChangeCel(PCMD pcmd)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser Import object
  * 		(A browser on top of a sound browser)
@@ -2730,7 +2845,7 @@ PBRWI BRWI::PbrwiNew(PRCA prca, int32_t kidGlass, int32_t sty)
     if ((pbrwi = NewObj BRWI(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwi->_FInitGok(prca, kidGlass))
     {
         ReleasePpo(&pbrwi);
@@ -2742,7 +2857,7 @@ PBRWI BRWI::PbrwiNew(PRCA prca, int32_t kidGlass, int32_t sty)
     return pbrwi;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Initialize the BRWI	 (Import Browser)
  *
@@ -2757,7 +2872,7 @@ bool BRWI::FInit(PCMD pcmd, CKI ckiRoot, PSTDIO pstdio)
 
     _pstdio = pstdio;
     //
-    // Create the gl's
+    // 3DMMv1.0: Create the gl's
     //
     if (pvNil == (_pglthd = GL::PglNew(SIZEOF(THD), kglthdGrow)))
         return fFalse;
@@ -2769,17 +2884,17 @@ bool BRWI::FInit(PCMD pcmd, CKI ckiRoot, PSTDIO pstdio)
     _ckiRoot = ckiRoot;
     _bws = kbwsCnoRoot;
 
-    // Fill the lists with sounds from the portfolio movie
+    // 3DMMv1.0: Fill the lists with sounds from the portfolio movie
     vapp.GetPortfolioDoc(&fni);
     pcfl = CFL::PcflOpen(&fni, fcflNil);
     if (pvNil == pcfl)
-        goto LFail; // Error already reported
+        goto LFail; // 3DMMv1.0: Error already reported
     _pcrf = CRF::PcrfNew(pcfl, 0);
     ReleasePpo(&pcfl);
 
     if (pvNil == _pcrf)
         goto LFail;
-    if (!_FUpdateLists()) // to include sounds from the selected movie
+    if (!_FUpdateLists()) // 3DMMv1.0: to include sounds from the selected movie
         goto LFail;
 
     BRWD::Init(pcmd, ivNil, ivNil, pstdio, fTrue);
@@ -2792,7 +2907,110 @@ LFail:
     return fFalse;
 }
 
-/****************************************************
+/***************************************************************************
+    Append movie-owned native VXP templates to the ordinary Add Actor / Add
+    Prop catalogue. The stock browser list remains authoritative for installed
+    content; VXP entries are transient rows rebuilt from the movie roll call
+    whenever this browser is opened/re-entered.
+
+    Native VXP preview artwork (.3th) is intentionally not imported yet. Use
+    one existing stock GOKD as a visual placeholder so the frame remains a
+    real GOK and all of the original selection/highlight behavior still works.
+***************************************************************************/
+bool BRWP::_FUpdateLists()
+{
+    AssertThis(0);
+    if (_pstdio == pvNil || _pstdio->Pmvie() == pvNil || _pglthd == pvNil)
+        return fTrue;
+
+    // Context caching deliberately keeps only CD/installed content. Drop any
+    // VXP rows from an earlier update before rebuilding them from MACTR.
+    while (_pglthd->IvMac() > _cthumCD)
+        _pglthd->Delete(_pglthd->IvMac() - 1);
+
+    if (_cthumCD <= 0)
+        return fTrue;
+
+    THD thdFallback;
+    _pglthd->Get(0, &thdFallback);
+
+    PMVIE pmvie = _pstdio->Pmvie();
+    const bool fWantProp = (_ckiRoot.ctg == kctgPrth);
+    int32_t cAdded = 0;
+    for (int32_t iarid = 0; iarid < pmvie->CmactrMac(); ++iarid)
+    {
+        int32_t arid = aridNil;
+        int32_t cactRef = 0;
+        STN stn;
+        TAG tag;
+        if (!pmvie->FGetArid(iarid, &arid, &stn, &cactRef, &tag) ||
+            !pmvie->FIsVxpBrwsIarid(iarid) || pmvie->FIsIaridTdt(iarid) ||
+            pmvie->FIsPropBrwsIarid(iarid) != fWantProp ||
+            tag.sid != ksidUseCrf || tag.ctg != kctgTmpl)
+        {
+            continue;
+        }
+
+        THD thd = thdFallback;
+        thd.tag = tag;
+        thd.ithd = _pglthd->IvMac();
+        if (!_pglthd->FAdd(&thd))
+            return fFalse;
+
+        ++cAdded;
+        MVIE::MultiLog(pmvie,
+            "vxp_browser catalogue_add kind=%s iarid=%ld arid=%ld refs=%ld cno=%ld name=%s",
+            fWantProp ? "prop" : "actor", (long)iarid, (long)arid, (long)cactRef,
+            (long)tag.cno, stn.Psz());
+    }
+
+    MVIE::MultiLog(pmvie, "vxp_browser catalogue_ready kind=%s added=%ld stock=%ld total=%ld",
+                   fWantProp ? "prop" : "actor", (long)cAdded, (long)_cthumCD,
+                   (long)_pglthd->IvMac());
+    return fTrue;
+}
+
+/***************************************************************************
+    Draw native VXP catalogue rows through BRWL's normal GOK path, then replace
+    only the rollover/help string with the imported template's real name.
+***************************************************************************/
+bool BRWP::_FSetThumFrame(int32_t ithd, PGOB pgobPar)
+{
+    AssertThis(0);
+    AssertPo(pgobPar, 0);
+
+    if (!BRWP_PAR::_FSetThumFrame(ithd, pgobPar))
+        return fFalse;
+
+    THD thd;
+    _pglthd->Get(ithd, &thd);
+    if (thd.tag.sid != ksidUseCrf || _pstdio == pvNil || _pstdio->Pmvie() == pvNil)
+        return fTrue;
+
+    PMVIE pmvie = _pstdio->Pmvie();
+    for (int32_t iarid = 0; iarid < pmvie->CmactrMac(); ++iarid)
+    {
+        int32_t arid = aridNil;
+        int32_t cactRef = 0;
+        STN stn;
+        TAG tag;
+        if (!pmvie->FGetArid(iarid, &arid, &stn, &cactRef, &tag) ||
+            !pmvie->FIsVxpBrwsIarid(iarid) || tag.sid != ksidUseCrf ||
+            tag.ctg != kctgTmpl || tag.cno != thd.tag.cno)
+        {
+            continue;
+        }
+
+        int32_t stid = (_ckiRoot.ctg == kctgPrth) ? kstidProp : kstidActor;
+        stid += _cfrmPageCur;
+        vapp.Pkwa()->Pstrg()->FPut(stid, &stn);
+        return fTrue;
+    }
+
+    return fTrue;
+}
+
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser Prop/Actor object
  *
@@ -2813,7 +3031,7 @@ PBRWP BRWP::PbrwpNew(PRCA prca, int32_t kidGlass)
     if ((pbrwp = NewObj BRWP(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwp->_FInitGok(prca, kidGlass))
     {
         ReleasePpo(&pbrwp);
@@ -2824,7 +3042,7 @@ PBRWP BRWP::PbrwpNew(PRCA prca, int32_t kidGlass)
     return pbrwp;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser Background object
  *
@@ -2845,7 +3063,7 @@ PBRWB BRWB::PbrwbNew(PRCA prca)
     if ((pbrwb = NewObj BRWB(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwb->_FInitGok(prca, kidSettingsGlass))
     {
         ReleasePpo(&pbrwb);
@@ -2856,7 +3074,7 @@ PBRWB BRWB::PbrwbNew(PRCA prca)
     return pbrwb;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Background's virtual FCmdCancel
  *
@@ -2869,12 +3087,12 @@ bool BRWB::FCmdCancel(PCMD pcmd)
 
     PMVU pmvu;
 
-    // Update the tool
+    // 3DMMv1.0: Update the tool
     pmvu = (PMVU)(_pstdio->Pmvie()->PddgActive());
     AssertPo(pmvu, 0);
     pmvu->SetTool(toolDefault);
 
-    // Update the UI
+    // 3DMMv1.0: Update the UI
     _pstdio->Pmvie()->Pmcc()->ChangeTool(toolDefault);
 
     if ((vpappb->GrfcustCur() & fcustCmd) && (_pstdio->Pmvie()->Cscen() == 0))
@@ -2884,7 +3102,7 @@ bool BRWB::FCmdCancel(PCMD pcmd)
     return BRWB_PAR::FCmdCancel(pcmd);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Set the size of the pcrm
  *
@@ -2895,7 +3113,7 @@ void BRWL::_SetCbPcrmMin(void)
     int32_t dwTotalPhys;
     int32_t dwAvailPhys;
 
-    // If short on memory, pull in the cache
+    // 3DMMv1.0: If short on memory, pull in the cache
     ((APP *)vpappb)->MemStat(&dwTotalPhys, &dwAvailPhys);
     if (dwTotalPhys > kdwTotalPhysLim && dwAvailPhys > kdwAvailPhysLim)
         return;
@@ -2909,7 +3127,7 @@ void BRWL::_SetCbPcrmMin(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser Camera object
  *
@@ -2930,7 +3148,7 @@ PBRWC BRWC::PbrwcNew(PRCA prca)
     if ((pbrwc = NewObj BRWC(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwc->_FInitGok(prca, kidCameraGlass))
     {
         ReleasePpo(&pbrwc);
@@ -2941,7 +3159,7 @@ PBRWC BRWC::PbrwcNew(PRCA prca)
     return pbrwc;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Camera's virtual FCmdCancel
  *
@@ -2954,18 +3172,18 @@ bool BRWC::FCmdCancel(PCMD pcmd)
 
     PMVU pmvu;
 
-    // Update the tool
+    // 3DMMv1.0: Update the tool
     pmvu = (PMVU)(_pstdio->Pmvie()->PddgActive());
     AssertPo(pmvu, 0);
     pmvu->SetTool(toolDefault);
 
-    // Update the UI
+    // 3DMMv1.0: Update the UI
     _pstdio->Pmvie()->Pmcc()->ChangeTool(toolDefault);
 
     return BRWC_PAR::FCmdCancel(pcmd);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create a BRoWser Roll Call object
  *
@@ -2983,7 +3201,7 @@ PBRWR BRWR::PbrwrNew(PRCA prca, int32_t kid)
     if ((pbrwr = NewObj BRWR(&gcb)) == pvNil)
         return pvNil;
 
-    // Initialize the gok
+    // 3DMMv1.0: Initialize the gok
     if (!pbrwr->_FInitGok(prca, kid))
     {
         ReleasePpo(&pbrwr);
@@ -2993,7 +3211,7 @@ PBRWR BRWR::PbrwrNew(PRCA prca, int32_t kid)
     return pbrwr;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Initialize a BRoWser Roll Call object
  *
@@ -3021,7 +3239,7 @@ bool BRWR::FInit(PCMD pcmd, CTG ctgTmplThum, int32_t ithumDisplay, PSTDIO pstdio
 
     _pcrm = CRM::PcrmNew(ccrf);
     if (pvNil == _pcrm)
-        goto LFail; // Error already reported
+        goto LFail; // 3DMMv1.0: Error already reported
 
     while (fnet.FNext(&fniThd))
     {
@@ -3030,14 +3248,14 @@ bool BRWR::FInit(PCMD pcmd, CTG ctgTmplThum, int32_t ithumDisplay, PSTDIO pstdio
         pcfl = CFL::PcflOpen(&fniThd, fcflNil);
         if (pvNil == pcfl)
         {
-            goto LFail; // Error already reported
+            goto LFail; // 3DMMv1.0: Error already reported
         }
 
-        // Add the file to the crm
+        // 3DMMv1.0: Add the file to the crm
         if (!_pcrm->FAddCfl(pcfl, kcbMaxCrm))
-            goto LFail; // Error already reported
+            goto LFail; // 3DMMv1.0: Error already reported
 
-        // Create the cno map from tmpl->gokd
+        // 3DMMv1.0: Create the cno map from tmpl->gokd
         if (ctgTmplThum == kctgTmth)
             ccki = pcfl->CckiCtg(kctgTmth);
         else
@@ -3047,7 +3265,7 @@ bool BRWR::FInit(PCMD pcmd, CTG ctgTmplThum, int32_t ithumDisplay, PSTDIO pstdio
             if (!pcfl->FGetCkiCtg(ctgTmplThum, icki, &cki))
                 continue;
 
-            // Read the chunk to map the cno of the CD content
+            // 3DMMv1.0: Read the chunk to map the cno of the CD content
             if (!pcfl->FFind(cki.ctg, cki.cno, &blck) || !blck.FUnpackData())
             {
                 goto LFail;
@@ -3078,7 +3296,7 @@ LFail:
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Update the RollCall : Select actor arid
  *
@@ -3091,7 +3309,7 @@ bool BRWR::FUpdate(int32_t arid, PSTDIO pstdio)
     _pstdio = pstdio;
     _ithumSelect = ithumDisplay = _IthumFromArid(arid);
 
-    // Define the index of the first thum on the page
+    // 3DMMv1.0: Define the index of the first thum on the page
     if (ithumDisplay != ivNil)
     {
         if (!_fNoRepositionSel || ithumDisplay < _ithumPageFirst || ithumDisplay >= _ithumPageFirst + _cfrm)
@@ -3100,14 +3318,14 @@ bool BRWR::FUpdate(int32_t arid, PSTDIO pstdio)
         }
     }
 
-    // Define the number of frames on the previous page and
-    // account for wrap-around
-    _SetScrollState(); // Set the state of the scroll arrows
+    // 3DMMv1.0: Define the number of frames on the previous page and
+    // 3DMMv1.0: account for wrap-around
+    _SetScrollState(); // 3DMMv1.0: Set the state of the scroll arrows
 
     return FDraw();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Process Browser Roll Call Selection
  * As the RollCall Browsers do not have OK buttons,
@@ -3125,14 +3343,14 @@ void BRWR::_ProcessSelection(void)
     int32_t thumSelect;
     int32_t sid;
 
-    // Get Selection from virtual function
+    // 3DMMv1.0: Get Selection from virtual function
     _GetThumFromIthum(_ithumSelect, &thumSelect, &sid);
 
-    // Apply the selection
+    // 3DMMv1.0: Apply the selection
     _ApplySelection(thumSelect, sid);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Roll Call Cthum
  *
@@ -3154,7 +3372,7 @@ int32_t BRWR::_Cthum(void)
 
     for (iarid = 0; _pstdio->Pmvie()->FGetArid(iarid, &arid, &stn, &cactRef); iarid++)
     {
-        // Verify actor in correct browser
+        // 3DMMv1.0: Verify actor in correct browser
         fProp = _pstdio->Pmvie()->FIsPropBrwsIarid(iarid);
 
         if (_ctg == kctgPrth && !fProp)
@@ -3168,7 +3386,7 @@ int32_t BRWR::_Cthum(void)
     return cthum;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Iarid from Ithum
  *
@@ -3188,7 +3406,7 @@ int32_t BRWR::_IaridFromIthum(int32_t ithum, int32_t iaridFirst)
 
     for (iarid = iaridFirst; _pstdio->Pmvie()->FGetArid(iarid, &arid, &stn, &cactRef); iarid++)
     {
-        // Verify actor in correct browser
+        // 3DMMv1.0: Verify actor in correct browser
         fProp = _pstdio->Pmvie()->FIsPropBrwsIarid(iarid);
 
         if (_ctg == kctgPrth && !fProp)
@@ -3204,7 +3422,7 @@ int32_t BRWR::_IaridFromIthum(int32_t ithum, int32_t iaridFirst)
     return iarid;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Ithum from AridSelect
  * (eg, find the thumbnail corresponding to the correct
@@ -3228,7 +3446,7 @@ int32_t BRWR::_IthumFromArid(int32_t aridSelect)
     for (iarid = 0; _pstdio->Pmvie()->FGetArid(iarid, &arid, &stn, &cactRef); iarid++)
     {
         AssertDo(_pstdio->Pmvie()->FGetArid(iarid, &arid, &stn, &cactRef), "Arid should exist");
-        // Verify actor in correct browser
+        // 3DMMv1.0: Verify actor in correct browser
         fProp = _pstdio->Pmvie()->FIsPropBrwsIarid(iarid);
         if (arid == aridSelect)
         {
@@ -3250,7 +3468,7 @@ int32_t BRWR::_IthumFromArid(int32_t aridSelect)
     return ivNil;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the ith Gob as a child of the current frame
  * Advance the gob (thumbnail) index
@@ -3275,57 +3493,71 @@ bool BRWR::_FSetThumFrame(int32_t ithum, PGOB pgobPar)
     int32_t dxp;
     int32_t dyp;
 
-    // Associate the gob with the current frame
+    // 3DMMv1.0: Associate the gob with the current frame
     iarid = _IaridFromIthum(ithum);
     if (!_pstdio->Pmvie()->FGetArid(iarid, &arid, &stn, &cactRef, &tag))
         return fFalse;
 
-    _pstdio->Pmvie()->FGetName(arid, &stnLabel);
+    _pstdio->Pmvie()->FGetDisplayName(arid, &stnLabel);
 
-    if (!_pstdio->Pmvie()->FIsIaridTdt(iarid))
+    bool fTextThumbnail = _pstdio->Pmvie()->FIsIaridTdt(iarid);
+    if (!fTextThumbnail)
     {
-        PGOK pgok;
-        CNO cno = _pstdio->CnoGokdFromCnoTmpl(tag.cno);
-        int32_t kidThum = _KidThumFromIfrm(_cfrmPageCur);
-        pgok = vapp.Pkwa()->PgokNew(pgobPar, kidThum, cno, _pcrm);
-        if (pvNil == pgok)
-            return fFalse;
+        PGOK pgok = pvNil;
+        const CNO cno = _pstdio->CnoGokdFromCnoTmpl(tag.cno);
+        const int32_t kidThum = _KidThumFromIfrm(_cfrmPageCur);
+        if (cno != cnoNil)
+            pgok = vapp.Pkwa()->PgokNew(pgobPar, kidThum, cno, _pcrm);
 
-        // Note: The graphic is not the correct size
-        ((PGOB)pgok)->GetPos(&rcAbs, &rcRel);
-        pgobPar->GetPos(&rcAbsPar, pvNil);
-        dxp = (rcAbs.Dxp() - rcAbsPar.Dxp()) / 2;
-        dyp = (rcAbs.Dyp() - rcAbsPar.Dyp()) / 2;
-        rcAbs.xpLeft += (_dxpFrmOffset - dxp);
-        rcAbs.ypTop += (_dypFrmOffset - dyp);
-        rcAbs.xpRight += (dxp - _dxpFrmOffset);
-        rcAbs.ypBottom += (dyp - _dypFrmOffset);
-        ((PGOB)pgok)->SetPos(&rcAbs, &rcRel);
+        // Movie-owned handmade Actor Studio templates do not have a stock
+        // content GOKD thumbnail mapping. They were already present in the
+        // roll call, but the classic Kauai side browser failed this frame and
+        // therefore looked empty. Give only ksidUseCrf assets a native text
+        // thumbnail fallback; stock content still fails closed if its GOKD is
+        // unexpectedly missing.
+        if (pgok == pvNil)
+        {
+            if (tag.sid != ksidUseCrf)
+                return fFalse;
+            fTextThumbnail = fTrue;
+        }
+        else
+        {
+            // 3DMMv1.0: Note: The graphic is not the correct size
+            ((PGOB)pgok)->GetPos(&rcAbs, &rcRel);
+            pgobPar->GetPos(&rcAbsPar, pvNil);
+            dxp = (rcAbs.Dxp() - rcAbsPar.Dxp()) / 2;
+            dyp = (rcAbs.Dyp() - rcAbsPar.Dyp()) / 2;
+            rcAbs.xpLeft += (_dxpFrmOffset - dxp);
+            rcAbs.ypTop += (_dypFrmOffset - dyp);
+            rcAbs.xpRight += (dxp - _dxpFrmOffset);
+            rcAbs.ypBottom += (dyp - _dypFrmOffset);
+            ((PGOB)pgok)->SetPos(&rcAbs, &rcRel);
+        }
     }
-    else
+    if (fTextThumbnail)
     {
         PTGOB ptgob;
         STN stn = stnLabel;
         int32_t cch = stn.Cch();
         int32_t hidThum;
 
-        // Display the text as the thumbnail
+        // Display the text as the thumbnail. This is also the long-standing
+        // classic 3D Word path, so custom assets stay inside the native UI.
         hidThum = _KidThumFromIfrm(_cfrmPageCur);
         ptgob = TGOB::PtgobCreate(_kidFrmFirst + _cfrmPageCur, _idsFont, tavCenter, hidThum);
 
         if (pvNil != ptgob)
-        {
             ptgob->SetText(&stn);
-        }
     }
 
-    // Put the name in the global string registry for rollover help
+    // 3DMMv1.0: Put the name in the global string registry for rollover help
     stid = (_ctg == kctgPrth) ? kstidProp : kstidActor;
     stid += _cfrmPageCur;
     return vapp.Pkwa()->Pstrg()->FPut(stid, &stnLabel);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Clear rollover help
  *
@@ -3342,7 +3574,7 @@ bool BRWR::_FClearHelp(int32_t ifrm)
     return vapp.Pkwa()->Pstrg()->FPut(stid, &stn);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Release previous thum from frame ifrm
  * Assumes gob based.
@@ -3354,7 +3586,7 @@ void BRWR::_ReleaseThumFrame(int32_t ifrm)
     AssertIn(ifrm, 0, _cfrm);
     PGOB pgob;
 
-    // Release previous gob associated with the current frame
+    // 3DMMv1.0: Release previous gob associated with the current frame
     pgob = _PgobFromIfrm(ifrm);
     if (pvNil != pgob)
     {
@@ -3362,7 +3594,7 @@ void BRWR::_ReleaseThumFrame(int32_t ifrm)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Destructor
  *
@@ -3375,7 +3607,7 @@ BRWD::~BRWD(void)
     vpappb->FSetProp(kpridBrwsOverrideKidThum, -1);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser List Destructor
  *
@@ -3391,7 +3623,7 @@ BRWL::~BRWL(void)
         vapp.EnableAccel();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Text Destructor
  *
@@ -3405,7 +3637,7 @@ BRWT::~BRWT(void)
         vapp.EnableAccel();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser RollCall Destructor
  *
@@ -3416,7 +3648,7 @@ BRWR::~BRWR(void)
     ReleasePpo(&_pcrm);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Music Import Destructor
  *
@@ -3427,7 +3659,7 @@ BRWI::~BRWI(void)
     ReleasePpo(&_pcrf);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Browser Context Destructor
  *
@@ -3441,7 +3673,7 @@ BRCNL::~BRCNL(void)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRCN
 
@@ -3452,7 +3684,7 @@ void BRCN::MarkMem(void)
     BRCN_PAR::MarkMem();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRCNL
 
@@ -3466,7 +3698,7 @@ void BRCNL::MarkMem(void)
     BRCNL_PAR::MarkMem();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRWR
 
@@ -3478,7 +3710,7 @@ void BRWR::MarkMem(void)
     BRWR_PAR::MarkMem();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRWI
 
@@ -3490,7 +3722,7 @@ void BRWI::MarkMem(void)
     BRWI_PAR::MarkMem();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRWD
 
@@ -3502,7 +3734,7 @@ void BRWD::MarkMem(void)
     MarkMemObj(_pbrcn);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRWL
 
@@ -3517,7 +3749,7 @@ void BRWL::MarkMem(void)
     MarkMemObj(_pgst);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRWT
 
@@ -3530,7 +3762,7 @@ void BRWT::MarkMem(void)
     BRWT_PAR::MarkMem();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Mark memory used by the BRWA
 
@@ -3543,7 +3775,7 @@ void BRWA::MarkMem(void)
     BRWA_PAR::MarkMem();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     BCL Markmem
 
@@ -3560,7 +3792,7 @@ void BCLS::MarkMem(void)
     MarkMemObj(_pgst);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRCN
 
@@ -3570,7 +3802,7 @@ void BRCN::AssertValid(uint32_t grfobj)
     BRCN_PAR::AssertValid(fobjAllocated);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRCNL
 
@@ -3580,7 +3812,7 @@ void BRCNL::AssertValid(uint32_t grfobj)
     BRCNL_PAR::AssertValid(fobjAllocated);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     BCL AssertValid
 
@@ -3596,7 +3828,7 @@ void BCL::AssertValid(uint32_t grf)
     AssertPo(_pglthd, 0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRWD
 
@@ -3607,7 +3839,7 @@ void BRWD::AssertValid(uint32_t grfobj)
     AssertNilOrPo(_pbrcn, 0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRWL
 
@@ -3621,7 +3853,7 @@ void BRWL::AssertValid(uint32_t grfobj)
     AssertNilOrPo(_pcrm, 0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRWR
 
@@ -3633,7 +3865,7 @@ void BRWR::AssertValid(uint32_t grfobj)
     AssertNilOrPo(_pcrm, 0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRWI
 
@@ -3645,7 +3877,7 @@ void BRWI::AssertValid(uint32_t grfobj)
     AssertNilOrPo(_pcrf, 0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRWT
 
@@ -3656,7 +3888,7 @@ void BRWT::AssertValid(uint32_t grfobj)
     AssertNilOrPo(_pgst, 0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
 
     Assert the validity of the BRWA
 
@@ -3666,4 +3898,4 @@ void BRWA::AssertValid(uint32_t grfobj)
     BRWA_PAR::AssertValid(fobjAllocated);
     AssertNilOrPo(_pape, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,0 +1,49 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: gv1buckt.h 1.1 1997/12/10 16:52:03 jon Exp $
+ * $Locker: $
+ *
+ * Geometry format
+ */
+#ifndef _GV1BUCKT_H_
+#define _GV1BUCKT_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* BRender:
+ * Private state of geometry format
+ */
+typedef struct br_geometry_v1_buckets {
+    /* BRender:
+     * Dispatch table
+     */
+    struct br_geometry_v1_buckets_dispatch *dispatch;
+
+    /* BRender:
+     * Standard object identifier
+     */
+    char *identifier;
+
+    /* BRender:
+     * Pointer to owning device
+     */
+    br_device *device;
+
+    /* BRender:
+     * Renderer type this format is associated with
+     */
+    br_renderer_facility *renderer_facility;
+
+    /* BRenderModern:
+     * Object query templates.
+     */
+    br_tv_template *templates;
+} br_geometry_v1_buckets;
+
+#ifdef __cplusplus
+};
+#endif
+#endif

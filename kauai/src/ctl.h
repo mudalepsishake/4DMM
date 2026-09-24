@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -24,7 +24,7 @@ typedef ControlHandle HCTL;
 typedef KWND HCTL;
 #endif
 
-// general control
+// 3DMMv1.0: general control
 typedef class CTL *PCTL;
 #define CTL_PAR GOB
 #define kclsCTL KLCONST3('C', 'T', 'L')
@@ -51,10 +51,10 @@ class CTL : public CTL_PAR
 
 #ifdef MAC
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 };
 
-// scroll bar
+// 3DMMv1.0: scroll bar
 enum
 {
     fscbNil = 0,
@@ -62,9 +62,9 @@ enum
     fscbHorz = 2,
     fscbStandardRc = 4,
 
-    // These are for GetStandardRc and GetClientRc.  They indicate that
-    // the controls should not hide the indicated edge (ie, the edge should
-    // be just inside the parent's rectangle).
+    // 3DMMv1.0: These are for GetStandardRc and GetClientRc.  They indicate that
+    // 3DMMv1.0: the controls should not hide the indicated edge (ie, the edge should
+    // 3DMMv1.0: be just inside the parent's rectangle).
     fscbShowLeft = 16,
     fscbShowRight = 32,
     fscbShowTop = 64,
@@ -74,7 +74,7 @@ enum
 #define kgrfscbShowVert (fscbShowTop | fscbShowBottom)
 #define kgrfscbShowAll (kgrfscbShowHorz | kgrfscbShowVert)
 
-// scroll action
+// 3DMMv1.0: scroll action
 enum
 {
     scaNil,
@@ -99,7 +99,7 @@ class SCB : public SCB_PAR
     bool _fVert : 1;
 #ifdef WIN
     bool _fSentEndScroll : 1;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
   protected:
     SCB(PGCB pgcb) : CTL(pgcb)
@@ -109,7 +109,7 @@ class SCB : public SCB_PAR
 
 #ifdef MAC
     virtual void _ActivateHwnd(bool fActive) override;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
   public:
     static int32_t DxpNormal(void);
@@ -136,13 +136,13 @@ class SCB : public SCB_PAR
 
 #ifdef MAC
     virtual void MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust) override;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
     virtual void TrackScroll(int32_t sb, int32_t lwVal);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 };
 
-// size box
+// 3DMMv1.0: size box
 typedef class WSB *PWSB;
 #define WSB_PAR CTL
 #define kclsWSB KLCONST3('W', 'S', 'B')
@@ -157,14 +157,14 @@ class WSB : public WSB_PAR
 
 #ifdef MAC
     virtual void _ActivateHwnd(bool fActive) override;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
   public:
     static PWSB PwsbNew(PGOB pgob, uint32_t grfgob);
 
 #ifdef MAC
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 };
 
-#endif //! CTL_H
+#endif //! 3DMMv1.0: CTL_H

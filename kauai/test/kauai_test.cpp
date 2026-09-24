@@ -1,4 +1,4 @@
-/**
+/** 3DMMEx:
  * Tests ported from Kauai test.cpp
  **/
 #include <gtest/gtest.h>
@@ -278,8 +278,8 @@ TEST(KauaiTests, TestFil)
 }
 
 #ifdef UNICODE
-// FIXME: Update TestGg for Unicode builds
-#else  // !UNICODE
+// 3DMMEx: FIXME: Update TestGg for Unicode builds
+#else  // 3DMMEx: !UNICODE
 
 TEST(KauaiTests, TestGg)
 {
@@ -341,7 +341,7 @@ TEST(KauaiTests, TestGg)
     EXPECT_EQ(grf, 0x00010554);
     ReleasePpo(&pgg);
 }
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 
 TEST(KauaiTests, TestCfl)
 {
@@ -431,8 +431,8 @@ TEST(KauaiTests, TestCfl)
         EXPECT_TRUE(FEqualRgb(rgch, perel->psz, CchSz(perel->psz) * SIZEOF(achar)));
     }
 
-    // copy all the chunks - they should already be there, but this
-    // should set up all the child links
+    // 3DMMEx: copy all the chunks - they should already be there, but this
+    // 3DMMEx: should set up all the child links
     for (rel = 0; rel < relLim; rel++)
     {
         perel = &dnrel[rel];
@@ -440,7 +440,7 @@ TEST(KauaiTests, TestCfl)
     }
     AssertPo(pcflDst, fcflFull);
 
-    // this should delete relShon, but not relBaby
+    // 3DMMEx: this should delete relShon, but not relBaby
     perelPar = &dnrel[relCarl];
     perel = &dnrel[relShon];
     pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
@@ -448,7 +448,7 @@ TEST(KauaiTests, TestCfl)
     pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
     EXPECT_EQ(pcfl->Ccki(), 13);
 
-    // this should delete relGreg and relStephen
+    // 3DMMEx: this should delete relGreg and relStephen
     perelPar = &dnrel[relCarl];
     perel = &dnrel[relGreg];
     pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
@@ -456,8 +456,8 @@ TEST(KauaiTests, TestCfl)
     pcfl->DeleteChild(perelPar->ctg, perelPar->cno, perel->ctg, perel->cno);
     EXPECT_EQ(pcfl->Ccki(), 11);
 
-    // this should delete relCarl, relPriscilla, relCathy, relJoshua,
-    // relRachel and relMike
+    // 3DMMEx: this should delete relCarl, relPriscilla, relCathy, relJoshua,
+    // 3DMMEx: relRachel and relMike
     pcfl->Delete(perelPar->ctg, perelPar->cno);
     perelPar = &dnrel[relCarl];
     pcfl->Delete(perelPar->ctg, perelPar->cno);
@@ -472,7 +472,7 @@ TEST(KauaiTests, TestCfl)
         EXPECT_EQ(stn.Cch() * SIZEOF(achar), blck.Cb());
     }
 
-    // copy all the chunks back
+    // 3DMMEx: copy all the chunks back
     for (icki = 0; pcflDst->FGetCki(icki, &cki); icki++)
     {
         EXPECT_TRUE(pcflDst->FCopy(cki.ctg, cki.cno, pcfl, &cno)) << "copy failed";
@@ -481,8 +481,8 @@ TEST(KauaiTests, TestCfl)
 
     pcfl->FSave(KLCONST4('J', 'U', 'N', 'K'), pvNil);
 
-    // FIXME: this check in the original test.cpp fails:
-    // EXPECT_EQ(pcfl->Ccki(), 14);
+    // 3DMMEx: FIXME: this check in the original test.cpp fails:
+    // 3DMMEx: EXPECT_EQ(pcfl->Ccki(), 14);
     ReleasePpo(&pcflDst);
 
     EXPECT_TRUE(pcfl->FSave(BigLittle(KLCONST4('J', 'U', 'N', 'K'), KLCONST4('K', 'N', 'U', 'J')), pvNil));
@@ -611,7 +611,7 @@ TEST(KauaiTests, TestGst)
         FAIL() << "Could not allocate GST";
     }
 
-    // Add some items
+    // 3DMMEx: Add some items
     lwValue = 1;
     stnName = PszLit("One");
     EXPECT_TRUE(pgst->FAddStn(&stnName, &lwValue, pvNil));
@@ -622,14 +622,14 @@ TEST(KauaiTests, TestGst)
     stnName = PszLit("Three");
     EXPECT_TRUE(pgst->FAddStn(&stnName, &lwValue, pvNil));
 
-    // Find an item by name
+    // 3DMMEx: Find an item by name
     stnName = PszLit("Two");
     ASSERT_TRUE(pgst->FFindStn(&stnName, &istn, fgstUserSorted));
     ASSERT_EQ(istn, 1);
     pgst->GetExtra(istn, &lwValue);
     ASSERT_EQ(2, lwValue);
 
-    // Find an item by value
+    // 3DMMEx: Find an item by value
     lwValue = 3;
     ASSERT_TRUE(pgst->FFindExtra(&lwValue, &stnName, &istn));
     ASSERT_EQ(istn, 2);

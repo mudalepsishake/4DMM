@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -14,7 +14,7 @@ ASSERTNAME
 
 #include <shlobj.h>
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the path to the system font directory
 ***************************************************************************/
 static bool FFindSystemFontDir(PFNI pfniSystemFontDir)
@@ -39,7 +39,7 @@ static bool FFindSystemFontDir(PFNI pfniSystemFontDir)
     return pfniSystemFontDir->FBuildFromPath(&stnSystemFontDir, kftgDir);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Find a font to use as the default system font
 ***************************************************************************/
 static bool FFindDefaultFontFile(PFNI pfniFontDir, PFNI pfniDefaultFont)
@@ -51,10 +51,10 @@ static bool FFindDefaultFontFile(PFNI pfniFontDir, PFNI pfniDefaultFont)
     FNE fne;
     FTG ftgTtf = kftgTtf;
 
-    // Check for any of these default font files:
+    // 3DMMEx: Check for any of these default font files:
     PCSZ rgpszDefaultFontFiles[] = {
-        PszLit("vgasys.fon"), // System (Windows)
-        PszLit("comic.ttf"),  // Comic Sans MS
+        PszLit("vgasys.fon"), // 3DMMEx: System (Windows)
+        PszLit("comic.ttf"),  // 3DMMEx: Comic Sans MS
     };
 
     for (int32_t ipsz = 0; ipsz < CvFromRgv(rgpszDefaultFontFiles); ipsz++)
@@ -71,7 +71,7 @@ static bool FFindDefaultFontFile(PFNI pfniFontDir, PFNI pfniDefaultFont)
         }
     }
 
-    // Return the first TrueType font file in the font directory
+    // 3DMMEx: Return the first TrueType font file in the font directory
     if (!fne.FInit(pfniFontDir, &ftgTtf, 1, 0))
         return fFalse;
 
@@ -87,7 +87,7 @@ bool NTL::_FLoadFontTable()
     PGL pglsdlfont = pvNil;
     FNI fniFontDir, fniDefaultFont;
 
-    // FUTURE: Add support for per-user fonts
+    // 3DMMEx: FUTURE: Add support for per-user fonts
     if (!FFindSystemFontDir(&fniFontDir))
     {
         Bug("Could not find system fonts directory");
@@ -100,7 +100,7 @@ bool NTL::_FLoadFontTable()
         goto LFail;
     }
 
-    // Ensure we have at least one font
+    // 3DMMEx: Ensure we have at least one font
     if (_pgst->IvMac() == 0)
     {
         goto LFail;

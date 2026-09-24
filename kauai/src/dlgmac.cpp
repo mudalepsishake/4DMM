@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -13,9 +13,9 @@
 #include "frame.h"
 ASSERTNAME
 
-// REVIEW shonk: implement combo items.
+// 3DMMv1.0: REVIEW shonk: implement combo items.
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the dialog resource and construct the GGDIT.
 ***************************************************************************/
 bool DLG::_FInit(void)
@@ -38,7 +38,7 @@ bool DLG::_FInit(void)
         return fFalse;
     }
 
-    // get the rid of the DITL resource
+    // 3DMMv1.0: get the rid of the DITL resource
     ridDitl = (*(short **)hn)[9];
     if ((hn = GetResource('DITL', ridDitl)) == hNil)
     {
@@ -46,13 +46,13 @@ bool DLG::_FInit(void)
         return fFalse;
     }
 
-    // lock the DITL so it doesn't move and so it isn't purged while
-    // we're looking at it.
+    // 3DMMv1.0: lock the DITL so it doesn't move and so it isn't purged while
+    // 3DMMv1.0: we're looking at it.
     bState = HGetState(hn);
     HLock(hn);
     pbDitl = *(uint8_t **)hn;
 
-    /***********************************************************************
+    /** 3DMMv1.0: *********************************************************************
     This info comes from New Inside Macintosh - Toolbox Essentials,
     pages 6-152 to 6-156.
 
@@ -90,20 +90,20 @@ bool DLG::_FInit(void)
     For other values of the item type, we assert and bag out.
     ***********************************************************************/
 
-    // get the lim of system items (they start at 1) and grow the GGDIT
-    // to a reasonable size
+    // 3DMMv1.0: get the lim of system items (they start at 1) and grow the GGDIT
+    // 3DMMv1.0: to a reasonable size
     sitLim = (*(short *)pbDitl) + 2;
     pbDitl += size(short);
     if (!FEnsureSpace(sitLim, size(int32_t), fgrpNil))
         goto LFail;
 
-    // look at the items in the DITL
+    // 3DMMv1.0: look at the items in the DITL
     for (idit = 0, sit = 1; sit < sitLim; sit++)
     {
-        // skip the reserved bytes and rectangle
+        // 3DMMv1.0: skip the reserved bytes and rectangle
         pbDitl += 12;
 
-        // the high bit is an enble bit, so mask it off
+        // 3DMMv1.0: the high bit is an enble bit, so mask it off
         bType = *pbDitl & 0x7F;
         pbDitl++;
 
@@ -114,21 +114,21 @@ bool DLG::_FInit(void)
             Bug("unkown item in DITL resource");
             goto LFail;
 
-        case btnCtrl + ctrlItem: // button
+        case btnCtrl + ctrlItem: // 3DMMv1.0: button
             dit.ditk = ditkButton;
             cbEntry = 0;
             fAddDit = fTrue;
             goto LSkipSt;
 
-        case chkCtrl + ctrlItem: // check box
+        case chkCtrl + ctrlItem: // 3DMMv1.0: check box
             dit.ditk = ditkCheckBox;
             cbEntry = size(int32_t);
             fAddDit = fTrue;
             goto LSkipSt;
 
-        case radCtrl + ctrlItem: // radio button
-            // if the last item added was a radio group, add this button to
-            // the group, otherwise create a new radio group
+        case radCtrl + ctrlItem: // 3DMMv1.0: radio button
+            // 3DMMv1.0: if the last item added was a radio group, add this button to
+            // 3DMMv1.0: the group, otherwise create a new radio group
             if (idit > 0)
             {
                 GetDit(idit - 1, &dit);
@@ -144,10 +144,10 @@ bool DLG::_FInit(void)
             fAddDit = fTrue;
             goto LSkipSt;
 
-        case statText: // static text item
+        case statText: // 3DMMv1.0: static text item
             goto LSkipSt;
 
-        case editText: // edit item
+        case editText: // 3DMMv1.0: edit item
             dit.ditk = ditkEditText;
             cbEntry = kcbMaxStz - kcchMaxStz;
             fAddDit = fTrue;
@@ -157,17 +157,17 @@ bool DLG::_FInit(void)
                 pbDitl++;
             break;
 
-        case 7:        // control
-        case iconItem: // icon
-        case picItem:  // picture
+        case 7:        // 3DMMv1.0: control
+        case iconItem: // 3DMMv1.0: icon
+        case picItem:  // 3DMMv1.0: picture
             pbDitl += 3;
             break;
 
-        case userItem: // app defined
+        case userItem: // 3DMMv1.0: app defined
             pbDitl += 1;
             break;
 
-        case 1: // help item
+        case 1: // 3DMMv1.0: help item
             pbDitl += CbSt((achar *)pbDitl);
             break;
         }
@@ -180,7 +180,7 @@ bool DLG::_FInit(void)
             if (!FInsert(idit, cbEntry, pvNil, &dit))
                 goto LFail;
 
-            // zero the extra data
+            // 3DMMv1.0: zero the extra data
             if (cbEntry > 0)
                 ClearPb(QvGet(idit), cbEntry);
             idit++;
@@ -197,7 +197,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Actually put up the dialog and don't return until it comes down.
     Returns the idit that dismissed the dialog.  Returns ivNil on failure.
 ***************************************************************************/
@@ -246,12 +246,12 @@ int32_t DLG::IditDo(int32_t iditFocus)
             break;
 
         case ditkCheckBox:
-            // invert it
+            // 3DMMv1.0: invert it
             _InvertCheckBox(idit);
             break;
 
         case ditkRadioGroup:
-            // set the value to swHit - dit.sitMin
+            // 3DMMv1.0: set the value to swHit - dit.sitMin
             _SetRadioGroup(idit, (int32_t)swHit - dit.sitMin);
             break;
         }
@@ -280,7 +280,7 @@ LDone:
     return idit;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the value of a radio group.
 ***************************************************************************/
 int32_t DLG::_LwGetRadioGroup(int32_t idit)
@@ -308,7 +308,7 @@ int32_t DLG::_LwGetRadioGroup(int32_t idit)
     return dit.sitLim - dit.sitMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change a radio group value.
 ***************************************************************************/
 void DLG::_SetRadioGroup(int32_t idit, int32_t lw)
@@ -335,7 +335,7 @@ void DLG::_SetRadioGroup(int32_t idit, int32_t lw)
         Assert(sitk == (radCtrl + ctrlItem), "not a radio button!");
         swT = GetCtlValue(hctl);
 
-        // set the value
+        // 3DMMv1.0: set the value
         if (swT)
         {
             if (sit - dit.sitMin != lw)
@@ -350,7 +350,7 @@ void DLG::_SetRadioGroup(int32_t idit, int32_t lw)
     gnv.Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the current value of a check box.
 ***************************************************************************/
 bool DLG::_FGetCheckBox(int32_t idit)
@@ -372,7 +372,7 @@ bool DLG::_FGetCheckBox(int32_t idit)
     return FPure(GetCtlValue(hctl));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert the value of a check box.
 ***************************************************************************/
 void DLG::_InvertCheckBox(int32_t idit)
@@ -380,7 +380,7 @@ void DLG::_InvertCheckBox(int32_t idit)
     _SetCheckBox(idit, !_FGetCheckBox(idit));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the value of a check box.
 ***************************************************************************/
 void DLG::_SetCheckBox(int32_t idit, bool fOn)
@@ -408,7 +408,7 @@ void DLG::_SetCheckBox(int32_t idit, bool fOn)
     gnv.Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the text from an edit control.
 ***************************************************************************/
 void DLG::_GetEditText(int32_t idit, PSTZ pstz)
@@ -431,7 +431,7 @@ void DLG::_GetEditText(int32_t idit, PSTZ pstz)
     StToStz(pstz);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the text in an edit control.
 ***************************************************************************/
 void DLG::_SetEditText(int32_t idit, PSTZ pstz)
@@ -456,7 +456,7 @@ void DLG::_SetEditText(int32_t idit, PSTZ pstz)
     gnv.Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the given item the "focused" item and select its contents.  The
     item should be a text item.
 ***************************************************************************/

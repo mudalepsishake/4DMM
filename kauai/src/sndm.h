@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,8 +18,8 @@
 
 const int32_t siiNil = 0;
 #ifdef MAC
-const FTG kftgMidi = KLCONST4('M', 'I', 'D', 'I'); // REVIEW shonk: Mac: file type
-const FTG kftgWave = KLCONST4('W', 'A', 'V', 'E'); // REVIEW shonk: Mac: file type
+const FTG kftgMidi = KLCONST4('M', 'I', 'D', 'I'); // 3DMMv1.0: REVIEW shonk: Mac: file type
+const FTG kftgWave = KLCONST4('W', 'A', 'V', 'E'); // 3DMMv1.0: REVIEW shonk: Mac: file type
 #else
 const FTG kftgMidi = KLCONST3('m', 'i', 'd');
 const FTG kftgWave = KLCONST3('w', 'a', 'v');
@@ -27,7 +27,7 @@ const FTG kftgWave = KLCONST3('w', 'a', 'v');
 
 const FTG kftgMP3 = KLCONST3('m', 'p', '3');
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sound device - like audioman or our midi player.
 ***************************************************************************/
 typedef class SNDV *PSNDV;
@@ -47,8 +47,8 @@ class SNDV : public SNDV_PAR
 
   public:
     virtual bool FActive(void) = 0;
-    virtual void Activate(bool fActive) = 0; // boolean state
-    virtual void Suspend(bool fSuspend) = 0; // reference count
+    virtual void Activate(bool fActive) = 0; // 3DMMv1.0: boolean state
+    virtual void Suspend(bool fSuspend) = 0; // 3DMMv1.0: reference count
     virtual void SetVlm(int32_t vlm) = 0;
     virtual int32_t VlmCur(void) = 0;
 
@@ -72,7 +72,7 @@ class SNDV : public SNDV_PAR
     virtual void EndSynch(void);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Sound manager class
 ****************************************/
 typedef class SNDM *PSNDM;
@@ -91,11 +91,11 @@ class SNDM : public SNDM_PAR
         PSNDV psndv;
     };
 
-    PGL _pglsndmpe; // sound type to device mapper
+    PGL _pglsndmpe; // 3DMMv1.0: sound type to device mapper
 
-    int32_t _cactSuspend; // nesting level for suspending
-    bool _fActive : 1;    // whether the app is active
-    bool _fFreeing : 1;   // we're in the destructor
+    int32_t _cactSuspend; // 3DMMv1.0: nesting level for suspending
+    bool _fActive : 1;    // 3DMMv1.0: whether the app is active
+    bool _fFreeing : 1;   // 3DMMv1.0: we're in the destructor
 
     SNDM(void);
     bool _FInit(void);
@@ -105,12 +105,12 @@ class SNDM : public SNDM_PAR
     static PSNDM PsndmNew(void);
     ~SNDM(void);
 
-    // new methods
+    // 3DMMv1.0: new methods
     virtual bool FAddDevice(CTG ctg, PSNDV psndv);
     virtual PSNDV PsndvFromCtg(CTG ctg);
     virtual void RemoveSndv(CTG ctg);
 
-    // inherited methods
+    // 3DMMv1.0: inherited methods
     virtual bool FActive(void) override;
     virtual void Activate(bool fActive) override;
     virtual void Suspend(bool fSuspend) override;
@@ -138,7 +138,7 @@ class SNDM : public SNDM_PAR
     virtual void EndSynch(void) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A useful base class for devices that support multiple queues.
 ***************************************************************************/
 typedef class SNQUE *PSNQUE;
@@ -153,14 +153,14 @@ class SNDMQ : public SNDMQ_PAR
     MARKMEM
 
   protected:
-    // queue descriptor
+    // 3DMMv1.0: queue descriptor
     struct SNQD
     {
         PSNQUE psnque;
         int32_t sqn;
     };
 
-    PGL _pglsnqd; // the queues
+    PGL _pglsnqd; // 3DMMv1.0: the queues
 
     int32_t _cactSuspend;
     bool _fActive : 1;
@@ -174,7 +174,7 @@ class SNDMQ : public SNDMQ_PAR
   public:
     ~SNDMQ(void);
 
-    // inherited methods
+    // 3DMMv1.0: inherited methods
     virtual bool FActive(void) override;
     virtual void Activate(bool fActive) override;
     virtual void Suspend(bool fSuspend) override;
@@ -198,24 +198,24 @@ class SNDMQ : public SNDMQ_PAR
     virtual void Flush(void) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The sound instance structure.
 ***************************************************************************/
 struct SNDIN
 {
-    PBACO pbaco;       // the sound to play
-    int32_t sii;       // the sound instance id
-    int32_t vlm;       // volume to play at
-    int32_t cactPlay;  // how many times to play
-    uint32_t dtsStart; // offset to start at
-    int32_t spr;       // sound priority
-    int32_t scl;       // sound class
+    PBACO pbaco;       // 3DMMv1.0: the sound to play
+    int32_t sii;       // 3DMMv1.0: the sound instance id
+    int32_t vlm;       // 3DMMv1.0: volume to play at
+    int32_t cactPlay;  // 3DMMv1.0: how many times to play
+    uint32_t dtsStart; // 3DMMv1.0: offset to start at
+    int32_t spr;       // 3DMMv1.0: sound priority
+    int32_t scl;       // 3DMMv1.0: sound class
 
-    // 0 means play, < 0 means skip, > 0 means pause
+    // 3DMMv1.0: 0 means play, < 0 means skip, > 0 means pause
     int32_t cactPause;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sound queue for a SNDMQ
 ***************************************************************************/
 #define SNQUE_PAR BASE
@@ -227,8 +227,8 @@ class SNQUE : public SNQUE_PAR
     MARKMEM
 
   protected:
-    PGL _pglsndin;      // the queue
-    int32_t _isndinCur; // SNDIN that we should be playing
+    PGL _pglsndin;      // 3DMMv1.0: the queue
+    int32_t _isndinCur; // 3DMMv1.0: SNDIN that we should be playing
 
     SNQUE(void);
 
@@ -263,4 +263,4 @@ class SNQUE : public SNQUE_PAR
 extern uint32_t LuVolScale(uint32_t luVolSys, int32_t vlm);
 extern uint32_t vluSysVolFake;
 
-#endif //! SNDM_H
+#endif //! 3DMMv1.0: SNDM_H

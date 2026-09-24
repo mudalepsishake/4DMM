@@ -1,4 +1,4 @@
-/**
+/** 3DMMEx:
  * KauaiGui tests
  **/
 #include <gtest/gtest.h>
@@ -11,11 +11,11 @@ TEST(RegionScannerTests, OverlappingRectangles)
 {
     RC rc;
 
-    // Create an empty region
+    // 3DMMEx: Create an empty region
     PREGN pregn = REGN::PregnNew(pvNil);
     AssertPo(pregn, 0);
 
-    // Create two overlapping rectangles at (2, 2)-(8, 8) and (4, 4)-(10, 10)
+    // 3DMMEx: Create two overlapping rectangles at (2, 2)-(8, 8) and (4, 4)-(10, 10)
     rc.Set(2, 2, 8, 8);
     pregn->FUnionRc(&rc);
 
@@ -25,7 +25,7 @@ TEST(RegionScannerTests, OverlappingRectangles)
     RC rcScreen;
     rcScreen.Set(0, 0, 640, 480);
 
-    // Create the region scanner
+    // 3DMMEx: Create the region scanner
     REGSC regsc;
     regsc.Init(pregn, &rcScreen);
 
@@ -35,26 +35,26 @@ TEST(RegionScannerTests, OverlappingRectangles)
     int32_t xpStart = 0, xpEnd = 0;
     bool fFound = fFalse;
 
-    // Scan to find the first line
+    // 3DMMEx: Scan to find the first line
     while (!fFound)
     {
         xpStart = regsc.XpCur();
 
         if (xpStart == klwMax)
         {
-            // Keep going until we find part of a region
+            // 3DMMEx: Keep going until we find part of a region
             regsc.ScanNext(1);
         }
         else
         {
-            // Found it
+            // 3DMMEx: Found it
             fFound = fTrue;
         }
     }
 
-    // List of starting pixels
+    // 3DMMEx: List of starting pixels
     int32_t rgxpStart[9] = {2, 2, 2, 2, 2, 2, 4, 4, klwMax};
-    // List of ending pixels
+    // 3DMMEx: List of ending pixels
     int32_t rgxpEnd[9] = {8, 8, 10, 10, 10, 10, 10, 10, klwMax};
 
     for (int32_t i = 0; i < CvFromRgv(rgxpStart); i++)
@@ -75,11 +75,11 @@ TEST(RegionScannerTests, AdjacentRectangles)
 {
     RC rc;
 
-    // Create an empty region
+    // 3DMMEx: Create an empty region
     PREGN pregn = REGN::PregnNew(pvNil);
     AssertPo(pregn, 0);
 
-    // Create two adjacent rectangles
+    // 3DMMEx: Create two adjacent rectangles
     rc.Set(2, 2, 8, 8);
     pregn->FUnionRc(&rc);
 
@@ -89,7 +89,7 @@ TEST(RegionScannerTests, AdjacentRectangles)
     RC rcScreen;
     rcScreen.Set(0, 0, 640, 480);
 
-    // Create the region scanner
+    // 3DMMEx: Create the region scanner
     REGSC regsc;
     regsc.Init(pregn, &rcScreen);
 
@@ -99,19 +99,19 @@ TEST(RegionScannerTests, AdjacentRectangles)
     int32_t xp = 0;
     bool fFound = fFalse;
 
-    // Scan to find the first line
+    // 3DMMEx: Scan to find the first line
     while (!fFound)
     {
         xp = regsc.XpCur();
 
         if (xp == klwMax)
         {
-            // Keep going until we find part of a region
+            // 3DMMEx: Keep going until we find part of a region
             regsc.ScanNext(1);
         }
         else
         {
-            // Found it
+            // 3DMMEx: Found it
             fFound = fTrue;
         }
     }
@@ -119,22 +119,22 @@ TEST(RegionScannerTests, AdjacentRectangles)
     ASSERT_TRUE(regsc.FOn());
     ASSERT_EQ(xp, 2) << "X coordinate of start of run incorrect";
 
-    // Find the end of the first line
+    // 3DMMEx: Find the end of the first line
     xp = regsc.XpFetch();
     ASSERT_FALSE(regsc.FOn());
     ASSERT_EQ(xp, 8);
 
-    // Find the start of the second line
+    // 3DMMEx: Find the start of the second line
     xp = regsc.XpFetch();
     ASSERT_TRUE(regsc.FOn());
     ASSERT_EQ(xp, 18);
 
-    // Find the end of the second line
+    // 3DMMEx: Find the end of the second line
     xp = regsc.XpFetch();
     ASSERT_FALSE(regsc.FOn());
     ASSERT_EQ(xp, 24);
 
-    // There should be no more lines
+    // 3DMMEx: There should be no more lines
     xp = regsc.XpFetch();
     ASSERT_EQ(xp, klwMax);
 

@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: fwiproto.h 1.27 1995/06/30 16:01:14 sam Exp $
@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Error types are 32 bit integers, broken into three fields -
      *
      * Class	Subclass Number

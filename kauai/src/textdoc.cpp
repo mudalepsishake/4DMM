@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,7 +18,7 @@ ASSERTNAME
 RTCLASS(TXDC)
 RTCLASS(TXDD)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a text document.
 ***************************************************************************/
 TXDC::TXDC(PDOCB pdocb, uint32_t grfdoc) : DOCB(pdocb, grfdoc)
@@ -27,7 +27,7 @@ TXDC::TXDC(PDOCB pdocb, uint32_t grfdoc) : DOCB(pdocb, grfdoc)
     _pfil = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a text document.
 ***************************************************************************/
 TXDC::~TXDC(void)
@@ -36,7 +36,7 @@ TXDC::~TXDC(void)
     ReleasePpo(&_pfil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new document based on the given text file and or text stream.
 ***************************************************************************/
 PTXDC TXDC::PtxdcNew(PFNI pfni, PBSF pbsf, PDOCB pdocb, uint32_t grfdoc)
@@ -55,7 +55,7 @@ PTXDC TXDC::PtxdcNew(PFNI pfni, PBSF pbsf, PDOCB pdocb, uint32_t grfdoc)
     return ptxdc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the TXDC.
 ***************************************************************************/
 bool TXDC::_FInit(PFNI pfni, PBSF pbsf)
@@ -78,7 +78,7 @@ bool TXDC::_FInit(PFNI pfni, PBSF pbsf)
         return fFalse;
     else if (pvNil != _pfil && _pfil->FpMac() > 0)
     {
-        // initialize the BSF to just point to the file
+        // 3DMMv1.0: initialize the BSF to just point to the file
         FLO flo;
 
         flo.pfil = _pfil;
@@ -91,7 +91,7 @@ bool TXDC::_FInit(PFNI pfni, PBSF pbsf)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new TXDD to display the TXDC.
 ***************************************************************************/
 PDDG TXDC::PddgNew(PGCB pgcb)
@@ -100,7 +100,7 @@ PDDG TXDC::PddgNew(PGCB pgcb)
     return TXDD::PtxddNew(this, pgcb, _pbsf, vpappb->OnnDefFixed(), fontNil, vpappb->DypTextDef());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current FNI for the doc.  Return false if the doc is not
     currently based on an FNI (it's a new doc or an internal one).
 ***************************************************************************/
@@ -115,7 +115,7 @@ bool TXDC::FGetFni(FNI *pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document and optionally set this fni as the current one.
     If the doc is currently based on an FNI, pfni may be nil, indicating
     that this is a normal save (not save as).  If pfni is not nil and
@@ -149,7 +149,7 @@ bool TXDC::FSaveToFni(FNI *pfni, bool fSetFni)
     if (!_pbsf->FWriteRgb(&flo))
         goto LFail;
 
-    // redirect the BSF to the new file
+    // 3DMMv1.0: redirect the BSF to the new file
     if (fSetFni)
         _pbsf->FReplaceFlo(&flo, fFalse, 0, flo.cb);
 
@@ -174,7 +174,7 @@ bool TXDC::FSaveToFni(FNI *pfni, bool fSetFni)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a TXDC.
 ***************************************************************************/
 void TXDC::AssertValid(uint32_t grf)
@@ -184,7 +184,7 @@ void TXDC::AssertValid(uint32_t grf)
     AssertNilOrPo(_pfil, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the TXDC.
 ***************************************************************************/
 void TXDC::MarkMem(void)
@@ -193,9 +193,9 @@ void TXDC::MarkMem(void)
     TXDC_PAR::MarkMem();
     MarkMemObj(_pbsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a text document display gob.
 ***************************************************************************/
 TXDD::TXDD(PDOCB pdocb, PGCB pgcb, PBSF pbsf, int32_t onn, uint32_t grfont, int32_t dypFont) : DDG(pdocb, pgcb)
@@ -209,7 +209,7 @@ TXDD::TXDD(PDOCB pdocb, PGCB pgcb, PBSF pbsf, int32_t onn, uint32_t grfont, int3
     _grfont = grfont;
     _dypFont = dypFont;
 
-    // get the _dypLine and _dxpTab values
+    // 3DMMv1.0: get the _dypLine and _dxpTab values
     RC rc;
     achar ch = kchSpace;
     GNV gnv(this);
@@ -220,7 +220,7 @@ TXDD::TXDD(PDOCB pdocb, PGCB pgcb, PBSF pbsf, int32_t onn, uint32_t grfont, int3
     _dxpTab = LwMul(rc.Dxp(), 4);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for TXDD.
 ***************************************************************************/
 TXDD::~TXDD(void)
@@ -228,7 +228,7 @@ TXDD::~TXDD(void)
     ReleasePpo(&_pglichStarts);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new TXDD.
 ***************************************************************************/
 PTXDD TXDD::PtxddNew(PDOCB pdocb, PGCB pgcb, PBSF pbsf, int32_t onn, uint32_t grfont, int32_t dypFont)
@@ -249,7 +249,7 @@ PTXDD TXDD::PtxddNew(PDOCB pdocb, PGCB pgcb, PBSF pbsf, int32_t onn, uint32_t gr
     return ptxdd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the TXDD.
 ***************************************************************************/
 bool TXDD::_FInit(void)
@@ -270,7 +270,7 @@ bool TXDD::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The TXDD has changed sizes, set the _clnDisp.
 ***************************************************************************/
 void TXDD::_NewRc(void)
@@ -285,7 +285,7 @@ void TXDD::_NewRc(void)
     TXDD_PAR::_NewRc();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Deactivate the TXDD - turn off the selection.
 ***************************************************************************/
 void TXDD::_Activate(bool fActive)
@@ -296,7 +296,7 @@ void TXDD::_Activate(bool fActive)
         _SwitchSel(fFalse, fFalse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find new line starts starting at lnMin.
 ***************************************************************************/
 void TXDD::_Reformat(int32_t lnMin, int32_t *pclnIns, int32_t *pclnDel)
@@ -317,7 +317,7 @@ void TXDD::_Reformat(int32_t lnMin, int32_t *pclnIns, int32_t *pclnDel)
             return;
         }
 
-        // delete starts that are before ich
+        // 3DMMv1.0: delete starts that are before ich
         for (;;)
         {
             if (ln >= _pglichStarts->IvMac())
@@ -331,7 +331,7 @@ void TXDD::_Reformat(int32_t lnMin, int32_t *pclnIns, int32_t *pclnDel)
             clnDel++;
         }
 
-        // add the new line start
+        // 3DMMv1.0: add the new line start
         if (!_pglichStarts->FInsert(ln, &ich))
         {
             if (ln >= _pglichStarts->IvMac())
@@ -345,7 +345,7 @@ void TXDD::_Reformat(int32_t lnMin, int32_t *pclnIns, int32_t *pclnDel)
     }
 
 LDone:
-    // truncate the list of line starts
+    // 3DMMv1.0: truncate the list of line starts
     if (_pglichStarts->IvMac() > _clnDisp + 1)
         _pglichStarts->FSetIvMac(_clnDisp + 1);
     if (pvNil != pclnIns)
@@ -354,7 +354,7 @@ LDone:
         *pclnDel = clnDel;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find new line starts starting at lnMin.
 ***************************************************************************/
 void TXDD::_ReformatEdit(int32_t ichMinEdit, int32_t cchIns, int32_t cchDel, int32_t *plnNew, int32_t *pclnIns,
@@ -370,22 +370,22 @@ void TXDD::_ReformatEdit(int32_t ichMinEdit, int32_t cchIns, int32_t cchDel, int
     int32_t ich;
     int32_t ln, clnDel;
 
-    // if the first displayed character was affected, reset it
-    // to a valid line start
+    // 3DMMv1.0: if the first displayed character was affected, reset it
+    // 3DMMv1.0: to a valid line start
     if (FIn(*_QichLn(0) - 1, ichMinEdit, ichMinEdit + cchDel))
     {
         AssertDo(_FFindLineStart(ichMinEdit, &ich), 0);
         *_QichLn(0) = ich;
     }
 
-    // skip unaffected lines
+    // 3DMMv1.0: skip unaffected lines
     for (ln = 0; ln < _pglichStarts->IvMac() && *_QichLn(ln) <= ichMinEdit; ln++)
         ;
 
     clnDel = 0;
     if (cchDel > 0)
     {
-        // remove any deleted lines
+        // 3DMMv1.0: remove any deleted lines
         while (ln < _pglichStarts->IvMac() && *_QichLn(ln) <= ichMinEdit + cchDel)
         {
             _pglichStarts->Delete(ln);
@@ -409,7 +409,7 @@ void TXDD::_ReformatEdit(int32_t ichMinEdit, int32_t cchIns, int32_t cchDel, int
         *pclnDel = clnDel;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch a character of the stream through the cache.
 ***************************************************************************/
 bool TXDD::_FFetchCh(int32_t ich, achar *pch)
@@ -420,7 +420,7 @@ bool TXDD::_FFetchCh(int32_t ich, achar *pch)
 
     if (!FIn(ich, _ichMinCache, _ichLimCache))
     {
-        // not a cache hit
+        // 3DMMv1.0: not a cache hit
         int32_t ichMinCache, ichLimCache;
         int32_t ichLim = _pbsf->IbMac();
 
@@ -430,12 +430,12 @@ bool TXDD::_FFetchCh(int32_t ich, achar *pch)
             return fFalse;
         }
 
-        // need to fetch some characters - try to center ich in the new cached data
+        // 3DMMv1.0: need to fetch some characters - try to center ich in the new cached data
         ichMinCache = LwMax(0, LwMin(ich - SIZEOF(_rgchCache) / 2, ichLim - SIZEOF(_rgchCache)));
         ichLimCache = LwMin(ichLim, ichMinCache + SIZEOF(_rgchCache));
         AssertIn(ich, ichMinCache, ichLimCache);
 
-        // see if we can use some of the currently cached characters
+        // 3DMMv1.0: see if we can use some of the currently cached characters
         if (_ichMinCache >= _ichLimCache)
             goto LFetchAll;
         if (FIn(_ichMinCache, ich, ichLimCache))
@@ -472,7 +472,7 @@ bool TXDD::_FFetchCh(int32_t ich, achar *pch)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the start of the line that ich is on.
 ***************************************************************************/
 bool TXDD::_FFindLineStart(int32_t ich, int32_t *pich)
@@ -507,7 +507,7 @@ bool TXDD::_FFindLineStart(int32_t ich, int32_t *pich)
         case kchReturn:
             if ((*pich = ich + 1 + dichLine) <= ichOrig)
                 return fTrue;
-            // fall through
+            // 3DMMv1.0: fall through
         default:
             dichLine = 0;
             break;
@@ -516,7 +516,7 @@ bool TXDD::_FFindLineStart(int32_t ich, int32_t *pich)
     Bug("How did we get here?");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the next line start after ich.  If prgch is not nil, fills it
     with the characters between ich and the line start (but not more
     than cchMax characters).
@@ -557,7 +557,7 @@ bool TXDD::_FFindNextLineStart(int32_t ich, int32_t *pich, achar *prgch, int32_t
                 fCr = fTrue;
                 break;
             }
-            // fall through
+            // 3DMMv1.0: fall through
         default:
             if (fCr)
             {
@@ -576,7 +576,7 @@ bool TXDD::_FFindNextLineStart(int32_t ich, int32_t *pich, achar *prgch, int32_t
     Bug("how did we get here?");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the start of the line that ich is on.  This routine assumes
     that _pglichStarts is valid and tries to use it.
 ***************************************************************************/
@@ -593,7 +593,7 @@ bool TXDD::_FFindLineStartCached(int32_t ich, int32_t *pich)
     return _FFindLineStart(ich, pich);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the next line start after ich.  If prgch is not nil, fills it
     with the characters between ich and the line start (but not more
     than cchMax characters).
@@ -615,7 +615,7 @@ bool TXDD::_FFindNextLineStartCached(int32_t ich, int32_t *pich, achar *prgch, i
     return _FFindNextLineStart(ich, pich, prgch, cchMax);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the contents of the gob.
 ***************************************************************************/
 void TXDD::Draw(PGNV pgnv, RC *prcClip)
@@ -648,7 +648,7 @@ void TXDD::Draw(PGNV pgnv, RC *prcClip)
         _InvertSel(pgnv, fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the characters for the given line.
 ***************************************************************************/
 void TXDD::_FetchLineLn(int32_t ln, achar *prgch, int32_t cchMax, int32_t *pcch, int32_t *pichMin)
@@ -664,7 +664,7 @@ void TXDD::_FetchLineLn(int32_t ln, achar *prgch, int32_t cchMax, int32_t *pcch,
         *pichMin = ichMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the characters for the given line.
 ***************************************************************************/
 void TXDD::_FetchLineIch(int32_t ich, achar *prgch, int32_t cchMax, int32_t *pcch, int32_t *pichMin)
@@ -680,7 +680,7 @@ void TXDD::_FetchLineIch(int32_t ich, achar *prgch, int32_t cchMax, int32_t *pcc
         *pichMin = ichMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the line in the given GNV.
 ***************************************************************************/
 void TXDD::_DrawLine(PGNV pgnv, RC *prcClip, int32_t yp, achar *prgch, int32_t cch)
@@ -712,7 +712,7 @@ void TXDD::_DrawLine(PGNV pgnv, RC *prcClip, int32_t yp, achar *prgch, int32_t c
         }
 
     LNonWhite:
-        // erase any blank portion of the line
+        // 3DMMv1.0: erase any blank portion of the line
         if (xp > xpPrev && xp > prcClip->xpLeft && xpPrev < prcClip->xpRight)
         {
             rc.Set(xpPrev, yp, xp, yp + _dypLine);
@@ -743,7 +743,7 @@ void TXDD::_DrawLine(PGNV pgnv, RC *prcClip, int32_t yp, achar *prgch, int32_t c
         xpPrev = xp;
     }
 
-    // erase any remaining portion of the line
+    // 3DMMv1.0: erase any remaining portion of the line
     if (xpPrev < prcClip->xpRight)
     {
         rc.Set(xpPrev, yp, prcClip->xpRight, yp + _dypLine);
@@ -751,7 +751,7 @@ void TXDD::_DrawLine(PGNV pgnv, RC *prcClip, int32_t yp, achar *prgch, int32_t c
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the maximum scroll value for this view of the doc.
 ***************************************************************************/
 int32_t TXDD::_ScvMax(bool fVert)
@@ -768,7 +768,7 @@ int32_t TXDD::_ScvMax(bool fVert)
     return LwMul(_dxpTab, 100);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Perform a scroll according to scaHorz and scaVert.
 ***************************************************************************/
 void TXDD::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t scvVert)
@@ -873,7 +873,7 @@ void TXDD::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
         _ScrollDxpDyp(dxp, dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do idle processing.  If this handler has the active selection, make sure
     the selection is on or off according to rglw[0] (non-zero means on)
     and set rglw[0] to false.  Always return false.
@@ -882,7 +882,7 @@ bool TXDD::FCmdSelIdle(PCMD pcmd)
 {
     AssertThis(0);
 
-    // if rglw[1] is this one's hid, don't change the sel state.
+    // 3DMMv1.0: if rglw[1] is this one's hid, don't change the sel state.
     if (pcmd->rglw[1] != Hid())
     {
         if (!pcmd->rglw[0])
@@ -896,7 +896,7 @@ bool TXDD::FCmdSelIdle(PCMD pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection.
 ***************************************************************************/
 void TXDD::SetSel(int32_t ichAnchor, int32_t ichOther, bool fDraw)
@@ -924,7 +924,7 @@ void TXDD::SetSel(int32_t ichAnchor, int32_t ichOther, bool fDraw)
         }
         else
         {
-            // they have the same anchor and neither is an insertion
+            // 3DMMv1.0: they have the same anchor and neither is an insertion
             _InvertIchRange(&gnv, _ichOther, ichOther, fDraw);
             _ichOther = ichOther;
         }
@@ -937,7 +937,7 @@ void TXDD::SetSel(int32_t ichAnchor, int32_t ichOther, bool fDraw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Turn the sel on or off according to fOn.
 ***************************************************************************/
 void TXDD::_SwitchSel(bool fOn, bool fDraw)
@@ -953,7 +953,7 @@ void TXDD::_SwitchSel(bool fOn, bool fDraw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert the current selection.
 ***************************************************************************/
 void TXDD::_InvertSel(PGNV pgnv, bool fDraw)
@@ -965,7 +965,7 @@ void TXDD::_InvertSel(PGNV pgnv, bool fDraw)
 
     if (_ichAnchor == _ichOther)
     {
-        // insertion bar
+        // 3DMMv1.0: insertion bar
         ln = _LnFromIch(_ichAnchor);
         if (!FIn(ln, 0, _clnDisp))
             return;
@@ -987,7 +987,7 @@ void TXDD::_InvertSel(PGNV pgnv, bool fDraw)
         _InvertIchRange(pgnv, _ichAnchor, _ichOther, fDraw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert a range.
 ***************************************************************************/
 void TXDD::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, bool fDraw)
@@ -1015,7 +1015,7 @@ void TXDD::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, bool fDraw)
 
     if (ln2 == ln1)
     {
-        // only one line involved
+        // 3DMMv1.0: only one line involved
         rc.xpRight = xp2;
         if (rcT.FIntersect(&rc, &rcClip))
         {
@@ -1027,7 +1027,7 @@ void TXDD::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, bool fDraw)
         return;
     }
 
-    // invert the sel on the first line
+    // 3DMMv1.0: invert the sel on the first line
     rc.xpRight = rcClip.xpRight;
     if (rcT.FIntersect(&rc, &rcClip))
     {
@@ -1037,7 +1037,7 @@ void TXDD::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, bool fDraw)
             InvalRc(&rcT);
     }
 
-    // invert the main rectangular block
+    // 3DMMv1.0: invert the main rectangular block
     rc.xpLeft = kdxpIndentTxdd - _scvHorz;
     rc.ypTop = rc.ypBottom;
     rc.ypBottom = LwMul(ln2, _dypLine);
@@ -1049,7 +1049,7 @@ void TXDD::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, bool fDraw)
             InvalRc(&rcT);
     }
 
-    // invert the last line
+    // 3DMMv1.0: invert the last line
     rc.ypTop = rc.ypBottom;
     rc.ypBottom = LwMul(ln2 + 1, _dypLine);
     rc.xpRight = xp2;
@@ -1062,7 +1062,7 @@ void TXDD::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, bool fDraw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the line in the TXDD that is displaying the given ich.  Returns -1
     if the ich is before the first displayed ich and returns _clnDisp if
     ich is after the last displayed ich.
@@ -1090,7 +1090,7 @@ int32_t TXDD::_LnFromIch(int32_t ich)
     return lnMin - 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the ich of the first character on the given line.  If ln < 0,
     returns 0; if ln >= _clnDisp, returns IbMac().
 ***************************************************************************/
@@ -1107,7 +1107,7 @@ int32_t TXDD::_IchMinLn(int32_t ln)
     return ich;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the xp location of the given ich on the given line.
 ***************************************************************************/
 int32_t TXDD::_XpFromLnIch(PGNV pgnv, int32_t ln, int32_t ich)
@@ -1126,7 +1126,7 @@ int32_t TXDD::_XpFromLnIch(PGNV pgnv, int32_t ln, int32_t ich)
     return _XpFromRgch(pgnv, rgch, cch);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the xp location of the given ich.
 ***************************************************************************/
 int32_t TXDD::_XpFromIch(int32_t ich)
@@ -1145,7 +1145,7 @@ int32_t TXDD::_XpFromIch(int32_t ich)
     return _XpFromRgch(&gnv, rgch, cch);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the xp location of the end of the given (rgch, cch), assuming
     it starts at the beginning of a line.
 ***************************************************************************/
@@ -1202,7 +1202,7 @@ int32_t TXDD::_XpFromRgch(PGNV pgnv, achar *prgch, int32_t cch)
     return xp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the character that is closest to xp on the given line.
 ***************************************************************************/
 int32_t TXDD::_IchFromLnXp(int32_t ln, int32_t xp)
@@ -1218,7 +1218,7 @@ int32_t TXDD::_IchFromLnXp(int32_t ln, int32_t xp)
     return _IchFromRgchXp(rgch, cch, ichMin, xp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the character that is closest to xp on the same line as the given
     character.
 ***************************************************************************/
@@ -1232,7 +1232,7 @@ int32_t TXDD::_IchFromIchXp(int32_t ich, int32_t xp)
     return _IchFromRgchXp(rgch, cch, ichMin, xp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the character that is closest to xp on the given line.
 ***************************************************************************/
 int32_t TXDD::_IchFromRgchXp(achar *prgch, int32_t cch, int32_t ichMinLine, int32_t xp)
@@ -1263,7 +1263,7 @@ int32_t TXDD::_IchFromRgchXp(achar *prgch, int32_t cch, int32_t ichMinLine, int3
     return ichMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the selection is visible (or at least _ichOther is).
 ***************************************************************************/
 void TXDD::ShowSel(bool fDraw)
@@ -1275,7 +1275,7 @@ void TXDD::ShowSel(bool fDraw)
     RC rc;
     int32_t ichAnchor = _ichAnchor;
 
-    // find the lines we want to show
+    // 3DMMv1.0: find the lines we want to show
     ln = _LnFromIch(_ichOther);
     lnHope = _LnFromIch(ichAnchor);
     GetRc(&rc, cooLocal);
@@ -1283,7 +1283,7 @@ void TXDD::ShowSel(bool fDraw)
     dichScroll = 0;
     if (!FIn(ln, 0, _clnDispWhole) || !FIn(lnHope, 0, _clnDispWhole))
     {
-        // count the number of lines between _ichOther and ichAnchor
+        // 3DMMv1.0: count the number of lines between _ichOther and ichAnchor
         int32_t ichMinLine, ich;
         int32_t ichMin = LwMin(ichAnchor, _ichOther);
         int32_t ichLim = LwMax(ichAnchor, _ichOther);
@@ -1296,7 +1296,7 @@ void TXDD::ShowSel(bool fDraw)
 
         if (cln >= _clnDispWhole)
         {
-            // just show _ichOther
+            // 3DMMv1.0: just show _ichOther
             AssertDo(_FFindLineStartCached(_ichOther, &ichMinLine), 0);
             ichAnchor = _ichOther;
             lnHope = ln;
@@ -1305,27 +1305,27 @@ void TXDD::ShowSel(bool fDraw)
 
         if (ln < 0 || lnHope < 0)
         {
-            // scroll up
+            // 3DMMv1.0: scroll up
             dichScroll = ichMinLine - _scvVert;
         }
         else if (ln >= _clnDispWhole || lnHope >= _clnDispWhole)
         {
-            // scroll down
+            // 3DMMv1.0: scroll down
             cln = LwMax(0, _clnDispWhole - cln - 1);
 
-            // move cln lines back from ichMinLine
+            // 3DMMv1.0: move cln lines back from ichMinLine
             while (cln-- > 0 && _FFindLineStartCached(ichMinLine - 1, &ichMin))
                 ichMinLine = ichMin;
             dichScroll = ichMinLine - _scvVert;
         }
     }
 
-    // now do the horizontal stuff
+    // 3DMMv1.0: now do the horizontal stuff
     xpMin = _XpFromIch(_ichOther);
     xpLim = _XpFromIch(ichAnchor);
     if (LwAbs(xpLim - xpMin) > rc.Dxp())
     {
-        // can't show both
+        // 3DMMv1.0: can't show both
         if (xpMin > xpLim)
         {
             xpLim = xpMin;
@@ -1344,7 +1344,7 @@ void TXDD::ShowSel(bool fDraw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mousedown in the TXDD.
 ***************************************************************************/
 bool TXDD::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -1368,7 +1368,7 @@ bool TXDD::FCmdTrackMouse(PCMD_MOUSE pcmd)
         Assert(pcmd->cid == cidTrackMouse, 0);
     }
 
-    // do autoscrolling
+    // 3DMMv1.0: do autoscrolling
     GetRc(&rc, cooLocal);
     if (!FIn(xp, rc.xpLeft, rc.xpRight))
     {
@@ -1387,13 +1387,13 @@ bool TXDD::FCmdTrackMouse(PCMD_MOUSE pcmd)
     if (scaHorz != scaNil || scaVert != scaNil)
         _Scroll(scaHorz, scaVert);
 
-    // set the selection
+    // 3DMMv1.0: set the selection
     ich = _IchFromLnXp(yp / _dypLine, xp);
     if (pcmd->cid != cidMouseDown || (pcmd->grfcust & fcustShift))
         SetSel(_ichAnchor, ich, fTrue);
     else
         SetSel(ich, ich, fTrue);
-    _SwitchSel(fTrue, fTrue); // make sure the selection is on
+    _SwitchSel(fTrue, fTrue); // 3DMMv1.0: make sure the selection is on
     ShowSel(fTrue);
 
     if (!(pcmd->grfcust & fcustMouse))
@@ -1402,7 +1402,7 @@ bool TXDD::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a key down.
 ***************************************************************************/
 bool TXDD::FCmdKey(PCMD_KEY pcmd)
@@ -1419,8 +1419,8 @@ bool TXDD::FCmdKey(PCMD_KEY pcmd)
     CMD cmd;
     achar rgch[kcchInsBuf + 1];
 
-    // keep fetching characters until we get a cursor key, delete key or
-    // until the buffer is full.
+    // 3DMMv1.0: keep fetching characters until we get a cursor key, delete key or
+    // 3DMMv1.0: until the buffer is full.
     vkDone = vkNil;
     ichLim = 0;
     do
@@ -1428,7 +1428,7 @@ bool TXDD::FCmdKey(PCMD_KEY pcmd)
         grfcust = pcmd->grfcust;
         switch (pcmd->vk)
         {
-        // these keys all terminate the key fetching loop
+        // 3DMMv1.0: these keys all terminate the key fetching loop
         case kvkHome:
         case kvkEnd:
         case kvkLeft:
@@ -1451,7 +1451,7 @@ bool TXDD::FCmdKey(PCMD_KEY pcmd)
 #ifdef WIN
                 if ((achar)pcmd->ch == kchReturn)
                     rgch[ichLim++] = kchLineFeed;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
             }
             break;
         }
@@ -1462,7 +1462,7 @@ bool TXDD::FCmdKey(PCMD_KEY pcmd)
 LInsert:
     if (ichLim > 0)
     {
-        // have some characters to insert
+        // 3DMMv1.0: have some characters to insert
         FReplace(rgch, ichLim, _ichAnchor, _ichOther, fTrue);
     }
 
@@ -1485,7 +1485,7 @@ LInsert:
             if (!_FFindNextLineStartCached(_ichOther, &ichT))
                 ichT = _pbsf->IbMac();
 
-            // don't advance past trailing line feed and return characters
+            // 3DMMv1.0: don't advance past trailing line feed and return characters
             while (ichT > _ichOther && _FFetchCh(ichT - 1, &ch) && (ch == kchReturn || ch == kchLineFeed))
             {
                 ichT--;
@@ -1521,7 +1521,7 @@ LInsert:
     LLineSel:
         if (!_fXpValid)
         {
-            // get the xp of _ichOther
+            // 3DMMv1.0: get the xp of _ichOther
             _xpSel = _XpFromIch(_ichOther) + _scvHorz;
             _fXpValid = fTrue;
         }
@@ -1532,7 +1532,7 @@ LInsert:
                 ichMin = ichT;
             if (dln >= 0)
             {
-                // goto end of doc
+                // 3DMMv1.0: goto end of doc
                 dich = _pbsf->IbMac() - _ichOther;
                 _fXpValid = fFalse;
             }
@@ -1547,22 +1547,22 @@ LInsert:
                 ichMin = ichT;
             if (dln <= 0)
             {
-                // goto top of doc
+                // 3DMMv1.0: goto top of doc
                 dich = -_ichOther;
                 _fXpValid = fFalse;
             }
             else
             {
             LFindIch:
-                // ichMin is the start of the line to move the selection to
+                // 3DMMv1.0: ichMin is the start of the line to move the selection to
                 dich = _IchFromIchXp(ichMin, _xpSel - _scvHorz) - _ichOther;
             }
         }
     LSetSel:
-        // move the selection
+        // 3DMMv1.0: move the selection
         if (grfcust & fcustShift)
         {
-            // extend selection
+            // 3DMMv1.0: extend selection
             SetSel(_ichAnchor, _ichOther + dich, fTrue);
             ShowSel(fTrue);
         }
@@ -1597,7 +1597,7 @@ LInsert:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replaces the characters between ich1 and ich2 with the given ones.
 ***************************************************************************/
 bool TXDD::FReplace(achar *prgch, int32_t cch, int32_t ich1, int32_t ich2, bool fDraw)
@@ -1615,7 +1615,7 @@ bool TXDD::FReplace(achar *prgch, int32_t cch, int32_t ich1, int32_t ich2, bool 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate all TXDDs on this text doc.  Also dirties the document.
     Should be called by any code that edits the document.
 ***************************************************************************/
@@ -1625,10 +1625,10 @@ void TXDD::_InvalAllTxdd(int32_t ich, int32_t cchIns, int32_t cchDel)
     int32_t ipddg;
     PDDG pddg;
 
-    // mark the document dirty
+    // 3DMMv1.0: mark the document dirty
     _pdocb->SetDirty();
 
-    // inform the TXDDs
+    // 3DMMv1.0: inform the TXDDs
     for (ipddg = 0; pvNil != (pddg = _pdocb->PddgGet(ipddg)); ipddg++)
     {
         if (pddg->FIs(kclsTXDD))
@@ -1636,7 +1636,7 @@ void TXDD::_InvalAllTxdd(int32_t ich, int32_t cchIns, int32_t cchDel)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the display from ich.  If we're the active TXDD, also redraw.
 ***************************************************************************/
 void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
@@ -1648,7 +1648,7 @@ void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
     int32_t lnNew, clnIns, clnDel;
     int32_t yp, dypIns, dypDel;
 
-    // adjust the sel
+    // 3DMMv1.0: adjust the sel
     ichAnchor = _ichAnchor;
     ichOther = _ichOther;
     FAdjustIv(&ichAnchor, ich, cchIns, cchDel);
@@ -1656,7 +1656,7 @@ void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
     if (ichAnchor != _ichAnchor || ichOther != _ichOther)
         SetSel(ichAnchor, ichOther, fFalse);
 
-    // adjust the cache
+    // 3DMMv1.0: adjust the cache
     if (_ichLimCache > _ichMinCache)
     {
         if (FPure(_ichLimCache <= ich) != FPure(_ichMinCache <= ich) ||
@@ -1667,7 +1667,7 @@ void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
         }
     }
 
-    // reformat
+    // 3DMMv1.0: reformat
     _ReformatEdit(ich, cchIns, cchDel, &lnNew, &clnIns, &clnDel);
     if (lnNew > 0)
     {
@@ -1676,7 +1676,7 @@ void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
         clnDel++;
     }
 
-    // determine the dirty rectangles and if we're active, update them
+    // 3DMMv1.0: determine the dirty rectangles and if we're active, update them
     GetRc(&rcLoc, cooLocal);
     if (!_fActive)
     {
@@ -1696,7 +1696,7 @@ void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
     rc.ypBottom = yp + LwMin(dypIns, dypDel);
     if (_clnDisp > lnNew + clnIns - clnDel && clnIns != clnDel)
     {
-        // have some bits to blt vertically
+        // 3DMMv1.0: have some bits to blt vertically
         rc = rcLoc;
         rc.ypTop = yp + LwMin(dypIns, dypDel);
         Scroll(&rc, 0, dypIns - dypDel, kginDraw);
@@ -1709,7 +1709,7 @@ void TXDD::_InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel)
     _fXpValid = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If ppdocb != pvNil, copy the selection to a new document and return
     true.  If ppdocb == pvNil just return whether the selection is
     non-empty.
@@ -1737,7 +1737,7 @@ bool TXDD::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clear (delete) the current selection.
 ***************************************************************************/
 void TXDD::_ClearSel(void)
@@ -1746,7 +1746,7 @@ void TXDD::_ClearSel(void)
     FReplace(pvNil, 0, _ichAnchor, _ichOther, fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paste the given doc into this one.
 ***************************************************************************/
 bool TXDD::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
@@ -1793,18 +1793,18 @@ bool TXDD::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a TXDD.
 ***************************************************************************/
 void TXDD::AssertValid(uint32_t grf)
 {
-    // REVIEW shonk: fill in more
+    // 3DMMv1.0: REVIEW shonk: fill in more
     TXDD_PAR::AssertValid(0);
     AssertPo(_pbsf, 0);
     AssertPo(_pglichStarts, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the TXDD.
 ***************************************************************************/
 void TXDD::MarkMem(void)
@@ -1814,4 +1814,4 @@ void TXDD::MarkMem(void)
     MarkMemObj(_pbsf);
     MarkMemObj(_pglichStarts);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

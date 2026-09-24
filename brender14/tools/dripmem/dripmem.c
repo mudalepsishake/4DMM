@@ -1,0 +1,293 @@
+/* BRender:
+ * Tracking version of malloc()
+ *
+ * Allocated blocks are maintained on a list, which includes
+ * the callers return address
+ */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <inttypes.h>
+
+#include "dripmem.h"
+
+struct mt_block {
+    struct mt_block  *next;
+    struct mt_block **prev;
+    size_t            size;
+    int               id;
+    int               tag;
+    const char       *from;
+    const char       *type;
+    int               flags;
+    int               magic;
+};
+
+#define MT_MAGIC_START  0x43E77AED
+#define MT_MAGIC_END    0x43E77AEF
+
+#define MT_FLAG_ALLOCED 0x00000001
+#define MT_FLAG_FREED   0x00000002
+
+/* BRender:
+ * Doubly linked list of all allocated blocks
+ */
+static struct mt_block *MtChain;
+static int              MtBlocks;
+static int              MtTotal;
+
+/* BRender:
+ * A user settable ID number that is recorded
+ * in each block
+ */
+static int MtCurrentID  = 0;
+static int MtCurrentTag = 0;
+static int MtLogging    = 0;
+static int MtFreeing    = 1;
+
+/* BRender:
+ * Drip checkpoint count and total allocation at last checkpoint
+ */
+static int MtCheckpointBlocks;
+static int MtCheckpointTotal;
+
+/* BRender:
+ * Allocate a new block of memory
+ */
+void *BR_CDECL _drip_alloc(size_t size, const char *from, const char *type)
+{
+    struct mt_block *mtb;
+
+    /* BRender:
+     * Write message to log
+     */
+    if(MtLogging)
+        fprintf(stderr, "\tMALLOC(%d,%" PRIuPTR ");\n", MtCurrentID, (br_uintptr_t)size);
+
+    /* BRender:
+     * Use underlying allocator to get block
+     * including enough space for header and
+     * trailing magic number and call trace
+     */
+    mtb = malloc(size + sizeof(*mtb) + sizeof(int));
+    if(mtb == NULL)
+        return NULL;
+
+    /* BRender:
+     * Fill in header and link into current chain
+     */
+    mtb->next = MtChain;
+    MtChain   = mtb;
+    mtb->prev = &MtChain;
+    if(mtb->next)
+        mtb->next->prev = &mtb->next;
+
+    mtb->id    = MtCurrentID++;
+    mtb->tag   = MtCurrentTag;
+    mtb->from  = from;
+    mtb->type  = type;
+    mtb->size  = size;
+    mtb->flags = MT_FLAG_ALLOCED;
+
+    /* BRender:
+     * Fill in magic numbers
+     */
+    mtb->magic = MT_MAGIC_START;
+
+    *((int *)((char *)(mtb + 1) + size)) = MT_MAGIC_END;
+
+    /* BRender:
+     * Keep track of totals
+     */
+    MtTotal += mtb->size;
+    MtBlocks++;
+
+    /* BRender:
+     * Give the space following the header back to user
+     */
+    return (void *)(mtb + 1);
+}
+
+/* BRender:
+ * Release a block of mmeory allocated with _drip_alloc()
+ */
+void BR_CDECL _drip_free(void *ptr)
+{
+    struct mt_block *mtb;
+
+    /* BRender:
+     * Get pointer to header
+     */
+    mtb = (struct mt_block *)ptr - 1;
+
+    /* BRender:
+     * Check magic numbers
+     */
+    if(mtb->magic != MT_MAGIC_START) {
+        fprintf(stderr, "_drip_free: Bad MAGIC_START\n");
+        return;
+    }
+
+    if(*((int *)((char *)(mtb + 1) + mtb->size)) != MT_MAGIC_END) {
+        fprintf(stderr, "_drip_free: Bad MAGIC_END\n");
+        return;
+    }
+
+    /* BRender:
+     * Write message to log
+     */
+    if(MtLogging)
+        fprintf(stderr, "\tFREE(%d);\n", mtb->id);
+
+    /* BRender:
+     * Keep track of totals
+     */
+    MtTotal -= mtb->size;
+    MtBlocks--;
+
+    mtb->flags |= MT_FLAG_FREED;
+
+    if(MtFreeing) {
+        /* BRender:
+         * Unlink block from list
+         */
+        if(mtb->next)
+            mtb->next->prev = mtb->prev;
+        *mtb->prev = mtb->next;
+
+        /* BRender:
+         * Release memory
+         */
+        free(mtb);
+    }
+}
+
+/* BRender:
+ * Set the tag value to be used for future allocations
+ */
+void BR_CDECL _drip_set_tag(int tag)
+{
+    MtCurrentTag = tag;
+}
+
+/* BRender:
+ * Set the log flag
+ */
+void BR_CDECL _drip_set_log(int flag)
+{
+    MtLogging = flag;
+}
+
+/* BRender:
+ * Set the free flag
+ */
+void BR_CDECL _drip_set_free(int flag)
+{
+    MtFreeing = flag;
+}
+
+/* BRender:
+ * Dump the current memeory chain to a file
+ * (or stderr if filename == NULL)
+ */
+void BR_CDECL _drip_checkpoint(const char *filename, const char *header, int dump_blocks)
+{
+    struct mt_block *mtb;
+    FILE            *ofh;
+    int              n;
+
+    if(filename) {
+        ofh = fopen(filename, "at");
+    } else {
+        ofh = stderr;
+    }
+
+    /* BRender:
+     * Print a header
+     */
+    fprintf(ofh, "-- %s   %d Blocks (%+d)   %d Bytes (%+d)\n", header, MtBlocks, MtBlocks - MtCheckpointBlocks, MtTotal,
+            MtTotal - MtCheckpointTotal);
+
+    MtCheckpointBlocks = MtBlocks;
+    MtCheckpointTotal  = MtTotal;
+
+    /* BRender:
+     * Print a line for each block allocated or freed since the last checkpoint
+     * and properly free the freed blocks
+     */
+    for(mtb = MtChain; mtb; mtb = mtb->next) {
+
+        if(mtb->flags & MT_FLAG_ALLOCED) {
+
+            /* BRender:
+             * Basic information about block
+             */
+            if(dump_blocks)
+                n = fprintf(ofh, "ALLOCATED %10d (%d %s %s): %08" PRIxPTR " %" PRIuPTR "\n", mtb->id, mtb->tag,
+                            mtb->from, mtb->type, (br_uintptr_t)mtb + 1, (br_uintptr_t)mtb->size);
+
+            mtb->flags &= ~MT_FLAG_ALLOCED;
+        }
+
+        if(mtb->flags & MT_FLAG_FREED) {
+
+            /* BRender:
+             * Basic information about block
+             */
+            if(dump_blocks)
+                n = fprintf(ofh, "FREED     %10d (%d %s %s): %08" PRIxPTR " %" PRIuPTR "\n", mtb->id, mtb->tag,
+                            mtb->from, mtb->type, (br_uintptr_t)mtb + 1, (br_uintptr_t)mtb->size);
+
+            /* BRender:
+             * Unlink block from list
+             */
+            if(mtb->next)
+                mtb->next->prev = mtb->prev;
+            *mtb->prev = mtb->next;
+
+            /* BRender:
+             * Release memory
+             */
+            free(mtb);
+        }
+    }
+
+    if(filename)
+        fclose(ofh);
+}
+
+/* BRender:
+ * Dump the current memeory chain to a file
+ * (or stderr if filename == NULL)
+ */
+void BR_CDECL _drip_dump(const char *filename, const char *header)
+{
+    struct mt_block *mtb;
+    FILE            *ofh;
+    int              n;
+
+    if(filename) {
+        ofh = fopen(filename, "at");
+    } else {
+        ofh = stderr;
+    }
+
+    /* BRender:
+     * Print a header
+     */
+    fprintf(ofh, "-- %s   %d Blocks   %d Bytes\n", header, MtBlocks, MtTotal);
+
+    /* BRender:
+     * Print a line for each block
+     */
+    for(mtb = MtChain; mtb; mtb = mtb->next) {
+        /* BRender:
+         * Basic information about block
+         */
+        n = fprintf(ofh, "%10d (%d %s %s): %08" PRIxPTR " %" PRIuPTR "\n", mtb->id, mtb->tag, mtb->from, mtb->type,
+                    (br_uintptr_t)mtb + 1, (br_uintptr_t)mtb->size);
+    }
+
+    if(filename)
+        fclose(ofh);
+}

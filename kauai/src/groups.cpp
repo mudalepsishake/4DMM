@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -33,14 +33,14 @@ RTCLASS(GGB)
 RTCLASS(GG)
 RTCLASS(AG)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     GRPB:  Manages two sections of data.  Currently the two sections are
     in two separate hq's, but they could be in one without affecting the
     clients.  The actual data in the two sections is determined by the
     subclass (client).  This class just manages resizing the data sections.
 ***************************************************************************/
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for GRPB.  Frees the hq.
 ***************************************************************************/
 GRPB::~GRPB(void)
@@ -50,7 +50,7 @@ GRPB::~GRPB(void)
     FreePhq(&_hqData2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ensure that the two sections are at least the given cb's large.
     if (grfgrp & fgrpShrink), makes them exact.
 ***************************************************************************/
@@ -61,7 +61,7 @@ bool GRPB::_FEnsureSizes(int32_t cbMin1, int32_t cbMin2, uint32_t grfgrp)
 
     if (grfgrp & fgrpShrink)
     {
-        // shrink anything that's too big
+        // 3DMMv1.0: shrink anything that's too big
         if (cbMin1 == 0)
         {
             FreePhq(&_hqData1);
@@ -94,7 +94,7 @@ bool GRPB::_FEnsureSizes(int32_t cbMin1, int32_t cbMin2, uint32_t grfgrp)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ensure that the given HQ is large enough.
 ***************************************************************************/
 bool GRPB::_FEnsureHqCb(HQ *phq, int32_t cb, int32_t cbMinGrow, int32_t *pcb)
@@ -104,14 +104,14 @@ bool GRPB::_FEnsureHqCb(HQ *phq, int32_t cb, int32_t cbMinGrow, int32_t *pcb)
     AssertVarMem(pcb);
     AssertIn(*pcb, 0, kcbMax);
 
-    // limit the size
+    // 3DMMv1.0: limit the size
     if ((uint32_t)cb >= kcbMax)
         return fFalse;
 
     AssertIn(cb, *pcb + 1, kcbMax);
     if (hqNil != *phq)
     {
-        // resize an existing hq
+        // 3DMMv1.0: resize an existing hq
         AssertHq(*phq);
 
         if ((cbMinGrow += *pcb) > cb && FResizePhq(phq, cbMinGrow, fmemClear, mprForSpeed))
@@ -127,7 +127,7 @@ bool GRPB::_FEnsureHqCb(HQ *phq, int32_t cb, int32_t cbMinGrow, int32_t *pcb)
         return fFalse;
     }
 
-    // just allocate the thing
+    // 3DMMv1.0: just allocate the thing
     Assert(*pcb == 0, "bad cb");
     if (cbMinGrow > cb && FAllocHq(phq, cbMinGrow, fmemClear, mprForSpeed))
     {
@@ -142,7 +142,7 @@ bool GRPB::_FEnsureHqCb(HQ *phq, int32_t cb, int32_t cbMinGrow, int32_t *pcb)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the given GRPB a duplicate of this one.
 ***************************************************************************/
 bool GRPB::_FDup(PGRPB pgrpbDst, int32_t cb1, int32_t cb2)
@@ -168,7 +168,7 @@ bool GRPB::_FDup(PGRPB pgrpbDst, int32_t cb1, int32_t cb2)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a group to a flo.
 ***************************************************************************/
 bool GRPB::FWriteFlo(PFLO pflo, int16_t bo, int16_t osk)
@@ -177,7 +177,7 @@ bool GRPB::FWriteFlo(PFLO pflo, int16_t bo, int16_t osk)
     return FWrite(&blck, bo, osk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the GRPB data to the block.  First write the (pv, cb), then
     cb1 bytes from the first section and cb2 bytes from the second.
 ***************************************************************************/
@@ -217,7 +217,7 @@ bool GRPB::_FWrite(PBLCK pblck, void *pv, int32_t cb, int32_t cb1, int32_t cb2)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the two sections of data from the given location in the given
     block.
 ***************************************************************************/
@@ -253,7 +253,7 @@ bool GRPB::_FReadData(PBLCK pblck, int32_t cb1, int32_t cb2, int32_t ib)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the grpb stuff.
 ***************************************************************************/
 void GRPB::AssertValid(uint32_t grfobj)
@@ -267,7 +267,7 @@ void GRPB::AssertValid(uint32_t grfobj)
     Assert(_hqData2 == hqNil || CbOfHq(_hqData2) == _cb2, "_hqData2 wrong size");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark the _hqData blocks.
 ***************************************************************************/
 void GRPB::MarkMem(void)
@@ -277,16 +277,16 @@ void GRPB::MarkMem(void)
     MarkHq(_hqData1);
     MarkHq(_hqData2);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     GLB:  Base class for GL (general list) and AL (general allocated list).
     The list data goes in section 1.  The GL class doesn't use section 2.
     The AL class uses section 2 for a bit array indicating whether an entry
     is free or in use.
 ***************************************************************************/
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the list base.
 ***************************************************************************/
 GLB::GLB(int32_t cb)
@@ -294,14 +294,14 @@ GLB::GLB(int32_t cb)
     AssertIn(cb, 0, kcbMax);
     _cbEntry = cb;
 
-    // use some reasonable values for _cbMinGrow* - code can always set
-    // set these to something else
+    // 3DMMv1.0: use some reasonable values for _cbMinGrow* - code can always set
+    // 3DMMv1.0: set these to something else
     _cbMinGrow1 = 128;
     _cbMinGrow2 = 16;
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return a volatile pointer to a list entry.
     NOTE: don't assert !FFree(iv) for allocated lists.
 ***************************************************************************/
@@ -312,7 +312,7 @@ void *GLB::QvGet(int32_t iv)
     return (0 == _ivMac) ? pvNil : _Qb1(LwMul(iv, _cbEntry));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the data for the iv'th element in the GLB.
 ***************************************************************************/
 void GLB::Get(int32_t iv, void *pv)
@@ -323,7 +323,7 @@ void GLB::Get(int32_t iv, void *pv)
     CopyPb(QvGet(iv), pv, _cbEntry);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put data into the iv'th element in the GLB.
 ***************************************************************************/
 void GLB::Put(int32_t iv, void *pv)
@@ -335,7 +335,7 @@ void GLB::Put(int32_t iv, void *pv)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Lock the data and return a pointer to the ith item.
 ***************************************************************************/
 void *GLB::PvLock(int32_t iv)
@@ -344,7 +344,7 @@ void *GLB::PvLock(int32_t iv)
     return QvGet(iv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the minimum that a GL should grow by.
 ***************************************************************************/
 void GLB::SetMinGrow(int32_t cvAdd)
@@ -357,7 +357,7 @@ void GLB::SetMinGrow(int32_t cvAdd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a list (GL or AL).
 ***************************************************************************/
 void GLB::AssertValid(uint32_t grfobj)
@@ -367,9 +367,9 @@ void GLB::AssertValid(uint32_t grfobj)
     AssertIn(_ivMac, 0, kcbMax);
     Assert(_Cb1() >= LwMul(_cbEntry, _ivMac), "array area too small");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new list and ensure that it has space for cvInit elements.
 ***************************************************************************/
 PGL GL::PglNew(int32_t cb, int32_t cvInit)
@@ -389,7 +389,7 @@ PGL GL::PglNew(int32_t cb, int32_t cvInit)
     return pgl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a list from a block and return it.
 ***************************************************************************/
 PGL GL::PglRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -399,7 +399,7 @@ PGL GL::PglRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     AssertNilOrVarMem(posk);
     PGL pgl;
 
-    /* the use of 4 for the cb is bogus, but _FRead overwrites the cb anyway */
+    /* 3DMMv1.0: the use of 4 for the cb is bogus, but _FRead overwrites the cb anyway */
     if ((pgl = NewObj GL(4)) == pvNil)
         goto LFail;
     if (!pgl->_FRead(pblck, pbo, posk))
@@ -414,7 +414,7 @@ PGL GL::PglRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     return pgl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a list from file and return it.
 ***************************************************************************/
 PGL GL::PglRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
@@ -423,7 +423,7 @@ PGL GL::PglRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
     return PglRead(&blck, pbo, posk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for GL.
 ***************************************************************************/
 GL::GL(int32_t cb) : GLB(cb)
@@ -431,7 +431,7 @@ GL::GL(int32_t cb) : GLB(cb)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Provided for completeness (all GRPB's have an FFree routine).
     Returns false iff iv is a valid index for the GL.
 ***************************************************************************/
@@ -441,7 +441,7 @@ bool GL::FFree(int32_t iv)
     return !FIn(iv, 0, _ivMac);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate this GL.
 ***************************************************************************/
 PGL GL::PglDup(void)
@@ -459,7 +459,7 @@ PGL GL::PglDup(void)
     return pgl;
 }
 
-// List on file
+// 3DMMv1.0: List on file
 struct GLF
 {
     int16_t bo;
@@ -470,7 +470,7 @@ struct GLF
 VERIFY_STRUCT_SIZE(GLF, 12);
 const BOM kbomGlf = 0x5F000000L;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the amount of space on file needed for the list.
 ***************************************************************************/
 int32_t GL::CbOnFile(void)
@@ -479,7 +479,7 @@ int32_t GL::CbOnFile(void)
     return SIZEOF(GLF) + LwMul(_cbEntry, _ivMac);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the list to disk.
 ***************************************************************************/
 bool GL::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
@@ -504,7 +504,7 @@ bool GL::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
     return _FWrite(pblck, &glf, SIZEOF(glf), LwMul(_cbEntry, _ivMac), 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read list data from disk.
 ***************************************************************************/
 bool GL::_FRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -554,7 +554,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert some items into a list at position iv.  iv should be <= IvMac().
 ***************************************************************************/
 bool GL::FInsert(int32_t iv, void *pv, int32_t cv)
@@ -584,7 +584,7 @@ bool GL::FInsert(int32_t iv, void *pv, int32_t cv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete an element from the list.  This changes the indices of all
     later elements.
 ***************************************************************************/
@@ -594,7 +594,7 @@ void GL::Delete(int32_t iv)
     Delete(iv, 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete a range of elements.  This changes the indices of all later
     elements.
 ***************************************************************************/
@@ -613,7 +613,7 @@ void GL::Delete(int32_t ivMin, int32_t cv)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the entry at ivSrc to be immediately before the element that is
     currently at ivTarget.  If ivTarget > ivSrc, the entry actually ends
     up at (ivTarget - 1) and the entry at ivTarget doesn't move.  If
@@ -631,7 +631,7 @@ void GL::Move(int32_t ivSrc, int32_t ivTarget)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an element to the end of the list.  Returns the location in *piv.
     On failure, returns false and *piv is undefined.
 ***************************************************************************/
@@ -650,7 +650,7 @@ bool GL::FAdd(void *pv, int32_t *piv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stack operation.  Returns fFalse on stack underflow.
 ***************************************************************************/
 bool GL::FPop(void *pv)
@@ -670,7 +670,7 @@ bool GL::FPop(void *pv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the number of elements.  Used rarely (to add a block of elements
     at a time or to "zero out" a list.
 ***************************************************************************/
@@ -698,7 +698,7 @@ bool GL::FSetIvMac(int32_t ivMacNew)
     {
         TrashPvCb(_Qb1(LwMul(ivMacNew, _cbEntry)), LwMul(_ivMac - ivMacNew, _cbEntry));
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     _ivMac = ivMacNew;
 
@@ -706,7 +706,7 @@ bool GL::FSetIvMac(int32_t ivMacNew)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure there is room for at least cvAdd additional entries. If
     fgrpShrink is set, will shrink the list if it has more than cvAdd
     available entries.
@@ -716,7 +716,7 @@ bool GL::FEnsureSpace(int32_t cvAdd, uint32_t grfgrp)
     AssertThis(0);
     AssertIn(cvAdd, 0, kcbMax);
 
-    // limit the size of the list
+    // 3DMMv1.0: limit the size of the list
     if (cvAdd > kcbMax / _cbEntry - _ivMac)
     {
         Bug("who's trying to allocate a list this big?");
@@ -726,7 +726,7 @@ bool GL::FEnsureSpace(int32_t cvAdd, uint32_t grfgrp)
     return _FEnsureSizes(LwMul(cvAdd + _ivMac, _cbEntry), 0, grfgrp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new allocated list and ensure that it has space for
     cvInit elements.
 ***************************************************************************/
@@ -747,7 +747,7 @@ PAL AL::PalNew(int32_t cb, int32_t cvInit)
     return pal;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read an allocated list from the block and return it.
 ***************************************************************************/
 PAL AL::PalRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -758,7 +758,7 @@ PAL AL::PalRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
 
     PAL pal;
 
-    /* the use of 4 for the cb is bogus, but _FRead overwrites the cb anyway */
+    /* 3DMMv1.0: the use of 4 for the cb is bogus, but _FRead overwrites the cb anyway */
     if ((pal = NewObj AL(4)) == pvNil)
         goto LFail;
     if (!pal->_FRead(pblck, pbo, posk))
@@ -773,7 +773,7 @@ PAL AL::PalRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     return pal;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read an allocated list from file and return it.
 ***************************************************************************/
 PAL AL::PalRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
@@ -782,7 +782,7 @@ PAL AL::PalRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
     return PalRead(&blck, pbo, posk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for AL (allocated list) class.
 ***************************************************************************/
 AL::AL(int32_t cb) : GLB(cb)
@@ -790,7 +790,7 @@ AL::AL(int32_t cb) : GLB(cb)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate this AL.
 ***************************************************************************/
 PAL AL::PalDup(void)
@@ -810,7 +810,7 @@ PAL AL::PalDup(void)
     return pal;
 }
 
-// Allocated list on file
+// 3DMMv1.0: Allocated list on file
 struct ALF
 {
     int16_t bo;
@@ -822,7 +822,7 @@ struct ALF
 VERIFY_STRUCT_SIZE(ALF, 16);
 const BOM kbomAlf = 0x5FC00000L;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the amount of space on file needed for the list.
 ***************************************************************************/
 int32_t AL::CbOnFile(void)
@@ -832,7 +832,7 @@ int32_t AL::CbOnFile(void)
     return SIZEOF(ALF) + LwMul(_cbEntry, _ivMac) + CbFromCbit(_ivMac);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the list to disk.
 ***************************************************************************/
 bool AL::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
@@ -858,7 +858,7 @@ bool AL::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
     return _FWrite(pblck, &alf, SIZEOF(alf), LwMul(_cbEntry, _ivMac), CbFromCbit(_ivMac));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read allocated list data from the block.
 ***************************************************************************/
 bool AL::_FRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -912,7 +912,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete all entries in the AL.
 ***************************************************************************/
 void AL::DeleteAll(void)
@@ -921,7 +921,7 @@ void AL::DeleteAll(void)
     _cvFree = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns whether the given element of the allocated list is free.
 ***************************************************************************/
 bool AL::FFree(int32_t iv)
@@ -931,7 +931,7 @@ bool AL::FFree(int32_t iv)
     return (iv < _ivMac) && !(*_Qgrfbit(iv) & Fbit(iv));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure there is room for at least cvAdd additional entries.  If
     fgrpShrink is set, will try to shrink the list if it has more than
     cvAdd available entries.
@@ -941,7 +941,7 @@ bool AL::FEnsureSpace(int32_t cvAdd, uint32_t grfgrp)
     AssertIn(cvAdd, 0, kcbMax);
     AssertThis(0);
 
-    // limit the size of the list
+    // 3DMMv1.0: limit the size of the list
     cvAdd = LwMax(0, cvAdd - _cvFree);
     if (cvAdd > kcbMax / _cbEntry - _ivMac)
     {
@@ -952,7 +952,7 @@ bool AL::FEnsureSpace(int32_t cvAdd, uint32_t grfgrp)
     return _FEnsureSizes(LwMul(cvAdd + _ivMac, _cbEntry), CbFromCbit(cvAdd + _ivMac), grfgrp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an element to the list.
 ***************************************************************************/
 bool AL::FAdd(void *pv, int32_t *piv)
@@ -965,7 +965,7 @@ bool AL::FAdd(void *pv, int32_t *piv)
 
     if (_cvFree > 0)
     {
-        /* find the first free one */
+        /* 3DMMv1.0: find the first free one */
         uint8_t grfbit;
         uint8_t *qgrfbit, *qrgb;
 
@@ -987,7 +987,7 @@ bool AL::FAdd(void *pv, int32_t *piv)
     }
     AssertIn(iv, 0, _ivMac);
 
-    /* mark the item used */
+    /* 3DMMv1.0: mark the item used */
     *_Qgrfbit(iv) |= Fbit(iv);
     Assert(!FFree(iv), "why is this marked free?");
     Put(iv, pv);
@@ -998,7 +998,7 @@ bool AL::FAdd(void *pv, int32_t *piv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete element iv from an allocated list.
 ***************************************************************************/
 void AL::Delete(int32_t iv)
@@ -1007,7 +1007,7 @@ void AL::Delete(int32_t iv)
     AssertIn(iv, 0, _ivMac);
     Assert(!FFree(iv), "already free!");
 
-    // trash the thing
+    // 3DMMv1.0: trash the thing
     TrashPvCb(QvGet(iv), _cbEntry);
 
     *_Qgrfbit(iv) &= ~Fbit(iv);
@@ -1019,27 +1019,27 @@ void AL::Delete(int32_t iv)
         return;
     }
 
-    // the last element was deleted, find the new _ivMac
+    // 3DMMv1.0: the last element was deleted, find the new _ivMac
     if (_ivMac <= _cvFree)
     {
-        // none left, just nuke everything
+        // 3DMMv1.0: none left, just nuke everything
         _ivMac = _cvFree = 0;
     }
     else
     {
-        // find the new _ivMac
+        // 3DMMv1.0: find the new _ivMac
         uint8_t fbit;
         uint8_t *qgrfbit = _Qgrfbit(iv);
 
         while (iv >= 0)
         {
             fbit = Fbit(iv);
-            if ((*qgrfbit & ((fbit << 1) - 1)) == 0) // check all bits from fbit on down
+            if ((*qgrfbit & ((fbit << 1) - 1)) == 0) // 3DMMv1.0: check all bits from fbit on down
             {
                 iv = (iv & ~0x0007L) - 1;
                 qgrfbit--;
             }
-            else if (!(*qgrfbit & fbit)) // check for the ith bit
+            else if (!(*qgrfbit & fbit)) // 3DMMv1.0: check for the ith bit
                 iv--;
             else
                 break;
@@ -1053,7 +1053,7 @@ void AL::Delete(int32_t iv)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the validity of an allocated list.
 ***************************************************************************/
 void AL::AssertValid(uint32_t grfobj)
@@ -1072,9 +1072,9 @@ void AL::AssertValid(uint32_t grfobj)
         Assert(cT == _cvFree, "_cvFree is wrong");
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for GGB class.
 ***************************************************************************/
 GGB::GGB(int32_t cbFixed, bool fAllowFree)
@@ -1083,14 +1083,14 @@ GGB::GGB(int32_t cbFixed, bool fAllowFree)
     _clocFree = fAllowFree ? 0 : cvNil;
     _cbFixed = cbFixed;
 
-    // use some reasonable values for _cbMinGrow* - code can always set
-    // set these to something else
+    // 3DMMv1.0: use some reasonable values for _cbMinGrow* - code can always set
+    // 3DMMv1.0: set these to something else
     _cbMinGrow1 = LwMin(1024, 16 * cbFixed);
     _cbMinGrow2 = 16 * SIZEOF(LOC);
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate the group.
 ***************************************************************************/
 bool GGB::_FDup(PGGB pggbDst)
@@ -1110,7 +1110,7 @@ bool GGB::_FDup(PGGB pggbDst)
     return fTrue;
 }
 
-// group on file
+// 3DMMv1.0: group on file
 struct GGF
 {
     int16_t bo;
@@ -1123,7 +1123,7 @@ struct GGF
 VERIFY_STRUCT_SIZE(GGF, 20);
 const BOM kbomGgf = 0x5FF00000L;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the amount of space on file needed for the group.
 ***************************************************************************/
 int32_t GGB::CbOnFile(void)
@@ -1132,7 +1132,7 @@ int32_t GGB::CbOnFile(void)
     return SIZEOF(GGF) + LwMul(_ivMac, SIZEOF(LOC)) + _bvMac;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the group to disk.  The client must ensure that the data in the
     GGB has the correct byte order (as specified by the bo).
 ***************************************************************************/
@@ -1155,7 +1155,7 @@ bool GGB::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
     AssertBomRglw(kbomLoc, SIZEOF(LOC));
     if (kboOther == bo)
     {
-        // swap the stuff
+        // 3DMMv1.0: swap the stuff
         SwapBytesBom(&ggf, kbomGgf);
         Assert(ggf.bo == bo, "wrong bo");
         Assert(ggf.osk == osk, "osk not invariant under byte swapping");
@@ -1164,13 +1164,13 @@ bool GGB::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
     fRet = _FWrite(pblck, &ggf, SIZEOF(ggf), _bvMac, LwMul(_ivMac, SIZEOF(LOC)));
     if (kboOther == bo)
     {
-        // swap the rgloc back
+        // 3DMMv1.0: swap the rgloc back
         SwapBytesRglw(_Qb2(0), LwMulDiv(_ivMac, SIZEOF(LOC), SIZEOF(int32_t)));
     }
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read group data from disk.
 ***************************************************************************/
 bool GGB::_FRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -1223,7 +1223,7 @@ bool GGB::_FRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     AssertBomRglw(kbomLoc, SIZEOF(LOC));
     if (bo == kboOther && fRet)
     {
-        // adjust the byte order on the loc's.
+        // 3DMMv1.0: adjust the byte order on the loc's.
         SwapBytesRglw(_Qb2(0), LwMulDiv(_ivMac, SIZEOF(LOC), SIZEOF(int32_t)));
     }
 
@@ -1233,7 +1233,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns true iff the loc.bv is nil or iloc is out of range.
 ***************************************************************************/
 bool GGB::FFree(int32_t iv)
@@ -1251,7 +1251,7 @@ bool GGB::FFree(int32_t iv)
     return bvNil == qloc->bv;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ensures that there is room to add at least cvAdd new entries with
     a total of cbAdd bytes (among the variable parts of the elements).
     If there is more than enough room and fgrpShrink is passed, the GST
@@ -1270,7 +1270,7 @@ bool GGB::FEnsureSpace(int32_t cvAdd, int32_t cbAdd, uint32_t grfgrp)
     else
         clocAdd = LwMax(0, cvAdd - _clocFree);
 
-    // we waste at most (SIZEOF(int32_t) - 1) bytes per element
+    // 3DMMEx: we waste at most (SIZEOF(int32_t) - 1) bytes per element
     if (clocAdd > kcbMax / SIZEOF(LOC) - _ivMac || cvAdd > (kcbMax / (_cbFixed + SIZEOF(int32_t) - 1)) - _bvMac ||
         cbAdd > kcbMax - _bvMac - cvAdd * (_cbFixed + SIZEOF(int32_t) - 1))
     {
@@ -1282,7 +1282,7 @@ bool GGB::FEnsureSpace(int32_t cvAdd, int32_t cbAdd, uint32_t grfgrp)
                          LwMul(_ivMac + clocAdd, SIZEOF(LOC)), grfgrp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the minimum that a GGB should grow by.
 ***************************************************************************/
 void GGB::SetMinGrow(int32_t cvAdd, int32_t cbAdd)
@@ -1295,7 +1295,7 @@ void GGB::SetMinGrow(int32_t cvAdd, int32_t cbAdd)
     _cbMinGrow2 = LwMul(cvAdd, SIZEOF(LOC));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Private api to remove a block of bytes.
 ***************************************************************************/
 void GGB::_RemoveRgb(int32_t bv, int32_t cb)
@@ -1317,7 +1317,7 @@ void GGB::_RemoveRgb(int32_t bv, int32_t cb)
     TrashPvCb(_Qb1(_bvMac), cb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Private api to remove a block of bytes.
 ***************************************************************************/
 void GGB::_AdjustLocs(int32_t bvMin, int32_t bvLim, int32_t dcb)
@@ -1342,7 +1342,7 @@ void GGB::_AdjustLocs(int32_t bvMin, int32_t bvLim, int32_t dcb)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns a volative pointer the the fixed sized data in the element.
     If pcbVar is not nil, fills *pcbVar with the size of the variable part.
 ***************************************************************************/
@@ -1363,7 +1363,7 @@ void *GGB::QvFixedGet(int32_t iv, int32_t *pcbVar)
     return _Qb1(loc.bv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Lock the data and return a pointer to the fixed sized data.
 ***************************************************************************/
 void *GGB::PvFixedLock(int32_t iv, int32_t *pcbVar)
@@ -1373,7 +1373,7 @@ void *GGB::PvFixedLock(int32_t iv, int32_t *pcbVar)
     return QvFixedGet(iv, pcbVar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the fixed sized data for the element.
 ***************************************************************************/
 void GGB::GetFixed(int32_t iv, void *pv)
@@ -1391,7 +1391,7 @@ void GGB::GetFixed(int32_t iv, void *pv)
     CopyPb(_Qb1(loc.bv), pv, _cbFixed);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the fixed sized data for the element.
 ***************************************************************************/
 void GGB::PutFixed(int32_t iv, void *pv)
@@ -1410,7 +1410,7 @@ void GGB::PutFixed(int32_t iv, void *pv)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of the variable part of the iv'th element.
 ***************************************************************************/
 int32_t GGB::Cb(int32_t iv)
@@ -1422,7 +1422,7 @@ int32_t GGB::Cb(int32_t iv)
     return _Qloc(iv)->cb - _cbFixed;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return a volatile pointer to the variable part of the iv'th element.
     If pcb is not nil, sets *pcb to the length of the (variable part of the)
     item.
@@ -1443,7 +1443,7 @@ void *GGB::QvGet(int32_t iv, int32_t *pcb)
     return _Qb1(loc.bv + _cbFixed);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Lock the data and return a pointer to the (variable part of the) iv'th
     item.  If pcb is not nil, sets *pcb to the length of the (variable part
     of the) item.
@@ -1455,7 +1455,7 @@ void *GGB::PvLock(int32_t iv, int32_t *pcb)
     return QvGet(iv, pcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the (variable part of the) iv'th element to pv.
 ***************************************************************************/
 void GGB::Get(int32_t iv, void *pv)
@@ -1471,7 +1471,7 @@ void GGB::Get(int32_t iv, void *pv)
     CopyPb(_Qb1(loc.bv + _cbFixed), pv, loc.cb - _cbFixed);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy *pv to the (variable part of the) iv'th element.
 ***************************************************************************/
 void GGB::Put(int32_t iv, void *pv)
@@ -1487,7 +1487,7 @@ void GGB::Put(int32_t iv, void *pv)
     CopyPb(pv, _Qb1(loc.bv + _cbFixed), loc.cb - _cbFixed);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the (variable part of the) iv'th element with the stuff in pv
     (cb bytes worth).  pv may be nil (effectively resizing the block).
 ***************************************************************************/
@@ -1518,7 +1518,7 @@ bool GGB::FPut(int32_t iv, int32_t cb, void *pv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a portion of the element.
 ***************************************************************************/
 void GGB::GetRgb(int32_t iv, int32_t bv, int32_t cb, void *pv)
@@ -1538,7 +1538,7 @@ void GGB::GetRgb(int32_t iv, int32_t bv, int32_t cb, void *pv)
     CopyPb(_Qb1(loc.bv + bv), pv, cb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put a portion of the element.
 ***************************************************************************/
 void GGB::PutRgb(int32_t iv, int32_t bv, int32_t cb, void *pv)
@@ -1559,7 +1559,7 @@ void GGB::PutRgb(int32_t iv, int32_t bv, int32_t cb, void *pv)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove a portion of element iv (can't be all of it).
 ***************************************************************************/
 void GGB::DeleteRgb(int32_t iv, int32_t bv, int32_t cb)
@@ -1580,12 +1580,12 @@ void GGB::DeleteRgb(int32_t iv, int32_t bv, int32_t cb)
 
     if (bv + cb < loc.cb)
     {
-        // shift usable stuff down
+        // 3DMMv1.0: shift usable stuff down
         qb = _Qb1(loc.bv + bv);
         BltPb(qb + cb, qb, loc.cb - bv - cb);
     }
 
-    // determine the number of bytes to nuke
+    // 3DMMv1.0: determine the number of bytes to nuke
     cbDel = CbRoundToLong(loc.cb) - CbRoundToLong(loc.cb - cb);
     if (cbDel > 0)
         _RemoveRgb(loc.bv + loc.cb - cb, cbDel);
@@ -1594,12 +1594,12 @@ void GGB::DeleteRgb(int32_t iv, int32_t bv, int32_t cb)
     if (0 == (qloc->cb -= cb))
     {
         Assert(_cbFixed == 0, "oops!");
-        qloc->bv = 0; // empty element
+        qloc->bv = 0; // 3DMMv1.0: empty element
     }
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert cb new bytes at location bv into the iv'th element.  pv may
     be nil.
 ***************************************************************************/
@@ -1620,7 +1620,7 @@ bool GGB::FInsertRgb(int32_t iv, int32_t bv, int32_t cb, const void *pv)
     if (loc.cb == 0)
         loc.bv = _bvMac;
 
-    // need to add this many bytes to _bvMac
+    // 3DMMv1.0: need to add this many bytes to _bvMac
     cbAdd = CbRoundToLong(loc.cb + cb) - CbRoundToLong(loc.cb);
     if (cbAdd > 0)
     {
@@ -1629,7 +1629,7 @@ bool GGB::FInsertRgb(int32_t iv, int32_t bv, int32_t cb, const void *pv)
         if (!_FEnsureSizes(_bvMac + cbAdd, LwMul(_ivMac, SIZEOF(LOC)), fgrpNil))
             return fFalse;
 
-        // move later entries back
+        // 3DMMv1.0: move later entries back
         bvT = loc.bv + CbRoundToLong(loc.cb);
         if (bvT < _bvMac)
         {
@@ -1641,7 +1641,7 @@ bool GGB::FInsertRgb(int32_t iv, int32_t bv, int32_t cb, const void *pv)
             _bvMac += cbAdd;
     }
 
-    // move data within this element
+    // 3DMMv1.0: move data within this element
     if (bv < loc.cb)
     {
         qb = _Qb1(loc.bv + bv);
@@ -1656,14 +1656,14 @@ bool GGB::FInsertRgb(int32_t iv, int32_t bv, int32_t cb, const void *pv)
     else
         TrashPvCb(_Qb1(loc.bv + bv), cb);
 
-    // copy the entire loc in case loc.bv got set to _bvMac (if the item was empty)
+    // 3DMMv1.0: copy the entire loc in case loc.bv got set to _bvMac (if the item was empty)
     loc.cb += cb;
     *_Qloc(iv) = loc;
     AssertThis(0);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Move cb bytes from position bvSrc in ivSrc to position bvDst in ivDst.
     This can fail only because of the padding used for each entry (at most
     SIZEOF(int32_t) additional bytes will need to be allocated).
@@ -1686,7 +1686,7 @@ bool GGB::FMoveRgb(int32_t ivSrc, int32_t bvSrc, int32_t ivDst, int32_t bvDst, i
     locSrc = *_Qloc(ivSrc);
     locDst = *_Qloc(ivDst);
 
-    // determine the number of bytes to resize by
+    // 3DMMv1.0: determine the number of bytes to resize by
     cbT = (CbRoundToLong(locDst.cb + cb) - CbRoundToLong(locDst.cb)) -
           (CbRoundToLong(locSrc.cb) - CbRoundToLong(locSrc.cb - cb));
     if (cbT > 0)
@@ -1696,7 +1696,7 @@ bool GGB::FMoveRgb(int32_t ivSrc, int32_t bvSrc, int32_t ivDst, int32_t bvDst, i
             return fFalse;
     }
 
-    // move most of the bytes
+    // 3DMMv1.0: move most of the bytes
     cbMove = LwRoundToward(cb, SIZEOF(int32_t));
     AssertIn(cb, cbMove, cbMove + SIZEOF(int32_t));
     if (cbMove > 0)
@@ -1730,7 +1730,7 @@ bool GGB::FMoveRgb(int32_t ivSrc, int32_t bvSrc, int32_t ivDst, int32_t bvDst, i
         AssertThis(fobjAssertFull);
     }
 
-    // move the last few bytes
+    // 3DMMv1.0: move the last few bytes
     if (cb > cbMove)
     {
         uint8_t rgb[SIZEOF(int32_t)];
@@ -1743,7 +1743,7 @@ bool GGB::FMoveRgb(int32_t ivSrc, int32_t bvSrc, int32_t ivDst, int32_t bvDst, i
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Append the variable data of ivSrc to ivDst, and delete ivSrc.
 
     NOTE: this is kind of goofy.  The only time FMoveRgb could possibly
@@ -1765,31 +1765,31 @@ void GGB::Merge(int32_t ivSrc, int32_t ivDst)
     cb = Cb(ivSrc);
     cbMove = LwRoundToward(cb, SIZEOF(int32_t));
     if (cb > cbMove)
-        GetRgb(ivSrc, cbMove, cb - cbMove, rgb); // get the tail bytes
+        GetRgb(ivSrc, cbMove, cb - cbMove, rgb); // 3DMMv1.0: get the tail bytes
 
     bv = Cb(ivDst);
     if (cbMove > 0)
     {
-        // move the main section
+        // 3DMMv1.0: move the main section
         AssertDo(FMoveRgb(ivSrc, 0, ivDst, bv, cbMove), "why did FMoveRgb fail?");
     }
 
-    // delete the source item
+    // 3DMMv1.0: delete the source item
     Delete(ivSrc);
     if (ivSrc < ivDst)
         ivDst--;
 
     if (cb > cbMove)
     {
-        // insert the remaining few bytes - there should already be room
-        // for these
+        // 3DMMv1.0: insert the remaining few bytes - there should already be room
+        // 3DMMv1.0: for these
         AssertDo(FInsertRgb(ivDst, bv + cbMove, cb - cbMove, rgb), "why did FInsertRgb fail?");
     }
     AssertThis(fobjAssertFull);
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a group.
 ***************************************************************************/
 void GGB::AssertValid(uint32_t grfobj)
@@ -1829,9 +1829,9 @@ void GGB::AssertValid(uint32_t grfobj)
         Assert(clocFree == _clocFree || _clocFree == cvNil && clocFree == 0, "bad _clocFree");
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new group with room for at least cvInit elements containing
     at least cbInit bytes worth of (total) space.
 ***************************************************************************/
@@ -1854,7 +1854,7 @@ PGG GG::PggNew(int32_t cbFixed, int32_t cvInit, int32_t cbInit)
     return pgg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a group from a block and return it.
 ***************************************************************************/
 PGG GG::PggRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -1879,7 +1879,7 @@ PGG GG::PggRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     return pgg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a group from file and return it.
 ***************************************************************************/
 PGG GG::PggRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
@@ -1888,7 +1888,7 @@ PGG GG::PggRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
     return PggRead(&blck, pbo, posk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate this GG.
 ***************************************************************************/
 PGG GG::PggDup(void)
@@ -1906,7 +1906,7 @@ PGG GG::PggDup(void)
     return pgg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert an element into the group.
 ***************************************************************************/
 bool GG::FInsert(int32_t iv, int32_t cb, const void *pv, const void *pvFixed)
@@ -1927,7 +1927,7 @@ bool GG::FInsert(int32_t iv, int32_t cb, const void *pv, const void *pvFixed)
     if (!_FEnsureSizes(_bvMac + cb, LwMul(_ivMac + 1, SIZEOF(LOC)), fgrpNil))
         return fFalse;
 
-    // make room for the entry
+    // 3DMMv1.0: make room for the entry
     qloc = _Qloc(iv);
     if (iv < _ivMac)
         BltPb(qloc, qloc + 1, LwMul(_ivMac - iv, SIZEOF(LOC)));
@@ -1959,7 +1959,7 @@ bool GG::FInsert(int32_t iv, int32_t cb, const void *pv, const void *pvFixed)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Takes cv entries from pggSrc at ivSrc and inserts (a copy of) them into
     this GG at ivDst.
 ***************************************************************************/
@@ -2005,7 +2005,7 @@ bool GG::FCopyEntries(PGG pggSrc, int32_t ivSrc, int32_t ivDst, int32_t cv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append an element to the group.
 ***************************************************************************/
 bool GG::FAdd(int32_t cb, int32_t *piv, const void *pv, void *pvFixed)
@@ -2023,7 +2023,7 @@ bool GG::FAdd(int32_t cb, int32_t *piv, const void *pv, void *pvFixed)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete an element from the group.
 ***************************************************************************/
 void GG::Delete(int32_t iv)
@@ -2043,7 +2043,7 @@ void GG::Delete(int32_t iv)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the entry at ivSrc to be immediately before the element that is
     currently at ivTarget.  If ivTarget > ivSrc, the entry actually ends
     up at (ivTarget - 1) and the entry at ivTarget doesn't move.  If
@@ -2061,7 +2061,7 @@ void GG::Move(int32_t ivSrc, int32_t ivTarget)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap two elements in a GG.
 ***************************************************************************/
 void GG::Swap(int32_t iv1, int32_t iv2)
@@ -2075,7 +2075,7 @@ void GG::Swap(int32_t iv1, int32_t iv2)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a group.
 ***************************************************************************/
 void GG::AssertValid(uint32_t grfobj)
@@ -2083,9 +2083,9 @@ void GG::AssertValid(uint32_t grfobj)
     GG_PAR::AssertValid(grfobj);
     AssertVar(_clocFree == cvNil, "bad _clocFree in GG", &_clocFree);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new allocated group with romm for at least cvInit elements
     containing at least cbInit bytes worth of (total) space.
 ***************************************************************************/
@@ -2108,7 +2108,7 @@ PAG AG::PagNew(int32_t cbFixed, int32_t cvInit, int32_t cbInit)
     return pag;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read an allocated group from a block and return it.
 ***************************************************************************/
 PAG AG::PagRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -2133,7 +2133,7 @@ PAG AG::PagRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     return pag;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read an allocated group from file and return it.
 ***************************************************************************/
 PAG AG::PagRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
@@ -2142,7 +2142,7 @@ PAG AG::PagRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
     return PagRead(&blck, pbo, posk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate this AG.
 ***************************************************************************/
 PAG AG::PagDup(void)
@@ -2160,7 +2160,7 @@ PAG AG::PagDup(void)
     return pag;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an element to the allocated group.
 ***************************************************************************/
 bool AG::FAdd(int32_t cb, int32_t *piv, const void *pv, void *pvFixed)
@@ -2179,7 +2179,7 @@ bool AG::FAdd(int32_t cb, int32_t *piv, const void *pv, void *pvFixed)
 
     if (0 < _clocFree)
     {
-        // find the first free element
+        // 3DMMv1.0: find the first free element
         qloc = _Qloc(0);
         for (iloc = 0; iloc < _ivMac; iloc++, qloc++)
         {
@@ -2208,7 +2208,7 @@ bool AG::FAdd(int32_t cb, int32_t *piv, const void *pv, void *pvFixed)
         return fFalse;
     }
 
-    // fill in the loc and copy the data
+    // 3DMMv1.0: fill in the loc and copy the data
     *_Qloc(iloc) = loc;
     if (pv != pvNil)
     {
@@ -2237,7 +2237,7 @@ bool AG::FAdd(int32_t cb, int32_t *piv, const void *pv, void *pvFixed)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete an element from the group.
 ***************************************************************************/
 void AG::Delete(int32_t iv)
@@ -2254,7 +2254,7 @@ void AG::Delete(int32_t iv)
 
     if (iv == _ivMac - 1)
     {
-        // move _ivMac back past any free entries on the end
+        // 3DMMv1.0: move _ivMac back past any free entries on the end
         while (--_ivMac > 0 && (--qloc)->bv == bvNil)
             _clocFree--;
         TrashPvCb(_Qloc(_ivMac), LwMul(iv - _ivMac + 1, SIZEOF(LOC)));
@@ -2271,7 +2271,7 @@ void AG::Delete(int32_t iv)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a group.
 ***************************************************************************/
 void AG::AssertValid(uint32_t grfobj)
@@ -2279,4 +2279,4 @@ void AG::AssertValid(uint32_t grfobj)
     AG_PAR::AssertValid(grfobj);
     AssertIn(_clocFree, 0, LwMax(1, _ivMac));
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

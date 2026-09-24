@@ -1,6 +1,6 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by utest.rc
+// 3DMMv1.0: {{NO_DEPENDENCIES}}
+// 3DMMv1.0: Microsoft Visual C++ generated include file.
+// 3DMMv1.0: Used by utest.rc
 //
 #include "socdef.h"
 
@@ -12,8 +12,8 @@
 #define stidInstallDriverWin95 5
 #define stidInstallDriverNT 6
 #define stidInstallCmdLine 7
-#define stidSectionName 8 // uses 7 entries
-#define stidDriverName 15 // uses 7 entries
+#define stidSectionName 8 // 3DMMv1.0: uses 7 entries
+#define stidDriverName 15 // 3DMMv1.0: uses 7 entries
 
 #define IDI_APP 208
 #define IDI_DOC 209
@@ -61,7 +61,7 @@
 #define cidMap 40042
 #define IDC_STATIC -1
 
-// Next default values for new objects
+// 3DMMv1.0: Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

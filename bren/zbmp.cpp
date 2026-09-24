@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     zbmp.cpp: Z-buffer bitmap class
 
@@ -11,7 +11,7 @@ ASSERTNAME
 
 RTCLASS(ZBMP)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a ZBMP of all 0xff's
 ***************************************************************************/
 PZBMP ZBMP::PzbmpNew(int32_t dxp, int32_t dyp)
@@ -37,7 +37,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a ZBMP from a BPMP.  For authoring use only.
 ***************************************************************************/
 PZBMP ZBMP::PzbmpNewFromBpmp(BPMP *pbpmp)
@@ -53,7 +53,7 @@ PZBMP ZBMP::PzbmpNewFromBpmp(BPMP *pbpmp)
     return pzbmp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky resource reader for ZBMP
 ***************************************************************************/
 bool ZBMP::FReadZbmp(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -65,7 +65,7 @@ bool ZBMP::FReadZbmp(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
 
     ZBMP *pzbmp;
 
-    *pcb = pblck->Cb(fTrue); // estimate ZBMP size
+    *pcb = pblck->Cb(fTrue); // 3DMMv1.0: estimate ZBMP size
     if (pvNil == ppbaco)
         return fTrue;
 
@@ -87,7 +87,7 @@ bool ZBMP::FReadZbmp(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a ZBMP from a BLCK.
 ***************************************************************************/
 PZBMP ZBMP::PzbmpRead(PBLCK pblck)
@@ -125,7 +125,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor
 ***************************************************************************/
 ZBMP::~ZBMP(void)
@@ -134,7 +134,7 @@ ZBMP::~ZBMP(void)
     FreePpv((void **)&_prgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the ZBMP into prgbPixels
 ***************************************************************************/
 void ZBMP::Draw(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, int32_t xpRef, int32_t ypRef, RC *prcClip,
@@ -155,7 +155,7 @@ void ZBMP::Draw(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, int32_t xpRef, 
     RC rcClippedRegnBounds;
     int32_t xpLeft, xpRight;
 
-    // Translate the zbmp's rc into coordinate system of prgbPixels' rc
+    // 3DMMv1.0: Translate the zbmp's rc into coordinate system of prgbPixels' rc
     rcZbmp.Offset(xpRef, ypRef);
 
     if (pvNil == pregnClip)
@@ -195,7 +195,7 @@ void ZBMP::Draw(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, int32_t xpRef, 
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the ZBMP into prgbPixels, squashing the clip region vertically by
     two (for BWLD's "half mode")
 ***************************************************************************/
@@ -219,7 +219,7 @@ void ZBMP::DrawHalf(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, int32_t xpR
 
     rcZbmp.ypBottom *= 2;
 
-    // Translate the zbmp's rc into coordinate system of prgbPixels' rc
+    // 3DMMv1.0: Translate the zbmp's rc into coordinate system of prgbPixels' rc
     rcZbmp.Offset(xpRef, ypRef);
 
     if (pvNil == pregnClip)
@@ -259,7 +259,7 @@ void ZBMP::DrawHalf(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, int32_t xpR
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the ZBMP
 ***************************************************************************/
 bool ZBMP::FWrite(PCFL pcfl, CTG ctg, CNO *pcno)
@@ -288,7 +288,7 @@ bool ZBMP::FWrite(PCFL pcfl, CTG ctg, CNO *pcno)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the ZBMP.
 ***************************************************************************/
 void ZBMP::AssertValid(uint32_t grf)
@@ -299,7 +299,7 @@ void ZBMP::AssertValid(uint32_t grf)
     Assert(_cb == LwMul(_rc.Dyp(), _cbRow), "bad _cb");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the ZBMP
 ***************************************************************************/
 void ZBMP::MarkMem(void)
@@ -308,4 +308,4 @@ void ZBMP::MarkMem(void)
     ZBMP_PAR::MarkMem();
     MarkPv(_prgb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

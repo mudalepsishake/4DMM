@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1992,1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: g386ifix.h 1.6 1995/02/22 21:37:10 sam Exp $
@@ -7,7 +7,7 @@
  * Inline fixed point maths for GNU-C (386)
  */
 
-/*
+/* BRender:
  * Old version using inline functions
  */
 #if 0
@@ -34,9 +34,9 @@ __inline static const long IFixedDiv(long a, long b)
 		"shll	$16,%%eax\n"
 		"sarl	$16,%%edx\n"
 		"idivl	%2\n"
-	: "=a" (__r)				/* outputs 	*/
-	: "0" (a), "rm" (b)			/* inputs 	*/
-	: "eax", "edx", "cc"		/* uses 	*/
+	: "=a" (__r)				/* BRender: outputs 	*/
+	: "0" (a), "rm" (b)			/* BRender: inputs 	*/
+	: "eax", "edx", "cc"		/* BRender: uses 	*/
 	);
 
 	return __r;
@@ -305,7 +305,7 @@ __inline static const long IFixedSqr4(
 #define BrFixedSqr4(a, b, c, d) IFixedSqr4(a, b, c, d)
 #endif
 
-/*
+/* BRender:
  * New version using direct expansion
  */
 #if 0

@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: position.h 1.3 1995/02/22 21:37:19 sam Exp $
@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* 3DMMv1.0:
      * Type of actor position
      */
     enum p3d_actor_position_type
@@ -30,21 +30,21 @@ extern "C"
     struct p3d_position
     {
 
-        /*
+        /* 3DMMv1.0:
          * Type of position
          */
         uint_16 t;
 
-        /*
+        /* 3DMMv1.0:
          * Union of the various means of describing a position
          */
         union {
-            /*
+            /* 3DMMv1.0:
              * General matrix - (XXX Should also have affine (3x4))
              */
             struct p3d_transform transform;
 
-            /*
+            /* 3DMMv1.0:
              * Euler angles and translation
              */
             struct
@@ -53,7 +53,7 @@ extern "C"
                 point3 t;
             } euler;
 
-            /*
+            /* 3DMMv1.0:
              * Unit quaternion and translation
              */
             struct
@@ -62,7 +62,7 @@ extern "C"
                 point3 t;
             } quaternion;
 
-            /*
+            /* 3DMMv1.0:
              * Lookat vector, up vector and translation
              */
             struct
@@ -72,7 +72,7 @@ extern "C"
                 point3 t;
             } look;
 
-            /*
+            /* 3DMMv1.0:
              * Just a translation
              */
             struct

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -25,7 +25,7 @@ RTCLASS(HBTN)
 
 const achar kchHelpString = ChLit('~');
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a help text document.
 ***************************************************************************/
 TXHD::TXHD(PRCA prca, PDOCB pdocb, uint32_t grfdoc) : TXHD_PAR(pdocb, grfdoc)
@@ -39,7 +39,7 @@ TXHD::TXHD(PRCA prca, PDOCB pdocb, uint32_t grfdoc) : TXHD_PAR(pdocb, grfdoc)
     _htop.ckiSnd.cno = cnoNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a help text document.
 ***************************************************************************/
 TXHD::~TXHD(void)
@@ -48,7 +48,7 @@ TXHD::~TXHD(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a TXHD.
 ***************************************************************************/
 void TXHD::AssertValid(uint32_t grf)
@@ -57,7 +57,7 @@ void TXHD::AssertValid(uint32_t grf)
     AssertPo(_prca, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the TXHD.
 ***************************************************************************/
 void TXHD::MarkMem(void)
@@ -66,9 +66,9 @@ void TXHD::MarkMem(void)
     TXHD_PAR::MarkMem();
     MarkMemObj(_prca);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read a help text document from the given (pcfl, ctg, cno)
     and using the given prca as the source for pictures and buttons.
 ***************************************************************************/
@@ -88,7 +88,7 @@ PTXHD TXHD::PtxhdReadChunk(PRCA prca, PCFL pcfl, CTG ctg, CNO cno, PSTRG pstrg, 
     return ptxhd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the given chunk into this TXRD.
 ***************************************************************************/
 bool TXHD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, PSTRG pstrg, uint32_t grftxhd)
@@ -116,8 +116,8 @@ bool TXHD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, PSTRG pstrg, uint32_t grftxh
     else
         pcfl->AddRef();
 
-    // The old version of HTOP didn't have the ckiSnd - accept both old and new
-    // versions.
+    // 3DMMv1.0: The old version of HTOP didn't have the ckiSnd - accept both old and new
+    // 3DMMv1.0: versions.
     htopf.htop.ckiSnd.ctg = ctgNil;
     htopf.htop.ckiSnd.cno = cnoNil;
     if (!pcfl->FFind(ctg, cno, &blck) || !blck.FUnpackData() ||
@@ -170,13 +170,13 @@ bool TXHD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, PSTRG pstrg, uint32_t grftxh
     AssertThis(0);
 
 LFail:
-    // Release our hold on the CFL
+    // 3DMMv1.0: Release our hold on the CFL
     ReleasePpo(&pcfl);
 
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do any necessary munging of the AG entry on open.  Return false if
     we don't recognize this argument type.
 ***************************************************************************/
@@ -250,7 +250,7 @@ bool TXHD::_FOpenArg(int32_t icact, uint8_t sprm, int16_t bo, int16_t osk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save a help topic to the given chunky file.  Fill in *pcki with where
     we put the root chunk.
 ***************************************************************************/
@@ -278,7 +278,7 @@ bool TXHD::FSaveToChunk(PCFL pcfl, CKI *pcki, bool fRedirectText)
     if (!TXHD_PAR::FSaveToChunk(pcfl, &cki, fRedirectText))
         goto LFail;
 
-    // add the text chunk and write it
+    // 3DMMv1.0: add the text chunk and write it
     if (!pcfl->FAdoptChild(pcki->ctg, pcki->cno, cki.ctg, cki.cno))
     {
         pcfl->Delete(cki.ctg, cki.cno);
@@ -291,7 +291,7 @@ bool TXHD::FSaveToChunk(PCFL pcfl, CKI *pcki, bool fRedirectText)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the bounding rectangle for the given object.
 ***************************************************************************/
 bool TXHD::_FGetObjectRc(int32_t icact, uint8_t sprm, PGNV pgnv, PCHP pchp, RC *prc)
@@ -353,7 +353,7 @@ bool TXHD::_FGetObjectRc(int32_t icact, uint8_t sprm, PGNV pgnv, PCHP pchp, RC *
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the given object.
 ***************************************************************************/
 bool TXHD::_FDrawObject(int32_t icact, uint8_t sprm, PGNV pgnv, int32_t *pxp, int32_t yp, PCHP pchp, RC *prcClip)
@@ -432,7 +432,7 @@ bool TXHD::_FDrawObject(int32_t icact, uint8_t sprm, PGNV pgnv, int32_t *pxp, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a picture into the help text document.
 ***************************************************************************/
 bool TXHD::FInsertPicture(CNO cno, void *pvExtra, int32_t cbExtra, int32_t cp, int32_t ccpDel, PCHP pchp,
@@ -464,7 +464,7 @@ bool TXHD::FInsertPicture(CNO cno, void *pvExtra, int32_t cbExtra, int32_t cp, i
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a new button
 ***************************************************************************/
 bool TXHD::FInsertButton(CNO cno, CNO cnoTopic, void *pvExtra, int32_t cbExtra, int32_t cp, int32_t ccpDel, PCHP pchp,
@@ -501,7 +501,7 @@ bool TXHD::FInsertButton(CNO cno, CNO cnoTopic, void *pvExtra, int32_t cbExtra, 
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Group the given text into the given group.  lw == 0 indicates no group.
     Any non-zero number is a group.
 ***************************************************************************/
@@ -524,7 +524,7 @@ bool TXHD::FGroupText(int32_t cp1, int32_t cp2, uint8_t bGroup, CNO cnoTopic, PS
     spvm.lwMask = -1;
     if (bGroup == 0)
     {
-        // means no grouping
+        // 3DMMv1.0: means no grouping
         spvm.lw = 0;
     }
     else
@@ -562,7 +562,7 @@ bool TXHD::FGroupText(int32_t cp1, int32_t cp2, uint8_t bGroup, CNO cnoTopic, PS
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the given cp is in a grouped text range.
 ***************************************************************************/
 bool TXHD::FGrouped(int32_t cp, int32_t *pcpMin, int32_t *pcpLim, uint8_t *pbGroup, CNO *pcnoTopic, PSTN pstnTopic)
@@ -589,7 +589,7 @@ bool TXHD::FGrouped(int32_t cp, int32_t *pcpMin, int32_t *pcpLim, uint8_t *pbGro
         int32_t cb;
 
         prgb = (uint8_t *)_pagcact->PvLock(mpe.lw - 1, &cb);
-        cb -= SIZEOF(uint8_t) + SIZEOF(CNO); // group number, cnoTopic
+        cb -= SIZEOF(uint8_t) + SIZEOF(CNO); // 3DMMv1.0: group number, cnoTopic
         if (cb < 0)
             goto LFail;
 
@@ -630,7 +630,7 @@ bool TXHD::FGrouped(int32_t cp, int32_t *pcpMin, int32_t *pcpLim, uint8_t *pbGro
     return bGroup != 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the help topic information.
 ***************************************************************************/
 void TXHD::GetHtop(PHTOP phtop)
@@ -641,7 +641,7 @@ void TXHD::GetHtop(PHTOP phtop)
     *phtop = _htop;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the topic info.
 ***************************************************************************/
 void TXHD::SetHtop(PHTOP phtop)
@@ -653,7 +653,7 @@ void TXHD::SetHtop(PHTOP phtop)
     SetDirty();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a TXHG.
 ***************************************************************************/
 TXHG::TXHG(PWOKS pwoks, PTXHD ptxhd, PGCB pgcb) : TXRG(ptxhd, pgcb)
@@ -664,7 +664,7 @@ TXHG::TXHG(PWOKS pwoks, PTXHD ptxhd, PGCB pgcb) : TXRG(ptxhd, pgcb)
     _pwoks = pwoks;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new help topic display gob.
 ***************************************************************************/
 PTXHG TXHG::PtxhgNew(PWOKS pwoks, PTXHD ptxhd, PGCB pgcb)
@@ -681,7 +681,7 @@ PTXHG TXHG::PtxhgNew(PWOKS pwoks, PTXHD ptxhd, PGCB pgcb)
     return ptxhg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Inititalize the display gob for a help balloon topic.
 ***************************************************************************/
 bool TXHG::_FInit(void)
@@ -708,7 +708,7 @@ bool TXHG::_FInit(void)
     if (!TXHG_PAR::_FInit())
         return fFalse;
 
-    // find the max of the group numbers
+    // 3DMMv1.0: find the max of the group numbers
     lwMax = 0;
     for (cp = 0; cp < ptxhd->CpMac();)
     {
@@ -716,7 +716,7 @@ bool TXHG::_FInit(void)
         lwMax = LwMax((int32_t)bGroup, lwMax);
     }
 
-    // find a base hid that covers lwMax buttons
+    // 3DMMv1.0: find a base hid that covers lwMax buttons
     _hidBase = 0;
     if (lwMax > 0)
     {
@@ -744,7 +744,7 @@ bool TXHG::_FInit(void)
             dxp = ((ECOS *)pv)->dxp;
             FreePpv(&pv);
 
-            // get the bounding rectangle
+            // 3DMMv1.0: get the bounding rectangle
             _GetXpYpFromCp(cp, pvNil, pvNil, &xp, &ypBase, fFalse);
             _FetchChp(cp, &chp);
             _pgnv->SetFont(chp.onn, chp.grfont, chp.dypFont, tahLeft, tavBaseline);
@@ -798,7 +798,7 @@ bool TXHG::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the point is over hot (marked text).
 ***************************************************************************/
 bool TXHG::FPtIn(int32_t xp, int32_t yp)
@@ -810,7 +810,7 @@ bool TXHG::FPtIn(int32_t xp, int32_t yp)
     return FGroupFromPt(xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Track the mouse.
 ***************************************************************************/
 bool TXHG::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -821,7 +821,7 @@ bool TXHG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     pcmd->grfcust = _pwoks->GrfcustAdjust(pcmd->grfcust);
     if (pcmd->cid == cidMouseDown)
     {
-        // first response to mouse down
+        // 3DMMv1.0: first response to mouse down
         Assert(vpcex->PgobTracking() == pvNil, "mouse already being tracked!");
 
         if (!FGroupFromPt(pcmd->xp, pcmd->yp, &_bTrack, &_cnoTrack))
@@ -851,7 +851,7 @@ bool TXHG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     An edit control got a bad key.
 ***************************************************************************/
 bool TXHG::FCmdBadKey(PCMD_BADKEY pcmd)
@@ -867,7 +867,7 @@ bool TXHG::FCmdBadKey(PCMD_BADKEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of the group text that the given point is in.
 ***************************************************************************/
 bool TXHG::FGroupFromPt(int32_t xp, int32_t yp, uint8_t *pbGroup, CNO *pcnoTopic)
@@ -882,7 +882,7 @@ bool TXHG::FGroupFromPt(int32_t xp, int32_t yp, uint8_t *pbGroup, CNO *pcnoTopic
     return Ptxhd()->FGrouped(cp, pvNil, pvNil, pbGroup, pcnoTopic);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A child button was hit, take action.
 ***************************************************************************/
 void TXHG::DoHit(uint8_t bGroup, CNO cnoTopic, uint32_t grfcust, int32_t hidHit)
@@ -890,7 +890,7 @@ void TXHG::DoHit(uint8_t bGroup, CNO cnoTopic, uint32_t grfcust, int32_t hidHit)
     AssertThis(0);
     int32_t lwRet = 0;
 
-    // run the script
+    // 3DMMv1.0: run the script
     if (!_FRunScript(bGroup, grfcust, hidHit, chNil, cnoTopic, &lwRet))
         return;
 
@@ -898,7 +898,7 @@ void TXHG::DoHit(uint8_t bGroup, CNO cnoTopic, uint32_t grfcust, int32_t hidHit)
         _pwoks->PhbalNew(PgobPar()->PgobPar(), Ptxhd()->Prca(), cnoTopic);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Run the script. Returns false iff the TXHG doesn't exist after
     running the script.
 ***************************************************************************/
@@ -937,8 +937,8 @@ bool TXHG::_FRunScript(uint8_t bGroup, uint32_t grfcust, int32_t hidHit, achar c
         rglw[3] = (int32_t)(uint8_t)ch;
         rglw[4] = cnoTopic;
 
-        // be careful not to use TXHG variables here in case the TXHG is
-        // freed while the script is running.
+        // 3DMMv1.0: be careful not to use TXHG variables here in case the TXHG is
+        // 3DMMv1.0: freed while the script is running.
         if (!psceg->FRunScript(pscpt, rglw, 5, plwRet) && pvNil != plwRet)
             *plwRet = 0;
         ReleasePpo(&psceg);
@@ -950,7 +950,7 @@ bool TXHG::_FRunScript(uint8_t bGroup, uint32_t grfcust, int32_t hidHit, achar c
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This handles cidMouseMove.
 ***************************************************************************/
 bool TXHG::FCmdMouseMove(PCMD_MOUSE pcmd)
@@ -966,7 +966,7 @@ bool TXHG::FCmdMouseMove(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the cursor for this TXHG and the given cursor state.
 ***************************************************************************/
 void TXHG::SetCursor(uint32_t grfcust)
@@ -990,7 +990,7 @@ void TXHG::SetCursor(uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new help topic balloon based on the given topic number.
 ***************************************************************************/
 PHBAL HBAL::PhbalCreate(PWOKS pwoks, PGOB pgobPar, PRCA prca, CNO cnoTopic, PHTOP phtop)
@@ -1018,7 +1018,7 @@ PHBAL HBAL::PhbalCreate(PWOKS pwoks, PGOB pgobPar, PRCA prca, CNO cnoTopic, PHTO
     return phbal;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new help balloon based on the given help
     topic document and htop.
 ***************************************************************************/
@@ -1037,7 +1037,7 @@ PHBAL HBAL::PhbalNew(PWOKS pwoks, PGOB pgobPar, PRCA prca, PTXHD ptxhd, PHTOP ph
     ptxhd->GetHtop(&htop);
     if (pvNil != phtop)
     {
-        // merge the given htop with the topic's htop.
+        // 3DMMv1.0: merge the given htop with the topic's htop.
         if (cnoNil != phtop->cnoBalloon)
             htop.cnoBalloon = phtop->cnoBalloon;
         if (hidNil != phtop->hidThis)
@@ -1064,17 +1064,17 @@ PHBAL HBAL::PhbalNew(PWOKS pwoks, PGOB pgobPar, PRCA prca, PTXHD ptxhd, PHTOP ph
 
         AssertPo(phbal, 0);
 
-#ifdef REVIEW // shonk: this makes little sense and is bug-prone
+#ifdef REVIEW // 3DMMv1.0: shonk: this makes little sense and is bug-prone
         if (htop.cnoBalloon == phbal->_pgokd->Cno() && prca == phbal->_prca)
         {
-            // same hid, same GOKD, same prca, so just change the topic
+            // 3DMMv1.0: same hid, same GOKD, same prca, so just change the topic
             if (!phbal->FSetTopic(ptxhd, &htop, prca))
                 return pvNil;
             return phbal;
         }
-#endif // REVIEW
+#endif // 3DMMv1.0: REVIEW
 
-        // free the balloon and create the new one.
+        // 3DMMv1.0: free the balloon and create the new one.
         ReleasePpo(&phbal);
     }
 
@@ -1095,7 +1095,7 @@ PHBAL HBAL::PhbalNew(PWOKS pwoks, PGOB pgobPar, PRCA prca, PTXHD ptxhd, PHTOP ph
         return pvNil;
     }
 
-    // initialize the topic
+    // 3DMMv1.0: initialize the topic
     phbal->_ptxhg->DoHit(0, cnoNil, fcustNil, hidNil);
     if (phbal != pwoks->PgobFromGrid(grid))
     {
@@ -1107,14 +1107,14 @@ PHBAL HBAL::PhbalNew(PWOKS pwoks, PGOB pgobPar, PRCA prca, PTXHD ptxhd, PHTOP ph
     return phbal;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a help balloon.
 ***************************************************************************/
 HBAL::HBAL(GCB *pgcb) : HBAL_PAR(pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the help balloon.
 ***************************************************************************/
 bool HBAL::_FInit(PWOKS pwoks, PTXHD ptxhd, HTOP *phtop, PRCA prca)
@@ -1130,7 +1130,7 @@ bool HBAL::_FInit(PWOKS pwoks, PTXHD ptxhd, HTOP *phtop, PRCA prca)
     return _FSetTopic(ptxhd, phtop, prca);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the topic for this balloon.  Returns false if setting the topic
     fails or if the balloon is instantly killed by a script.
 ***************************************************************************/
@@ -1147,7 +1147,7 @@ bool HBAL::FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca)
     return _FEnterState(ksnoInit);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the topic in the help balloon.  Don't enter the initial state.
 ***************************************************************************/
 bool HBAL::_FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca)
@@ -1164,12 +1164,12 @@ bool HBAL::_FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca)
     RTVN rtvn;
     PTXHG ptxhgSave = _ptxhg;
 
-    // create the topic DDG.
+    // 3DMMv1.0: create the topic DDG.
     gcb.Set(CMH::HidUnique(), this, fgobNil, kginMark);
     if (pvNil == (_ptxhg = TXHG::PtxhgNew(_pwoks, ptxhd, &gcb)))
         goto LFail;
 
-    // set the sound variables
+    // 3DMMv1.0: set the sound variables
     stn = PszLit("_ctgSound");
     rtvn.SetFromStn(&stn);
     if (!FAssignRtvm(_ptxhg->Ppglrtvm(), &rtvn, phtop->ckiSnd.ctg))
@@ -1181,7 +1181,7 @@ bool HBAL::_FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca)
     LFail:
         ReleasePpo(&_ptxhg);
 
-        // restore the previous topic DDG
+        // 3DMMv1.0: restore the previous topic DDG
         _ptxhg = ptxhgSave;
         return fFalse;
     }
@@ -1205,7 +1205,7 @@ bool HBAL::_FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca)
     }
     pgob->MapPt(&pt, cooParent, cooGlobal);
 
-    // point the balloon at the gob
+    // 3DMMv1.0: point the balloon at the gob
     PgobPar()->MapPt(&pt, cooGlobal, cooLocal);
     GetPtReg(&ptReg);
     _SetGorp(_pgorp, pt.xp - ptReg.xp + phtop->dxp, pt.yp - ptReg.yp + phtop->dyp);
@@ -1213,7 +1213,7 @@ bool HBAL::_FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Our representation is changing, so make sure we stay inside our parent
     and reposition the TXHG.
 ***************************************************************************/
@@ -1223,7 +1223,7 @@ void HBAL::_SetGorp(PGORP pgorp, int32_t dxp, int32_t dyp)
 
     HBAL_PAR::_SetGorp(pgorp, dxp, dyp);
 
-    // make sure we stay inside our parent
+    // 3DMMv1.0: make sure we stay inside our parent
     GetRc(&rc1, cooParent);
     PgobPar()->GetRc(&rc2, cooLocal);
     rc3.FIntersect(&rc1, &rc2);
@@ -1233,21 +1233,21 @@ void HBAL::_SetGorp(PGORP pgorp, int32_t dxp, int32_t dyp)
         SetPos(&rc1);
     }
 
-    // position the TXHG.
+    // 3DMMv1.0: position the TXHG.
     GetRcContent(&rc1);
     rc2.Set(0, 0, _dxpPref, _dypPref);
     rc2.CenterOnRc(&rc1);
     _ptxhg->SetPos(&rc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a help balloon button.
 ***************************************************************************/
 HBTN::HBTN(GCB *pgcb) : HBTN_PAR(pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new help balloon button
 ***************************************************************************/
 PHBTN HBTN::PhbtnNew(PWOKS pwoks, PGOB pgobPar, int32_t hid, CNO cno, PRCA prca, uint8_t bGroup, CNO cnoTopic,
@@ -1292,7 +1292,7 @@ PHBTN HBTN::PhbtnNew(PWOKS pwoks, PGOB pgobPar, int32_t hid, CNO cno, PRCA prca,
     return phbtn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test whether the given point is in this button or its related text.
 ***************************************************************************/
 bool HBTN::FPtIn(int32_t xp, int32_t yp)
@@ -1317,7 +1317,7 @@ bool HBTN::FPtIn(int32_t xp, int32_t yp)
     return bGroup == _bGroup && cnoTopic == _cnoTopic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The button has been clicked on.  Tell the TXHG to do its thing.
 ***************************************************************************/
 bool HBTN::FCmdClicked(PCMD_MOUSE pcmd)

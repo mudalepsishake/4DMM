@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,17 +15,17 @@ ASSERTNAME
 
 #ifdef WIN
 #include <commdlg.h>
-#endif // WIN
+#endif // 3DMMEx: WIN
 
-// This is the FTG to use for temp files - clients may set this to whatever
-// they want.
+// 3DMMv1.0: This is the FTG to use for temp files - clients may set this to whatever
+// 3DMMv1.0: they want.
 FTG vftgTemp = kftgTemp;
 
 typedef OFSTRUCT OFS;
 typedef OPENFILENAME OFN;
 
-// maximal number of short characters in an extension is 4 (so it fits in
-// a long).
+// 3DMMv1.0: maximal number of short characters in an extension is 4 (so it fits in
+// 3DMMv1.0: a long).
 const int32_t kcchsMaxExt = SIZEOF(int32_t);
 
 kpriv void _CleanFtg(FTG *pftg, PSTN pstnExt = pvNil);
@@ -34,7 +34,7 @@ FNI _fniTemp;
 RTCLASS(FNI)
 RTCLASS(FNE)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sets the fni to nil values.
 ***************************************************************************/
 void FNI::SetNil(void)
@@ -44,7 +44,7 @@ void FNI::SetNil(void)
     AssertThis(ffniEmpty);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for fni class.
 ***************************************************************************/
 FNI::FNI(void)
@@ -52,7 +52,7 @@ FNI::FNI(void)
     SetNil();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get an fni (for opening) from the user.
 ***************************************************************************/
 bool FNI::FGetOpen(const achar *prgchFilter, KWND hwndOwner)
@@ -89,14 +89,14 @@ bool FNI::FGetOpen(const achar *prgchFilter, KWND hwndOwner)
     AssertThis(ffniFile);
     return fTrue;
 
-#else  // !WIN
-    // FGetOpen not supported on non-Windows
+#else  // 3DMMEx: !WIN
+    // 3DMMEx: FGetOpen not supported on non-Windows
     RawRtn();
     return fFalse;
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get an fni (for saving) from the user.
 ***************************************************************************/
 bool FNI::FGetSave(const achar *prgchFilter, KWND hwndOwner)
@@ -133,16 +133,16 @@ bool FNI::FGetSave(const achar *prgchFilter, KWND hwndOwner)
     _SetFtgFromName();
     AssertThis(ffniFile);
     return fTrue;
-#else // !WIN
+#else // 3DMMEx: !WIN
 
-    // FGetSave not supported on non-Windows
+    // 3DMMEx: FGetSave not supported on non-Windows
     RawRtn();
     return fFalse;
 
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Builds the fni from the path.
 ***************************************************************************/
 bool FNI::FBuildFromPath(PSTN pstn, FTG ftgDef)
@@ -156,8 +156,8 @@ bool FNI::FBuildFromPath(PSTN pstn, FTG ftgDef)
 
     if (kftgDir != ftgDef)
     {
-        // if the path ends with a slash or only has periods after the last
-        // slash, force the fni to be a directory.
+        // 3DMMv1.0: if the path ends with a slash or only has periods after the last
+        // 3DMMv1.0: slash, force the fni to be a directory.
 
         cch = pstn->Cch();
         for (pchT = pstn->Prgch() + cch - 1;; pchT--)
@@ -172,7 +172,7 @@ bool FNI::FBuildFromPath(PSTN pstn, FTG ftgDef)
         }
     }
 
-    /* ask windows to parse the file name (resolves ".." and ".") and returns
+    /* 3DMMv1.0: ask windows to parse the file name (resolves ".." and ".") and returns
        absolute filename "X:\FOO\BAR", relative to the current drive and
        directory if no drive or directory is given in pstn */
     if ((cch = GetFullPathName(pstn->Psz(), kcchMaxSz, sz, NULL)) == 0 || cch > kcchMaxSz)
@@ -210,7 +210,7 @@ bool FNI::FBuildFromPath(PSTN pstn, FTG ftgDef)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Will attempt to build an FNI with the given filename.  Uses the
     Windows SearchPath API, and thus the Windows path*search rules.
 
@@ -242,7 +242,7 @@ bool FNI::FSearchInPath(PSTN pstn, PCSZ pcszEnv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a unique filename in the directory currently indicated by the fni.
 ***************************************************************************/
 bool FNI::FGetUnique(FTG ftg)
@@ -273,7 +273,7 @@ bool FNI::FGetUnique(FTG ftg)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a temporary fni.
 ***************************************************************************/
 bool FNI::FGetTemp(void)
@@ -282,7 +282,7 @@ bool FNI::FGetTemp(void)
 
     if (_fniTemp._ftg != kftgDir)
     {
-        // get the temp directory
+        // 3DMMv1.0: get the temp directory
         SZ sz;
 
         if (GetTempPath(kcchMaxSz, sz) == 0)
@@ -298,7 +298,7 @@ bool FNI::FGetTemp(void)
     return FGetUnique(vftgTemp);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the FNI to the current working directory
 ***************************************************************************/
 bool FNI::FGetCwd()
@@ -309,7 +309,7 @@ bool FNI::FGetCwd()
     return FBuildFromPath(&stnCurrentDir, kftgDir);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the FNI to the current executable file
 ***************************************************************************/
 bool FNI::FGetExe()
@@ -326,14 +326,14 @@ bool FNI::FGetExe()
     return FBuildFromPath(&stnExe);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the FNI to the directory containing application resources
 ***************************************************************************/
 bool FNI::FGetResourcesDir()
 {
     AssertThis(0);
 
-    // On Windows, this is the same directory as the executable.
+    // 3DMMEx: On Windows, this is the same directory as the executable.
     if (FGetExe())
     {
         return FSetLeaf(pvNil, kftgDir);
@@ -345,7 +345,7 @@ bool FNI::FGetResourcesDir()
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the file type of the fni.
 ***************************************************************************/
 FTG FNI::Ftg(void)
@@ -354,7 +354,7 @@ FTG FNI::Ftg(void)
     return _ftg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the volume kind for the given fni.
 ***************************************************************************/
 uint32_t FNI::Grfvk(void)
@@ -391,7 +391,7 @@ uint32_t FNI::Grfvk(void)
         break;
     case DRIVE_REMOTE:
     default:
-        // treat anything else like a network drive
+        // 3DMMv1.0: treat anything else like a network drive
         grfvk |= fvkNetwork;
         break;
     }
@@ -399,7 +399,7 @@ uint32_t FNI::Grfvk(void)
     return grfvk;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the leaf to the given string and type.
 ***************************************************************************/
 bool FNI::FSetLeaf(PSTN pstn, FTG ftg)
@@ -424,7 +424,7 @@ LFail:
     return fFalse;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Changes just the FTG of the FNI, leaving the file path and filename alone
     (but does change the extension). Returns: fTrue if it succeeds
 ******************************************************************************/
@@ -439,10 +439,10 @@ bool FNI::FChangeFtg(FTG ftg)
     if (_ftg == ftg)
         return fTrue;
 
-    // set the extension
+    // 3DMMv1.0: set the extension
     cchBase = _stnFile.Cch() - _CchExt();
 
-    // use >= to leave room for the '.'
+    // 3DMMv1.0: use >= to leave room for the '.'
     if (cchBase + stnFtg.Cch() >= kcchMaxStn)
         return fFalse;
 
@@ -456,7 +456,7 @@ bool FNI::FChangeFtg(FTG ftg)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the leaf name.
 ***************************************************************************/
 void FNI::GetLeaf(PSTN pstn)
@@ -474,7 +474,7 @@ void FNI::GetLeaf(PSTN pstn)
     pstn->SetSz(pch + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a string representing the path of the fni.
 ***************************************************************************/
 void FNI::GetStnPath(PSTN pstn)
@@ -484,7 +484,7 @@ void FNI::GetStnPath(PSTN pstn)
     *pstn = _stnFile;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines if the file/directory exists.  Returns tMaybe on error or
     if the fni type (file or dir) doesn't match the disk object of the
     same name.
@@ -496,7 +496,7 @@ tribool FNI::TExists(void)
     PSTN pstn;
     uint32_t lu;
 
-    // strip off the trailing slash (if a directory).
+    // 3DMMv1.0: strip off the trailing slash (if a directory).
     pstn = &_stnFile;
     if (_ftg == kftgDir)
     {
@@ -511,7 +511,7 @@ tribool FNI::TExists(void)
 
     if (0xFFFFFFFF == (lu = GetFileAttributes(pstn->Psz())))
     {
-        /* Any of these are equivalent to "there's no file with that name" */
+        /* 3DMMv1.0: Any of these are equivalent to "there's no file with that name" */
         if ((lu = GetLastError()) == ERROR_FILE_NOT_FOUND || lu == ERROR_INVALID_DRIVE)
         {
             return tNo;
@@ -532,7 +532,7 @@ tribool FNI::TExists(void)
     return tYes;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the physical file.  Should not be open.
 ***************************************************************************/
 bool FNI::FDelete(void)
@@ -546,7 +546,7 @@ bool FNI::FDelete(void)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return whether the fni is read-only.
 ***************************************************************************/
 bool FNI::FIsReadOnly(void)
@@ -556,7 +556,7 @@ bool FNI::FIsReadOnly(void)
     return (FILE_ATTRIBUTE_READONLY & GetFileAttributes(_stnFile.Psz()));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Renames the file indicated by this to *pfni.
 ***************************************************************************/
 bool FNI::FRename(FNI *pfni)
@@ -572,7 +572,7 @@ bool FNI::FRename(FNI *pfni)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compare two fni's for equality.
 ***************************************************************************/
 bool FNI::FEqual(FNI *pfni)
@@ -583,7 +583,7 @@ bool FNI::FEqual(FNI *pfni)
     return pfni->_stnFile.FEqualUser(&_stnFile);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the fni refers to a directory.
 ***************************************************************************/
 bool FNI::FDir(void)
@@ -592,7 +592,7 @@ bool FNI::FDir(void)
     return _ftg == kftgDir;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the directory portions of the fni's are the same.
 ***************************************************************************/
 bool FNI::FSameDir(FNI *pfni)
@@ -608,7 +608,7 @@ bool FNI::FSameDir(FNI *pfni)
     return fni1.FEqual(&fni2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the directory pstn in fni exists, optionally creating it
     and/or moving into it.  Specify ffniCreateDir to create it if it
     doesn't exist.  Specify ffniMoveTo to make the fni refer to it.
@@ -621,7 +621,7 @@ bool FNI::FDownDir(PSTN pstn, uint32_t grffni)
     FNI fniT;
 
     fniT = *this;
-    // the +1 is for the \ character
+    // 3DMMv1.0: the +1 is for the \ character
     if (fniT._stnFile.Cch() + pstn->Cch() + 1 > kcchMaxStn)
     {
         PushErc(ercFniGeneral);
@@ -636,7 +636,7 @@ bool FNI::FDownDir(PSTN pstn, uint32_t grffni)
     {
         if (!(grffni & ffniCreateDir))
             return fFalse;
-        // try to create it
+        // 3DMMv1.0: try to create it
         if (!CreateDirectory(fniT._stnFile.Psz(), NULL))
         {
             PushErc(ercFniDirCreate);
@@ -649,7 +649,7 @@ bool FNI::FDownDir(PSTN pstn, uint32_t grffni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Gets the lowest directory name (if pstn is not nil) and optionally
     moves the fni up a level (if ffniMoveToDir is specified).
 ***************************************************************************/
@@ -687,7 +687,7 @@ bool FNI::FUpDir(PSTN pstn, uint32_t grffni)
 
     if (pvNil != pstn)
     {
-        // copy the tail and delete the trailing slash
+        // 3DMMv1.0: copy the tail and delete the trailing slash
         pstn->SetSz(_stnFile.Psz() + cch);
         pstn->Delete(pstn->Cch() - 1);
     }
@@ -701,7 +701,7 @@ bool FNI::FUpDir(PSTN pstn, uint32_t grffni)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert validity of the FNI.
 ***************************************************************************/
 void FNI::AssertValid(uint32_t grffni)
@@ -742,9 +742,9 @@ void FNI::AssertValid(uint32_t grffni)
         Assert(pszT >= szT && pszT < szT + cch, "expected filename");
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the length of the file extension on the fni (including the period).
     Allow up to kcchsMaxExt characters for the extension (plus one for the
     period).
@@ -760,8 +760,8 @@ int32_t FNI::_CchExt(void)
     {
         if ((achar)(schar)*pch != *pch)
         {
-            // not an ANSI character - so doesn't qualify for our
-            // definition of an extension
+            // 3DMMv1.0: not an ANSI character - so doesn't qualify for our
+            // 3DMMv1.0: definition of an extension
             return 0;
         }
 
@@ -778,7 +778,7 @@ int32_t FNI::_CchExt(void)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the ftg from the file name.
 ***************************************************************************/
 void FNI::_SetFtgFromName(void)
@@ -802,7 +802,7 @@ void FNI::_SetFtgFromName(void)
     AssertThis(ffniFile | ffniDir);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change the leaf of the fni.
 ***************************************************************************/
 bool FNI::_FChangeLeaf(PSTN pstn)
@@ -834,7 +834,7 @@ bool FNI::_FChangeLeaf(PSTN pstn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the ftg is all uppercase and has no characters after a zero.
 ***************************************************************************/
 kpriv void _CleanFtg(FTG *pftg, PSTN pstnExt)
@@ -871,7 +871,7 @@ kpriv void _CleanFtg(FTG *pftg, PSTN pstnExt)
     *pftg = ftgNew;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a File Name Enumerator.
 ***************************************************************************/
 FNE::FNE(void)
@@ -884,7 +884,7 @@ FNE::FNE(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for an FNE.
 ***************************************************************************/
 FNE::~FNE(void)
@@ -893,7 +893,7 @@ FNE::~FNE(void)
     _Free();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Free all the memory associated with the FNE.
 ***************************************************************************/
 void FNE::_Free(void)
@@ -914,7 +914,7 @@ void FNE::_Free(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the fne to do an enumeration.
 ***************************************************************************/
 bool FNE::FInit(FNI *pfniDir, FTG *prgftg, int32_t cftg, uint32_t grffne)
@@ -925,7 +925,7 @@ bool FNE::FInit(FNI *pfniDir, FTG *prgftg, int32_t cftg, uint32_t grffne)
     AssertPvCb(prgftg, LwMul(cftg, SIZEOF(FTG)));
     FTG *pftg;
 
-    // free the old stuff
+    // 3DMMv1.0: free the old stuff
     _Free();
 
     if (0 >= cftg)
@@ -975,7 +975,7 @@ bool FNE::FInit(FNI *pfniDir, FTG *prgftg, int32_t cftg, uint32_t grffne)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next FNI in the enumeration.
 ***************************************************************************/
 bool FNE::FNextFni(FNI *pfni, uint32_t *pgrffneOut, uint32_t grffneIn)
@@ -997,14 +997,14 @@ bool FNE::FNextFni(FNI *pfni, uint32_t *pgrffneOut, uint32_t grffneIn)
 
     if (grffneIn & ffneSkipDir)
     {
-        // skip the rest of the stuff in this dir
+        // 3DMMv1.0: skip the rest of the stuff in this dir
         if (!_FPop())
             goto LDone;
     }
 
     if (_fesCur.chVol != 0)
     {
-        // volume
+        // 3DMMv1.0: volume
         for (fvol = 1L << (_fesCur.chVol - 'A'); _fesCur.chVol <= 'Z' && (_fesCur.grfvol & fvol) == 0;
              _fesCur.chVol++, fvol <<= 1)
         {
@@ -1012,13 +1012,13 @@ bool FNE::FNextFni(FNI *pfni, uint32_t *pgrffneOut, uint32_t grffneIn)
 
         if (_fesCur.chVol > ChLit('Z'))
             goto LDone;
-        // we've got one
+        // 3DMMv1.0: we've got one
         stn.FFormatSz(PszLit("%c:\\"), (int32_t)_fesCur.chVol++);
         AssertDo(pfni->FBuildFromPath(&stn), 0);
         goto LGotOne;
     }
 
-    // directory or file
+    // 3DMMv1.0: directory or file
     for (;;)
     {
         if (hBadWin == _fesCur.hn)
@@ -1078,8 +1078,8 @@ LPop:
         return fFalse;
     }
 
-    // we're about to pop a directory, so send the current directory back
-    // with ffnePost
+    // 3DMMv1.0: we're about to pop a directory, so send the current directory back
+    // 3DMMv1.0: with ffnePost
     if (pvNil != pgrffneOut)
         *pgrffneOut = ffnePost;
     *pfni = _fesCur.fni;
@@ -1098,7 +1098,7 @@ LGotOne:
     {
         if ((pvNil != _pglfes || pvNil != (_pglfes = GL::PglNew(SIZEOF(FES), 5))) && _pglfes->FPush(&_fesCur))
         {
-            // set up the new fes
+            // 3DMMv1.0: set up the new fes
             _fesCur.fni = *pfni;
             stn = PszLit("*");
             if (!_fesCur.fni._FChangeLeaf(&stn))
@@ -1121,7 +1121,7 @@ LGotOne:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pop a state in the FNE.
 ***************************************************************************/
 bool FNE::_FPop(void)
@@ -1136,7 +1136,7 @@ bool FNE::_FPop(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a FNE.
 ***************************************************************************/
 void FNE::AssertValid(uint32_t grf)
@@ -1153,7 +1153,7 @@ void FNE::AssertValid(uint32_t grf)
         Assert(_pglfes == pvNil, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the FNE.
 ***************************************************************************/
 void FNE::MarkMem(void)
@@ -1164,4 +1164,4 @@ void FNE::MarkMem(void)
         MarkPv(_prgftg);
     MarkMemObj(_pglfes);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,0 +1,50 @@
+/* BRenderModern:
+ * Private device driver structure
+ */
+#ifndef _DEVICE_H_
+#define _DEVICE_H_
+
+#ifdef BR_DEVICE_PRIVATE
+
+/* BRenderModern:
+ * Private state of device
+ */
+typedef struct br_device {
+    /* BRenderModern:
+     * Dispatch table
+     */
+    const struct br_device_dispatch *dispatch;
+
+    /* BRenderModern:
+     * Standard object identifier
+     */
+    const char *identifier;
+
+    /* BRenderModern:
+     * Pointer to owning device
+     */
+    struct br_device *device;
+
+    /* BRenderModern:
+     * List of objects associated with this device
+     */
+    void *object_list;
+
+    /* BRenderModern:
+     * Anchor for all device's resources
+     */
+    void *res;
+
+    /* BRenderModern:
+     * Driver-wide template store
+     */
+    struct device_templates templates;
+} br_device;
+
+/* BRenderModern:
+ * Some useful inline ops.
+ */
+#define DeviceSDL3Resource(d) (((br_device *)d)->res)
+
+#endif /* BRenderModern: BR_DEVICE_PRIVATE */
+#endif /* BRenderModern: _DEVICE_H_ */

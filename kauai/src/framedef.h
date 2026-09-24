@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -29,25 +29,25 @@
 #define MacWin(mac, win) win
 #define Mac(foo)
 #define Win(foo) foo
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Miscellaneous defines
 ***************************************************************************/
 #define kdzpInch 72
 #define klwSigPackedFile KLCONST4('k', 'a', 'p', 'a')
 #define klwSigUnpackedFile KLCONST4('k', 'a', 'u', 'p')
-#define stidNil 0xFFFFFFFF // nil string id
+#define stidNil 0xFFFFFFFF // 3DMMv1.0: nil string id
 #define kdtimSecond 60
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compression formats.
 ***************************************************************************/
 #define cfmtNil 0
 #define kcfmtKauai KLCONST4('K', 'C', 'D', 'C')
 #define kcfmtKauai2 KLCONST4('K', 'C', 'D', '2')
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     For flushing events.
 ***************************************************************************/
 #define fevtNil 0x00000000
@@ -55,15 +55,15 @@
 #define fevtKey 0x00000002
 #define kgrfevtAll 0xFFFFFFFF
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sound manager constants.
 ***************************************************************************/
-#define sclNil 0xFFFFFFFF   // nil sound class
-#define sqnNil 0xFFFFFFFF   // nil queue (for wild card)
-#define ksqnNone 0          // non-queued sound
-#define kvlmFull 0x00010000 // normal volume level
+#define sclNil 0xFFFFFFFF   // 3DMMv1.0: nil sound class
+#define sqnNil 0xFFFFFFFF   // 3DMMv1.0: nil queue (for wild card)
+#define ksqnNone 0          // 3DMMv1.0: non-queued sound
+#define kvlmFull 0x00010000 // 3DMMv1.0: normal volume level
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Cursor state constants.
         bits 0-7 are reserved by GUI Kauai.
         bits 8-15 are reserved by Kidspace Kauai.
@@ -82,7 +82,7 @@
 #define kgrfcustKid 0x0000FF00
 #define kgrfcustApp 0xFFFF0000
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Property id's.  For APPB::FSetProp and APPB::FGetProp.
 ***************************************************************************/
 #define kpridMaximized 1
@@ -90,7 +90,7 @@
 #define kpridToolTipDelay 3
 #define kpridReduceMouseJitter 4
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Transitions that Kauai knows how to do.
 ***************************************************************************/
 #define gftNil 0
@@ -100,54 +100,54 @@
 #define kgftFade 4
 #define kgftIris 5
 
-// transition directions for Wipe and Slide
-#define kgfdLeft 0x00      // 0000
-#define kgfdRight 0x05     // 0101
-#define kgfdUp 0x0A        // 1010
-#define kgfdDown 0x0F      // 1111
-#define kgfdLeftRight 0x04 // 0100
-#define kgfdRightLeft 0x01 // 0001
-#define kgfdUpDown 0x0E    // 1110
-#define kgfdDownUp 0x0B    // 1011
+// 3DMMv1.0: transition directions for Wipe and Slide
+#define kgfdLeft 0x00      // 3DMMv1.0: 0000
+#define kgfdRight 0x05     // 3DMMv1.0: 0101
+#define kgfdUp 0x0A        // 3DMMv1.0: 1010
+#define kgfdDown 0x0F      // 3DMMv1.0: 1111
+#define kgfdLeftRight 0x04 // 3DMMv1.0: 0100
+#define kgfdRightLeft 0x01 // 3DMMv1.0: 0001
+#define kgfdUpDown 0x0E    // 3DMMv1.0: 1110
+#define kgfdDownUp 0x0B    // 3DMMv1.0: 1011
 
-// transition directions for Iris
-#define kgfdOpen 0x00      // 00
-#define kgfdClose 0x03     // 11
-#define kgfdCloseOpen 0x01 // 01
-#define kgfdOpenClose 0x02 // 10
+// 3DMMv1.0: transition directions for Iris
+#define kgfdOpen 0x00      // 3DMMv1.0: 00
+#define kgfdClose 0x03     // 3DMMv1.0: 11
+#define kgfdCloseOpen 0x01 // 3DMMv1.0: 01
+#define kgfdOpenClose 0x02 // 3DMMv1.0: 10
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Standard command handler IDs.
         GUI Kauai reserves values below 10000.
         Kidspace Kauai reserves values below 20000.
         Values >= 20000 can be used by the application.
 ***************************************************************************/
-// The framework reserves values below khidLimFrame
+// 3DMMv1.0: The framework reserves values below khidLimFrame
 #define hidNil 0
 #define khidApp 1
 #define khidScreen 2
-#define khidMdi 3       // generic mdi windows should get this
-#define khidSizeBox 4   // all size boxes (WSBs) get this
-#define khidDialog 5    // for modal dialogs
-#define khidHScroll 6   // standard horizontal scroll bar
-#define khidVScroll 7   // standard vertical scroll bar
-#define khidDoc 8       // standard hid for a document
-#define khidDsg 9       // standard dsg (child of dmw)
-#define khidDdg 10      // standard ddg (child of dsg)
-#define khidDsspHorz 11 // standard horizontal document window split box
-#define khidDsspVert 12 // standard vertical document window split box
-#define khidDssm 13     // standard split mover
-#define khidDmw 14      // convenient for single DMW window
-#define khidDmd 15      // standard dmd
-#define khidEdit 16     // edit control
-#define khidToolTip 17  // tool tip
+#define khidMdi 3       // 3DMMv1.0: generic mdi windows should get this
+#define khidSizeBox 4   // 3DMMv1.0: all size boxes (WSBs) get this
+#define khidDialog 5    // 3DMMv1.0: for modal dialogs
+#define khidHScroll 6   // 3DMMv1.0: standard horizontal scroll bar
+#define khidVScroll 7   // 3DMMv1.0: standard vertical scroll bar
+#define khidDoc 8       // 3DMMv1.0: standard hid for a document
+#define khidDsg 9       // 3DMMv1.0: standard dsg (child of dmw)
+#define khidDdg 10      // 3DMMv1.0: standard ddg (child of dsg)
+#define khidDsspHorz 11 // 3DMMv1.0: standard horizontal document window split box
+#define khidDsspVert 12 // 3DMMv1.0: standard vertical document window split box
+#define khidDssm 13     // 3DMMv1.0: standard split mover
+#define khidDmw 14      // 3DMMv1.0: convenient for single DMW window
+#define khidDmd 15      // 3DMMv1.0: standard dmd
+#define khidEdit 16     // 3DMMv1.0: edit control
+#define khidToolTip 17  // 3DMMv1.0: tool tip
 
 #define khidLimFrame 10000
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky file constants.
 ***************************************************************************/
-// convenient to indicate none (chunk places no restrictions on these)
+// 3DMMv1.0: convenient to indicate none (chunk places no restrictions on these)
 #define cnoNil 0xFFFFFFFF
 #define ctgNil 0
 #define chidNil 0xFFFFFFFF
@@ -160,7 +160,7 @@
 #define kctgPictNative kctgMeta
 #endif
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command IDs
 
     Commands above 64K cannot be put on Win menus.
@@ -178,32 +178,32 @@
     at all.
 ***************************************************************************/
 
-// id of main key accelerator table (if one is used)
+// 3DMMv1.0: id of main key accelerator table (if one is used)
 #define acidMain 128
 
 #define cidNil 0
 
-// Windows MDI reserves ids 1-10, so start at 100
+// 3DMMv1.0: Windows MDI reserves ids 1-10, so start at 100
 
-// command IDs
+// 3DMMv1.0: command IDs
 #define wcidMinApp 100
 #define cidNew 100
 #define cidOpen 101
 #define cidClose 102
 #define cidSave 103
 #define cidSaveAs 104
-#define cidSaveCopy 105 // save a copy of the doc
+#define cidSaveCopy 105 // 3DMMv1.0: save a copy of the doc
 #define cidQuit 106
 #define cidAbout 107
 #define cidNewWnd 108
-#define cidCloseWnd 109      // just the current window, not the whole doc
-#define cidChooseWnd 110     // a dynamic list
-#define cidOpenDA 111        // (Mac only) a desk accessory list
-#define cidChooseFont 112    // a font menu list
-#define cidCexStopPlay 113   // stop playing a command stream
-#define cidCexStopRec 114    // stop recording a command stream
-#define cidCexPlayDone 115   // notify the world that play stopped
-#define cidCexRecordDone 116 // notify the world that record stopped
+#define cidCloseWnd 109      // 3DMMv1.0: just the current window, not the whole doc
+#define cidChooseWnd 110     // 3DMMv1.0: a dynamic list
+#define cidOpenDA 111        // 3DMMv1.0: (Mac only) a desk accessory list
+#define cidChooseFont 112    // 3DMMv1.0: a font menu list
+#define cidCexStopPlay 113   // 3DMMv1.0: stop playing a command stream
+#define cidCexStopRec 114    // 3DMMv1.0: stop recording a command stream
+#define cidCexPlayDone 115   // 3DMMv1.0: notify the world that play stopped
+#define cidCexRecordDone 116 // 3DMMv1.0: notify the world that record stopped
 #define cidSaveAndClose 117
 #define cidCut 118
 #define cidCopy 119
@@ -222,18 +222,18 @@
 #define cidUnderline 132
 #define cidUndo 133
 #define cidRedo 134
-#define cidChooseFontSize 135 // a dynamic list
+#define cidChooseFontSize 135 // 3DMMv1.0: a dynamic list
 #define cidPlain 136
-#define cidChooseSubSuper 137 // a dynamic list
+#define cidChooseSubSuper 137 // 3DMMv1.0: a dynamic list
 #define cidPrint 138
 #define cidPrintSetup 139
 #define cidPasteSpecial 140
 
-#define wcidListBase 50000 // for windows menu list handling
-#define dwcidList 500      // increment between list base values
-#define wcidLimApp 0xF000  // windows reserves larger values
+#define wcidListBase 50000 // 3DMMv1.0: for windows menu list handling
+#define dwcidList 500      // 3DMMv1.0: increment between list base values
+#define wcidLimApp 0xF000  // 3DMMv1.0: windows reserves larger values
 
-/****************************************
+/** 3DMMv1.0: **************************************
     non-menu, non-key invoked commands
     These commands cannot be put on
     menus
@@ -250,7 +250,7 @@
 #define cidClicked 100008
 #define cidEndModal 100009
 
-/****************************************
+/** 3DMMv1.0: **************************************
     no-repeat commands:
     when recording, multiple (identical)
     instances of these are recorded only
@@ -261,100 +261,100 @@
 
 #define cidLimNoRepeat 400000
 
-/****************************************
+/** 3DMMv1.0: **************************************
     no-record commands:
     when recording, don't record
     these at all.
 ****************************************/
 #define cidMinNoRecord 400000
 #define cidIdle 400000
-#define cidSelIdle 400001   // idle for settting/clearing selection.
-#define cidMouseMove 400002 // mouse moved
-#define cidRollOff 400003   // mouse rolled off the GOB
+#define cidSelIdle 400001   // 3DMMv1.0: idle for settting/clearing selection.
+#define cidMouseMove 400002 // 3DMMv1.0: mouse moved
+#define cidRollOff 400003   // 3DMMv1.0: mouse rolled off the GOB
 
 #define cidLimNoRecord 600000
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Error codes
 ***************************************************************************/
 
-/****************************************
+/** 3DMMv1.0: **************************************
     0 - 9999: Util-issued error codes
 ****************************************/
 
-// 00000 - 00099: low-memory errors
+// 3DMMv1.0: 00000 - 00099: low-memory errors
 #define ercNil 0xFFFFFFFF
 #define ercOomHq 0
 #define ercOomPv 1
 #define ercOomNew 2
 
-// 00100 - 00199: file errors
-#define ercFileGeneral 100   // enum files and check el's
-#define ercFilePerm 101      // can't set write permissions
-#define ercFileOpen 102      // can't open a file
-#define ercFileCreate 103    // can't create a file
-#define ercFileSwapNames 104 // FSwapNames failed
-#define ercFileRename 105    // FRename failed
-#define ercStnRead 106       // reading a string failed
+// 3DMMv1.0: 00100 - 00199: file errors
+#define ercFileGeneral 100   // 3DMMv1.0: enum files and check el's
+#define ercFilePerm 101      // 3DMMv1.0: can't set write permissions
+#define ercFileOpen 102      // 3DMMv1.0: can't open a file
+#define ercFileCreate 103    // 3DMMv1.0: can't create a file
+#define ercFileSwapNames 104 // 3DMMv1.0: FSwapNames failed
+#define ercFileRename 105    // 3DMMv1.0: FRename failed
+#define ercStnRead 106       // 3DMMv1.0: reading a string failed
 
-// 00200 - 00299: fni errors
-#define ercFniGeneral 200   // couldn't build an fni
-#define ercFniDelete 201    // delete failed
-#define ercFniRename 202    // rename failed
-#define ercFniMismatch 203  // requested dir is a file or file is dir
-#define ercFniHidden 204    // requested file/dir is hidden or alias
-#define ercFniDirCreate 205 // can't create directory
+// 3DMMv1.0: 00200 - 00299: fni errors
+#define ercFniGeneral 200   // 3DMMv1.0: couldn't build an fni
+#define ercFniDelete 201    // 3DMMv1.0: delete failed
+#define ercFniRename 202    // 3DMMv1.0: rename failed
+#define ercFniMismatch 203  // 3DMMv1.0: requested dir is a file or file is dir
+#define ercFniHidden 204    // 3DMMv1.0: requested file/dir is hidden or alias
+#define ercFniDirCreate 205 // 3DMMv1.0: can't create directory
 
-// 00300 - 00399: fne errors
+// 3DMMv1.0: 00300 - 00399: fne errors
 #define ercFneGeneral 300
 
-// 00400 - 00499: chunk errors
+// 3DMMv1.0: 00400 - 00499: chunk errors
 #define ercCflOpen 400
 #define ercCflCreate 401
 #define ercCflSave 402
 #define ercCflSaveCopy 403
 
-// 00500 - 00599: crf errors
+// 3DMMv1.0: 00500 - 00599: crf errors
 #define ercCrfCantLoad 500
 
-// 00600 - 00699: sound manager
+// 3DMMv1.0: 00600 - 00699: sound manager
 #define ercSndmCantInit 600
 #define ercSndmPartialInit 601
 #define ercSndamWaveDeviceBusy 602
 #define ercSndMidiDeviceBusy 603
 
-/*******************************************
+/** 3DMMv1.0: *****************************************
     10000 - 19999: Frame-issued error codes
 *******************************************/
 
-// 10000 - 10099: gdi errors
+// 3DMMv1.0: 10000 - 10099: gdi errors
 #define ercOomGdi 10000
 
-// 10100 - 10199: gfx errors
+// 3DMMv1.0: 10100 - 10199: gfx errors
 #define ercGfxCantDraw 10100
 #define ercGfxCantSetFont 10101
 #define ercGfxNoFontList 10102
 #define ercGfxCantSetPalette 10103
 
-// 10200 - 10299: dlg errors
+// 3DMMv1.0: 10200 - 10299: dlg errors
 #define ercDlgCantGetArgs 10200
 #define ercDlgCantFind 10201
 #define ercDlgOom 10202
 
-// 10300 - 10399: rtxd errors
+// 3DMMv1.0: 10300 - 10399: rtxd errors
 #define ercCantSave 10300
 #define ercRtxdTooMuchText 10301
 #define ercRtxdReadFailed 10302
 #define ercRtxdSaveFailed 10303
 
-// 11000 - 11999: misc errors
+// 3DMMv1.0: 11000 - 11999: misc errors
 #define ercCantOpenVideo 11000
 #define ercMbmpCantOpenBitmap 11001
 #define ercSpellNoDll 11002
 #define ercSpellNoDict 11003
 #define ercSpellNoUserDict 11004
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Custom window messages for testing
     WARNING: because of Chicago stupidity, these have to be less than 64K.
     Chicago truncates to 16 bits! Long live NT!
@@ -372,4 +372,4 @@
 #define WM_GOB_TYPE 0x0000400A
 #define WM_IS_GOB 0x0000400B
 
-#endif //! FRAMEDEF_H
+#endif //! 3DMMv1.0: FRAMEDEF_H

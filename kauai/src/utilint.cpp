@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,7 +17,7 @@
 
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Calculates the GCD of two longs.
 ***************************************************************************/
 int32_t LwGcd(int32_t lw1, int32_t lw2)
@@ -25,15 +25,15 @@ int32_t LwGcd(int32_t lw1, int32_t lw2)
     return LuGcd(LwAbs(lw1), LwAbs(lw2));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Calculates the GCD of two unsigned longs.
 ***************************************************************************/
 uint32_t LuGcd(uint32_t lu1, uint32_t lu2)
 {
-    // Euclidean algorithm - keep mod'ing until we hit zero
+    // 3DMMv1.0: Euclidean algorithm - keep mod'ing until we hit zero
     if (lu1 == 0)
     {
-        // if both are zero, return 1.
+        // 3DMMv1.0: if both are zero, return 1.
         return lu2 == 0 ? 1 : lu2;
     }
 
@@ -48,7 +48,7 @@ uint32_t LuGcd(uint32_t lu1, uint32_t lu2)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sort the two longs so the smaller is in *plw1.
 ***************************************************************************/
 void SortLw(int32_t *plw1, int32_t *plw2)
@@ -61,9 +61,9 @@ void SortLw(int32_t *plw1, int32_t *plw2)
     }
 }
 
-#ifndef MC_68020 // 68020 version in utilmc.asm
-#ifndef IN_80386 // 80386 version inline in utilint.h
-/***************************************************************************
+#ifndef MC_68020 // 3DMMv1.0: 68020 version in utilmc.asm
+#ifndef IN_80386 // 3DMMv1.0: 80386 version inline in utilint.h
+/** 3DMMv1.0: *************************************************************************
     Multiply lw by lwMul and divide by lwDiv without losing precision.
 ***************************************************************************/
 int32_t LwMulDiv(int32_t lw, int32_t lwMul, int32_t lwDiv)
@@ -76,7 +76,7 @@ int32_t LwMulDiv(int32_t lw, int32_t lwMul, int32_t lwDiv)
     return (int32_t)dou;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the quotient and set *plwRem to the remainder when (lw * lwMul)
     is divided by lwDiv.
 ***************************************************************************/
@@ -92,9 +92,9 @@ int32_t LwMulDivMod(int32_t lw, int32_t lwMul, int32_t lwDiv, int32_t *plwRem)
     Assert(dou <= klwMax && dou >= klwMin, "overflow in LwMulDiv");
     return (int32_t)dou;
 }
-#endif // IN_80386
+#endif // 3DMMv1.0: IN_80386
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Multiply two longs to get a 64 bit (signed) result.
 ***************************************************************************/
 void MulLw(int32_t lw1, int32_t lw2, int32_t *plwHigh, uint32_t *pluLow)
@@ -109,7 +109,7 @@ void MulLw(int32_t lw1, int32_t lw2, int32_t *plwHigh, uint32_t *pluLow)
 		mov		ebx,pluLow
 		mov		[ebx],eax
     }
-#else  //! IN_80386
+#else  //! 3DMMv1.0: IN_80386
     double dou;
     bool fNeg;
 
@@ -128,10 +128,10 @@ void MulLw(int32_t lw1, int32_t lw2, int32_t *plwHigh, uint32_t *pluLow)
             *plwHigh = ~*plwHigh;
         }
     }
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Multiply lu by luMul and divide by luDiv without losing precision.
 ***************************************************************************/
 uint32_t LuMulDiv(uint32_t lu, uint32_t luMul, uint32_t luDiv)
@@ -139,7 +139,7 @@ uint32_t LuMulDiv(uint32_t lu, uint32_t luMul, uint32_t luDiv)
     Assert(luDiv != 0, "divide by zero error");
 
 #ifdef IN_80386
-    // REVIEW shonk: this will fault on overflow!
+    // 3DMMv1.0: REVIEW shonk: this will fault on overflow!
     __asm
     {
 		mov		eax,lu
@@ -148,16 +148,16 @@ uint32_t LuMulDiv(uint32_t lu, uint32_t luMul, uint32_t luDiv)
 		mov		lu,eax
     }
     return lu;
-#else  //! IN_80386
+#else  //! 3DMMv1.0: IN_80386
     double dou;
 
     dou = (double)lu * luMul / luDiv;
     Assert(dou <= kluMax && dou >= 0, "overflow in LuMulDiv");
     return (uint32_t)dou;
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Multiply two unsigned longs to get a 64 bit (unsigned) result.
 ***************************************************************************/
 void MulLu(uint32_t lu1, uint32_t lu2, uint32_t *pluHigh, uint32_t *pluLow)
@@ -172,17 +172,17 @@ void MulLu(uint32_t lu1, uint32_t lu2, uint32_t *pluHigh, uint32_t *pluLow)
 		mov		ebx,pluLow
 		mov		[ebx],eax
     }
-#else  //! IN_80386
+#else  //! 3DMMv1.0: IN_80386
     double dou;
 
     dou = (double)lu1 * lu2;
     *pluHigh = (uint32_t)(dou / ((double)0x10000 * 0x10000));
     *pluLow = dou - *pluHigh * ((double)0x10000 * 0x10000);
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
-#endif //! MC_68020
+#endif //! 3DMMv1.0: MC_68020
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Does a multiply and divide without losing precision, rounding away from
     zero during the divide.
 ***************************************************************************/
@@ -194,7 +194,7 @@ int32_t LwMulDivAway(int32_t lw, int32_t lwMul, int32_t lwDiv)
     lwT = LwMulDivMod(lw, lwMul, lwDiv, &lwRem);
     if (lwRem != 0)
     {
-        // divide wasn't exact
+        // 3DMMv1.0: divide wasn't exact
         if (lwT < 0)
             lwT--;
         else
@@ -204,7 +204,7 @@ int32_t LwMulDivAway(int32_t lw, int32_t lwMul, int32_t lwDiv)
     return lwT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Does a multiply and divide without losing precision, rounding away from
     zero during the divide.
 ***************************************************************************/
@@ -213,7 +213,7 @@ uint32_t LuMulDivAway(uint32_t lu, uint32_t luMul, uint32_t luDiv)
     Assert(luDiv != 0, "divide by zero error");
     uint32_t luT;
 
-    // get rid of common factors
+    // 3DMMv1.0: get rid of common factors
     if (1 < (luT = LuGcd(lu, luDiv)))
     {
         lu /= luT;
@@ -228,14 +228,14 @@ uint32_t LuMulDivAway(uint32_t lu, uint32_t luMul, uint32_t luDiv)
     return LuMulDiv(lu, luMul, luDiv) + (luDiv > 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns lwNum divided by lwDen rounded away from zero.
 ***************************************************************************/
 int32_t LwDivAway(int32_t lwNum, int32_t lwDen)
 {
     Assert(lwDen != 0, "divide by zero");
 
-    // make sure lwDen is greater than zero
+    // 3DMMv1.0: make sure lwDen is greater than zero
     if (lwDen < 0)
     {
         lwDen = -lwDen;
@@ -248,14 +248,14 @@ int32_t LwDivAway(int32_t lwNum, int32_t lwDen)
     return lwNum / lwDen;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns lwNum divided by lwDen rounded toward the closest integer.
 ***************************************************************************/
 int32_t LwDivClosest(int32_t lwNum, int32_t lwDen)
 {
     Assert(lwDen != 0, "divide by zero");
 
-    // make sure lwDen is greater than zero
+    // 3DMMv1.0: make sure lwDen is greater than zero
     if (lwDen < 0)
     {
         lwDen = -lwDen;
@@ -268,7 +268,7 @@ int32_t LwDivClosest(int32_t lwNum, int32_t lwDen)
     return lwNum / lwDen;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rounds lwSrc to a multiple of lwBase.  The rounding is done away from
     zero.  Equivalent to LwDivAway(lwSrc, lwBase) * lwBase.
 ***************************************************************************/
@@ -276,7 +276,7 @@ int32_t LwRoundAway(int32_t lwSrc, int32_t lwBase)
 {
     Assert(lwBase != 0, "divide by zero");
 
-    // make sure lwBase is greater than zero
+    // 3DMMv1.0: make sure lwBase is greater than zero
     if (lwBase < 0)
         lwBase = -lwBase;
     if (lwSrc < 0)
@@ -286,7 +286,7 @@ int32_t LwRoundAway(int32_t lwSrc, int32_t lwBase)
     return lwSrc - (lwSrc % lwBase);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rounds lwSrc to a multiple of lwBase.  The rounding is done toward zero.
     Equivalent to (lwSrc / lwBase) * lwBase.
 ***************************************************************************/
@@ -294,13 +294,13 @@ int32_t LwRoundToward(int32_t lwSrc, int32_t lwBase)
 {
     Assert(lwBase != 0, "divide by zero");
 
-    // make sure lwBase is greater than zero
+    // 3DMMv1.0: make sure lwBase is greater than zero
     if (lwBase < 0)
         lwBase = -lwBase;
     return lwSrc - (lwSrc % lwBase);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rounds lwSrc to the closest multiple of lwBase.
     Equivalent to LwDivClosest(lwSrc, lwBase) * lwBase.
 ***************************************************************************/
@@ -308,7 +308,7 @@ int32_t LwRoundClosest(int32_t lwSrc, int32_t lwBase)
 {
     Assert(lwBase != 0, "divide by zero");
 
-    // make sure lwBase is greater than zero
+    // 3DMMv1.0: make sure lwBase is greater than zero
     if (lwBase < 0)
         lwBase = -lwBase;
     if (lwSrc < 0)
@@ -318,14 +318,14 @@ int32_t LwRoundClosest(int32_t lwSrc, int32_t lwBase)
     return lwSrc - (lwSrc % lwBase);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns fcmpGt, fcmpEq or fcmpLt according to whether (lwNum1 / lwDen2)
     is greater than, equal to or less than (lwNum2 / lwDen2).
 ***************************************************************************/
 uint32_t FcmpCompareFracs(int32_t lwNum1, int32_t lwDen1, int32_t lwNum2, int32_t lwDen2)
 {
-    int32_t lwHigh1, lwHigh2; // must be signed
-    uint32_t luLow1, luLow2;  // must be unsigned
+    int32_t lwHigh1, lwHigh2; // 3DMMv1.0: must be signed
+    uint32_t luLow1, luLow2;  // 3DMMv1.0: must be unsigned
 
     MulLw(lwNum1, lwDen2, &lwHigh1, &luLow1);
     MulLw(lwNum2, lwDen1, &lwHigh2, &luLow2);
@@ -335,8 +335,8 @@ uint32_t FcmpCompareFracs(int32_t lwNum1, int32_t lwDen1, int32_t lwNum2, int32_
     if (lwHigh1 < lwHigh2)
         return fcmpLt;
 
-    // the high 32 bits are the same, so just compare the low 32 bits
-    // (as unsigned longs)
+    // 3DMMv1.0: the high 32 bits are the same, so just compare the low 32 bits
+    // 3DMMv1.0: (as unsigned longs)
     Assert(lwHigh1 == lwHigh2, 0);
     if (luLow1 > luLow2)
         return fcmpGt;
@@ -345,7 +345,7 @@ uint32_t FcmpCompareFracs(int32_t lwNum1, int32_t lwDen1, int32_t lwNum2, int32_
     return fcmpEq;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adjusts an index after an edit.  *piv is the index to adjust, iv is
     the index where the edit occurred, cvIns is the number of things inserted
     and cvDel is the number deleted.  Returns true iff *piv is not in
@@ -371,7 +371,7 @@ bool FAdjustIv(int32_t *piv, int32_t iv, int32_t cvIns, int32_t cvDel)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Multiplies two longs.  Asserts on overflow.
 ***************************************************************************/
 int32_t LwMul(int32_t lw1, int32_t lw2)
@@ -382,7 +382,7 @@ int32_t LwMul(int32_t lw1, int32_t lw2)
     return lw1 * lw2;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Asserts that the lw is >= lwMin and < lwLim.
 ***************************************************************************/
 void AssertIn(int32_t lw, int32_t lwMin, int32_t lwLim)
@@ -390,9 +390,9 @@ void AssertIn(int32_t lw, int32_t lwMin, int32_t lwLim)
     Assert(lw >= lwMin, "long too small");
     Assert(lw < lwLim, "long too big");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap bytes in pv according to bom.  bom consists of up to 16
     2-bit opcodes (packed from hi bit to low bit).  The high bit of
     each opcode indicates a long field (1) or short field (0).  The low
@@ -409,7 +409,7 @@ void SwapBytesBom(void *pv, BOM bom)
     {
         if (bom & 0x80000000L)
         {
-            // long field
+            // 3DMMv1.0: long field
             AssertPvCb(pb, 4);
             if (bom & 0x40000000L)
             {
@@ -424,7 +424,7 @@ void SwapBytesBom(void *pv, BOM bom)
         }
         else
         {
-            // short field
+            // 3DMMv1.0: short field
             AssertPvCb(pb, 2);
             if (bom & 0x40000000L)
             {
@@ -438,7 +438,7 @@ void SwapBytesBom(void *pv, BOM bom)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap bytes within an array of short words.
 ***************************************************************************/
 void SwapBytesRgsw(void *psw, int32_t csw)
@@ -457,7 +457,7 @@ void SwapBytesRgsw(void *psw, int32_t csw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap bytes within an array of long words.
 ***************************************************************************/
 void SwapBytesRglw(void *plw, int32_t clw)
@@ -481,7 +481,7 @@ void SwapBytesRglw(void *plw, int32_t clw)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Asserts that the given BOM indicates a struct having cb/SIZEOF(int32_t) longs
     to be swapped (so SwapBytesRglw can legally be used on an array of
     these).
@@ -498,7 +498,7 @@ void AssertBomRglw(BOM bom, int32_t cb)
     Assert(bomT == bom, "wrong bom");
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Asserts that the given BOM indicates a struct having cb/SIZEOF(int16_t) shorts
     to be swapped (so SwapBytesRgsw can legally be used on an array of
     these).
@@ -514,10 +514,10 @@ void AssertBomRgsw(BOM bom, int32_t cb)
     bomT = 0x55555555 << 2 * (16 - csw);
     Assert(bomT == bom, "wrong bom");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifdef WIN32
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Truncates a util point to a system point.
     REVIEW shonk: should we assert on truncation?  Should we truncate
     on windows?
@@ -533,7 +533,7 @@ PT::operator POINT(void)
     return pts;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copies a system point to a util point.
 ***************************************************************************/
 PT &PT::operator=(POINT &pts)
@@ -544,9 +544,9 @@ PT &PT::operator=(POINT &pts)
     return *this;
 }
 
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a point from prcSrc coordinates to prcDst coordinates.
 ***************************************************************************/
 void PT::Map(RC *prcSrc, RC *prcDst)
@@ -578,7 +578,7 @@ void PT::Map(RC *prcSrc, RC *prcDst)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a point from prcSrc coordinates to prcDst coordinates.
 ***************************************************************************/
 PT PT::PtMap(RC *prcSrc, RC *prcDst)
@@ -589,7 +589,7 @@ PT PT::PtMap(RC *prcSrc, RC *prcDst)
     return pt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Transform the xp and yp values according to grfpt.  Negating comes
     before transposition.
 ***************************************************************************/
@@ -610,7 +610,7 @@ void PT::Transform(uint32_t grfpt)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check for equality, special casing empty.
 ***************************************************************************/
 bool RC::operator==(RC &rc)
@@ -623,7 +623,7 @@ bool RC::operator==(RC &rc)
     return xpLeft == rc.xpLeft && ypTop == rc.ypTop && xpRight == rc.xpRight && ypBottom == rc.ypBottom;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check for non-equality, special casing empty.
 ***************************************************************************/
 bool RC::operator!=(RC &rc)
@@ -636,7 +636,7 @@ bool RC::operator!=(RC &rc)
     return xpLeft != rc.xpLeft || ypTop != rc.ypTop || xpRight != rc.xpRight || ypBottom != rc.ypBottom;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unionize the rects.
 ***************************************************************************/
 void RC::Union(RC *prc1, RC *prc2)
@@ -649,7 +649,7 @@ void RC::Union(RC *prc1, RC *prc2)
     Union(prc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unionize the rects.
 ***************************************************************************/
 void RC::Union(RC *prc)
@@ -657,7 +657,7 @@ void RC::Union(RC *prc)
     AssertThisMem();
     AssertVarMem(prc);
 
-    // if a rect is empty, it shouldn't contribute to the union
+    // 3DMMv1.0: if a rect is empty, it shouldn't contribute to the union
     if (!prc->FEmpty())
     {
         if (FEmpty())
@@ -672,7 +672,7 @@ void RC::Union(RC *prc)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Intersect the rects and return whether the result is non-empty.
 ***************************************************************************/
 bool RC::FIntersect(RC *prc1, RC *prc2)
@@ -694,7 +694,7 @@ bool RC::FIntersect(RC *prc1, RC *prc2)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Intersect this rect with the given rect and return whether the result
     is non-empty.
 ***************************************************************************/
@@ -716,7 +716,7 @@ bool RC::FIntersect(RC *prc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Inset a rectangle (into another)
 ***************************************************************************/
 void RC::InsetCopy(RC *prc, int32_t dxp, int32_t dyp)
@@ -730,7 +730,7 @@ void RC::InsetCopy(RC *prc, int32_t dxp, int32_t dyp)
     ypBottom = prc->ypBottom - dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Inset a rectangle (in place)
 ***************************************************************************/
 void RC::Inset(int32_t dxp, int32_t dyp)
@@ -743,7 +743,7 @@ void RC::Inset(int32_t dxp, int32_t dyp)
     ypBottom -= dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map this rectangle through the two rectangles (from prcSrc
     coordinates to prcDst coordinates).  This cannot be either prcSrc
     or prcDst.
@@ -781,7 +781,7 @@ void RC::Map(RC *prcSrc, RC *prcDst)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Transform the xp and yp values according to grfpt.  Negating comes
     before transposition.
 ***************************************************************************/
@@ -813,7 +813,7 @@ void RC::Transform(uint32_t grfpt)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move a rectangle (into another)
 ***************************************************************************/
 void RC::OffsetCopy(RC *prc, int32_t dxp, int32_t dyp)
@@ -827,7 +827,7 @@ void RC::OffsetCopy(RC *prc, int32_t dxp, int32_t dyp)
     ypBottom = prc->ypBottom + dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move a rectangle (in place)
 ***************************************************************************/
 void RC::Offset(int32_t dxp, int32_t dyp)
@@ -840,7 +840,7 @@ void RC::Offset(int32_t dxp, int32_t dyp)
     ypBottom += dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the rectangle so the top left is (0, 0).
 ***************************************************************************/
 void RC::OffsetToOrigin(void)
@@ -852,7 +852,7 @@ void RC::OffsetToOrigin(void)
     xpLeft = ypTop = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move this rectangle so it is centered over *prcBase.
 ***************************************************************************/
 void RC::CenterOnRc(RC *prcBase)
@@ -868,7 +868,7 @@ void RC::CenterOnRc(RC *prcBase)
     ypBottom = ypTop + dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Centers this rectangle on (xp, yp).
 ***************************************************************************/
 void RC::CenterOnPt(int32_t xp, int32_t yp)
@@ -883,7 +883,7 @@ void RC::CenterOnPt(int32_t xp, int32_t yp)
     ypBottom = ypTop + dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Center this rectangle over *prcBase.  If it doesn't fit inside *prcBase,
     scale it down so it does.
 ***************************************************************************/
@@ -898,7 +898,7 @@ void RC::SqueezeIntoRc(RC *prcBase)
         StretchToRc(prcBase);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scale this rectangle proportionally (and translate it) so it is centered
     on *prcBase and as large as possible but still inside *prcBase.
 ***************************************************************************/
@@ -920,13 +920,13 @@ void RC::StretchToRc(RC *prcBase)
 
     if (FcmpCompareFracs(dxp, dyp, dxpBase, dypBase) & fcmpLt)
     {
-        // height dominated
+        // 3DMMv1.0: height dominated
         dxp = LwMulDiv(dxp, dypBase, dyp);
         dyp = dypBase;
     }
     else
     {
-        // width dominated
+        // 3DMMv1.0: width dominated
         dyp = LwMulDiv(dyp, dxpBase, dxp);
         dxp = dxpBase;
     }
@@ -935,7 +935,7 @@ void RC::StretchToRc(RC *prcBase)
     CenterOnRc(prcBase);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the given point is in the rectangle
 ***************************************************************************/
 bool RC::FPtIn(int32_t xp, int32_t yp)
@@ -945,7 +945,7 @@ bool RC::FPtIn(int32_t xp, int32_t yp)
     return xp >= xpLeft && xp < xpRight && yp >= ypTop && yp < ypBottom;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pin the point to the rectangle.
 ***************************************************************************/
 void RC::PinPt(PT *ppt)
@@ -957,7 +957,7 @@ void RC::PinPt(PT *ppt)
     ppt->yp = LwBound(ppt->yp, ypTop, ypBottom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pin this rectangle to the given one.
 ***************************************************************************/
 void RC::PinToRc(RC *prc)
@@ -974,7 +974,7 @@ void RC::PinToRc(RC *prc)
 
 #ifdef WIN32
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copies a system rectangle to a util rectangle.
 ***************************************************************************/
 RC &RC::operator=(RECT &rcs)
@@ -988,7 +988,7 @@ RC &RC::operator=(RECT &rcs)
     return *this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Truncates util rectangle to a system rectangle.
     REVIEW shonk: should we assert on truncation?
 ***************************************************************************/
@@ -1004,11 +1004,11 @@ RC::operator RECT(void)
     return rcs;
 }
 
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 
 #ifdef KAUAI_SDL
 
-// Convert from an SDL rectangle
+// 3DMMEx: Convert from an SDL rectangle
 RC &RC::operator=(SDL_Rect &rcs)
 {
     AssertThisMem();
@@ -1020,7 +1020,7 @@ RC &RC::operator=(SDL_Rect &rcs)
     return *this;
 }
 
-// Convert to an SDL rectangle
+// 3DMMEx: Convert to an SDL rectangle
 RC::operator SDL_Rect(void)
 {
     AssertThisMem();
@@ -1033,9 +1033,9 @@ RC::operator SDL_Rect(void)
     return rect;
 }
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the area of the rectangle.
 ***************************************************************************/
 int32_t RC::LwArea(void)
@@ -1047,7 +1047,7 @@ int32_t RC::LwArea(void)
     return LwMul(xpRight - xpLeft, ypBottom - ypTop);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether this rectangle fully contains *prc.
 ***************************************************************************/
 bool RC::FContains(RC *prc)
@@ -1059,7 +1059,7 @@ bool RC::FContains(RC *prc)
            prc->xpLeft >= xpLeft && prc->xpRight <= xpRight && prc->ypTop >= ypTop && prc->ypBottom <= ypBottom;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Imagine *prcSrc divided into a crcWidth by crcHeight grid.  This sets
     this rc to the (ircWidth, ircHeight) cell of the grid.  prcSrc cannot
     be equal to this.
@@ -1080,7 +1080,7 @@ void RC::SetToCell(RC *prcSrc, int32_t crcWidth, int32_t crcHeight, int32_t ircW
     ypBottom = prcSrc->ypTop + LwMulDiv(prcSrc->Dyp(), ircHeight + 1, crcHeight);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines which cell the given (xp, yp) is in.  This is essentially
     the inverse of SetToCell.
 ***************************************************************************/
@@ -1101,7 +1101,7 @@ bool RC::FMapToCell(int32_t xp, int32_t yp, int32_t crcWidth, int32_t crcHeight,
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Asserts the validity of a fraction.
 ***************************************************************************/
 void RAT::AssertValid(uint32_t grf)
@@ -1110,9 +1110,9 @@ void RAT::AssertValid(uint32_t grf)
     int32_t lwGcd = LwGcd(_lwNum, _lwDen);
     Assert(lwGcd == 1, "fraction not in lowest terms");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the master clock.
 ***************************************************************************/
 USAC::USAC(void)
@@ -1123,7 +1123,7 @@ USAC::USAC(void)
     _luScale = kluTimeScaleNormal;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current application time.
 ***************************************************************************/
 uint32_t USAC::TsCur(void)
@@ -1141,7 +1141,7 @@ uint32_t USAC::TsCur(void)
     return _tsBaseApp + dtsSys;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scale the time.
 ***************************************************************************/
 void USAC::Scale(uint32_t luScale)
@@ -1152,7 +1152,7 @@ void USAC::Scale(uint32_t luScale)
     if (luScale == _luScale)
         return;
 
-    // set the _tsBaseSys and _tsBaseApp to now and set _luScale to luScale.
+    // 3DMMv1.0: set the _tsBaseSys and _tsBaseApp to now and set _luScale to luScale.
     tsSys = TsCurrentSystem();
     dts = tsSys - _tsBaseSys;
     if (_luScale != kluTimeScaleNormal)
@@ -1166,7 +1166,7 @@ void USAC::Scale(uint32_t luScale)
     _luScale = luScale;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the DVER structure.
 ***************************************************************************/
 void DVER::Set(int16_t swCur, int16_t swBack)
@@ -1175,7 +1175,7 @@ void DVER::Set(int16_t swCur, int16_t swBack)
     _swCur = swCur;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines if the DVER structure is compatible with (swCur and swMin).
     Asserts that 0 <= swMin <= swCur.
 ***************************************************************************/

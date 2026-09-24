@@ -1,0 +1,473 @@
+// BRender: Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+//
+// BRender: $Id: dev_objs.hpp 1.7 1998/11/17 15:58:54 jon Exp $
+// BRender: $Locker: $
+//
+// BRender: C++ Classes for BRender device interface
+// BRender: Various structures and dispatch tables used to represent device objects
+//
+// BRender: The formatting of this file is important - it is parsed by classgen.pl to
+// BRender: produce C headers.
+
+// BRenderModern: clang-format off
+
+
+#ifndef __CLASSGEN__
+#	define CG_PUBLIC
+#endif
+
+class br_object;
+class br_object_container;
+class br_device;
+class br_facility;
+class br_output_facility;
+class br_device_pixelmap;
+class br_device_clut;
+class br_renderer_facility;
+class br_renderer;
+
+class br_geometry;
+class br_geometry_format;
+
+class br_geometry_stored;
+class br_renderer_state_stored;
+class br_map_stored;
+class br_table_stored;
+
+struct br_tv_template;
+struct br_tv_match_info;
+
+// BRender: The root abstract base class for all device objects
+//
+// BRender: Supports queries about the object, both for a few specific
+// BRender: things (identifer, type & devce), and a more general set of
+// BRender: token/value queries
+
+class br_object {
+	public:
+		// BRender: Four slots reserved for the device implementor
+		//
+		virtual	void BR_METHOD _reserved0(void);
+		virtual	void BR_METHOD _reserved1(void);
+		virtual	void BR_METHOD _reserved2(void);
+		virtual	void BR_METHOD _reserved3(void);
+
+		virtual	void BR_METHOD free(void);
+		virtual	const char * BR_METHOD identifier(void);
+		virtual	br_token BR_METHOD type(void);
+		virtual	br_boolean BR_METHOD isType(br_token t);
+		virtual	class br_device * BR_METHOD device(void);
+		virtual	br_size_t BR_METHOD space(void);
+
+	protected:
+		virtual	struct br_tv_template * BR_METHOD templateQuery(void) = 0;
+
+	public:
+		virtual	br_error BR_METHOD query(void *pvalue, br_token t);
+		virtual	br_error BR_METHOD queryBuffer(void *pvalue, void *buffer, br_size_t buffer_size, br_token t);
+		virtual	br_error BR_METHOD queryMany(br_token_value *tv, void *extra, br_size_t extra_size, br_int_32 *pcount);
+		virtual	br_error BR_METHOD queryManySize(br_size_t *pextra_size, br_token_value *tv);
+		virtual	br_error BR_METHOD queryAll(br_token_value *buffer, br_size_t buffer_size);
+		virtual	br_error BR_METHOD queryAllSize(br_size_t *psize);
+};
+
+// BRender: Abstract base class for an obect that can contain other objects
+// BRender: Allows objects to be added, removed and enumerated.
+
+class br_object_container : public br_object {
+	protected:
+		virtual	void * BR_METHOD listQuery(void) = 0;
+		virtual	void * BR_METHOD tokensMatchBegin(br_token t, br_token_value *tv);
+		virtual	br_boolean BR_METHOD tokensMatch(class br_object *h, void *arg);
+		virtual	void BR_METHOD tokensMatchEnd(void *arg);
+		virtual	const struct br_tv_match_info* BR_METHOD tokensMatchInfoQuery(void);
+
+	public:
+		virtual	br_error BR_METHOD addFront(class br_object *h);
+		virtual	br_error BR_METHOD removeFront(class br_object **h);
+		virtual	br_error BR_METHOD remove(class br_object *h);
+		virtual br_error BR_METHOD find(class br_object **ph, br_token type, const char *pattern, br_token_value *tv);
+		virtual br_error BR_METHOD findMany(class br_object **objects, br_int_32 max_objects,
+			br_int_32 *pnum_objects, br_token type, const char *pattern, br_token_value *tv);
+		virtual br_error BR_METHOD count(br_int_32 *pcount, br_token type, const char *pattern, br_token_value *tv);
+};
+
+// BRender: The device object - contains the various type objects
+// BRender: for services the device has on offer
+
+class br_device : public br_object_container {
+	public:
+};
+
+// BRender: Some facility that a device supports
+
+class br_facility : public br_object_container {
+	public:
+};
+
+// BRender: A type of output that a device supports. (typically this would
+// BRender: corespond to a screen mode).
+//
+// BRender: device_pixelmaps (and, if supported, CLUTs) can be instantiated from this
+
+class br_output_facility : public br_facility {
+	public:
+		virtual br_error BR_METHOD validSource(br_boolean *bp, class br_object *h);
+		virtual br_error BR_METHOD pixelmapNew(class br_device_pixelmap **ppmap, br_token_value *tv);
+		virtual br_error BR_METHOD clutNew(class br_device_clut **pclut, br_token_value *tv);
+		virtual br_error BR_METHOD queryCapability(br_token_value *buffer_in, br_token_value *buffer_out,
+			br_size_t size_buffer_out);
+};
+
+// BRender: A drawable surface - compatibile with br_pixelmap. May represent
+// BRender: the screen, the off-screen buffer a depth buffer or others.
+
+class br_device_pixelmap : public br_object {
+
+	public:
+
+	// BRender: Public fields for compatibility with br_pixelmap
+
+		CG_PUBLIC char *pm_identifier ;
+		CG_PUBLIC BR_PIXELMAP_MEMBERS
+
+		virtual br_error BR_METHOD validSource(br_boolean *bp, class br_object *h);
+
+		virtual br_error BR_METHOD resize(br_int_32 width, br_int_32 height);
+		virtual br_error BR_METHOD match(class br_device_pixelmap **newpm, br_token_value *tv);
+		virtual br_error BR_METHOD allocateSub(class br_device_pixelmap **newpm, br_rectangle *rect);
+
+
+	// BRender: Operations on whole pixemap (with versions that include a hint dirty rectangle)
+
+		virtual br_error BR_METHOD copy(class br_device_pixelmap *src);
+		virtual br_error BR_METHOD copyTo(class br_device_pixelmap *src);
+		virtual br_error BR_METHOD copyFrom(class br_device_pixelmap *src);
+		virtual br_error BR_METHOD fill(br_uint_32 colour);
+		virtual br_error BR_METHOD doubleBuffer(class br_device_pixelmap *src);
+
+		virtual br_error BR_METHOD copyDirty(class br_device_pixelmap *src, br_rectangle *dirty, br_int_32 num_rects);
+		virtual br_error BR_METHOD copyToDirty(class br_device_pixelmap *src, br_rectangle *dirty, br_int_32 num_rects);
+		virtual br_error BR_METHOD copyFromDirty(class br_device_pixelmap *src, br_rectangle *dirty, br_int_32 num_rects);
+		virtual br_error BR_METHOD fillDirty(br_uint_32 colour, br_rectangle *dirty, br_int_32 num_rects);
+		virtual br_error BR_METHOD doubleBufferDirty(class br_device_pixelmap *src, br_rectangle *dirty, br_int_32 num_rects);
+
+
+	// BRender: Direct 2D rendering operations
+
+		virtual br_error BR_METHOD rectangle(br_rectangle *rect, br_uint_32 colour);
+		virtual br_error BR_METHOD rectangle2(br_rectangle *rect, br_uint_32 colour_tl, br_uint_32 colour_br);
+
+		// BRenderModern: Device -> device non-stretch
+		virtual br_error BR_METHOD rectangleCopy(br_point *p, class br_device_pixelmap *src, br_rectangle *src_rect);
+		// BRenderModern: Memory -> device non-stretch
+		virtual br_error BR_METHOD rectangleCopyTo(br_point *p, class br_device_pixelmap *src, br_rectangle *src_rect);
+		// BRenderModern: Device -> Memory non-stretch, device pixels non-addressable
+		// BRenderModern:   If pixels were addressable, would go via rectangleCopyTo() on the other pixelmap.
+		virtual br_error BR_METHOD rectangleCopyFrom(br_point *p, class br_device_pixelmap *src, br_rectangle *src_rect);
+
+		// BRenderModern: Device -> device stretch
+		virtual br_error BR_METHOD rectangleStretchCopy(br_rectangle *r,class br_device_pixelmap *s,br_rectangle *q);
+		// BRenderModern: Memory -> device stretch
+		virtual br_error BR_METHOD rectangleStretchCopyTo(br_rectangle *r,class br_device_pixelmap *s,br_rectangle *q);
+		// BRenderModern: Device -> Memory stretch, device pixels non-addressable
+		// BRenderModern:   If pixels were addressable, would go via rectangleCopyTo() on the other pixelmap.
+		virtual br_error BR_METHOD rectangleStretchCopyFrom(br_rectangle *src_rect,class br_device_pixelmap *dst,br_rectangle *dst_rect);
+
+		virtual br_error BR_METHOD rectangleFill(br_rectangle *rect, br_uint_32 colour);
+
+		virtual br_error BR_METHOD pixelSet(br_point *point, br_uint_32 colour);
+
+		virtual br_error BR_METHOD line(br_point *start, br_point *end, br_uint_32 colour);
+
+		virtual br_error BR_METHOD copyBits(br_point *point,
+			const br_uint_8 *src, br_uint_16 s_stride,
+			br_rectangle *bit_rect,
+			br_uint_32 colour);
+
+
+	// BRender: Text
+
+		virtual br_error BR_METHOD text(br_point *point, br_font *font, const char *text, br_uint_32 colour);
+		virtual br_error BR_METHOD textBounds(br_rectangle *rect, struct br_font *font, const char *text);
+
+
+	// BRender: Row read/write
+
+		virtual br_error BR_METHOD rowSize(br_size_t *size);
+		virtual br_error BR_METHOD rowSet(void *buffer, br_size_t buffer_size, br_uint_32 row);
+		virtual br_error BR_METHOD rowQuery(void *buffer, br_size_t buffer_size, br_uint_32 row);
+
+
+	// BRender: Reading back
+
+		virtual br_error BR_METHOD pixelQuery(br_uint_32 *pcolour, br_point *point);
+		virtual br_error BR_METHOD pixelAddressQuery(void **pptr, br_uint_32 *pqual, br_point *point);
+
+
+	// BRender: Updating the pixelmap
+
+		virtual br_error BR_METHOD pixelAddressSet(void *ptr, br_uint_32 *qual);
+		virtual br_error BR_METHOD originSet(br_point *p);
+
+
+	// BRender: Flush any cached output
+
+		virtual br_error BR_METHOD flush(void);
+
+	// BRender: Syncronisation
+
+		virtual br_error BR_METHOD synchronise(br_token sync_type, br_boolean block);
+
+	// BRender: Locking/unlocking for direct pixel access
+	//
+		virtual br_error BR_METHOD directLock(br_boolean block);
+		virtual br_error BR_METHOD directUnlock(void);
+
+	// BRender: Locking/unlocking for direct pixel access
+	//
+		virtual br_error BR_METHOD getControls(br_display_controls *controls);
+		virtual br_error BR_METHOD setControls(br_display_controls *controls);
+
+	// BRenderModern: Handle an event for our attached window, e.g. the user resized it
+	//
+		virtual br_error BR_METHOD handleWindowEvent(void *arg);
+};
+
+// BRender: A device Colour LookUp Table
+//
+// BRender: There may be multiple instances of this, if the device supports
+// BRender: it. (eg: CLUT per wndows)
+
+class br_device_clut : public br_object {
+	public:
+		virtual br_error BR_METHOD entrySet(br_int_32 index, br_colour entry);
+		virtual br_error BR_METHOD entryQuery(br_colour *entry, br_int_32 index);
+		virtual br_error BR_METHOD entrySetMany(br_int_32 index, br_int_32 count, br_colour *entries);
+		virtual br_error BR_METHOD entryQueryMany(br_colour *entries, br_int_32 index, br_int_32 count);
+};
+
+// BRender: A type of renderer - this class contains all instaniated renderers
+// BRender: of this type, and the stored maps, tables and states associated
+// BRender: with this type of renderer
+
+class br_renderer_facility : public br_facility {
+	public:
+		virtual br_error BR_METHOD validDestination(br_boolean *bp, class br_object *h);
+		virtual br_error BR_METHOD rendererNew(class br_renderer **prenderer, br_token_value *tv);
+};
+
+// BRender: An active renderer
+
+class br_renderer : public br_object_container {
+	public:
+
+		virtual br_error BR_METHOD validDestination(br_boolean *bp, class br_object *h);
+
+	// BRender: Creating new stored states
+
+		virtual br_error BR_METHOD stateStoredNew(class br_renderer_state_stored **pstate,
+				br_uint_32 mask, br_token_value *tv);
+		virtual br_error BR_METHOD stateStoredAvail(br_int_32 *psize, br_uint_32 mask, br_token_value *tv);
+
+	// BRender: Creating new stored input buffers
+
+		virtual br_error BR_METHOD bufferStoredNew(class br_buffer_stored **rtp,
+			br_token use, class br_device_pixelmap *pm, br_token_value *tv);
+
+		virtual br_error BR_METHOD bufferStoredAvail(br_int_32 *space,
+			br_token use, br_token_value *tv);
+
+	// BRender: Writing current state
+		virtual br_error BR_METHOD partSet(br_token part, br_int_32 index, br_token t, br_value value);
+		virtual br_error BR_METHOD partSetMany(br_token part, br_int_32 index, br_token_value * tv, br_int_32 *pcount);
+
+	// BRender: Reading current state
+
+		virtual br_error BR_METHOD partQuery(br_token part, br_int_32 index, void *pvalue, br_token t);
+		virtual br_error BR_METHOD partQueryBuffer(br_token part, br_int_32 index, void *pvalue,
+			void *buffer, br_size_t buffer_size, br_token t);
+		virtual br_error BR_METHOD partQueryMany(br_token part, br_int_32 index,
+			br_token_value *tv, void *extra, br_size_t extra_size, br_int_32 *pcount);
+		virtual br_error BR_METHOD partQueryManySize(br_token part, br_int_32 index, br_size_t *pextra_size, br_token_value *tv);
+		virtual br_error BR_METHOD partQueryAll(br_token part, br_int_32 index, br_token_value *buffer, br_size_t buffer_size);
+		virtual br_error BR_METHOD partQueryAllSize(br_token part, br_int_32 index, br_size_t *psize);
+
+	// BRender: Find out the range of indices for a part
+		virtual br_error BR_METHOD partIndexQuery(br_token part, br_int_32 *pnindex);
+
+	// BRender: Special case state manipulation for ease of use
+
+		virtual br_error BR_METHOD modelMul(br_matrix34 *m);
+
+		virtual br_error BR_METHOD modelPopPushMul(br_matrix34 *m);
+
+		virtual br_error BR_METHOD modelInvert(void);
+
+	// BRender: State stacking and saving
+
+		virtual br_error BR_METHOD statePush(br_uint_32 mask);
+		virtual br_error BR_METHOD statePop(br_uint_32 mask);
+
+		virtual br_error BR_METHOD stateSave(class br_renderer_state_stored *h, br_uint_32 mask);
+		virtual br_error BR_METHOD stateRestore(class br_renderer_state_stored *h, br_uint_32 mask);
+
+	// BRender: Given a list of parts, produce a value for the push/pop/default/save/restore masks
+
+		virtual br_error BR_METHOD stateMask(br_uint_32 *mask, const br_token *parts, br_size_t n_parts);
+
+	// BRender: Reset parts of state to the default
+
+		virtual br_error BR_METHOD stateDefault(br_uint_32 mask);
+
+	// BRender: Various queries based on current transforms
+
+		virtual br_error BR_METHOD boundsTest(br_token *r, br_bounds3 *bounds);
+
+	// BRender: Control current command mode
+
+		virtual br_error BR_METHOD commandModeSet(br_token mode);
+		virtual br_error BR_METHOD commandModeQuery(br_token *mode);
+		virtual br_error BR_METHOD commandModeDefault(void);
+		virtual br_error BR_METHOD commandModePush(void);
+		virtual br_error BR_METHOD commandModePop(void);
+
+	// BRender: Flush any cached output
+
+		virtual br_error BR_METHOD flush(br_boolean wait);
+
+
+	// BRender: Sync. waiting
+
+		virtual br_error BR_METHOD synchronise(br_token sync_type, br_boolean block);
+
+		virtual br_error BR_METHOD frameBegin(void);
+		virtual br_error BR_METHOD frameEnd(void);
+		virtual br_error BR_METHOD focusLossBegin(void);
+		virtual br_error BR_METHOD focusLossEnd(void);
+		virtual void     BR_METHOD sceneBegin(void);
+		virtual void     BR_METHOD sceneEnd(void);
+};
+
+// BRender: Stored renderer state
+
+class br_renderer_state_stored : public br_object {
+	public:
+};
+
+// BRender: Abstract base class for some sort of geometry that can be stuffed into a renderer
+
+class br_geometry : public br_object {
+	public:
+}
+
+// BRender: Stored geometry
+
+class br_geometry_stored : public br_geometry {
+	public:
+		virtual br_error BR_METHOD render(class br_renderer *r,
+				br_token type);
+		virtual br_error BR_METHOD renderOnScreen(class br_renderer *r,
+				br_token type);
+}
+
+// BRender: Predefined geometry formats
+
+class br_geometry_v1_model : public br_geometry {
+	public:
+		virtual br_error BR_METHOD render(class br_renderer *r, struct v11model *model,
+			class br_renderer_state_stored *default_state,
+			br_token type);
+		virtual br_error BR_METHOD renderOnScreen(class br_renderer *r, struct v11model *model,
+			class br_renderer_state_stored *default_state,
+			br_token type);
+		virtual br_error BR_METHOD storedNew(class br_renderer *r, class br_geometry_stored **psg,
+				struct v11model *model, br_token type, br_token_value *tv);
+
+		virtual br_error BR_METHOD storedAvail(br_int_32 *psize, br_token_value *tv);
+}
+
+class br_geometry_v1_buckets : public br_geometry {
+	public:
+		virtual br_error BR_METHOD render(class br_renderer *r,
+				class br_primitive **buckets, br_int_32 nbuckets);
+		virtual br_error BR_METHOD renderOnScreen(class br_renderer *r,
+				class br_primitive **buckets, br_int_32 nbuckets);
+}
+
+class br_geometry_lighting : public br_geometry {
+	public:
+		virtual br_error BR_METHOD render(class br_renderer *r,
+			br_vector3 *points, br_vector3 *normals, br_colour *colour_in,
+			br_colour *colour_out, br_uint_16 *redirect, int pstride, int nstride,
+			int cinstride, int coutstride, int nvertices);
+}
+
+// BRender: Stored texture map/table etc.
+
+class br_buffer_stored : public br_object {
+	public:
+		virtual br_error BR_METHOD update(class br_device_pixelmap *pm, br_token_value *tv);
+};
+
+// BRender: Primitives library
+
+class br_primitive_library : public br_object_container {
+	public:
+		virtual br_error BR_METHOD stateNew(class br_primitive_state **rps);
+		virtual br_error BR_METHOD bufferStoredNew(class br_buffer_stored **rtp,
+			br_token use, class br_device_pixelmap *pm, br_token_value *tv);
+		virtual br_error BR_METHOD bufferStoredAvail(br_int_32 *space,
+			br_token use, br_token_value *tv);
+
+		virtual br_error BR_METHOD flush(br_boolean wait);
+		virtual br_error BR_METHOD synchronise(br_token sync_type, br_boolean block);
+
+	// BRender: Given a list of parts, produce a bitmask
+		virtual br_error BR_METHOD mask(br_uint_32 *mask, const br_token *parts, br_size_t n_parts);
+
+};
+
+
+// BRender: Primitives state
+
+class br_primitive_state : public br_object {
+	public:
+
+	// BRender: Writing current state
+		virtual br_error BR_METHOD partSet(br_token part, br_int_32 index, br_token t, br_value value);
+		virtual br_error BR_METHOD partSetMany(br_token part, br_int_32 index, br_token_value * tv, br_int_32 *pcount);
+
+	// BRender: Reading current state
+		virtual br_error BR_METHOD partQuery(br_token part, br_int_32 index, void *pvalue, br_token t);
+		virtual br_error BR_METHOD partQueryBuffer(br_token part, br_int_32 index, void *pvalue,
+			void *buffer, br_size_t buffer_size, br_token t);
+		virtual br_error BR_METHOD partQueryMany(br_token part, br_int_32 index,
+			br_token_value *tv, void *extra, br_size_t extra_size, br_int_32 *pcount);
+		virtual br_error BR_METHOD partQueryManySize(br_token part, br_int_32 index, br_size_t *pextra_size, br_token_value *tv);
+		virtual br_error BR_METHOD partQueryAll(br_token state, br_int_32 index, br_token_value *buffer, br_size_t buffer_size);
+		virtual br_error BR_METHOD partQueryAllSize(br_token part, br_int_32 index, br_size_t *psize);
+
+	// BRender: Find out the range of indices for a part
+		virtual br_error BR_METHOD partIndexQuery(br_token part, br_int_32 *pnindex);
+
+	// BRender: Reset parts of state to the default
+		virtual br_error BR_METHOD stateDefault(br_uint_32 mask);
+
+	// BRender: Copy parts of state from one to another
+		virtual br_error BR_METHOD stateCopy(class br_primitive_state *source, br_uint_32 mask);
+
+	// BRender: Get a pointer to a primitive block representing the current state
+	//
+		virtual br_error BR_METHOD renderBegin(class brp_block **rpb,
+				br_boolean *block_changed, br_boolean *ranges_changed, br_boolean no_render,
+				br_token prim_type);
+
+		virtual br_error BR_METHOD renderEnd(class brp_block *rpb);
+
+	// BRender: Find the current component transformations
+	//
+		virtual br_error BR_METHOD rangesQuery(br_scalar *offset, br_scalar *scale, br_int_32 max_comp);
+};
+
+// BRenderModern: clang-format on

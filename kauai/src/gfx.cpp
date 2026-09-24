@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -27,7 +27,7 @@ RTCLASS(OGN)
 const int32_t kdtsMaxTrans = 30 * kdtsSecond;
 int32_t vcactRealize;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the ACR from the lw.  The lw should have been returned by a call
     to ACR::LwGet().
 ***************************************************************************/
@@ -37,7 +37,7 @@ void ACR::SetFromLw(int32_t lw)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get an lw from the ACR.  The lw can then be stored on file, reread
     and passed to ACR::SetFromLw.  Valid non-nil colors always return
     non-zero, so zero can be used as a nil value.
@@ -47,7 +47,7 @@ int32_t ACR::LwGet(void) const
     return (int32_t)_lu;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a clr from the ACR.  Asserts that the acr is an rgb color.
 ***************************************************************************/
 void ACR::GetClr(CLR *pclr)
@@ -62,7 +62,7 @@ void ACR::GetClr(CLR *pclr)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that the acr is a valid color.
 ***************************************************************************/
 void ACR::AssertValid(uint32_t grfacr)
@@ -88,14 +88,14 @@ void ACR::AssertValid(uint32_t grfacr)
         break;
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change the origin on the pattern.
 ***************************************************************************/
 void APT::MoveOrigin(int32_t dxp, int32_t dyp)
 {
-    // this cast to uint32_t works because 2^32 is a multiple of 8.
+    // 3DMMEx: this cast to uint32_t works because 2^32 is a multiple of 8.
     dxp = (uint32_t)dxp % 8;
     dyp = (uint32_t)dyp % 8;
     if (dxp != 0)
@@ -109,7 +109,7 @@ void APT::MoveOrigin(int32_t dxp, int32_t dyp)
         SwapBlocks(rgb, 8 - dyp, dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for Graphics environment.
 ***************************************************************************/
 GNV::GNV(GPT *pgpt)
@@ -120,19 +120,19 @@ GNV::GNV(GPT *pgpt)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for Graphics environment based on a pgob.
 ***************************************************************************/
 GNV::GNV(PGOB pgob)
 {
     AssertPo(pgob, 0);
 
-    _Init(pgob->Pgpt()); // use the GOB's port
-    SetGobRc(pgob);      // set the rc's according to the gob
+    _Init(pgob->Pgpt()); // 3DMMv1.0: use the GOB's port
+    SetGobRc(pgob);      // 3DMMv1.0: set the rc's according to the gob
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for Graphics environment based on both a port and a pgob.
 ***************************************************************************/
 GNV::GNV(PGOB pgob, PGPT pgpt)
@@ -145,7 +145,7 @@ GNV::GNV(PGOB pgob, PGPT pgpt)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the GNV.
 ***************************************************************************/
 GNV::~GNV(void)
@@ -157,7 +157,7 @@ GNV::~GNV(void)
     ReleasePpo(&_pgpt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill in all fields of the gnv with default values.
 ***************************************************************************/
 void GNV::_Init(PGPT pgpt)
@@ -185,14 +185,14 @@ void GNV::_Init(PGPT pgpt)
     _rcVis.Max();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the mapping and vis according to the gob.
 ***************************************************************************/
 void GNV::SetGobRc(PGOB pgob)
 {
     RC rc;
 
-    // set the mapping
+    // 3DMMv1.0: set the mapping
     pgob->GetRc(&rc, cooGpt);
     SetRcDst(&rc);
     pgob->GetRc(&rc, cooLocal);
@@ -202,7 +202,7 @@ void GNV::SetGobRc(PGOB pgob)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the gnv
 ***************************************************************************/
 void GNV::AssertValid(uint32_t grf)
@@ -215,7 +215,7 @@ void GNV::AssertValid(uint32_t grf)
     Assert(_gdd.prcsClip == pvNil || _gdd.prcsClip == &_rcsClip, "bad _gdd.prcsClip");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the GNV.
 ***************************************************************************/
 void GNV::MarkMem(void)
@@ -224,9 +224,9 @@ void GNV::MarkMem(void)
     GNV_PAR::MarkMem();
     MarkMemObj(_pgpt);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill a rectangle with a two color pattern.
 ***************************************************************************/
 void GNV::FillRcApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
@@ -251,7 +251,7 @@ void GNV::FillRcApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
     _pgpt->DrawRcs(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill a rectangle with a color.
 ***************************************************************************/
 void GNV::FillRc(RC *prc, ACR acr)
@@ -271,7 +271,7 @@ void GNV::FillRc(RC *prc, ACR acr)
     _pgpt->DrawRcs(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame a rectangle with a two color pattern.
 ***************************************************************************/
 void GNV::FrameRcApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
@@ -296,7 +296,7 @@ void GNV::FrameRcApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
     _pgpt->DrawRcs(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame a rectangle with a color.
 ***************************************************************************/
 void GNV::FrameRc(RC *prc, ACR acr)
@@ -316,7 +316,7 @@ void GNV::FrameRc(RC *prc, ACR acr)
     _pgpt->DrawRcs(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     For hilighting text.  On mac, interchanges the system hilite color and
     the background color.  On Win, just inverts.
 ***************************************************************************/
@@ -333,7 +333,7 @@ void GNV::HiliteRc(RC *prc, ACR acrBack)
     _pgpt->HiliteRcs(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill an oval with a two color pattern.
 ***************************************************************************/
 void GNV::FillOvalApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
@@ -358,7 +358,7 @@ void GNV::FillOvalApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
     _pgpt->DrawOval(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill an oval with a color.
 ***************************************************************************/
 void GNV::FillOval(RC *prc, ACR acr)
@@ -378,7 +378,7 @@ void GNV::FillOval(RC *prc, ACR acr)
     _pgpt->DrawOval(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame an oval with a two color pattern.
 ***************************************************************************/
 void GNV::FrameOvalApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
@@ -403,7 +403,7 @@ void GNV::FrameOvalApt(RC *prc, APT *papt, ACR acrFore, ACR acrBack)
     _pgpt->DrawOval(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame an oval with a color.
 ***************************************************************************/
 void GNV::FrameOval(RC *prc, ACR acr)
@@ -423,7 +423,7 @@ void GNV::FrameOval(RC *prc, ACR acr)
     _pgpt->DrawOval(&rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw a line with a pattern.  Sets the pen position to (xp2, yp2).
 ***************************************************************************/
 void GNV::LineApt(int32_t xp1, int32_t yp1, int32_t xp2, int32_t yp2, APT *papt, ACR acrFore, ACR acrBack)
@@ -450,7 +450,7 @@ void GNV::LineApt(int32_t xp1, int32_t yp1, int32_t xp2, int32_t yp2, APT *papt,
     _yp = yp2;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw a line in a solid color.  Sets the pen position to (xp2, yp2).
 ***************************************************************************/
 void GNV::Line(int32_t xp1, int32_t yp1, int32_t xp2, int32_t yp2, ACR acr)
@@ -472,7 +472,7 @@ void GNV::Line(int32_t xp1, int32_t yp1, int32_t xp2, int32_t yp2, ACR acr)
     _yp = yp2;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill a polygon with a pattern.
 ***************************************************************************/
 void GNV::FillOgnApt(POGN pogn, APT *papt, ACR acrFore, ACR acrBack)
@@ -500,7 +500,7 @@ void GNV::FillOgnApt(POGN pogn, APT *papt, ACR acrFore, ACR acrBack)
     FreePhq(&hqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill a polygon with a color.
 ***************************************************************************/
 void GNV::FillOgn(POGN pogn, ACR acr)
@@ -523,7 +523,7 @@ void GNV::FillOgn(POGN pogn, ACR acr)
     FreePhq(&hqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame a polygon with a pattern.
     NOTE: Using kacrInvert produces slightly different results on the Mac.
     (Mac only does alternate winding).
@@ -556,7 +556,7 @@ void GNV::FrameOgnApt(POGN pogn, APT *papt, ACR acrFore, ACR acrBack)
     FreePhq(&hqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame a polygon with a color.
     NOTE: Using kacrInvert produces slightly different results on the Mac.
 ***************************************************************************/
@@ -583,7 +583,7 @@ void GNV::FrameOgn(POGN pogn, ACR acr)
     FreePhq(&hqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame a poly-line with a pattern.
     NOTE: Using kacrInvert produces slightly different results on the Mac.
 ***************************************************************************/
@@ -615,7 +615,7 @@ void GNV::FramePolyLineApt(POGN pogn, APT *papt, ACR acrFore, ACR acrBack)
     FreePhq(&hqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Frame a poly-line with a color.
     NOTE: Using kacrInvert produces slightly different results on the Mac.
 ***************************************************************************/
@@ -642,7 +642,7 @@ void GNV::FramePolyLine(POGN pogn, ACR acr)
     FreePhq(&hqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Convert an OGN into a polygon record (hqoly).  This maps the points and
     optionally closes the polygon and/or calculates the bounds (Mac only).
 ***************************************************************************/
@@ -678,9 +678,9 @@ HQ GNV::_HqolyCreate(POGN pogn, uint32_t grfogn)
     poly->rcs.right = kswMin;
     poly->rcs.top = kswMax;
     poly->rcs.bottom = kswMin;
-#else  //! MAC
+#else  //! 3DMMv1.0: MAC
     poly->cpts = cpt + FPure(grfogn & fognAutoClose);
-#endif //! MAC
+#endif //! 3DMMv1.0: MAC
 
     ppt = pogn->PrgptLock();
     ppts = (PTS *)poly->rgpts;
@@ -688,7 +688,7 @@ HQ GNV::_HqolyCreate(POGN pogn, uint32_t grfogn)
     {
         _MapPtPts(ppt->xp, ppt->yp, ppts);
 #ifdef MAC
-        // Compute bounding rectangle.
+        // 3DMMv1.0: Compute bounding rectangle.
         if (poly->rcs.top > ppts->v)
             poly->rcs.top = ppts->v;
         if (poly->rcs.left > ppts->h)
@@ -697,7 +697,7 @@ HQ GNV::_HqolyCreate(POGN pogn, uint32_t grfogn)
             poly->rcs.bottom = ppts->v;
         if (poly->rcs.right < ppts->h)
             poly->rcs.right = ppts->h;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
     }
     if (grfogn & fognAutoClose)
         *ppts = poly->rgpts[0];
@@ -707,7 +707,7 @@ HQ GNV::_HqolyCreate(POGN pogn, uint32_t grfogn)
     return hqoly;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Convert a polygon (OGN) into a polygon record (hqoly).  On Windows,
     this actually generates a new polygon that is the outline of the framed
     path (which we'll tell GDI to fill).  On the Mac, this just calls
@@ -721,7 +721,7 @@ HQ GNV::_HqolyFrame(POGN pogn, uint32_t grfogn)
     HQ hqoly;
 
     POGN pognUse;
-    PT rgptPen[4]; // Pen rectangle vectors.
+    PT rgptPen[4]; // 3DMMv1.0: Pen rectangle vectors.
 
     rgptPen[0].xp = 0;
     rgptPen[0].yp = 0;
@@ -740,10 +740,10 @@ HQ GNV::_HqolyFrame(POGN pogn, uint32_t grfogn)
     return hqoly;
 #elif defined(MAC)
     return _HqolyCreate(pogn, grfogn);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the given rectangle by (dxp, dyp).  If prc1 is not nil fill it
     with the first uncovered rectangle.  If prc2 is not nil fill it
     with the second uncovered rectangle (if there is one).
@@ -774,7 +774,7 @@ void GNV::ScrollRc(RC *prc, int32_t dxp, int32_t dyp, RC *prc1, RC *prc2)
     GetBadRcForScroll(prc, dxp, dyp, prc1, prc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to get the RC's that are uncovered during a scroll
     operation.
 ***************************************************************************/
@@ -817,7 +817,7 @@ void GNV::GetBadRcForScroll(RC *prc, int32_t dxp, int32_t dyp, RC *prc1, RC *prc
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the source rectangle.
 ***************************************************************************/
 void GNV::GetRcSrc(RC *prc)
@@ -827,7 +827,7 @@ void GNV::GetRcSrc(RC *prc)
     *prc = _rcSrc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the source rectangle.
 ***************************************************************************/
 void GNV::SetRcSrc(RC *prc)
@@ -844,7 +844,7 @@ void GNV::SetRcSrc(RC *prc)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the destination rectangle.
 ***************************************************************************/
 void GNV::GetRcDst(RC *prc)
@@ -858,7 +858,7 @@ void GNV::GetRcDst(RC *prc)
     prc->Offset(pt.xp, pt.yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the destination rectangle.  Also opens up the vis rc and clipping
     and sets default font and pen values.
 ***************************************************************************/
@@ -889,7 +889,7 @@ void GNV::SetRcDst(RC *prc)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the visible rectangle.  When ClipRc is called, the rc is first
     intersected with the vis rc.  Passing pvNil opens up the vis rectangle
     (so there is no natural clipping).  This should be called _after_
@@ -916,7 +916,7 @@ void GNV::SetRcVis(RC *prc)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Intersect the current vis rectangle with the given rectangle and make
     that the new vis rectangle.  Opens the clipping to the vis rectangle
     also.
@@ -935,7 +935,7 @@ void GNV::IntersectRcVis(RC *prc)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the clipping (in source coordinates).  If prc is pvNil, opens up
     the clipping (to the vis rectangle).  Otherwise, sets the clipping
     to the intersection of the vis rectangle and *prc.
@@ -952,7 +952,7 @@ void GNV::ClipRc(RC *prc)
         rc.Max();
         if (rc == _rcVis)
         {
-            // no clipping
+            // 3DMMv1.0: no clipping
             _gdd.prcsClip = pvNil;
             return;
         }
@@ -969,7 +969,7 @@ void GNV::ClipRc(RC *prc)
     _gdd.prcsClip = &_rcsClip;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clip to the source rectangle.
 ***************************************************************************/
 void GNV::ClipToSrc(void)
@@ -978,7 +978,7 @@ void GNV::ClipToSrc(void)
     ClipRc(&_rcSrc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the pen size (in source coordinates).
 ***************************************************************************/
 void GNV::SetPenSize(int32_t dxpPen, int32_t dypPen)
@@ -990,7 +990,7 @@ void GNV::SetPenSize(int32_t dxpPen, int32_t dypPen)
     _gdd.dypPen = LwMulDivAway(dypPen, _rcDst.Dyp(), _rcSrc.Dyp());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current font info.
 ***************************************************************************/
 void GNV::SetFont(int32_t onn, uint32_t grfont, int32_t dypFont, int32_t tah, int32_t tav)
@@ -1004,7 +1004,7 @@ void GNV::SetFont(int32_t onn, uint32_t grfont, int32_t dypFont, int32_t tah, in
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current font.
 ***************************************************************************/
 void GNV::SetOnn(int32_t onn)
@@ -1014,7 +1014,7 @@ void GNV::SetOnn(int32_t onn)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current font style.
 ***************************************************************************/
 void GNV::SetFontStyle(uint32_t grfont)
@@ -1024,7 +1024,7 @@ void GNV::SetFontStyle(uint32_t grfont)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current font size.
 ***************************************************************************/
 void GNV::SetFontSize(int32_t dyp)
@@ -1034,7 +1034,7 @@ void GNV::SetFontSize(int32_t dyp)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current font alignment.
 ***************************************************************************/
 void GNV::SetFontAlign(int32_t tah, int32_t tav)
@@ -1045,7 +1045,7 @@ void GNV::SetFontAlign(int32_t tah, int32_t tav)
     AssertThis(0);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Set the current font.  Font size must be specified in Dst units.
 ******************************************************************************/
 void GNV::SetDsf(DSF *pdsf)
@@ -1057,7 +1057,7 @@ void GNV::SetDsf(DSF *pdsf)
     AssertThis(0);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Get the current font.  Font size is specified in Dst units.
 ******************************************************************************/
 void GNV::GetDsf(DSF *pdsf)
@@ -1067,7 +1067,7 @@ void GNV::GetDsf(DSF *pdsf)
     *pdsf = _dsf;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Draw some text.
 ******************************************************************************/
 void GNV::DrawRgch(const achar *prgch, int32_t cch, int32_t xp, int32_t yp, ACR acrFore, ACR acrBack)
@@ -1089,7 +1089,7 @@ void GNV::DrawRgch(const achar *prgch, int32_t cch, int32_t xp, int32_t yp, ACR 
     _pgpt->DrawRgch(prgch, cch, pts, &_gdd, &_dsf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the given string.
 ***************************************************************************/
 void GNV::DrawStn(PSTN pstn, int32_t xp, int32_t yp, ACR acrFore, ACR acrBack)
@@ -1102,7 +1102,7 @@ void GNV::DrawStn(PSTN pstn, int32_t xp, int32_t yp, ACR acrFore, ACR acrBack)
     DrawRgch(pstn->Prgch(), pstn->Cch(), xp, yp, acrFore, acrBack);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Return the bounding box of the text.  If the GNV has any scaling, this
     is approximate.  This even works if cch is 0 (just gives the height).
 ******************************************************************************/
@@ -1122,7 +1122,7 @@ void GNV::GetRcFromRgch(RC *prc, const achar *prgch, int32_t cch, int32_t xp, in
     prc->Map(&_rcDst, &_rcSrc);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Return the bounding box of the text.  If the GNV has any scaling, this
     is approximate.  This even works if the string is empty (gives the height).
 ******************************************************************************/
@@ -1135,7 +1135,7 @@ void GNV::GetRcFromStn(RC *prc, PSTN pstn, int32_t xp, int32_t yp)
     GetRcFromRgch(prc, pstn->Prgch(), pstn->Cch(), xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy bits from a GNV to this one.
 ***************************************************************************/
 void GNV::CopyPixels(PGNV pgnvSrc, RC *prcSrc, RC *prcDst)
@@ -1155,7 +1155,7 @@ uint32_t _mpgfdgrfpt[4] = {fptNegateXp, fptNil, fptNegateYp | fptTranspose, fptT
 
 uint32_t _mpgfdgrfptInv[4] = {fptNegateXp, fptNil, fptNegateXp | fptTranspose, fptTranspose};
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the old palette in *ppglclrOld, allocate a transitionary palette
     in *ppglclrTrans, and get init the palette animation.  On failure set
     the new palette and set *ppglclrOld and *ppglclrTrans to nil.
@@ -1172,7 +1172,7 @@ bool GNV::_FInitPaletteTrans(PGL pglclr, PGL *ppglclrOld, PGL *ppglclrTrans, int
     *ppglclrOld = pvNil;
     *ppglclrTrans = pvNil;
 
-    // get the current palette and set up the temporary transitionary palette
+    // 3DMMv1.0: get the current palette and set up the temporary transitionary palette
     if (0 != cbitPixel && _pgpt->CbitPixel() != cbitPixel || pvNil == (*ppglclrOld = GPT::PglclrGetPalette()) ||
         0 == (cclr = LwMin((*ppglclrOld)->IvMac(), cclr)) || pvNil == (*ppglclrTrans = GL::PglNew(SIZEOF(CLR), cclr)))
     {
@@ -1187,7 +1187,7 @@ bool GNV::_FInitPaletteTrans(PGL pglclr, PGL *ppglclrOld, PGL *ppglclrTrans, int
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Transition the palette.  Merge pglclrOld and pglclrNew into pglclrTrans
     and animate the palette to pglclrTrans.  If either source palette is nil,
     *pclrSub is used in place of the nil palette.  acrSub must be an RGB color.
@@ -1231,7 +1231,7 @@ void GNV::_PaletteTrans(PGL pglclrOld, PGL pglclrNew, int32_t lwNum, int32_t lwD
     GPT::SetActiveColors(pglclrTrans, fpalIdentity | fpalAnimate);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a temporary GNV that is a copy of the given rectangle in this
     GNV.  This is used for several transitions.
 ***************************************************************************/
@@ -1254,7 +1254,7 @@ bool GNV::_FEnsureTempGnv(PGNV *ppgnv, RC *prc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Wipe the source gnv onto this one.  If acrFill is not kacrClear, first
     wipe acrFill on.  The source and destination rectangles must be the same
     size.  gfd indicates which direction the wipe is.  If pglclr is not
@@ -1297,7 +1297,7 @@ void GNV::Wipe(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, u
         }
         else if (pvNil != pglclr && !_FInitPaletteTrans(pglclr, &pglclrOld, &pglclrTrans, 8))
         {
-            pglclr = pvNil; // so we don't try to transition
+            pglclr = pvNil; // 3DMMv1.0: so we don't try to transition
         }
 
         tsStart = TsCurrent();
@@ -1334,9 +1334,9 @@ void GNV::Wipe(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, u
 
         if (pvNil != pglclr)
         {
-            // set the palette
+            // 3DMMv1.0: set the palette
             GPT::SetActiveColors(pglclr, fpalIdentity);
-            pglclr = pvNil; // so we don't transition during the second wipe
+            pglclr = pvNil; // 3DMMv1.0: so we don't transition during the second wipe
         }
     }
 
@@ -1344,7 +1344,7 @@ void GNV::Wipe(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, u
     ReleasePpo(&pglclrTrans);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Slide the source gnv onto this one.  The source and destination
     rectangles must be the same size.
 ***************************************************************************/
@@ -1370,7 +1370,7 @@ void GNV::Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, 
 
     Assert(prcSrc->Dyp() == prcDst->Dyp() && prcSrc->Dxp() == prcDst->Dxp(), "rc's are scaled");
 
-    // allocate the offscreen port and copy the destination into it.
+    // 3DMMv1.0: allocate the offscreen port and copy the destination into it.
     if (!_FEnsureTempGnv(&pgnv, prcDst))
     {
         if (pvNil != pglclr)
@@ -1396,7 +1396,7 @@ void GNV::Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, 
         }
         else if (pvNil != pglclr && !_FInitPaletteTrans(pglclr, &pglclrOld, &pglclrTrans))
         {
-            pglclr = pvNil; // so we don't try to transition
+            pglclr = pvNil; // 3DMMv1.0: so we don't try to transition
         }
 
         tsStart = TsCurrent();
@@ -1413,13 +1413,13 @@ void GNV::Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, 
 
             if (dxp != dxpOld)
             {
-                // scroll the stuff that's already there
+                // 3DMMv1.0: scroll the stuff that's already there
                 dpt.xp = dxp - dxpOld;
                 dpt.yp = 0;
                 dpt.Transform(grfptInv);
                 pgnv->ScrollRc(prcDst, dpt.xp, dpt.yp);
 
-                // copy in the new stuff
+                // 3DMMv1.0: copy in the new stuff
                 rc1 = rcSrc;
                 rc2 = rcDst;
                 rc1.xpLeft = rc1.xpRight - dxp;
@@ -1438,7 +1438,7 @@ void GNV::Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, 
 
             if (dxp != dxpOld)
             {
-                // copy the result to the destination
+                // 3DMMv1.0: copy the result to the destination
                 CopyPixels(pgnv, prcDst, prcDst);
                 GPT::Flush();
             }
@@ -1446,17 +1446,17 @@ void GNV::Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, 
 
         if (pvNil != pglclr)
         {
-            // set the palette
+            // 3DMMv1.0: set the palette
             GPT::SetActiveColors(pglclr, fpalIdentity);
 
-            // if we're not in 8 bit and cact is 1, copy the pixels so we
-            // make sure we've drawn the picture after the last palette change
+            // 3DMMv1.0: if we're not in 8 bit and cact is 1, copy the pixels so we
+            // 3DMMv1.0: make sure we've drawn the picture after the last palette change
             if (1 == cact && _pgpt->CbitPixel() != 8)
             {
                 CopyPixels(pgnv, prcDst, prcDst);
                 GPT::Flush();
             }
-            pglclr = pvNil; // so we don't transition during the second wipe
+            pglclr = pvNil; // 3DMMv1.0: so we don't transition during the second wipe
         }
     }
 
@@ -1465,16 +1465,16 @@ void GNV::Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, 
     ReleasePpo(&pglclrTrans);
 }
 
-// klwPrime must be a prime and klwRoot must be a primitive root for klwPrime.
-// the code under #ifdef SPECIAL_PRIME below assumes that klwPrime is
-// (2^16 + 1) and klwRoot is (2 ^15 - 1).  If you change klwPrime and/or
-// klwRoot, make sure that SPECIAL_PRIME is not defined.
+// 3DMMv1.0: klwPrime must be a prime and klwRoot must be a primitive root for klwPrime.
+// 3DMMv1.0: the code under #ifdef SPECIAL_PRIME below assumes that klwPrime is
+// 3DMMv1.0: (2^16 + 1) and klwRoot is (2 ^15 - 1).  If you change klwPrime and/or
+// 3DMMv1.0: klwRoot, make sure that SPECIAL_PRIME is not defined.
 
 #define SPECIAL_PRIME
-#define klwPrime 65537 // a prime
-#define klwRoot 32767  // a primitive root for the prime
+#define klwPrime 65537 // 3DMMv1.0: a prime
+#define klwRoot 32767  // 3DMMv1.0: a primitive root for the prime
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the next quasi-random number for Dissolve.
 ***************************************************************************/
 inline int32_t _LwNextDissolve(int32_t lw)
@@ -1486,24 +1486,24 @@ inline int32_t _LwNextDissolve(int32_t lw)
     Assert(klwPrime == 0x00010001, 0);
     Assert(klwRoot == 0x00007FFF, 0);
 
-    // multiply by 2^15 - 1
+    // 3DMMv1.0: multiply by 2^15 - 1
     lw = (lw << 15) - lw;
 
-    // mod by 2^16 + 1
+    // 3DMMv1.0: mod by 2^16 + 1
     lw = (lw & 0x0000FFFFL) - (int32_t)((uint32_t)lw >> 16);
     if (lw < 0)
         lw += klwPrime;
 
-#else //! SPECIAL_PRIME
+#else //! 3DMMv1.0: SPECIAL_PRIME
 
     LwMulDivMod(lw, klwRoot, klwPrime, &lw);
 
-#endif //! SPECIAL_PRIME
+#endif //! 3DMMv1.0: SPECIAL_PRIME
 
     return lw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dissolve the source gnv into this one.  If acrFill is not kacrClear,
     first dissolve into a solid acrFill, then into the source. The source
     and destination rectangles must be the same size.  If pgnvSrc is nil,
@@ -1539,12 +1539,32 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
     if (prcDst->FEmpty())
         return;
 
+    // Kauai's pixel-level dissolve below is an indexed 8-bit algorithm: one
+    // byte is one pixel, temporary ports are 8-bit, and palette interpolation
+    // is part of the effect.  -c deliberately gives the application a 24-bit
+    // staging GPT, so entering that path is invalid and used to raise
+    // "Can't dissolve from this GPT".  Preserve the final image and stability
+    // by treating true-colour dissolves as cuts; legacy 8-bit behavior remains
+    // byte-for-byte unchanged.
+    if (_pgpt->CbitPixel() != 8 ||
+        (pgnvSrc != pvNil && pgnvSrc->Pgpt()->CbitPixel() != 8))
+    {
+        if (pvNil != pglclr)
+            GPT::SetActiveColors(pglclr, fpalIdentity);
+        if (pvNil != pgnvSrc)
+            CopyPixels(pgnvSrc, prcSrc, prcDst);
+        else if (kacrClear != acrFill)
+            FillRc(prcDst, acrFill);
+        GPT::Flush();
+        return;
+    }
+
     if (crcWidth <= 0 || crcHeight <= 0)
     {
-        // do off screen pixel level dissolve
+        // 3DMMv1.0: do off screen pixel level dissolve
         fOnScreen = fFalse;
 
-        // allocate the offscreen port and copy the destination into it.
+        // 3DMMv1.0: allocate the offscreen port and copy the destination into it.
         if (pgnvSrc != pvNil)
         {
             PGPT pgptSrc;
@@ -1588,7 +1608,7 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
 
         if (acrFill != kacrClear)
         {
-            // get the byte value to fill with
+            // 3DMMv1.0: get the byte value to fill with
             uint8_t bT = prgbDst[0];
 
             rc1.Set(prcDst->xpLeft, prcDst->ypTop, prcDst->xpLeft + 1, prcDst->ypTop + 1);
@@ -1607,7 +1627,7 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
     }
     else
     {
-        // on screen dissolve
+        // 3DMMv1.0: on screen dissolve
         fOnScreen = fTrue;
         crcWidth = LwMin(prcDst->Dxp(), crcWidth);
         crcHeight = LwMin(prcDst->Dyp(), crcHeight);
@@ -1617,8 +1637,8 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
     if (!FIn(dts, 1, kdtsMaxTrans))
         dts = kdtsSecond;
 
-    // the first time through, dissolve to the color; the second time
-    // through dissolve to the source bitmap
+    // 3DMMv1.0: the first time through, dissolve to the color; the second time
+    // 3DMMv1.0: through dissolve to the source bitmap
     for (cact = 0; cact < 2; cact++)
     {
         if (cact == 0)
@@ -1632,29 +1652,29 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
                 goto LSetPalette;
             if (pvNil != pglclr && !_FInitPaletteTrans(pglclr, &pglclrOld, &pglclrTrans, fOnScreen ? 8 : 0))
             {
-                pglclr = pvNil; // so we don't try to transition
+                pglclr = pvNil; // 3DMMv1.0: so we don't try to transition
             }
         }
 
-        // We start with lw a random value between 1 and (klwPrime - 1)
-        // (inclusive). Subsequent values of lw are computed as
-        // lw = lw * klwRoot % klwPrime. Because klwRoot is a primitive root
-        // of unity for klwPrime, lw will take on all values from 1 thru
-        // (klwPrime - 1) in seemingly random order.
+        // 3DMMv1.0: We start with lw a random value between 1 and (klwPrime - 1)
+        // 3DMMv1.0: (inclusive). Subsequent values of lw are computed as
+        // 3DMMv1.0: lw = lw * klwRoot % klwPrime. Because klwRoot is a primitive root
+        // 3DMMv1.0: of unity for klwPrime, lw will take on all values from 1 thru
+        // 3DMMv1.0: (klwPrime - 1) in seemingly random order.
 
         irc = rnd.LwNext(crcFill);
         lw = (crcFill - irc - 1) % (klwPrime - 1) + 1;
 
         if (!fOnScreen && cact != 0)
         {
-            // pbRow points to the row of prgbSrc that the current source
-            // pixel is in.  ibExtra is the offset of the source pixel
-            // into the row (the "xp" coordinate of the source pixel).
-            // dibRow and dibExtra are for finding the source pixel
-            // incrementally.  When we subtract (klwPrime - 1) from irc,
-            // we subtract dibRow from pbRow and dibExtra from ibExtra.
-            // If ibExtra goes negative, we add cbRowSrc to pbRow and
-            // crcWidth to ibExtra.
+            // 3DMMv1.0: pbRow points to the row of prgbSrc that the current source
+            // 3DMMv1.0: pixel is in.  ibExtra is the offset of the source pixel
+            // 3DMMv1.0: into the row (the "xp" coordinate of the source pixel).
+            // 3DMMv1.0: dibRow and dibExtra are for finding the source pixel
+            // 3DMMv1.0: incrementally.  When we subtract (klwPrime - 1) from irc,
+            // 3DMMv1.0: we subtract dibRow from pbRow and dibExtra from ibExtra.
+            // 3DMMv1.0: If ibExtra goes negative, we add cbRowSrc to pbRow and
+            // 3DMMv1.0: crcWidth to ibExtra.
 
             ibExtra = irc % crcWidth;
             pbRow = prgbSrc + (irc / crcWidth) * cbRowSrc;
@@ -1673,7 +1693,7 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
             {
                 for (; crcT > 0; crcT--)
                 {
-                    // find the next rectangle to fill
+                    // 3DMMv1.0: find the next rectangle to fill
                     for (irc -= klwPrime - 1; irc < 0; irc = crcFill - lw)
                         lw = _LwNextDissolve(lw);
 
@@ -1692,10 +1712,10 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
 
             if (cact == 0)
             {
-                // fill with bFill
+                // 3DMMv1.0: fill with bFill
                 for (; crcT > 0; crcT--)
                 {
-                    // find the next pixel to fill
+                    // 3DMMv1.0: find the next pixel to fill
                     for (irc -= klwPrime - 1; irc < 0; irc = crcFill - lw)
                         lw = _LwNextDissolve(lw);
                     prgbDst[irc] = bFill;
@@ -1703,10 +1723,10 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
                 goto LBlastToScreen;
             }
 
-            // cact == 1, fill from prgbSrc
+            // 3DMMv1.0: cact == 1, fill from prgbSrc
             for (; crcT > 0; crcT--)
             {
-                // find the next rectangle to fill
+                // 3DMMv1.0: find the next rectangle to fill
                 irc -= klwPrime - 1;
                 if (irc >= 0)
                 {
@@ -1727,21 +1747,21 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
 
 #ifdef IN_80386
                     __asm
-                        {                         // ibExtra = irc % crcWidth;
-                         // pbRow = prgbSrc + (irc / crcWidth) * cbRowSrc;
+                        {                         // 3DMMv1.0: ibExtra = irc % crcWidth;
+                         // 3DMMv1.0: pbRow = prgbSrc + (irc / crcWidth) * cbRowSrc;
 						mov		edx,irc
 						movzx	eax,dx
 						shr		edx,16
-						div		WORD PTR crcWidth // 16 bit divide for speed
+						div		WORD PTR crcWidth // 3DMMv1.0: 16 bit divide for speed
 						imul	eax,cbRowSrc
 						mov		ibExtra,edx
 						add		eax,prgbSrc
 						mov		pbRow,eax
                         }
-#else  //! IN_80386
+#else  //! 3DMMv1.0: IN_80386
                     ibExtra = irc % crcWidth;
                     pbRow = prgbSrc + (irc / crcWidth) * cbRowSrc;
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
                 }
 
                 prgbDst[irc] = pbRow[ibExtra];
@@ -1759,17 +1779,17 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
     LSetPalette:
         if (pvNil != pglclr)
         {
-            // set the palette
+            // 3DMMv1.0: set the palette
             GPT::SetActiveColors(pglclr, fpalIdentity);
 
-            // if we're not in 8 bit and cact is 1, copy the pixels so we
-            // make sure we've drawn the picture after the last palette change
+            // 3DMMv1.0: if we're not in 8 bit and cact is 1, copy the pixels so we
+            // 3DMMv1.0: make sure we've drawn the picture after the last palette change
             if (pvNil != pgnv && 1 == cact && _pgpt->CbitPixel() != 8)
             {
                 CopyPixels(pgnv, prcDst, prcDst);
                 GPT::Flush();
             }
-            pglclr = pvNil; // so we don't transition during the second wipe
+            pglclr = pvNil; // 3DMMv1.0: so we don't transition during the second wipe
         }
     }
 
@@ -1782,7 +1802,7 @@ void GNV::Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSr
     ReleasePpo(&pglclrTrans);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fade the palette to color acrFade, copy the pixels from pgnvSrc to
     this gnv, then fade to the new palette or original palette.  Each fade
     is given dts time.  Asserts that acrFade is an rgb color.  cactMax is
@@ -1850,7 +1870,7 @@ void GNV::Fade(int32_t cactMax, ACR acrFade, PGNV pgnvSrc, RC *prcSrc, RC *prcDs
     ReleasePpo(&pglclrTrans);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open and/or close a rectangular iris onto the gnvSrc with an
     intermediate color of acrFill (if not clear).  xp, yp are the focus
     point of the iris (in destination coordinates).
@@ -1901,7 +1921,7 @@ void GNV::Iris(int32_t gfd, int32_t xp, int32_t yp, ACR acrFill, PGNV pgnvSrc, R
         }
         else if (pvNil != pglclr && !_FInitPaletteTrans(pglclr, &pglclrOld, &pglclrTrans, 8))
         {
-            pglclr = pvNil; // so we don't try to transition
+            pglclr = pvNil; // 3DMMv1.0: so we don't try to transition
         }
 
         fOpen = !(gfd & (1 << cact));
@@ -1956,9 +1976,9 @@ void GNV::Iris(int32_t gfd, int32_t xp, int32_t yp, ACR acrFill, PGNV pgnvSrc, R
 
         if (pvNil != pglclr)
         {
-            // set the palette
+            // 3DMMv1.0: set the palette
             GPT::SetActiveColors(pglclr, fpalIdentity);
-            pglclr = pvNil; // so we don't transition during the second iris
+            pglclr = pvNil; // 3DMMv1.0: so we don't transition during the second iris
         }
     }
 
@@ -1967,7 +1987,7 @@ void GNV::Iris(int32_t gfd, int32_t xp, int32_t yp, ACR acrFill, PGNV pgnvSrc, R
     ReleasePpo(&pglclrTrans);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the picture in the given rectangle.
 ***************************************************************************/
 void GNV::DrawPic(PPIC ppic, RC *prc)
@@ -1982,7 +2002,7 @@ void GNV::DrawPic(PPIC ppic, RC *prc)
     _pgpt->DrawPic(ppic, &rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the mbmp with reference point at the given point.
 ***************************************************************************/
 void GNV::DrawMbmp(PMBMP pmbmp, int32_t xp, int32_t yp)
@@ -1999,7 +2019,7 @@ void GNV::DrawMbmp(PMBMP pmbmp, int32_t xp, int32_t yp)
     _pgpt->DrawMbmp(pmbmp, &rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the mbmp in the given rectangle.
 ***************************************************************************/
 void GNV::DrawMbmp(PMBMP pmbmp, RC *prc)
@@ -2014,7 +2034,7 @@ void GNV::DrawMbmp(PMBMP pmbmp, RC *prc)
     _pgpt->DrawMbmp(pmbmp, &rcs, &_gdd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a rectangle to a system rectangle.  Return true iff the result
     is non-empty.
 ***************************************************************************/
@@ -2030,7 +2050,7 @@ bool GNV::_FMapRcRcs(RC *prc, RCS *prcs)
     return prcs->xpLeft < prcs->xpRight && prcs->ypTop < prcs->ypBottom;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an (xp, yp) pair to a system point.
 ***************************************************************************/
 void GNV::_MapPtPts(int32_t xp, int32_t yp, PTS *ppts)
@@ -2044,7 +2064,7 @@ void GNV::_MapPtPts(int32_t xp, int32_t yp, PTS *ppts)
 }
 
 #ifdef MAC
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the port associated with the GNV as the current port and set the
     clipping as in the GNV and set the pen and fore/back color to defaults.
 ***************************************************************************/
@@ -2057,16 +2077,16 @@ void GNV::Set(void)
     PenNormal();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Restore the port.  Balances a call to GNV::Set.
 ***************************************************************************/
 void GNV::Restore(void)
 {
     _pgpt->Restore();
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clip to the region specified by *ppregn.  *ppregn is set to the previous
     clip region (may be pvNil).  The GPT takes over ownership of the region
     and relinquishes ownership of the old region.
@@ -2084,7 +2104,7 @@ void GPT::ClipToRegn(PREGN *ppregn)
     _fNewClip = fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the base PT for the GPT.  This affects the mapping of any attached
     GNVs.
 ***************************************************************************/
@@ -2095,7 +2115,7 @@ void GPT::SetPtBase(PT *ppt)
     _ptBase = *ppt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the base PT for the GPT.
 ***************************************************************************/
 void GPT::GetPtBase(PT *ppt)
@@ -2106,7 +2126,7 @@ void GPT::GetPtBase(PT *ppt)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the GPT.
 ***************************************************************************/
 void GPT::MarkMem(void)
@@ -2116,7 +2136,7 @@ void GPT::MarkMem(void)
     MarkMemObj(_pregnClip);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Assert the validity of a polygon descriptor.
 ******************************************************************************/
 void OLY::AssertValid(uint32_t grf)
@@ -2125,7 +2145,7 @@ void OLY::AssertValid(uint32_t grf)
     AssertPvCb(rgpts, LwMul(Cpts(), SIZEOF(PTS)));
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Assert the validity of the font description.
 ******************************************************************************/
 void DSF::AssertValid(uint32_t grf)
@@ -2136,9 +2156,9 @@ void DSF::AssertValid(uint32_t grf)
     AssertIn(tah, 0, tahLim);
     AssertIn(tav, 0, tavLim);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Initialize the graphics module.
 ******************************************************************************/
 bool FInitGfx(void)
@@ -2146,7 +2166,7 @@ bool FInitGfx(void)
     return vntl.FInit();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Construct a new font list.
 ***************************************************************************/
 NTL::NTL(void)
@@ -2155,18 +2175,18 @@ NTL::NTL(void)
 }
 
 #ifdef KAUAI_WIN32
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destroy a font list.
 ***************************************************************************/
 NTL::~NTL(void)
 {
     ReleasePpo(&_pgst);
 }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #ifdef DEBUG
 #ifdef KAUAI_WIN32
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the font list.
 ***************************************************************************/
 void NTL::AssertValid(uint32_t grf)
@@ -2175,7 +2195,7 @@ void NTL::AssertValid(uint32_t grf)
     AssertPo(_pgst, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the font table.
 ***************************************************************************/
 void NTL::MarkMem(void)
@@ -2184,18 +2204,18 @@ void NTL::MarkMem(void)
     NTL_PAR::MarkMem();
     MarkMemObj(_pgst);
 }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the font number is valid.
 ***************************************************************************/
 bool NTL::FValidOnn(int32_t onn)
 {
     return pvNil != _pgst && onn >= 0 && onn < _pgst->IstnMac();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the name of the given font.
 ***************************************************************************/
 void NTL::GetStn(int32_t onn, PSTN pstn)
@@ -2206,7 +2226,7 @@ void NTL::GetStn(int32_t onn, PSTN pstn)
     _pgst->GetStn(onn, pstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the font number for the given font name.
 ***************************************************************************/
 bool NTL::FGetOnn(PSTN pstn, int32_t *ponn)
@@ -2217,7 +2237,7 @@ bool NTL::FGetOnn(PSTN pstn, int32_t *ponn)
     return _pgst->FFindStn(pstn, ponn, fgstUserSorted);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a font name to an existing font.  Use platform information if
     possible.
     REVIEW shonk: implement font mapping for real.
@@ -2233,7 +2253,7 @@ int32_t NTL::OnnMapStn(PSTN pstn, int16_t osk)
     return onn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the font number mac.
 ***************************************************************************/
 int32_t NTL::OnnMac(void)
@@ -2242,7 +2262,7 @@ int32_t NTL::OnnMac(void)
     return _pgst->IstnMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new polygon by tracing the outline of this one with a
     convex polygon.
 ***************************************************************************/
@@ -2257,7 +2277,7 @@ POGN OGN::PognTraceOgn(POGN pogn, uint32_t grfogn)
     return pognNew;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new polygon by tracing the outline of this one with a
     convex polygon.
 ***************************************************************************/
@@ -2283,8 +2303,8 @@ POGN OGN::PognTraceRgpt(PT *prgpt, int32_t cpt, uint32_t grfogn)
     prgptThis = PrgptLock();
     if (iptLast == 0 || prgptThis[0] == prgptThis[1])
     {
-        // if all the points of the polygon are the same, doing this ensures
-        // that we will encircle the pen
+        // 3DMMv1.0: if all the points of the polygon are the same, doing this ensures
+        // 3DMMv1.0: that we will encircle the pen
         aei.ptCur = prgpt[0] + prgptThis[0];
         if (!aei.pogn->FPush(&aei.ptCur))
             goto LError;
@@ -2299,7 +2319,7 @@ POGN OGN::PognTraceRgpt(PT *prgpt, int32_t cpt, uint32_t grfogn)
     if (!aei.pogn->FPush(&aei.ptCur))
         goto LError;
 
-    // Walk to end, adding vertices.
+    // 3DMMv1.0: Walk to end, adding vertices.
     for (aei.dipt = 1, aei.ipt = 0; aei.ipt < iptLast; aei.ipt++)
     {
         if (!_FAddEdge(&aei))
@@ -2315,7 +2335,7 @@ POGN OGN::PognTraceRgpt(PT *prgpt, int32_t cpt, uint32_t grfogn)
             goto LError;
     }
 
-    // Walk back to start.
+    // 3DMMv1.0: Walk back to start.
     for (aei.dipt = aei.ipt = iptLast; aei.ipt > 0; aei.ipt--)
     {
         if (!_FAddEdge(&aei))
@@ -2332,7 +2352,7 @@ POGN OGN::PognTraceRgpt(PT *prgpt, int32_t cpt, uint32_t grfogn)
     return aei.pogn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the vertices encountered while walking an edge of the input polygon.
 ***************************************************************************/
 bool OGN::_FAddEdge(AEI *paei)
@@ -2345,12 +2365,12 @@ bool OGN::_FAddEdge(AEI *paei)
     AssertIn(paei->ipt, 0, IvMac());
     AssertIn(paei->iptPenCur, 0, paei->cpt);
 
-    PT *prgptThis = (PT *)QvGet(0); // Already locked in PognTraceRgpt().
+    PT *prgptThis = (PT *)QvGet(0); // 3DMMv1.0: Already locked in PognTraceRgpt().
     int32_t iptEnd = (paei->ipt + paei->dipt) % IvMac();
     int32_t iptPenNew = IptFindLeftmost(paei->prgpt, paei->cpt, prgptThis[iptEnd].xp - prgptThis[paei->ipt].xp,
                                         prgptThis[iptEnd].yp - prgptThis[paei->ipt].yp);
 
-    // Add vertices from current to leftmost.
+    // 3DMMv1.0: Add vertices from current to leftmost.
     if (paei->iptPenCur != iptPenNew)
     {
         PT pt;
@@ -2366,13 +2386,13 @@ bool OGN::_FAddEdge(AEI *paei)
         } while (ipt != iptPenNew);
     }
 
-    // Add vertex at endpoint.
+    // 3DMMv1.0: Add vertex at endpoint.
     paei->iptPenCur = iptPenNew;
     paei->ptCur = prgptThis[iptEnd] + paei->prgpt[iptPenNew];
     return paei->pogn->FPush(&paei->ptCur);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the leftmost vertex of the rgpt looking down the vector.
     dxp, dyp : Direction of vector to look down.
 ***************************************************************************/
@@ -2382,10 +2402,10 @@ int32_t IptFindLeftmost(PT *prgpt, int32_t cpt, int32_t dxp, int32_t dyp)
     AssertIn(cpt, 2, kcbMax);
 
     int32_t ipt, iptLeftmost;
-    int32_t dzpMac; // Maximum cross product (z vector) found.
+    int32_t dzpMac; // 3DMMv1.0: Maximum cross product (z vector) found.
     int32_t dzp;
 
-    // reduces the chance of overflow
+    // 3DMMv1.0: reduces the chance of overflow
     if (1 < (dzp = LwGcd(dxp, dyp)))
     {
         dxp /= dzp;
@@ -2404,7 +2424,7 @@ int32_t IptFindLeftmost(PT *prgpt, int32_t cpt, int32_t dxp, int32_t dyp)
     return iptLeftmost;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     -- Allocate a new OGN and ensure that it has space for cptInit elements.
 ***************************************************************************/
 POGN OGN::PognNew(int32_t cptInit)
@@ -2423,7 +2443,7 @@ POGN OGN::PognNew(int32_t cptInit)
     return pogn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for OGN.
 ***************************************************************************/
 OGN::OGN(void) : GL(SIZEOF(PT))
@@ -2431,7 +2451,7 @@ OGN::OGN(void) : GL(SIZEOF(PT))
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This does a 2x stretch blt, clipped to prcClip and pregnClip. The
     clipping is expressed in destination coordinates.
 ***************************************************************************/
@@ -2457,14 +2477,14 @@ void DoubleStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSr
     if (pvNil != prcClip && !rcClip.FIntersect(prcClip))
         return;
 
-    // Set up the region scanner
+    // 3DMMv1.0: Set up the region scanner
     if (pvNil != pregnClip)
         regsc.Init(pregnClip, &rcClip);
     else
         regsc.InitRc(&rcClip, &rcClip);
     dxpBase = rcClip.xpLeft - xpDst;
 
-    // move to rcClip.ypTop
+    // 3DMMv1.0: move to rcClip.ypTop
     yp = rcClip.ypTop;
     prgbSrc += prcSrc->xpLeft + LwMul(prcSrc->ypTop + ((yp - ypDst) >> 1), cbRowSrc);
     prgbDst += xpDst + LwMul(yp, cbRowDst);
@@ -2474,7 +2494,7 @@ void DoubleStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSr
     {
         if (klwMax == (xpOn = regsc.XpCur()))
         {
-            // empty strip of the region
+            // 3DMMv1.0: empty strip of the region
             dypAdvance = regsc.DypCur();
             goto LAdvance;
         }
@@ -2482,24 +2502,24 @@ void DoubleStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSr
         if (fSecondRow || (regsc.DypCur() == 1))
             goto LOneRow;
 
-        // copy two rows to the destination
+        // 3DMMv1.0: copy two rows to the destination
         for (;;)
         {
             xpOff = regsc.XpFetch() + dxpBase;
             AssertIn(xpOff - 1, xpOn, rcClip.Dxp() + dxpBase);
 
 #ifdef IN_80386
-// copy two rows to the destination in native
+// 3DMMv1.0: copy two rows to the destination in native
 #define pbDstReg edi
 #define pbSrcReg esi
 #define pbDst2Reg ebx
 #define lwTReg edx
 
             __asm {
-                // lwTReg = xpOn;
-                // pbDstReg = prgbDst + xpOn;
-                // pbSrcReg = prgbSrc + (xpOn >> 1);
-                // pbDst2Reg = pbDstReg + cbRowDst;
+                // 3DMMv1.0: lwTReg = xpOn;
+                // 3DMMv1.0: pbDstReg = prgbDst + xpOn;
+                // 3DMMv1.0: pbSrcReg = prgbSrc + (xpOn >> 1);
+                // 3DMMv1.0: pbDst2Reg = pbDstReg + cbRowDst;
 				mov		lwTReg,xpOn
 				mov		pbSrcReg,lwTReg
 				mov		pbDstReg,lwTReg
@@ -2509,16 +2529,16 @@ void DoubleStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSr
 				mov		pbDst2Reg,pbDstReg
 				add		pbDst2Reg,cbRowDst
 
-                    // if (!(lwTReg & 1)) goto LGetCount2;
+                    // 3DMMv1.0: if (!(lwTReg & 1)) goto LGetCount2;
 				test	lwTReg,1
 				mov		ecx,xpOff
 				jz		LGetCount2
 
-                    // move the single leading byte
-                    // lwTReg++;
-                    // al = *pbSrcReg++;
-                    // *pbDstReg++ = al;
-                    // *pbDstReg2++ = al;
+                    // 3DMMv1.0: move the single leading byte
+                    // 3DMMv1.0: lwTReg++;
+                    // 3DMMv1.0: al = *pbSrcReg++;
+                    // 3DMMv1.0: *pbDstReg++ = al;
+                    // 3DMMv1.0: *pbDstReg2++ = al;
 				inc		lwTReg
 				mov		al,[pbSrcReg]
 				inc		pbSrcReg
@@ -2528,20 +2548,20 @@ void DoubleStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSr
 				inc		pbDst2Reg
 
 LGetCount2:
-                    // ecx = xpOff - lwTReg;
-                    // ecx >>= 1;
-                    // if (ecx <= 0) goto LLastByte2;
+                    // 3DMMv1.0: ecx = xpOff - lwTReg;
+                    // 3DMMv1.0: ecx >>= 1;
+                    // 3DMMv1.0: if (ecx <= 0) goto LLastByte2;
 				sub		ecx,lwTReg
 				sar		ecx,1
 				jle		LLastByte2
 
 LLoop2:
-                    // al = *pbSrcReg++;
-                    // ah = al;
-                    // *(int16_t *)pbDstReg = ax;
-                    // *(int16_t *)pbDst2Reg = ax;
-                    // pbDstReg += 2;
-                    // pbDst2Reg += 2;
+                    // 3DMMv1.0: al = *pbSrcReg++;
+                    // 3DMMv1.0: ah = al;
+                    // 3DMMEx: *(int16_t *)pbDstReg = ax;
+                    // 3DMMEx: *(int16_t *)pbDst2Reg = ax;
+                    // 3DMMv1.0: pbDstReg += 2;
+                    // 3DMMv1.0: pbDst2Reg += 2;
 				mov		al,[pbSrcReg]
 				inc		pbSrcReg
 				mov		ah,al
@@ -2550,18 +2570,18 @@ LLoop2:
 				mov		[pbDst2Reg],ax
 				add		pbDst2Reg,2
 
-                // if (--ecx != 0) goto LLoop2;
+                // 3DMMv1.0: if (--ecx != 0) goto LLoop2;
 				loop	LLoop2
 
 LLastByte2:
-                    // if (!(xpOff & 1)) goto LDone2;
+                    // 3DMMv1.0: if (!(xpOff & 1)) goto LDone2;
 				test	xpOff,1
 				jz		LDone2
 
-                    // move the single trailing byte
-                    // al = *pbSrcReg;
-                    // *pbDstReg = al;
-                    // *pbDstReg2 = al;
+                    // 3DMMv1.0: move the single trailing byte
+                    // 3DMMv1.0: al = *pbSrcReg;
+                    // 3DMMv1.0: *pbDstReg = al;
+                    // 3DMMv1.0: *pbDstReg2 = al;
 				mov		al,[pbSrcReg]
 				mov		[pbDstReg],al
 				mov		[pbDst2Reg],al
@@ -2572,8 +2592,8 @@ LDone2:
 #undef pbSrcReg
 #undef pbDst2Reg
 #undef lwTReg
-#else  //! IN_80386
-       // copy two rows to the destination in C code
+#else  //! 3DMMv1.0: IN_80386
+       // 3DMMv1.0: copy two rows to the destination in C code
             uint8_t *pbSrc = prgbSrc + (xpOn >> 1);
             uint8_t *pbDst = prgbDst + xpOn;
             uint8_t *pbDst2 = pbDst + cbRowDst;
@@ -2582,7 +2602,7 @@ LDone2:
 
             if (xpOn & 1)
             {
-                // do leading single byte
+                // 3DMMv1.0: do leading single byte
                 bT = *pbSrc++;
                 *pbDst++ = bT;
                 *pbDst2++ = bT;
@@ -2602,12 +2622,12 @@ LDone2:
 
             if (xpOff & 1)
             {
-                // do the trailing byte
+                // 3DMMv1.0: do the trailing byte
                 bT = *pbSrc;
                 *pbDst = bT;
                 *pbDst2 = bT;
             }
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 
             if (klwMax == (xpOn = regsc.XpFetch())) break;
             xpOn += dxpBase;
@@ -2617,22 +2637,22 @@ LDone2:
         goto LAdvance;
 
     LOneRow:
-        // copy just one row to the destination
+        // 3DMMv1.0: copy just one row to the destination
         for (;;)
         {
             xpOff = regsc.XpFetch() + dxpBase;
             AssertIn(xpOff - 1, xpOn, rcClip.Dxp() + dxpBase);
 
 #ifdef IN_80386
-// copy just one row to the destination in native
+// 3DMMv1.0: copy just one row to the destination in native
 #define pbDstReg edi
 #define pbSrcReg esi
 #define lwTReg edx
 
             __asm {
-                // lwTReg = xpOn;
-                // pbDstReg = prgbDst + xpOn;
-                // pbSrcReg = prgbSrc + (xpOn >> 1);
+                // 3DMMv1.0: lwTReg = xpOn;
+                // 3DMMv1.0: pbDstReg = prgbDst + xpOn;
+                // 3DMMv1.0: pbSrcReg = prgbSrc + (xpOn >> 1);
 				mov		lwTReg,xpOn
 				mov		pbSrcReg,lwTReg
 				mov		pbDstReg,lwTReg
@@ -2640,15 +2660,15 @@ LDone2:
 				add		pbDstReg,prgbDst
 				add		pbSrcReg,prgbSrc
 
-                    // if (!(lwTReg & 1)) goto LGetCount1;
+                    // 3DMMv1.0: if (!(lwTReg & 1)) goto LGetCount1;
 				test	lwTReg,1
 				mov		ecx,xpOff
 				jz		LGetCount1
 
-                    // move the single leading byte
-                    // lwTReg++;
-                    // al = *pbSrcReg++;
-                    // *pbDstReg++ = al;
+                    // 3DMMv1.0: move the single leading byte
+                    // 3DMMv1.0: lwTReg++;
+                    // 3DMMv1.0: al = *pbSrcReg++;
+                    // 3DMMv1.0: *pbDstReg++ = al;
 				inc		lwTReg
 				mov		al,[pbSrcReg]
 				inc		pbSrcReg
@@ -2656,35 +2676,35 @@ LDone2:
 				mov		[pbDstReg-1],al
 
 LGetCount1:
-                    // ecx = xpOff - lwTReg;
-                    // ecx >>= 1;
-                    // if (ecx <= 0) goto LLastByte1;
+                    // 3DMMv1.0: ecx = xpOff - lwTReg;
+                    // 3DMMv1.0: ecx >>= 1;
+                    // 3DMMv1.0: if (ecx <= 0) goto LLastByte1;
 				sub		ecx,lwTReg
 				sar		ecx,1
 				jle		LLastByte1
 
 LLoop1:
-                    // al = *pbSrcReg++;
-                    // ah = al;
-                    // *(int16_t *)pbDstReg = ax;
-                    // pbDstReg += 2;
+                    // 3DMMv1.0: al = *pbSrcReg++;
+                    // 3DMMv1.0: ah = al;
+                    // 3DMMEx: *(int16_t *)pbDstReg = ax;
+                    // 3DMMv1.0: pbDstReg += 2;
 				mov		al,[pbSrcReg]
 				inc		pbSrcReg
 				add		pbDstReg,2
 				mov		ah,al
 				mov		[pbDstReg-2],ax
 
-                    // if (--ecx != 0) goto LLoop1;
+                    // 3DMMv1.0: if (--ecx != 0) goto LLoop1;
 				loop	LLoop1
 
 LLastByte1:
-                    // if (!(xpOff & 1)) goto LDone1;
+                    // 3DMMv1.0: if (!(xpOff & 1)) goto LDone1;
 				test	xpOff,1
 				jz		LDone1
 
-                    // move the single trailing byte
-                    // al = *pbSrcReg;
-                    // *pbDstReg = al;
+                    // 3DMMv1.0: move the single trailing byte
+                    // 3DMMv1.0: al = *pbSrcReg;
+                    // 3DMMv1.0: *pbDstReg = al;
 				mov		al,[pbSrcReg]
 				mov		[pbDstReg],al
 LDone1:
@@ -2693,8 +2713,8 @@ LDone1:
 #undef pbDstReg
 #undef pbSrcReg
 #undef lwTReg
-#else  //! IN_80386
-       // copy just one row to the destination in C code
+#else  //! 3DMMv1.0: IN_80386
+       // 3DMMv1.0: copy just one row to the destination in C code
             uint8_t bT;
             uint8_t *pbSrc = prgbSrc + (xpOn >> 1);
             uint8_t *pbDst = prgbDst + xpOn;
@@ -2702,7 +2722,7 @@ LDone1:
 
             if (xpOn & 1)
             {
-                // do leading single byte
+                // 3DMMv1.0: do leading single byte
                 *pbDst++ = *pbSrc++;
                 xpOn++;
             }
@@ -2717,10 +2737,10 @@ LDone1:
 
             if (xpOff & 1)
             {
-                // do the trailing byte
+                // 3DMMv1.0: do the trailing byte
                 *pbDst = *pbSrc;
             }
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 
             if (klwMax == (xpOn = regsc.XpFetch())) break;
             xpOn += dxpBase;
@@ -2743,7 +2763,7 @@ LDone1:
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This does a 2x vertical and 1x horizontal stretch blt, clipped to prcClip
     and pregnClip. The clipping is expressed in destination coordinates.
 ***************************************************************************/
@@ -2769,14 +2789,14 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
     if (pvNil != prcClip && !rcClip.FIntersect(prcClip))
         return;
 
-    // Set up the region scanner
+    // 3DMMv1.0: Set up the region scanner
     if (pvNil != pregnClip)
         regsc.Init(pregnClip, &rcClip);
     else
         regsc.InitRc(&rcClip, &rcClip);
     dxpBase = rcClip.xpLeft - xpDst;
 
-    // move to rcClip.ypTop
+    // 3DMMv1.0: move to rcClip.ypTop
     yp = rcClip.ypTop;
     prgbSrc += prcSrc->xpLeft + LwMul(prcSrc->ypTop + ((yp - ypDst) >> 1), cbRowSrc);
     prgbDst += xpDst + LwMul(yp, cbRowDst);
@@ -2786,7 +2806,7 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
     {
         if (klwMax == (xpOn = regsc.XpCur()))
         {
-            // empty strip of the region
+            // 3DMMv1.0: empty strip of the region
             dypAdvance = regsc.DypCur();
             goto LAdvance;
         }
@@ -2794,7 +2814,7 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
         if (fSecondRow || (regsc.DypCur() == 1))
             goto LOneRow;
 
-        // copy two rows to the destination
+        // 3DMMv1.0: copy two rows to the destination
         for (;;)
         {
             xpOff = regsc.XpFetch() + dxpBase;
@@ -2802,13 +2822,13 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 
 #ifdef IN_80386
 
-            // copy two rows to the destination in native
+            // 3DMMv1.0: copy two rows to the destination in native
             __asm
             {
-                // edi = prgbDst + xpOn;
-                // esi = eax = prgbSrc + xpOn;
-                // ebx = pbDstReg + cbRowDst;
-                // ecx = xpOff - xpOn
+                // 3DMMv1.0: edi = prgbDst + xpOn;
+                // 3DMMv1.0: esi = eax = prgbSrc + xpOn;
+                // 3DMMv1.0: ebx = pbDstReg + cbRowDst;
+                // 3DMMv1.0: ecx = xpOff - xpOn
 				mov		edx,xpOn
 				mov		ecx,xpOff
 				mov		edi,edx
@@ -2820,7 +2840,7 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 				mov		eax,esi
 				add		ebx,cbRowDst
 
-                    // copy the first row
+                    // 3DMMv1.0: copy the first row
 				mov		edx,ecx
 				shr		ecx,2
 				rep		movsd
@@ -2828,12 +2848,12 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 				and		ecx,3
 				rep		movsb
 
-                    // prepare to copy the second row
+                    // 3DMMv1.0: prepare to copy the second row
 				mov		esi,eax
 				mov		edi,ebx
 				mov		ecx,edx
 
-                    // copy the second row
+                    // 3DMMv1.0: copy the second row
 				shr		ecx,2
 				and		edx,3
 				rep		movsd
@@ -2841,13 +2861,13 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 				rep		movsb
             }
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
-            // copy two rows to the destination in C code
+            // 3DMMv1.0: copy two rows to the destination in C code
             CopyPb(prgbSrc + xpOn, prgbDst + xpOn, xpOff - xpOn);
             CopyPb(prgbSrc + xpOn, prgbDst + cbRowDst + xpOn, xpOff - xpOn);
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 
             if (klwMax == (xpOn = regsc.XpFetch())) break;
             xpOn += dxpBase;
@@ -2857,7 +2877,7 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
         goto LAdvance;
 
     LOneRow:
-        // copy just one row to the destination
+        // 3DMMv1.0: copy just one row to the destination
         for (;;)
         {
             xpOff = regsc.XpFetch() + dxpBase;
@@ -2865,12 +2885,12 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 
 #ifdef IN_80386
 
-            // copy one row to the destination in native
+            // 3DMMv1.0: copy one row to the destination in native
             __asm
             {
-                // edi = prgbDst + xpOn;
-                // esi = prgbSrc + xpOn;
-                // ecx = xpOff - xpOn
+                // 3DMMv1.0: edi = prgbDst + xpOn;
+                // 3DMMv1.0: esi = prgbSrc + xpOn;
+                // 3DMMv1.0: ecx = xpOff - xpOn
 				mov		edx,xpOn
 				mov		ecx,xpOff
 				mov		edi,edx
@@ -2879,7 +2899,7 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 				add		edi,prgbDst
 				add		esi,prgbSrc
 
-                    // copy the row
+                    // 3DMMv1.0: copy the row
 				mov		edx,ecx
 				shr		ecx,2
 				and		edx,3
@@ -2888,12 +2908,12 @@ void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *p
 				rep		movsb
             }
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
-            // copy one row to the destination in C code
+            // 3DMMv1.0: copy one row to the destination in C code
             CopyPb(prgbSrc + xpOn, prgbDst + xpOn, xpOff - xpOn);
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 
             if (klwMax == (xpOn = regsc.XpFetch())) break;
             xpOn += dxpBase;

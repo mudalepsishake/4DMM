@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @doc    MMINSTAL
 
@@ -41,15 +41,15 @@
 ******************************************************************************/
 
 #include "studio.h"
-#include <mmsystem.h> // winmm.lib
-#include <mmreg.h>    // required by msacm.h
-#include <msacm.h>    // msacm32.lib
-#include <vfw.h>      // vfw32.lib
+#include <mmsystem.h> // 3DMMv1.0: winmm.lib
+#include <mmreg.h>    // 3DMMv1.0: required by msacm.h
+#include <msacm.h>    // 3DMMv1.0: msacm32.lib
+#include <vfw.h>      // 3DMMv1.0: vfw32.lib
 
 #include "mminstal.h"
 #include "utestres.h"
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wHaveWaveDevice |
 
@@ -75,10 +75,10 @@ WORD wHaveWaveDevice(DWORD dwReqFormats)
     WORD wDevID;
     WORD wErr;
 
-    // Determine how many WAVE devices are in the user's system
+    // 3DMMv1.0: Determine how many WAVE devices are in the user's system
     wNumWavDev = waveOutGetNumDevs();
 
-    // If there are none, return indicating that
+    // 3DMMv1.0: If there are none, return indicating that
     if (0 == wNumWavDev)
     {
 #ifdef _DEBUG
@@ -87,25 +87,25 @@ WORD wHaveWaveDevice(DWORD dwReqFormats)
         return (HWD_NODEVICE);
     }
 
-    // Cycle through the WAVE devices to determine if any support
-    // the desired format.
+    // 3DMMv1.0: Cycle through the WAVE devices to determine if any support
+    // 3DMMv1.0: the desired format.
     for (wDevID = 0; wDevID < wNumWavDev; wDevID++)
     {
         wErr = waveOutGetDevCaps(wDevID, &WOC, sizeof(WAVEOUTCAPS));
 
-        // If we obtain a WAVE device's capabilities OK
+        // 3DMMv1.0: If we obtain a WAVE device's capabilities OK
         if ((0 == wErr) &&
-            // and it supports the desired format
+            // 3DMMv1.0: and it supports the desired format
             ((WOC.dwFormats & dwReqFormats) == dwReqFormats))
-            // then return success - we have a device that supports what we want
+            // 3DMMv1.0: then return success - we have a device that supports what we want
             return (HWD_SUCCESS);
 
-    } // for(wDevID
+    } // 3DMMv1.0: for(wDevID
 
-    // If we didn't find a device that supported what we wanted, why didn't we...
+    // 3DMMv1.0: If we didn't find a device that supported what we wanted, why didn't we...
     switch (wErr)
     {
-        // We got the capabilities OK but the formats didn't match
+        // 3DMMv1.0: We got the capabilities OK but the formats didn't match
     case 0:
 #ifdef _DEBUG
         MessageBox(NULL, TEXT("Found 1 or more WAVE devices, but none support the desired PCM format."), NULL,
@@ -113,7 +113,7 @@ WORD wHaveWaveDevice(DWORD dwReqFormats)
 #endif
         return (HWD_NOFORMAT);
 
-        // There wasn't an installed driver for the WAVE device
+        // 3DMMv1.0: There wasn't an installed driver for the WAVE device
     case MMSYSERR_NODRIVER:
 #ifdef _DEBUG
         MessageBox(NULL, TEXT("Found 1 or more WAVE devices, but there was no driver installed for it."), NULL,
@@ -122,7 +122,7 @@ WORD wHaveWaveDevice(DWORD dwReqFormats)
         return (HWD_NODRIVER);
     }
 
-    // Some other error occured.
+    // 3DMMv1.0: Some other error occured.
 #ifdef _DEBUG
     MessageBox(NULL, TEXT("Found 1 or more WAVE devices, but an error occured getting the device capabilities."), NULL,
                MB_ICONSTOP);
@@ -130,7 +130,7 @@ WORD wHaveWaveDevice(DWORD dwReqFormats)
     return (HWD_ERROR);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wHaveACM |
 
@@ -150,7 +150,7 @@ WORD wHaveWaveDevice(DWORD dwReqFormats)
 
 WORD wHaveACM()
 {
-    /* The following taken from MSDN ACMAPP sample exe.
+    /* 3DMMv1.0: The following taken from MSDN ACMAPP sample exe.
        Select options - wave device - output menu item.
        Select the Microsoft Sound Mapper device.
 
@@ -192,9 +192,9 @@ WORD wHaveACM()
 
     wErr = waveOutGetDevCaps(WAVE_MAPPER, &WOC, sizeof(WAVEOUTCAPS));
 
-    if ((MMSYSERR_NOERROR != wErr) || // If the driver wasn't installed or
+    if ((MMSYSERR_NOERROR != wErr) || // 3DMMv1.0: If the driver wasn't installed or
 
-        (WOC.vDriverVersion < 0x0332)) // ACM ver is less than 3.50 (for Win32) HIBYTE=Major LOBYTE=Minor ver num
+        (WOC.vDriverVersion < 0x0332)) // 3DMMv1.0: ACM ver is less than 3.50 (for Win32) HIBYTE=Major LOBYTE=Minor ver num
     {
 #ifdef _DEBUG
         MessageBox(NULL, TEXT("ACM not installed or it is an old version."), NULL, MB_ICONSTOP);
@@ -210,7 +210,7 @@ WORD wHaveACM()
     return (0);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wHaveACMCodec |
 
@@ -234,7 +234,7 @@ WORD wHaveACMCodec(DWORD dwReqCodec)
     acmFTD.cbStruct = sizeof(ACMFORMATTAGDETAILS);
     acmFTD.dwFormatTagIndex = 0;
     acmFTD.dwFormatTag = dwReqCodec;
-    acmFTD.cbFormatSize = 0; // These must be initialized or the retail build breaks under NT
+    acmFTD.cbFormatSize = 0; // 3DMMv1.0: These must be initialized or the retail build breaks under NT
     acmFTD.fdwSupport = 0;
 
     mmRet = acmFormatTagDetails(NULL, &acmFTD, ACM_FORMATTAGDETAILSF_FORMATTAG);
@@ -262,7 +262,7 @@ WORD wHaveACMCodec(DWORD dwReqCodec)
     return (HAC_NOCONVERT);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wHaveICMCodec |
 
@@ -299,7 +299,7 @@ WORD wHaveICMCodec(DWORD dwReqCodec)
     return (HIC_SUCCESS);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wHaveMCI |
 
@@ -324,7 +324,7 @@ WORD wHaveMCI(PCSZ dwDeviceType)
     mciOpen.lpstrElementName = NULL;
     mciOpen.lpstrAlias = NULL;
 
-    // mciErr =  mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_OPEN_TYPE_ID, (DWORD)(LPMCI_OPEN_PARMS)&mciOpen);
+    // 3DMMv1.0: mciErr =  mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_OPEN_TYPE_ID, (DWORD)(LPMCI_OPEN_PARMS)&mciOpen);
     mciErr = mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD_PTR)(LPMCI_OPEN_PARMS)&mciOpen);
 
     if (MMSYSERR_NOERROR == mciErr)
@@ -344,7 +344,7 @@ WORD wHaveMCI(PCSZ dwDeviceType)
     return ((WORD)mciErr);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   BOOL | FRunningChicagoUI |
 
@@ -358,15 +358,15 @@ BOOL fRunningWin95(void)
 {
     DWORD dwVersion = GetVersion();
 
-    if ((LOBYTE(LOWORD(dwVersion)) >= 4) && // If windows version is >= 4.0 we're on Win95 or WinNT w/ new shell
-        (dwVersion & 0x80000000L))          // If high bit is set we're on Win95 or Win32s (not WinNT)
+    if ((LOBYTE(LOWORD(dwVersion)) >= 4) && // 3DMMv1.0: If windows version is >= 4.0 we're on Win95 or WinNT w/ new shell
+        (dwVersion & 0x80000000L))          // 3DMMv1.0: If high bit is set we're on Win95 or Win32s (not WinNT)
         return (TRUE);
 
     else
         return (FALSE);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   WORD | wInstallComp |
 
@@ -379,10 +379,10 @@ BOOL fRunningWin95(void)
 
 ******************************************************************************/
 
-#define HOW_NEVER_REBOOT TEXT("0") // Whatever happens the machine will not be rebooted.
+#define HOW_NEVER_REBOOT TEXT("0") // 3DMMv1.0: Whatever happens the machine will not be rebooted.
 #define MMINF TEXT("MOTOWN.INF")
 
-// The following 2 arrays must parallel each other between Win95 setup sections & NT driver names
+// 3DMMv1.0: The following 2 arrays must parallel each other between Win95 setup sections & NT driver names
 
 WORD wInstallComp(WORD wComp)
 {
@@ -391,12 +391,12 @@ WORD wInstallComp(WORD wComp)
     bool fWin95 = fRunningWin95();
 
     if (!LoadString(vwig.hinst, (fWin95) ? stidInstallDriverWin95 : stidInstallDriverNT, szText, sizeof(szText)))
-        return (1); // fail
+        return (1); // 3DMMv1.0: fail
     if (!LoadString(vwig.hinst, stidDriverName + wComp, szDriverName, sizeof(szDriverName)))
-        return (1); // fail
+        return (1); // 3DMMv1.0: fail
     MessageBox(NULL, szText, szDriverName, MB_ICONSTOP);
 
-    if (fWin95) // Running Win95 NOT NT 3.51 with or without new shell
+    if (fWin95) // 3DMMv1.0: Running Win95 NOT NT 3.51 with or without new shell
     {
         STARTUPINFO si;
         PROCESS_INFORMATION pi;
@@ -404,25 +404,25 @@ WORD wInstallComp(WORD wComp)
         TCHAR szSectionName[255];
 
         if (!LoadString(vwig.hinst, stidInstallCmdLine, szCommandLine, sizeof(szCommandLine)))
-            return (1); // fail
+            return (1); // 3DMMv1.0: fail
 
         if (!LoadString(vwig.hinst, stidSectionName + wComp, szSectionName, sizeof(szSectionName)))
-            return (1); // fail
+            return (1); // 3DMMv1.0: fail
 
-        // Command line should look like this:
-        //   RunDll.exe setupx.dll,InstallHinfSection <section> <reboot mode> <inf name>
+        // 3DMMv1.0: Command line should look like this:
+        // 3DMMv1.0:   RunDll.exe setupx.dll,InstallHinfSection <section> <reboot mode> <inf name>
 
-        // Add <section>
+        // 3DMMv1.0: Add <section>
         lstrcat(szCommandLine, szSectionName);
 
-        // Add <reboot mode> <inf name>
+        // 3DMMv1.0: Add <reboot mode> <inf name>
         lstrcat(szCommandLine, TEXT(" ") HOW_NEVER_REBOOT TEXT(" ") MMINF);
 
 #ifdef _DEBUG
         MessageBox(NULL, szCommandLine, TEXT("Win95 setup command"), MB_ICONINFORMATION);
 #endif
 
-        // Now execute the command line to cause the actual install
+        // 3DMMv1.0: Now execute the command line to cause the actual install
         si.cb = sizeof(STARTUPINFO);
         si.lpReserved = NULL;
         si.lpDesktop = NULL;
@@ -431,21 +431,21 @@ WORD wInstallComp(WORD wComp)
         si.cbReserved2 = 0;
         si.lpReserved2 = NULL;
 
-        if (CreateProcess(NULL,             // address of module name
-                          szCommandLine,    // address of command line
-                          NULL,             // process security
-                          NULL,             // thread security
-                          FALSE,            // inherit handles?
-                          DETACHED_PROCESS, // creation flags
-                          NULL,             // address of new environment
-                          NULL,             // address of current directory
-                          &si,              // STARTUPINFO
-                          &pi))             // PROCESS_INFORMATION
+        if (CreateProcess(NULL,             // 3DMMv1.0: address of module name
+                          szCommandLine,    // 3DMMv1.0: address of command line
+                          NULL,             // 3DMMv1.0: process security
+                          NULL,             // 3DMMv1.0: thread security
+                          FALSE,            // 3DMMv1.0: inherit handles?
+                          DETACHED_PROCESS, // 3DMMv1.0: creation flags
+                          NULL,             // 3DMMv1.0: address of new environment
+                          NULL,             // 3DMMv1.0: address of current directory
+                          &si,              // 3DMMv1.0: STARTUPINFO
+                          &pi))             // 3DMMv1.0: PROCESS_INFORMATION
         {
-            // Wait until process is finished
+            // 3DMMv1.0: Wait until process is finished
             WaitForSingleObject(pi.hProcess, INFINITE);
 
-            // Close the process down
+            // 3DMMv1.0: Close the process down
             CloseHandle(pi.hProcess);
             CloseHandle(pi.hThread);
 
@@ -461,7 +461,7 @@ WORD wInstallComp(WORD wComp)
     return (1);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
 
 @func   int WINAPI | WinMain |
 
@@ -471,7 +471,7 @@ WORD wInstallComp(WORD wComp)
 
 ******************************************************************************/
 
-/* Uncomment this WinMain function to make this module into a stand alone
+/* 3DMMEx: Uncomment this WinMain function to make this module into a stand alone
    Win32 app that will verify audio support with the MS-ADPCM codec and
    video support with MS Video1 and Intel Indeo 3.2 codecs.
 

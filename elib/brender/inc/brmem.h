@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: brmem.h 1.13 1995/05/25 13:37:26 sam Exp $
@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Instance of a memory allocator
      */
     typedef void *BR_CALLBACK brmem_allocate_cbfn(br_size_t size, br_uint_8 type);
@@ -26,32 +26,32 @@ extern "C"
     {
         char *identifier;
 
-        /*
+        /* BRender:
          * Allocate a new chunk of memory - must return the new pointer
          * or handle the error itself
          */
         brmem_allocate_cbfn *allocate;
 
-        /*
+        /* BRender:
          * Release previously allocated block
          */
         brmem_free_cbfn *free;
 
-        /*
+        /* BRender:
          * Inquire as to the amount of memeory available for a given type
          */
         brmem_inquire_cbfn *inquire;
 
     } br_allocator;
 
-    /*
+    /* BRender:
      * Classes of resource that brender allocates
      *
      * Valid values are 1 to 255
      */
     enum br_memory_classes
     {
-        /*
+        /* BRender:
          * System classes
          */
         BR_MEMORY_SCRATCH = 1,
@@ -85,18 +85,18 @@ extern "C"
         BR_MEMORY_IMAGE_NAMES,
         BR_MEMORY_EXCEPTION_HANDLER,
 
-        /*
+        /* BRender:
          * Application classes
          */
         BR_MEMORY_APPLICATION = 0x80,
 
-        /*
+        /* BRender:
          * User defined classed are BR_MEMORY_APPLICATION + 1 ... 127
          */
         BR_MEMORY_MAX = 256
     };
 
-    /*
+    /* BRender:
      * A resource class structure
      */
     typedef void BR_CALLBACK br_resourcefree_cbfn(void *res, br_uint_8 res_class, br_size_t size);

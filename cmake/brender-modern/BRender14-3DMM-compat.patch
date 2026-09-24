@@ -1,0 +1,1317 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a503041..3657843 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -86,8 +86,12 @@ endif ()
+ 
+ 
+ option(BRENDER_BUILD_FOR_CROC "Build for Croc" OFF)
++option(BRENDER_LEGACY_3DMM_MODEL_ABI "Expose legacy 3DMM prepared-model compatibility fields" OFF)
+ message(STATUS "Building for Croc: ${BRENDER_BUILD_FOR_CROC}")
+ 
++option(BRENDER_LEGACY_FIXED_ABI "Use legacy fixed-point scalar/angle ABI" OFF)
++message(STATUS "Legacy fixed ABI: ${BRENDER_LEGACY_FIXED_ABI}")
++
+ add_subdirectory(core)
+ 
+ if (BRENDER_BUILD_DRIVERS)
+diff --git a/core/fmt/CMakeLists.txt b/core/fmt/CMakeLists.txt
+index 98dff42..f917e72 100644
+--- a/core/fmt/CMakeLists.txt
++++ b/core/fmt/CMakeLists.txt
+@@ -36,9 +36,6 @@ set(FMT_FILES
+         loadvue.c
+         savescr.c
+         savestb.c
+-        savegltf.c
+-        loadgltf.c
+-        animgltf.c
+ 
+         stb_image.h
+         stb_image_write.h
+@@ -55,6 +52,14 @@ set(FMT_FILES
+         cgltf.c
+         )
+ 
++if (NOT BRENDER_LEGACY_FIXED_ABI)
++    list(APPEND FMT_FILES
++        savegltf.c
++        loadgltf.c
++        animgltf.c
++    )
++endif()
++
+ add_library(fmt OBJECT
+         ${FMT_FILES}
+         ${INC_FILES}
+diff --git a/core/fw/ddi/brddi_p.h b/core/fw/ddi/brddi_p.h
+index 4a5f75f..b004246 100644
+--- a/core/fw/ddi/brddi_p.h
++++ b/core/fw/ddi/brddi_p.h
+@@ -108,8 +108,13 @@ br_int_32 BR_RESIDENT_ENTRY BrParseMatrixFloat(struct br_lexer *l, br_float *m,
+ br_int_32 BR_RESIDENT_ENTRY BrParseMatrixFixed(struct br_lexer *l, br_fixed_ls *m, br_int_32 width, br_int_32 max_h);
+ 
+ #define BrParseScalar BrParseFloat
++#if BASED_FIXED
++#define BrParseVector BrParseVectorFixed
++#define BrParseMatrix BrParseMatrixFixed
++#else
+ #define BrParseVector BrParseVectorFloat
+ #define BrParseMatrix BrParseMatrixFloat
++#endif
+ 
+ /*
+  * object.c
+diff --git a/core/fw/ddi/tokenmap.h b/core/fw/ddi/tokenmap.h
+index 6d2edb3..ed1d36d 100644
+--- a/core/fw/ddi/tokenmap.h
++++ b/core/fw/ddi/tokenmap.h
+@@ -126,6 +126,28 @@ typedef struct br_tv_custom {
+ /*
+  * Define some operations in terms of the current scalar type
+  */
++#if BASED_FIXED
++#define BRTV_CONV_FIXED_SCALAR     BRTV_CONV_COPY
++#define BRTV_CONV_FLOAT_SCALAR     BRTV_CONV_FLOAT_FIXED
++
++#define BRTV_CONV_V2_FIXED_SCALAR  BRTV_CONV_V2_COPY
++#define BRTV_CONV_V2_FLOAT_SCALAR  BRTV_CONV_V2_FLOAT_FIXED
++
++#define BRTV_CONV_V3_FIXED_SCALAR  BRTV_CONV_V3_COPY
++#define BRTV_CONV_V3_FLOAT_SCALAR  BRTV_CONV_V3_FLOAT_FIXED
++
++#define BRTV_CONV_V4_FIXED_SCALAR  BRTV_CONV_V4_COPY
++#define BRTV_CONV_V4_FLOAT_SCALAR  BRTV_CONV_V4_FLOAT_FIXED
++
++#define BRTV_CONV_M23_FIXED_SCALAR BRTV_CONV_M23_COPY
++#define BRTV_CONV_M23_FLOAT_SCALAR BRTV_CONV_M23_FLOAT_FIXED
++
++#define BRTV_CONV_M34_FIXED_SCALAR BRTV_CONV_M34_COPY
++#define BRTV_CONV_M34_FLOAT_SCALAR BRTV_CONV_M34_FLOAT_FIXED
++
++#define BRTV_CONV_M4_FIXED_SCALAR  BRTV_CONV_M4_COPY
++#define BRTV_CONV_M4_FLOAT_SCALAR  BRTV_CONV_M4_FLOAT_FIXED
++#else
+ #define BRTV_CONV_FIXED_SCALAR     BRTV_CONV_FIXED_FLOAT
+ #define BRTV_CONV_FLOAT_SCALAR     BRTV_CONV_COPY
+ 
+@@ -146,6 +168,7 @@ typedef struct br_tv_custom {
+ 
+ #define BRTV_CONV_M4_FIXED_SCALAR  BRTV_CONV_M4_FIXED_FLOAT
+ #define BRTV_CONV_M4_FLOAT_SCALAR  BRTV_CONV_M4_COPY
++#endif
+ 
+ /*
+  * Conversion flags
+diff --git a/core/inc/CMakeLists.txt b/core/inc/CMakeLists.txt
+index 3fba1e2..798d752 100644
+--- a/core/inc/CMakeLists.txt
++++ b/core/inc/CMakeLists.txt
+@@ -6,8 +6,13 @@ target_include_directories(brender-inc INTERFACE
+         $<INSTALL_INTERFACE:include>
+         )
+ 
+-set(BASED_FIXED 0)
+-set(BASED_FLOAT 1)
++if (BRENDER_LEGACY_FIXED_ABI)
++    set(BASED_FIXED 1)
++    set(BASED_FLOAT 0)
++else()
++    set(BASED_FIXED 0)
++    set(BASED_FLOAT 1)
++endif()
+ set(PARANOID 1)
+ 
+ configure_file(brconfig.h.in "${CMAKE_CURRENT_BINARY_DIR}/brconfig.h")
+diff --git a/core/inc/angles.h b/core/inc/angles.h
+index 6ca5004..fcd55b8 100644
+--- a/core/inc/angles.h
++++ b/core/inc/angles.h
+@@ -8,9 +8,35 @@
+ #ifndef _ANGLES_H_
+ #define _ANGLES_H_
+ 
+-/*
+- * Angles are in turns, i.e. [0, 1],
+- */
++#if BASED_FIXED
++
++/* Legacy BRender/3DMM ABI: angles are 0.16 fixed point. */
++typedef br_fixed_luf br_angle;
++
++#define BR_ANGLE_DEG(deg) ((br_angle)(long)((deg)*182))
++#define BR_ANGLE_RAD(rad) ((br_angle)(long)((rad)*10430))
++
++#define BrAngleToDegree(a) BR_MUL((a),BR_SCALAR(360.0))
++#define BrDegreeToAngle(d) ((br_angle)BR_MULDIV((d),BR_SCALAR(1.0),BR_SCALAR(360.0)))
++#define BrAngleToRadian(a) BR_MUL((a),BR_SCALAR(2.0*PI))
++#define BrRadianToAngle(r) ((br_angle)(BR_MUL((r),BR_SCALAR(0.5/PI))))
++#define BrDegreeToRadian(d) (BR_MULDIV((d),BR_SCALAR(PI),BR_SCALAR(180.0)))
++#define BrRadianToDegree(r) (BR_MUL((r),BR_SCALAR(180.0/PI)))
++
++#define BrAngleToScalar(a) ((br_scalar)(a))
++#define BrScalarToAngle(s) ((br_angle)(long)(s))
++
++#define BR_SIN(a)          BrFixedSin(a)
++#define BR_COS(a)          BrFixedCos(a)
++#define BR_TAN(a)          BR_DIV(BrFixedSin(a),BrFixedCos(a))
++#define BR_ASIN(a)         BrFixedASin(a)
++#define BR_ACOS(a)         BrFixedACos(a)
++#define BR_ATAN2(a,b)      BrFixedATan2(a,b)
++#define BR_ATAN2FAST(a,b)  BrFixedATan2Fast(a,b)
++
++#else
++
++/* Modern BRender 1.4 ABI: angles are scalar turns in [0,1]. */
+ typedef br_scalar br_angle;
+ 
+ #define BR_ANGLE_DEG(deg)   ((br_angle)((deg) / 360.0f))
+@@ -28,11 +54,14 @@ typedef br_scalar br_angle;
+ 
+ #define BR_SIN(a)           ((br_scalar)sinf(BrAngleToRadian(a)))
+ #define BR_COS(a)           ((br_scalar)cosf(BrAngleToRadian(a)))
++#define BR_TAN(a)           ((br_scalar)tanf(BrAngleToRadian(a)))
+ #define BR_ASIN(a)          BrRadianToAngle(asinf(a))
+ #define BR_ACOS(a)          BrRadianToAngle(acosf(a))
+ #define BR_ATAN2(a, b)      BrRadianToAngle(atan2f((a), (b)))
+ #define BR_ATAN2FAST(a, b)  BrRadianToAngle(atan2f((a), (b)))
+ 
++#endif
++
+ /*
+  * Fields that go into br_euler.order
+  */
+diff --git a/core/inc/brconfig.h.in b/core/inc/brconfig.h.in
+index cc0b1d7..3c17f0e 100644
+--- a/core/inc/brconfig.h.in
++++ b/core/inc/brconfig.h.in
+@@ -18,6 +18,9 @@
+ 
+ #cmakedefine01 PARANOID
+ 
++/* Legacy 3DMM prepared-model compatibility view. */
++#cmakedefine01 BRENDER_LEGACY_3DMM_MODEL_ABI
++
+ /*
+  * True if we're built for Croc.
+  */
+diff --git a/core/inc/model.h b/core/inc/model.h
+index 0e58936..29d701a 100644
+--- a/core/inc/model.h
++++ b/core/inc/model.h
+@@ -23,9 +23,16 @@ typedef struct br_vertex {
+     br_uint_8 blu;
+ 
+     /*
+-     * Private fields
++     * Private fields. 3D Movie Maker's 1995 BRender headers expose this
++     * 16-bit slot as `r`; modern BRender treats it as padding. Preserve the
++     * legacy name only for the 3DMM compatibility ABI so existing 3DMM code
++     * and serialized vertices keep their exact 32-byte layout.
+      */
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    br_uint_16  r;
++#else
+     br_uint_16  _pad0;
++#endif
+     br_fvector3 n; /* Surface normal at vertex	*/
+ 
+ } br_vertex;
+@@ -72,6 +79,21 @@ enum {
+     BR_FACEF_QUAD_SHIFT = 4
+ };
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++/* Compatibility-only views used by 3D Movie Maker. */
++typedef struct br_face_group {
++    br_material *material;
++    br_face     *faces;
++    br_uint_16   nfaces;
++} br_face_group;
++
++typedef struct br_vertex_group {
++    br_material *material;
++    br_vertex   *vertices;
++    br_uint_16   nvertices;
++} br_vertex_group;
++#endif
++
+ /*
+  * Primitive list added for future expansion
+  */
+@@ -321,6 +343,30 @@ typedef struct br_model {
+     void *prepared;
+     void *stored;
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * Legacy 3DMM compatibility view. These aliases intentionally expose the
++     * source mesh, while modern BRender keeps its private prepared mesh in
++     * model->prepared.
++     */
++    br_uint_16 nprepared_vertices;
++    br_uint_16 nprepared_faces;
++    br_face   *prepared_faces;
++    br_vertex *prepared_vertices;
++
++    br_uint_16 nface_groups;
++    br_uint_16 nvertex_groups;
++    br_face_group   *face_groups;
++    br_vertex_group *vertex_groups;
++
++    br_uint_16 nedges;
++    br_uint_16 *face_tags;
++    br_uint_16 *vertex_tags;
++    br_uint_32 prep_flags;
++    br_uint_16 *smooth_strings;
++    void *rptr;
++#endif
++
+     /*
+      * New primitive extensions
+      */
+diff --git a/core/inc/scalar.h b/core/inc/scalar.h
+index 95e02cb..ab2666c 100644
+--- a/core/inc/scalar.h
++++ b/core/inc/scalar.h
+@@ -19,6 +19,135 @@
+ #ifndef _SCALAR_H_
+ #define _SCALAR_H_
+ 
++#if !defined(BASED_FIXED) && !defined(BASED_FLOAT)
++#define BASED_FLOAT 1
++#endif
++
++#if !defined(BASED_FIXED)
++#define BASED_FIXED 0
++#endif
++
++#if !defined(BASED_FLOAT)
++#define BASED_FLOAT 0
++#endif
++
++#if !BASED_FIXED && !BASED_FLOAT
++#error "Must define BASED_FIXED or BASED_FLOAT"
++#endif
++
++#if BASED_FIXED
++
++	/*
++	 * Fixed base types
++	 */
++typedef br_fixed_ls		br_scalar;
++typedef br_fixed_lsf	br_fraction;
++typedef br_fixed_luf	br_ufraction;
++
++#define BR_SCALAR_EPSILON	0x0001
++#define BR_SCALAR_MAX		0x7fffffff
++#define BR_SCALAR_MIN		0x80000000
++
++#define BR_SCALAR_TOKEN		BRT_FIXED
++
++/*
++ * Macros for static initialisation
++ */
++#define BR_SCALAR(x)		((br_scalar)(BR_ONE_LS * (x)))
++#define BR_FRACTION(x)		((br_fraction)((BR_ONE_LSF * (x))>=BR_ONE_LSF?BR_ONE_LSF-1:BR_ONE_LSF * (x)))
++#define BR_UFRACTION(x)		((br_ufraction)((BR_ONE_LUF * (x))>=BR_ONE_LUF?BR_ONE_LUF-1:BR_ONE_LUF * (x)))
++
++/*
++ * Macros for type conversion
++ */
++#define BrFloatToScalar(f)	((br_scalar)((f)*(float)BR_ONE_LS))
++#define BrScalarToFloat(s)	((s)/(float)BR_ONE_LS)
++
++#define BrIntToScalar(i)	((br_scalar)((i)*(int)BR_ONE_LS))
++#define BrScalarToInt(s)	((s)/(int)BR_ONE_LS)
++
++#define BrFixedToScalar(f)		(f)
++#define BrScalarToFixed(s)		(s)
++
++#define BrFractionToScalar(f)	((br_scalar)((f)*2))
++#define BrScalarToFraction(s)	((br_fraction)((s)/2))
++
++#define BrUFractionToScalar(f)	((br_scalar)(f))
++#define BrScalarToUFraction(s)	((br_ufraction)(s))
++
++/* Modern BRender file compatibility helpers retained for legacy fixed ABI. */
++#define BrFixedLUFToScalar(f)	((br_scalar)(f))
++#define BrScalarToFixedLUF(s)	((br_fixed_luf)(s))
++
++/*
++ * Various arithmetic operations
++ */
++#define BR_ADD(a,b)				((a)+(b))
++#define BR_SUB(a,b)				((a)-(b))
++#define BR_MUL(a,b)				BrFixedMul(a,b)
++#define BR_SQR(a)				BrFixedSqr(a)
++
++#define BR_ABS(a)				BrFixedAbs(a)
++#define BR_NEG(a)				(-(a))
++
++#define BR_DIV(a,b)				BrFixedDiv(a,b)
++#define BR_DIVR(a,b)			BrFixedDivR(a,b)
++#define BR_MULDIV(a,b,c)		BrFixedMulDiv(a,b,c)
++#define BR_RCP(a)				BrFixedRcp(a)
++
++#define BR_CONST_MUL(a,b)		((a)*(b))
++#define BR_CONST_DIV(a,b)		((a)/(b))
++
++#define BR_MAC2(a,b,c,d)		BrFixedMac2(a,b,c,d)
++#define BR_MAC3(a,b,c,d,e,f)	BrFixedMac3(a,b,c,d,e,f)
++#define BR_MAC4(a,b,c,d,e,f,g,h) BrFixedMac4(a,b,c,d,e,f,g,h)
++
++#define BR_MAC2DIV(a,b,c,d,e)		BrFixedMac2Div(a,b,c,d,e)
++#define BR_MAC3DIV(a,b,c,d,e,f,g)	BrFixedMac3Div(a,b,c,d,e,f,g)
++#define BR_MAC4DIV(a,b,c,d,e,f,g,h,i) BrFixedMac4Div(a,b,c,d,e,f,g,h,i)
++
++#define BR_SQR2(a,b)			BrFixedSqr2(a,b)
++#define BR_SQR3(a,b,c)			BrFixedSqr3(a,b,c)
++#define BR_SQR4(a,b,c,d)		BrFixedSqr4(a,b,c,d)
++
++#define BR_FMAC2(a,b,c,d)		BrFixedFMac2(a,b,c,d)
++#define BR_FMAC3(a,b,c,d,e,f)	  BrFixedFMac3(a,b,c,d,e,f)
++#define BR_FMAC4(a,b,c,d,e,f,g,h) BrFixedFMac4(a,b,c,d,e,f,g,h)
++
++#define BR_LENGTH2(a,b)			BrFixedLength2(a,b)
++#define BR_LENGTH3(a,b,c)		BrFixedLength3(a,b,c)
++#define BR_LENGTH4(a,b,c,d)		BrFixedLength4(a,b,c,d)
++
++#define BR_RLENGTH2(a,b)		BrFixedRLength2(a,b)
++#define BR_RLENGTH3(a,b,c)		BrFixedRLength3(a,b,c)
++#define BR_RLENGTH4(a,b,c,d)	BrFixedRLength4(a,b,c,d)
++
++#define BR_POW(a,b)				BrFixedPow((a),(b))
++#define BR_SQRT(a)				BrFixedSqrt(a)
++
++#define BR_FLOOR(a)				((a) & -BR_ONE_LS)
++#define BR_CEIL(a)				(((a) + BR_ONE_LS-BR_SCALAR_EPSILON) & -BR_ONE_LS)
++#define BR_FMOD(x,y)            BrFixedToScalar(BrScalarToFixed(x) % BrScalarToFixed(y))
++
++#ifndef PI
++#define PI 3.14159265358979323846f
++#endif
++
++typedef br_fixed_ls  br_scalar_x;
++typedef br_fixed_lsf br_fraction_x;
++typedef br_fixed_luf br_ufraction_x;
++typedef br_float     br_scalar_f;
++typedef br_float     br_fraction_f;
++typedef br_float     br_ufraction_f;
++
++#define BR_SCALAR_LE_0(a) ((a) <= BR_SCALAR(0.0))
++#define BR_SCALAR_GE_1(a) ((a) >= BR_SCALAR(1.0))
++#define BR_SCALAR_LE_2_EPSILON(a) ((a) <= 2 * BR_SCALAR_EPSILON)
++#define BR_SCALAR_GT_SPECULARPOW_CUTOFF(a) ((a) > SPECULARPOW_CUTOFF)
++#define BR_SCALAR_LT(a,b) ((a) < (b))
++#define BR_SCALAR_GT(a,b) ((a) > (b))
++
++#else
+ /**
+  ** Basic types - float
+  **/
+@@ -152,3 +281,5 @@ typedef br_float br_ufraction_f;
+ #define BR_SCALAR_GT(a, b)                 (*(br_int_32 *)&(a) > *(br_int_32 *)&(b))
+ 
+ #endif
++
++#endif
+diff --git a/core/v1db/modsupt.c b/core/v1db/modsupt.c
+index 3b31979..3cb4353 100644
+--- a/core/v1db/modsupt.c
++++ b/core/v1db/modsupt.c
+@@ -236,6 +236,30 @@ br_model *BR_PUBLIC_ENTRY BrModelAllocate(const char *name, int nvertices, int n
+     if(nfaces)
+         m->faces = BrResAllocate(m, nfaces * sizeof(*m->faces), BR_MEMORY_FACES);
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /* Legacy 3DMM compatibility aliases: app-visible "prepared" data is the
++     * retained source mesh; modern private preparation remains model->prepared. */
++    m->prepared_vertices  = m->vertices;
++    m->prepared_faces     = m->faces;
++    m->nprepared_vertices = m->nvertices;
++    m->nprepared_faces    = m->nfaces;
++
++    if(nvertices) {
++        m->vertex_groups = BrResAllocate(m, sizeof(*m->vertex_groups), BR_MEMORY_GROUPS);
++        m->nvertex_groups = 1;
++        m->vertex_groups[0].material = NULL;
++        m->vertex_groups[0].vertices = m->vertices;
++        m->vertex_groups[0].nvertices = m->nvertices;
++    }
++    if(nfaces) {
++        m->face_groups = BrResAllocate(m, sizeof(*m->face_groups), BR_MEMORY_GROUPS);
++        m->nface_groups = 1;
++        m->face_groups[0].material = NULL;
++        m->face_groups[0].faces = m->faces;
++        m->face_groups[0].nfaces = m->nfaces;
++    }
++#endif
++
+     return m;
+ }
+ 
+diff --git a/drivers/glrend/CMakeLists.txt b/drivers/glrend/CMakeLists.txt
+index 87be869..7e518ac 100644
+--- a/drivers/glrend/CMakeLists.txt
++++ b/drivers/glrend/CMakeLists.txt
+@@ -30,20 +30,20 @@ add_library(BRender::Drivers::GLRend::Headers ALIAS glrend-headers)
+ # set(GLSLANG_EXECUTABLE "$<TARGET_FILE:glslang::glslang-standalone>")
+ 
+ find_program(GLSLANG_EXECUTABLE glslang)
+-if (NOT GLSLANG_EXECUTABLE)
+-    message(STATUS "glslang not found, not building glrend.")
+-    return()
+-endif()
+-
+-message(STATUS "Found glslang: ${GLSLANG_EXECUTABLE}")
+-
+ find_program(SPIRV_CROSS_EXECUTABLE spirv-cross)
+-if (NOT SPIRV_CROSS_EXECUTABLE)
+-    message(STATUS "spirv-cross not found, not building glrend.")
+-    return()
+-endif()
+ 
+-message(STATUS "Found spirv-cross: ${SPIRV_CROSS_EXECUTABLE}")
++if (GLSLANG_EXECUTABLE AND SPIRV_CROSS_EXECUTABLE)
++    message(STATUS "Found glslang: ${GLSLANG_EXECUTABLE}")
++    message(STATUS "Found spirv-cross: ${SPIRV_CROSS_EXECUTABLE}")
++    set(GLREND_SHADER_PIPELINE_SPIRV TRUE)
++else()
++    # 4DMM compatibility fallback: preserve the native GLSL 4.30 shaders when
++    # the optional SPIR-V translation tools are unavailable.  The experimental
++    # Win32 viewport requests an OpenGL 4.3 core context, so this gives the
++    # project a self-contained path to glrend on a normal Visual Studio setup.
++    message(STATUS "glslang/spirv-cross not found; building glrend with native GLSL 4.30 shaders")
++    set(GLREND_SHADER_PIPELINE_SPIRV FALSE)
++endif()
+ 
+ function(compile_shader)
+     set(shaderpp    "${CMAKE_CURRENT_SOURCE_DIR}/shaderpp.pl")
+@@ -57,22 +57,37 @@ function(compile_shader)
+     set(spv_file       "${CMAKE_CURRENT_BINARY_DIR}/${source_filename}.spv")
+     set(optimised_file "${CMAKE_CURRENT_BINARY_DIR}/${source_filename}.optimised.glsl")
+ 
+-    add_custom_command(
+-            OUTPUT              ${arg_DESTINATION}
+-            WORKING_DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}
+-            MAIN_DEPENDENCY     ${arg_SOURCE}
+-            BYPRODUCTS          "${processed_file}"
+-                                "${spv_file}"
+-                                "${optimised_file}"
+-            DEPENDS             "${shaderpp}"
+-                                "${embedshader}"
+-                                ${arg_DEPENDS}
+-
+-            COMMAND "${PERL_EXECUTABLE}" "${shaderpp}" "${arg_SOURCE}" "${processed_file}"
+-            COMMAND "${GLSLANG_EXECUTABLE}" -G100 -S "${arg_STAGE}" -o "${spv_file}" "${processed_file}"
+-            COMMAND "${SPIRV_CROSS_EXECUTABLE}" "${spv_file}" --version 330 --no-420pack-extension --no-es --output "${optimised_file}"
+-            COMMAND "${PERL_EXECUTABLE}" "${embedshader}" "${arg_VARNAME}" "${optimised_file}" "${arg_DESTINATION}"
+-    )
++    if (GLREND_SHADER_PIPELINE_SPIRV)
++        add_custom_command(
++                OUTPUT              ${arg_DESTINATION}
++                WORKING_DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}
++                MAIN_DEPENDENCY     ${arg_SOURCE}
++                BYPRODUCTS          "${processed_file}"
++                                    "${spv_file}"
++                                    "${optimised_file}"
++                DEPENDS             "${shaderpp}"
++                                    "${embedshader}"
++                                    ${arg_DEPENDS}
++
++                COMMAND "${PERL_EXECUTABLE}" "${shaderpp}" "${arg_SOURCE}" "${processed_file}"
++                COMMAND "${GLSLANG_EXECUTABLE}" -G100 -S "${arg_STAGE}" -o "${spv_file}" "${processed_file}"
++                COMMAND "${SPIRV_CROSS_EXECUTABLE}" "${spv_file}" --version 330 --no-420pack-extension --no-es --output "${optimised_file}"
++                COMMAND "${PERL_EXECUTABLE}" "${embedshader}" "${arg_VARNAME}" "${optimised_file}" "${arg_DESTINATION}"
++        )
++    else()
++        add_custom_command(
++                OUTPUT              ${arg_DESTINATION}
++                WORKING_DIRECTORY   ${CMAKE_CURRENT_SOURCE_DIR}
++                MAIN_DEPENDENCY     ${arg_SOURCE}
++                BYPRODUCTS          "${processed_file}"
++                DEPENDS             "${shaderpp}"
++                                    "${embedshader}"
++                                    ${arg_DEPENDS}
++
++                COMMAND "${PERL_EXECUTABLE}" "${shaderpp}" "${arg_SOURCE}" "${processed_file}"
++                COMMAND "${PERL_EXECUTABLE}" "${embedshader}" "${arg_VARNAME}" "${processed_file}" "${arg_DESTINATION}"
++        )
++    endif()
+ endfunction()
+ 
+ compile_shader(
+@@ -187,6 +202,8 @@ set(GLREND_FILES
+ 
+         driver.c
+ 
++        gpu_float.h
++
+         context_state.c
+         context_state.h
+ 
+diff --git a/drivers/glrend/cache.c b/drivers/glrend/cache.c
+index ef65891..b5c625a 100644
+--- a/drivers/glrend/cache.c
++++ b/drivers/glrend/cache.c
+@@ -44,19 +44,20 @@ static int casfd(br_gl_main_data_scene *scene, const state_light *in, size_t i,
+     if(in->type == BRT_NONE)
+         return -1;
+ 
+-    float intensity = 16384.0f; /* Effectively infinite */
+-    if(in->attenuation_c != 0.0f)
+-        intensity = BR_RCP(in->attenuation_c);
++    br_float intensity = 16384.0f; /* Effectively infinite */
++    const br_float attenuation_c = BrGLScalarToFloat(in->attenuation_c);
++    if(attenuation_c != 0.0f)
++        intensity = 1.0f / attenuation_c;
+ 
+-    br_vector4 colour;
+-    BrVector4ColourSet(&colour, in->colour);
++    br_vector4_f colour;
++    BrGLVector4FColourSet(&colour, in->colour);
+ 
+     /*
+      * Regular (i.e. non-radial) ambient lights can be accumulated early,
+      * moving work out of the shader.
+      */
+     if(in->type == BRT_AMBIENT && in->attenuation_type != BRT_RADII) {
+-        BrVector4AccumulateScale(&scene->ambient_colour, &colour, intensity);
++        BrGLVector4FAccumulateScale(&scene->ambient_colour, &colour, intensity);
+         *use_ambient_colour = BR_TRUE;
+         return -1;
+     }
+@@ -85,27 +86,27 @@ static int casfd(br_gl_main_data_scene *scene, const state_light *in, size_t i,
+     counts->v[info->type]++;
+ 
+     /* See enables.c:194, BrSetupLights(). All the lights are already converted into view space. */
+-    BrVector4Set(scene->light_positions + i, in->position.v[0], in->position.v[1], in->position.v[2], in->type == BRT_DIRECT ? 0.0f : 1.0f);
+-    BrVector4Set(scene->light_directions + i, in->direction.v[0], in->direction.v[1], in->direction.v[2], 0.0f);
++    BrGLVector4FSet(scene->light_positions + i, in->position.v[0], in->position.v[1], in->position.v[2], in->type == BRT_DIRECT ? 0.0f : 1.0f);
++    BrGLVector4FSet(scene->light_directions + i, in->direction.v[0], in->direction.v[1], in->direction.v[2], 0.0f);
+ 
+     if(in->type == BRT_DIRECT) {
+-        BrVector4Copy(scene->light_halfs + i, scene->light_directions + i);
++        scene->light_halfs[i] = scene->light_directions[i];
+         scene->light_halfs[i].v[2] += 1.0f;
+-        BrVector4Normalise(scene->light_halfs + i, scene->light_halfs + i);
++        BrGLVector4FNormalise(scene->light_halfs + i, scene->light_halfs + i);
+ 
+-        BrVector4Scale(scene->light_directions + i, scene->light_directions + i, intensity);
++        BrGLVector4FScale(scene->light_directions + i, scene->light_directions + i, intensity);
+     }
+ 
+     atten->intensity     = intensity;
+-    atten->attenuation_c = in->attenuation_c;
+-    atten->attenuation_l = in->attenuation_l;
+-    atten->attenuation_q = in->attenuation_q;
++    atten->attenuation_c = attenuation_c;
++    atten->attenuation_l = BrGLScalarToFloat(in->attenuation_l);
++    atten->attenuation_q = BrGLScalarToFloat(in->attenuation_q);
+ 
+     scene->light_colours[i] = colour;
+ 
+     if(in->type == BRT_SPOT) {
+-        radii->spot_cos_inner = in->spot_inner;
+-        radii->spot_cos_outer = in->spot_outer;
++        radii->spot_cos_inner = BrGLScalarToFloat(in->spot_inner);
++        radii->spot_cos_outer = BrGLScalarToFloat(in->spot_outer);
+     } else {
+         radii->spot_cos_inner = 0.0f;
+         radii->spot_cos_outer = 0.0f;
+@@ -120,8 +121,8 @@ static int casfd(br_gl_main_data_scene *scene, const state_light *in, size_t i,
+         case BRT_RADII:
+             info->attenuation_type = 1;
+ 
+-            radii->radius_inner = in->radius_inner;
+-            radii->radius_outer = in->radius_outer;
++            radii->radius_inner = BrGLScalarToFloat(in->radius_inner);
++            radii->radius_outer = BrGLScalarToFloat(in->radius_outer);
+ 
+             if(radii->radius_inner == radii->radius_outer)
+                 radii->radius_inner = 0;
+@@ -151,7 +152,7 @@ static void ProcessSceneLights(state_cache *cache, state_light *lights)
+      */
+     BrQsort(lights, MAX_STATE_LIGHTS, sizeof(state_light), sort_lights);
+ 
+-    BrVector4ColourSet(&scene->ambient_colour, BR_COLOUR_RGBA(0, 0, 0, 0xFF));
++    BrGLVector4FColourSet(&scene->ambient_colour, BR_COLOUR_RGBA(0, 0, 0, 0xFF));
+ 
+     for(uint32_t i = 0; i < MAX_STATE_LIGHTS; ++i) {
+         const state_light *light = lights + i;
+@@ -175,9 +176,9 @@ static void ProcessSceneLights(state_cache *cache, state_light *lights)
+     scene->light_end.v[3]   = scene->light_start.v[3] + counts.v[3];
+ 
+     if(use_ambient_colour) {
+-        BrVector4Clamp(&scene->ambient_colour, &scene->ambient_colour, BR_SCALAR(0), BR_SCALAR(1));
++        BrGLVector4FClamp(&scene->ambient_colour, &scene->ambient_colour, 0.0f, 1.0f);
+ 
+-        if(scene->ambient_colour.v[0] == BR_SCALAR(1) && scene->ambient_colour.v[0] == BR_SCALAR(1) && scene->ambient_colour.v[0] == BR_SCALAR(1))
++        if(scene->ambient_colour.v[0] == 1.0f && scene->ambient_colour.v[0] == 1.0f && scene->ambient_colour.v[0] == 1.0f)
+             use_ambient_colour = BR_FALSE;
+     }
+ 
+@@ -302,7 +303,7 @@ void StateGLUpdateScene(state_cache *cache, state_stack *state)
+     ASSERT(state->output.colour);
+     cache->fbo = state->output.colour->asBack.glFbo;
+ 
+-    BrVector4Set(&cache->scene.eye_view, 0.0f, 0.0f, 1.0f, 0.0f);
++    BrGLVector4FSet(&cache->scene.eye_view, 0.0f, 0.0f, 1.0f, 0.0f);
+ 
+     ProcessSceneLights(cache, state->light);
+ 
+@@ -317,7 +318,9 @@ void StateGLUpdateScene(state_cache *cache, state_stack *state)
+              * BrSetupClipPlanes() does "Push plane through to screen space".
+              * We need to undo that particular transformation.
+              */
+-            BrMatrix4TApply(cache->scene.clip_planes + i, &cp->plane, &state->matrix.view_to_screen);
++            br_vector4 plane;
++            BrMatrix4TApply(&plane, &cp->plane, &state->matrix.view_to_screen);
++            BrGLVector4ToFloat(cache->scene.clip_planes + i, &plane);
+ 
+             ++cache->scene.num_clip_planes;
+         }
+@@ -334,7 +337,7 @@ void StateGLReset(state_cache *cache)
+     cache->model.mv_det3 = 0;
+     BrVector4Set(&cache->model.eye_m, 0, 0, 0, 1);
+ 
+-    BrVector4Set(&cache->scene.eye_view, 0, 0, 0, 0);
++    BrGLVector4FSet(&cache->scene.eye_view, 0.0f, 0.0f, 0.0f, 0.0f);
+ 
+     BrMemSet(&cache->scene, 0, sizeof(cache->scene));
+ }
+diff --git a/drivers/glrend/devpixmp.c b/drivers/glrend/devpixmp.c
+index 0ac06d5..fbe8753 100644
+--- a/drivers/glrend/devpixmp.c
++++ b/drivers/glrend/devpixmp.c
+@@ -554,15 +554,15 @@ static br_error BR_CMETHOD(br_device_pixelmap_gl, rectangleStretchCopyTo)(br_dev
+ 
+     br_gl_rect_data rect_data = {
+         .mvp      = {},
+-        .src_rect = BR_VECTOR4((float)srect.x / (float)src->width, (float)srect.y / (float)src->height, (float)srect.w / (float)src->width,
+-                               (float)srect.h / (float)src->height),
+-        .dst_rect = BR_VECTOR4((float)drect.x / (float)self->pm_width, (float)drect.y / (float)self->pm_height,
+-                               (float)drect.w / (float)self->pm_width, (float)drect.h / (float)self->pm_height),
++        .src_rect = {{(float)srect.x / (float)src->width, (float)srect.y / (float)src->height, (float)srect.w / (float)src->width,
++                      (float)srect.h / (float)src->height}},
++        .dst_rect = {{(float)drect.x / (float)self->pm_width, (float)drect.y / (float)self->pm_height,
++                      (float)drect.w / (float)self->pm_width, (float)drect.h / (float)self->pm_height}},
+         .vertical_flip = 1,
+         .indexed       = (float)fmt->indexed,
+     };
+ 
+-    BrMatrix4Orthographic(&rect_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
++    BrGLMatrix4Orthographic(&rect_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+ 
+     gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+     gl->Viewport(0, 0, self->pm_width, self->pm_height);
+@@ -701,10 +701,10 @@ static br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap *self
+      * Create the per-model/text state.
+      */
+     text_data = BrScratchAllocate(sizeof(br_gl_text_data));
+-    BrMatrix4Orthographic(&text_data->mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
++    BrGLMatrix4Orthographic(&text_data->mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+ 
+     BrColourUnpack(colour, self->pm_type, &r8, &g8, &b8, &a8);
+-    text_data->colour = (br_vector4)BR_VECTOR4(r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
++    BrGLVector4FSet(&text_data->colour, r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
+ 
+     gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+     gl->Viewport(0, 0, self->pm_width, self->pm_height);
+@@ -742,12 +742,12 @@ static br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap *self
+             }
+ 
+             // clang-format off
+-            text_data->rects[i] = (br_vector4_f)BR_VECTOR4(
++            text_data->rects[i] = (br_vector4_f){{
+                 (float)dr.x / (float)self->pm_width,
+                 (float)dr.y / (float)self->pm_height,
+                 (float)dr.w / (float)self->pm_width,
+                 (float)dr.h / (float)self->pm_height
+-            );
++            }};
+             text_data->chars[i] = (br_uint_32)glyph;
+             // clang-format on
+ 
+@@ -781,10 +781,10 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, line)(br_device_pixelmap
+ 
+     BrColourUnpack(colour, self->pm_type, &r8, &g8, &b8, &a8);
+ 
+-    BrMatrix4Orthographic(&line_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+-    line_data.start  = (br_vector2)BR_VECTOR2((float)spoint.x / (float)self->pm_width, 1.0f - ((float)spoint.y / (float)self->pm_height));
+-    line_data.end    = (br_vector2)BR_VECTOR2((float)epoint.x / (float)self->pm_width, 1.0f - ((float)epoint.y / (float)self->pm_height));
+-    line_data.colour = (br_vector4)BR_VECTOR4(r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
++    BrGLMatrix4Orthographic(&line_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
++    line_data.start  = (br_vector2_f){{(float)spoint.x / (float)self->pm_width, 1.0f - ((float)spoint.y / (float)self->pm_height)}};
++    line_data.end    = (br_vector2_f){{(float)epoint.x / (float)self->pm_width, 1.0f - ((float)epoint.y / (float)self->pm_height)}};
++    BrGLVector4FSet(&line_data.colour, r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
+ 
+     gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+     gl->Viewport(0, 0, self->pm_width, self->pm_height);
+@@ -810,9 +810,9 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, pixelSet)(br_device_pixel
+     /*
+      * FIXME: For some reason I cbf figuring out now, when rendering a point, both components need a -1.
+      */
+-    BrMatrix4Orthographic(&line_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+-    line_data.start = (br_vector2)BR_VECTOR2((float)(point.x - 1) / (float)self->pm_width, 1.0f - ((float)(point.y - 1) / (float)self->pm_height));
+-    line_data.colour = (br_vector4)BR_VECTOR4(r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
++    BrGLMatrix4Orthographic(&line_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
++    line_data.start = (br_vector2_f){{(float)(point.x - 1) / (float)self->pm_width, 1.0f - ((float)(point.y - 1) / (float)self->pm_height)}};
++    BrGLVector4FSet(&line_data.colour, r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
+ 
+     /*
+      * What is a point, but half a line?
+diff --git a/drivers/glrend/drv.h b/drivers/glrend/drv.h
+index 3676a98..1c3bccf 100644
+--- a/drivers/glrend/drv.h
++++ b/drivers/glrend/drv.h
+@@ -55,6 +55,8 @@ extern "C" {
+ #include <formats.h>
+ #include <pm.h>
+ 
++#include "gpu_float.h"
++
+ typedef struct br_pixelmap_gl_fmt {
+     br_uint_8  pm_type;
+     GLint      internal_format;
+diff --git a/drivers/glrend/drv_ip.h b/drivers/glrend/drv_ip.h
+index 18852d6..66da44d 100644
+--- a/drivers/glrend/drv_ip.h
++++ b/drivers/glrend/drv_ip.h
+@@ -194,7 +194,7 @@ void DeviceGLObjectLabelF(const GladGLContext *gl, GLenum identifier, GLuint nam
+ br_boolean  DeviceGLCheckErrors(const GladGLContext *gl);
+ const char *DeviceGLStrError(GLenum err);
+ 
+-br_vector3 DeviceGLTriangleCentroid(const br_vector3 *v1, const br_vector3 *v2, const br_vector3 *v3);
++br_vector3 DeviceGLTriangleCentroid(const br_vector3_f *v1, const br_vector3_f *v2, const br_vector3_f *v3);
+ 
+ br_clip_result DevicePixelmapGLRectangleClip(br_rectangle *restrict out, const br_rectangle *restrict r, const br_pixelmap *pm);
+ 
+diff --git a/drivers/glrend/gpu_float.h b/drivers/glrend/gpu_float.h
+new file mode 100644
+index 0000000..70aec6e
+--- /dev/null
++++ b/drivers/glrend/gpu_float.h
+@@ -0,0 +1,113 @@
++#ifndef GPU_FLOAT_H_
++#define GPU_FLOAT_H_
++
++#include <math.h>
++
++/*
++ * OpenGL uniform/vertex buffers are always 32-bit floating point, even when
++ * BRender itself is built with the legacy 16.16 fixed-point scalar ABI.
++ * Keep the conversion at the renderer boundary instead of leaking the GPU
++ * representation back into BRender's public/runtime structures.
++ */
++static inline br_float BrGLScalarToFloat(br_scalar v)
++{
++    return (br_float)BrScalarToFloat(v);
++}
++
++static inline void BrGLVector2ToFloat(br_vector2_f *dst, const br_vector2 *src)
++{
++    dst->v[0] = BrGLScalarToFloat(src->v[0]);
++    dst->v[1] = BrGLScalarToFloat(src->v[1]);
++}
++
++static inline void BrGLVector3ToFloat(br_vector3_f *dst, const br_vector3 *src)
++{
++    dst->v[0] = BrGLScalarToFloat(src->v[0]);
++    dst->v[1] = BrGLScalarToFloat(src->v[1]);
++    dst->v[2] = BrGLScalarToFloat(src->v[2]);
++}
++
++static inline void BrGLVector4ToFloat(br_vector4_f *dst, const br_vector4 *src)
++{
++    dst->v[0] = BrGLScalarToFloat(src->v[0]);
++    dst->v[1] = BrGLScalarToFloat(src->v[1]);
++    dst->v[2] = BrGLScalarToFloat(src->v[2]);
++    dst->v[3] = BrGLScalarToFloat(src->v[3]);
++}
++
++static inline void BrGLMatrix4ToFloat(br_matrix4_f *dst, const br_matrix4 *src)
++{
++    for(int r = 0; r < 4; ++r)
++        for(int c = 0; c < 4; ++c)
++            dst->m[r][c] = BrGLScalarToFloat(src->m[r][c]);
++}
++
++static inline void BrGLMatrix23ToMatrix4Float(br_matrix4_f *dst, const br_matrix23 *src)
++{
++    br_matrix4 tmp;
++    BrMatrix4Copy23(&tmp, src);
++    BrGLMatrix4ToFloat(dst, &tmp);
++}
++
++static inline void BrGLMatrix4Orthographic(br_matrix4_f *dst, br_float left, br_float right, br_float bottom, br_float top, br_float znear,
++                                           br_float zfar)
++{
++    br_matrix4 tmp;
++    BrMatrix4Orthographic(&tmp, BrFloatToScalar(left), BrFloatToScalar(right), BrFloatToScalar(bottom), BrFloatToScalar(top),
++                          BrFloatToScalar(znear), BrFloatToScalar(zfar));
++    BrGLMatrix4ToFloat(dst, &tmp);
++}
++
++static inline void BrGLVector4FSet(br_vector4_f *dst, br_float x, br_float y, br_float z, br_float w)
++{
++    dst->v[0] = x;
++    dst->v[1] = y;
++    dst->v[2] = z;
++    dst->v[3] = w;
++}
++
++static inline void BrGLVector4FColourSet(br_vector4_f *dst, br_colour colour)
++{
++    dst->v[0] = BR_RED(colour) / 255.0f;
++    dst->v[1] = BR_GRN(colour) / 255.0f;
++    dst->v[2] = BR_BLU(colour) / 255.0f;
++    dst->v[3] = BR_ALPHA(colour) / 255.0f;
++}
++
++static inline void BrGLVector4FAccumulateScale(br_vector4_f *dst, const br_vector4_f *src, br_float scale)
++{
++    for(int i = 0; i < 4; ++i)
++        dst->v[i] += src->v[i] * scale;
++}
++
++static inline void BrGLVector4FScale(br_vector4_f *dst, const br_vector4_f *src, br_float scale)
++{
++    for(int i = 0; i < 4; ++i)
++        dst->v[i] = src->v[i] * scale;
++}
++
++static inline void BrGLVector4FNormalise(br_vector4_f *dst, const br_vector4_f *src)
++{
++    const br_float len = sqrtf(src->v[0] * src->v[0] + src->v[1] * src->v[1] + src->v[2] * src->v[2] + src->v[3] * src->v[3]);
++    if(len <= 0.0f) {
++        BrGLVector4FSet(dst, 0.0f, 0.0f, 0.0f, 0.0f);
++        return;
++    }
++
++    const br_float inv = 1.0f / len;
++    BrGLVector4FScale(dst, src, inv);
++}
++
++static inline void BrGLVector4FClamp(br_vector4_f *dst, const br_vector4_f *src, br_float minv, br_float maxv)
++{
++    for(int i = 0; i < 4; ++i) {
++        br_float v = src->v[i];
++        if(v < minv)
++            v = minv;
++        else if(v > maxv)
++            v = maxv;
++        dst->v[i] = v;
++    }
++}
++
++#endif /* GPU_FLOAT_H_ */
+diff --git a/drivers/glrend/gstored.c b/drivers/glrend/gstored.c
+index e8f16a8..a196b72 100644
+--- a/drivers/glrend/gstored.c
++++ b/drivers/glrend/gstored.c
+@@ -71,9 +71,9 @@ static GLuint build_vbo(const GladGLContext *gl, const struct v11model *model, s
+         groups[i].vertex_offset = v_offset;
+ 
+         for(br_uint_16 v = 0; v < gp->nvertices; ++v, ++nextVtx) {
+-            nextVtx->p    = *(br_vector3_f *)(gp->position + v);
+-            nextVtx->map  = *(br_vector2_f *)(gp->map + v);
+-            nextVtx->n    = *(br_vector3_f *)(gp->normal + v);
++            BrGLVector3ToFloat(&nextVtx->p, gp->position + v);
++            BrGLVector2ToFloat(&nextVtx->map, gp->map + v);
++            BrGLVector3ToFloat(&nextVtx->n, gp->normal + v);
+             nextVtx->c[0] = BR_RED(gp->vertex_colours[v]);
+             nextVtx->c[1] = BR_GRN(gp->vertex_colours[v]);
+             nextVtx->c[2] = BR_BLU(gp->vertex_colours[v]);
+diff --git a/drivers/glrend/renderer.c b/drivers/glrend/renderer.c
+index fa16a2d..4a9ab69 100644
+--- a/drivers/glrend/renderer.c
++++ b/drivers/glrend/renderer.c
+@@ -784,26 +784,20 @@ br_int_32 RendererGLNextImmTri(br_renderer *self, struct v11group *group, br_vec
+     br_immvert_gl *v1 = self->trans.pool + self->trans.next++;
+     br_immvert_gl *v2 = self->trans.pool + self->trans.next++;
+ 
+-    *v0 = (br_immvert_gl){
+-        .position = group->position[fp.v[0]],
+-        .normal   = group->normal[fp.v[0]],
+-        .map      = group->map[fp.v[0]],
+-        .colour   = group->vertex_colours[fp.v[0]],
+-    };
+-
+-    *v1 = (br_immvert_gl){
+-        .position = group->position[fp.v[1]],
+-        .normal   = group->normal[fp.v[1]],
+-        .map      = group->map[fp.v[1]],
+-        .colour   = group->vertex_colours[fp.v[1]],
+-    };
+-
+-    *v2 = (br_immvert_gl){
+-        .position = group->position[fp.v[2]],
+-        .normal   = group->normal[fp.v[2]],
+-        .map      = group->map[fp.v[2]],
+-        .colour   = group->vertex_colours[fp.v[2]],
+-    };
++    BrGLVector3ToFloat(&v0->position, group->position + fp.v[0]);
++    BrGLVector3ToFloat(&v0->normal, group->normal + fp.v[0]);
++    BrGLVector2ToFloat(&v0->map, group->map + fp.v[0]);
++    v0->colour = group->vertex_colours[fp.v[0]];
++
++    BrGLVector3ToFloat(&v1->position, group->position + fp.v[1]);
++    BrGLVector3ToFloat(&v1->normal, group->normal + fp.v[1]);
++    BrGLVector2ToFloat(&v1->map, group->map + fp.v[1]);
++    v1->colour = group->vertex_colours[fp.v[1]];
++
++    BrGLVector3ToFloat(&v2->position, group->position + fp.v[2]);
++    BrGLVector3ToFloat(&v2->normal, group->normal + fp.v[2]);
++    BrGLVector2ToFloat(&v2->map, group->map + fp.v[2]);
++    v2->colour = group->vertex_colours[fp.v[2]];
+ 
+     return (br_int_32)base;
+ }
+diff --git a/drivers/glrend/renderer.h b/drivers/glrend/renderer.h
+index 80a5199..3534cc7 100644
+--- a/drivers/glrend/renderer.h
++++ b/drivers/glrend/renderer.h
+@@ -10,9 +10,9 @@ extern "C" {
+ 
+ #pragma pack(push, 4)
+ typedef struct br_immvert_gl {
+-    br_vector3 position;
+-    br_vector3 normal;
+-    br_vector2 map;
++    br_vector3_f position;
++    br_vector3_f normal;
++    br_vector2_f map;
+     br_colour  colour;
+ } br_immvert_gl;
+ #pragma pack(pop)
+@@ -41,10 +41,10 @@ typedef struct br_state_info_gl {
+     };
+     GLenum depth_func;
+ 
+-    br_vector4 fog_colour;
+-    br_scalar  fog_min;
+-    br_scalar  fog_max;
+-    br_scalar  fog_scale;
++    br_vector4_f fog_colour;
++    br_float     fog_min;
++    br_float     fog_max;
++    br_float     fog_scale;
+ 
+     br_token shading_mode;
+ } br_primitive_state_info_gl;
+diff --git a/drivers/glrend/shader_line.h b/drivers/glrend/shader_line.h
+index 5ff4596..5e72d00 100644
+--- a/drivers/glrend/shader_line.h
++++ b/drivers/glrend/shader_line.h
+@@ -3,10 +3,10 @@
+ 
+ #pragma pack(push, 16)
+ typedef struct br_gl_line_data {
+-    alignas(16) br_matrix4 mvp;
+-    alignas(8) br_vector2 start;
+-    alignas(8) br_vector2 end;
+-    alignas(16) br_vector4 colour;
++    alignas(16) br_matrix4_f mvp;
++    alignas(8) br_vector2_f start;
++    alignas(8) br_vector2_f end;
++    alignas(16) br_vector4_f colour;
+ } br_gl_line_data;
+ #pragma pack(pop)
+ 
+diff --git a/drivers/glrend/shader_main.h b/drivers/glrend/shader_main.h
+index 4909b16..28ba45d 100644
+--- a/drivers/glrend/shader_main.h
++++ b/drivers/glrend/shader_main.h
+@@ -34,7 +34,7 @@ typedef struct br_gl_main_data_light_info {
+     alignas(4) uint32_t _pad0;
+     alignas(4) uint32_t _pad1;
+ } br_gl_main_data_light_info;
+-BR_STATIC_ASSERT(sizeof(br_gl_main_data_light_info) == sizeof(br_vector4), "sizeof(br_gl_main_data_light_info) != sizeof(br_vector4)");
++BR_STATIC_ASSERT(sizeof(br_gl_main_data_light_info) == sizeof(br_vector4_f), "sizeof(br_gl_main_data_light_info) != sizeof(br_vector4_f)");
+ 
+ typedef struct br_gl_main_data_light_atten {
+     alignas(4) br_float intensity;
+@@ -42,7 +42,7 @@ typedef struct br_gl_main_data_light_atten {
+     alignas(4) br_float attenuation_l;
+     alignas(4) br_float attenuation_q;
+ } br_gl_main_data_light_atten;
+-BR_STATIC_ASSERT(sizeof(br_gl_main_data_light_atten) == sizeof(br_vector4), "sizeof(br_gl_main_data_light_atten) != sizeof(br_vector4)");
++BR_STATIC_ASSERT(sizeof(br_gl_main_data_light_atten) == sizeof(br_vector4_f), "sizeof(br_gl_main_data_light_atten) != sizeof(br_vector4_f)");
+ 
+ typedef struct br_gl_main_data_light_radii {
+     alignas(4) br_float spot_cos_inner;
+@@ -50,19 +50,19 @@ typedef struct br_gl_main_data_light_radii {
+     alignas(4) br_float radius_inner;
+     alignas(4) br_float radius_outer;
+ } br_gl_main_data_light_radii;
+-BR_STATIC_ASSERT(sizeof(br_gl_main_data_light_radii) == sizeof(br_vector4), "sizeof(br_gl_main_data_light_radii) != sizeof(br_vector4)");
++BR_STATIC_ASSERT(sizeof(br_gl_main_data_light_radii) == sizeof(br_vector4_f), "sizeof(br_gl_main_data_light_radii) != sizeof(br_vector4_f)");
+ 
+ typedef struct br_gl_main_data_scene {
+-    alignas(16) br_vector4 eye_view;
++    alignas(16) br_vector4_f eye_view;
+     alignas(16) br_gl_main_data_light_info light_info[BR_MAX_LIGHTS];   /* (type, atten_type, 0, 0) */
+-    alignas(16) br_vector4 light_positions[BR_MAX_LIGHTS];              /* (X, Y, Z, 0) */
+-    alignas(16) br_vector4 light_directions[BR_MAX_LIGHTS];             /* (X, Y, Z, 0), normalised */
+-    alignas(16) br_vector4 light_halfs[BR_MAX_LIGHTS];                  /* (X, Y, Z, 0), normalised */
+-    alignas(16) br_vector4 light_colours[BR_MAX_LIGHTS];                /* (R, G, B, 0)   */
++    alignas(16) br_vector4_f light_positions[BR_MAX_LIGHTS];              /* (X, Y, Z, 0) */
++    alignas(16) br_vector4_f light_directions[BR_MAX_LIGHTS];             /* (X, Y, Z, 0), normalised */
++    alignas(16) br_vector4_f light_halfs[BR_MAX_LIGHTS];                  /* (X, Y, Z, 0), normalised */
++    alignas(16) br_vector4_f light_colours[BR_MAX_LIGHTS];                /* (R, G, B, 0)   */
+     alignas(16) br_gl_main_data_light_atten light_atten[BR_MAX_LIGHTS]; /* (1/C, C, L, Q) */
+     alignas(16) br_gl_main_data_light_radii light_radii[BR_MAX_LIGHTS]; /* (cos(inner), cos(outer), radius_inner, radius_outer) */
+-    alignas(16) br_vector4 clip_planes[BR_MAX_CLIP_PLANES];
+-    alignas(16) br_vector4 ambient_colour;
++    alignas(16) br_vector4_f clip_planes[BR_MAX_CLIP_PLANES];
++    alignas(16) br_vector4_f ambient_colour;
+     alignas(16) br_vector4_i light_start;
+     alignas(16) br_vector4_i light_end;
+     alignas(4) uint32_t num_clip_planes;
+@@ -70,16 +70,16 @@ typedef struct br_gl_main_data_scene {
+ } br_gl_main_data_scene;
+ 
+ typedef struct br_gl_main_data_model {
+-    alignas(16) br_matrix4 model_view;
+-    alignas(16) br_matrix4 projection;
+-    alignas(16) br_matrix4 mvp;
+-    alignas(16) br_matrix4 normal_matrix;
+-    alignas(16) br_matrix4 environment_matrix;
+-    alignas(16) br_matrix4 map_transform;
+-    alignas(16) br_vector4 surface_colour;
+-    alignas(16) br_vector4 eye_m;
+-    alignas(16) br_vector4 fog_colour;
+-    alignas(8) br_vector2 fog_range;
++    alignas(16) br_matrix4_f model_view;
++    alignas(16) br_matrix4_f projection;
++    alignas(16) br_matrix4_f mvp;
++    alignas(16) br_matrix4_f normal_matrix;
++    alignas(16) br_matrix4_f environment_matrix;
++    alignas(16) br_matrix4_f map_transform;
++    alignas(16) br_vector4_f surface_colour;
++    alignas(16) br_vector4_f eye_m;
++    alignas(16) br_vector4_f fog_colour;
++    alignas(8) br_vector2_f fog_range;
+     alignas(4) float ka;
+     alignas(4) float ks;
+     alignas(4) float kd;
+@@ -91,7 +91,7 @@ typedef struct br_gl_main_data_model {
+     alignas(4) uint32_t disable_colour_key;
+     alignas(4) uint32_t texture_mode;
+     alignas(4) uint32_t enable_fog;
+-    alignas(4) br_scalar fog_scale;
++    alignas(4) br_float fog_scale;
+     alignas(4) uint32_t shading_mode;
+ } br_gl_main_data_model;
+ #pragma pack(pop)
+diff --git a/drivers/glrend/shader_rect.h b/drivers/glrend/shader_rect.h
+index 91b035d..b38c423 100644
+--- a/drivers/glrend/shader_rect.h
++++ b/drivers/glrend/shader_rect.h
+@@ -3,9 +3,9 @@
+ 
+ #pragma pack(push, 16)
+ typedef struct br_gl_rect_data {
+-    alignas(16) br_matrix4 mvp;
+-    alignas(16) br_vector4 src_rect;
+-    alignas(16) br_vector4 dst_rect;
++    alignas(16) br_matrix4_f mvp;
++    alignas(16) br_vector4_f src_rect;
++    alignas(16) br_vector4_f dst_rect;
+     alignas(4) float vertical_flip;
+     alignas(4) float indexed;
+ } br_gl_rect_data;
+diff --git a/drivers/glrend/shader_text.h b/drivers/glrend/shader_text.h
+index e30d73a..8ef91e0 100644
+--- a/drivers/glrend/shader_text.h
++++ b/drivers/glrend/shader_text.h
+@@ -13,8 +13,8 @@
+ 
+ #pragma pack(push, 16)
+ typedef struct br_gl_text_data {
+-    alignas(16) br_matrix4 mvp;
+-    alignas(16) br_vector4 colour;
++    alignas(16) br_matrix4_f mvp;
++    alignas(16) br_vector4_f colour;
+     alignas(16) br_vector4_f rects[BR_GL_TEXT_CHUNK_SIZE];
+     alignas(16) br_uint_32 chars[BR_GL_TEXT_CHUNK_SIZE];
+ } br_gl_text_data;
+diff --git a/drivers/glrend/state_light.c b/drivers/glrend/state_light.c
+index 9abc82b..e157255 100644
+--- a/drivers/glrend/state_light.c
++++ b/drivers/glrend/state_light.c
+@@ -23,10 +23,10 @@ static const struct br_tv_custom customLightingVolumeConv = {
+ static br_tv_template_entry template_entries[] = {
+     {BRT(TYPE_T),          F(light[0].type),           Q | S | A,  BRTV_CONV_COPY,            0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+     {BRT(SPACE_T),         F(light[0].lighting_space), Q | S | A,  BRTV_CONV_COPY,            0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+-    {BRT(POSITION_V3_X),   F(light[0].position),       Q | S | AX, BRTV_CONV_V3_FIXED_SCALAR, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+-    {BRT(POSITION_V3_F),   F(light[0].position),       Q | S | AF, BRTV_CONV_V3_FLOAT_SCALAR, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+-    {BRT(DIRECTION_V3_X),  F(light[0].direction),      Q | S | AX, BRTV_CONV_V3_FIXED_SCALAR, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+-    {BRT(DIRECTION_V3_F),  F(light[0].direction),      Q | S | AF, BRTV_CONV_V3_FLOAT_SCALAR, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
++    {BRT(POSITION_V3_X),   F(light[0].position),       Q | S | AX, BRTV_CONV_V3_FIXED_FLOAT, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
++    {BRT(POSITION_V3_F),   F(light[0].position),       Q | S | AF, BRTV_CONV_V3_COPY, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
++    {BRT(DIRECTION_V3_X),  F(light[0].direction),      Q | S | AX, BRTV_CONV_V3_FIXED_FLOAT, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
++    {BRT(DIRECTION_V3_F),  F(light[0].direction),      Q | S | AF, BRTV_CONV_V3_COPY, 0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+     {BRT(SPOT_INNER_X),    F(light[0].spot_inner),     Q | S | AX, BRTV_CONV_FIXED_SCALAR,    0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+     {BRT(SPOT_INNER_F),    F(light[0].spot_inner),     Q | S | AF, BRTV_CONV_FLOAT_SCALAR,    0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+     {BRT(SPOT_OUTER_X),    F(light[0].spot_outer),     Q | S | AX, BRTV_CONV_FIXED_SCALAR,    0, TM_PART | TM_INDEX | TM_INVALID_PS | TM_INVALID_PM},
+diff --git a/drivers/glrend/util.c b/drivers/glrend/util.c
+index 7484eea..51c49d6 100644
+--- a/drivers/glrend/util.c
++++ b/drivers/glrend/util.c
+@@ -206,12 +206,12 @@ br_boolean DeviceGLCheckErrors(const GladGLContext *gl)
+     return has_error;
+ }
+ 
+-br_vector3 DeviceGLTriangleCentroid(const br_vector3 *v1, const br_vector3 *v2, const br_vector3 *v3)
++br_vector3 DeviceGLTriangleCentroid(const br_vector3_f *v1, const br_vector3_f *v2, const br_vector3_f *v3)
+ {
+     br_vector3 v;
+-    v.v[0] = BR_DIV(v1->v[0] + v2->v[0] + v3->v[0], BR_SCALAR(3));
+-    v.v[1] = BR_DIV(v1->v[1] + v2->v[1] + v3->v[1], BR_SCALAR(3));
+-    v.v[2] = BR_DIV(v1->v[2] + v2->v[2] + v3->v[2], BR_SCALAR(3));
++    v.v[0] = BrFloatToScalar((v1->v[0] + v2->v[0] + v3->v[0]) / 3.0f);
++    v.v[1] = BrFloatToScalar((v1->v[1] + v2->v[1] + v3->v[1]) / 3.0f);
++    v.v[2] = BrFloatToScalar((v1->v[2] + v2->v[2] + v3->v[2]) / 3.0f);
+     return v;
+ }
+ 
+diff --git a/drivers/glrend/v1model.c b/drivers/glrend/v1model.c
+index 74f0c17..f920c94 100644
+--- a/drivers/glrend/v1model.c
++++ b/drivers/glrend/v1model.c
+@@ -25,7 +25,7 @@ void DeviceGLExtractPrimitiveState(const state_stack *state, br_primitive_state_
+         .write_depth        = BR_TRUE,
+         .depth_func         = GL_LESS,
+         .fog                = BR_FALSE,
+-        .fog_colour         = BR_VECTOR4(BR_SCALAR(1), BR_SCALAR(1), BR_SCALAR(1), BR_SCALAR(1)),
++        .fog_colour         = {{1.0f, 1.0f, 1.0f, 1.0f}},
+         .fog_min            = 0,
+         .fog_max            = 0,
+         .fog_scale          = 1.0f,
+@@ -167,8 +167,8 @@ void DeviceGLExtractPrimitiveState(const state_stack *state, br_primitive_state_
+         info->fog_colour.v[2] = BR_BLU(prim->fog_colour) / 255.0f;
+         info->fog_colour.v[3] = 1.0f;
+ 
+-        info->fog_min   = prim->fog_min;
+-        info->fog_max   = prim->fog_max;
++        info->fog_min   = BrGLScalarToFloat(prim->fog_min);
++        info->fog_max   = BrGLScalarToFloat(prim->fog_max);
+         info->fog_scale = (float)prim->fog_scale / 255.0f;
+     }
+ }
+@@ -260,19 +260,19 @@ static void apply_stored_properties(const GladGLContext *gl, br_renderer *render
+             float      r      = BR_RED(colour) / 255.0f;
+             float      g      = BR_GRN(colour) / 255.0f;
+             float      b      = BR_BLU(colour) / 255.0f;
+-            BrVector4Set(&model->surface_colour, r, g, b, state->surface.opacity);
++            BrGLVector4FSet(&model->surface_colour, r, g, b, BrGLScalarToFloat(state->surface.opacity));
+ 
+             model->colour_source = 1;
+         } else {
+             ASSERT(state->surface.colour_source == BRT_GEOMETRY);
+-            BrVector4Set(&model->surface_colour, 1.0f, 1.0f, 1.0f, state->surface.opacity);
++            BrGLVector4FSet(&model->surface_colour, 1.0f, 1.0f, 1.0f, BrGLScalarToFloat(state->surface.opacity));
+             model->colour_source = 0;
+         }
+ 
+-        model->ka    = state->surface.ka;
+-        model->ks    = state->surface.ks;
+-        model->kd    = state->surface.kd;
+-        model->power = state->surface.power;
++        model->ka    = BrGLScalarToFloat(state->surface.ka);
++        model->ks    = BrGLScalarToFloat(state->surface.ks);
++        model->kd    = BrGLScalarToFloat(state->surface.kd);
++        model->power = BrGLScalarToFloat(state->surface.power);
+ 
+         switch(state->surface.mapping_source) {
+             case BRT_GEOMETRY_MAP:
+@@ -301,7 +301,7 @@ static void apply_stored_properties(const GladGLContext *gl, br_renderer *render
+                 break;
+         }
+ 
+-        BrMatrix4Copy23(&model->map_transform, &state->surface.map_transform);
++        BrGLMatrix23ToMatrix4Float(&model->map_transform, &state->surface.map_transform);
+ 
+         depth_test = !state->surface.force_front && !state->surface.force_back;
+ 
+@@ -364,9 +364,10 @@ static void apply_stored_properties(const GladGLContext *gl, br_renderer *render
+         gl->DepthMask(info.write_depth ? GL_TRUE : GL_FALSE);
+ 
+         model->enable_fog = info.fog;
+-        model->fog_colour = info.fog_colour;
+-        model->fog_scale  = info.fog_scale;
+-        BrVector2Set(&model->fog_range, info.fog_min, info.fog_max);
++        model->fog_colour      = info.fog_colour;
++        model->fog_scale       = info.fog_scale;
++        model->fog_range.v[0]  = info.fog_min;
++        model->fog_range.v[1]  = info.fog_max;
+     }
+ 
+     if(states & MASK_STATE_OUTPUT) {
+@@ -385,17 +386,17 @@ static br_boolean apply_state(br_renderer *renderer, const GladGLContext *gl)
+     const br_gl_context_state *ctx   = GLContextState(gl);
+     state_cache               *cache = &renderer->state.cache;
+     br_boolean                 unlit;
+-    br_gl_main_data_model      model;
++    br_gl_main_data_model      model = {0};
+ 
+     /* Update the per-model cache (matrices and lights) */
+     StateGLUpdateModel(cache, &renderer->state.current->matrix);
+ 
+-    model.projection         = cache->model.p;
+-    model.model_view         = cache->model.mv;
+-    model.mvp                = cache->model.mvp;
+-    model.normal_matrix      = cache->model.normal;
+-    model.environment_matrix = cache->model.environment;
+-    model.eye_m              = cache->model.eye_m;
++    BrGLMatrix4ToFloat(&model.projection, &cache->model.p);
++    BrGLMatrix4ToFloat(&model.model_view, &cache->model.mv);
++    BrGLMatrix4ToFloat(&model.mvp, &cache->model.mvp);
++    BrGLMatrix4ToFloat(&model.normal_matrix, &cache->model.normal);
++    BrGLMatrix4ToFloat(&model.environment_matrix, &cache->model.environment);
++    BrGLVector4ToFloat(&model.eye_m, &cache->model.eye_m);
+ 
+     /*
+      * If we've got a negative determinant for the upper 3x3 MV matrix,
+diff --git a/drivers/glrend1x/pstate.c b/drivers/glrend1x/pstate.c
+index 839f56a..135c37d 100644
+--- a/drivers/glrend1x/pstate.c
++++ b/drivers/glrend1x/pstate.c
+@@ -172,7 +172,7 @@ static void DeviceGL1xExtractPrimitiveState(const br_primitive_state *state, br_
+         .wrap_s             = GL_REPEAT,
+         .wrap_t             = GL_REPEAT,
+         .fog                = BR_FALSE,
+-        .fog_colour         = BR_VECTOR4(BR_SCALAR(1), BR_SCALAR(1), BR_SCALAR(1), BR_SCALAR(1)),
++        .fog_colour         = BR_VECTOR4(1, 1, 1, 1),
+         .fog_min            = 0,
+         .fog_max            = 0,
+         .shading_mode       = BRT_FLAT,
+@@ -277,10 +277,10 @@ static void DeviceGL1xExtractPrimitiveState(const br_primitive_state *state, br_
+     }
+ 
+     if(prim->fog_type != BRT_NONE) {
+-        info->fog_colour.v[0] = BR_RED(prim->fog_colour) / 255.0f;
+-        info->fog_colour.v[1] = BR_GRN(prim->fog_colour) / 255.0f;
+-        info->fog_colour.v[2] = BR_BLU(prim->fog_colour) / 255.0f;
+-        info->fog_colour.v[3] = 1.0f;
++        info->fog_colour.v[0] = BrFloatToScalar(BR_RED(prim->fog_colour) / 255.0f);
++        info->fog_colour.v[1] = BrFloatToScalar(BR_GRN(prim->fog_colour) / 255.0f);
++        info->fog_colour.v[2] = BrFloatToScalar(BR_BLU(prim->fog_colour) / 255.0f);
++        info->fog_colour.v[3] = BR_SCALAR(1.0f);
+ 
+         info->fog_min = prim->fog_min;
+         info->fog_max = prim->fog_max;
+@@ -358,8 +358,8 @@ static void pushGLState(const GladGLContext *gl, br_primitive_state *self, const
+         gl->Fogi(GL_FOG_MODE, GL_LINEAR);
+         gl->Fogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);
+         gl->Fogfv(GL_FOG_COLOR, fog_colour);
+-        gl->Fogf(GL_FOG_START, info.fog_min);
+-        gl->Fogf(GL_FOG_END, info.fog_max);
++        gl->Fogf(GL_FOG_START, BrScalarToFloat(info.fog_min));
++        gl->Fogf(GL_FOG_END, BrScalarToFloat(info.fog_max));
+     } else {
+         gl->Disable(GL_FOG);
+         gl->Fogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FRAGMENT_DEPTH_EXT);

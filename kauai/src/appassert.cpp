@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author:
     Project: Kauai
     Reviewed:
@@ -12,7 +12,7 @@
 
 #ifdef DEBUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert proc - just calls the app's AssertProc.
 ***************************************************************************/
 bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t cb)
@@ -22,7 +22,7 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t 
     return vpappb->FAssertProcApp(pszsFile, lwLine, pszsMsg, pv, cb);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Warning reporting proc.
 ***************************************************************************/
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg)
@@ -33,4 +33,4 @@ void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg)
         vpappb->WarnProcApp(pszsFile, lwLine, pszsMsg);
 }
 
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

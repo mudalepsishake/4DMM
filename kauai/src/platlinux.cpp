@@ -1,4 +1,4 @@
-/*
+/* 3DMMEx:
  * Linux platform functions
  */
 
@@ -16,7 +16,7 @@ void Debugger(void)
     raise(SIGTRAP);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Universal scalable application clock and other time stuff
 ***************************************************************************/
 
@@ -41,10 +41,10 @@ uint32_t TsCurrentSystem(void)
 
 uint32_t DtsCaret(void)
 {
-    return 1000; /* 1s for now */
+    return 1000; /* 3DMMEx: 1s for now */
 }
 
-/****************************************
+/** 3DMMEx: **************************************
     Current executable name
 ****************************************/
 void GetExecutableName(char *psz, int cchMax)
@@ -55,7 +55,7 @@ void GetExecutableName(char *psz, int cchMax)
     psz[len] = '\0';
 }
 
-/****************************************
+/** 3DMMEx: **************************************
     Get environment variable
 ****************************************/
 uint32_t GetEnvironmentVariable(const char *pcszName, char *pszValue, uint32_t cchMax)
@@ -79,7 +79,7 @@ uint32_t GetEnvironmentVariable(const char *pcszName, char *pszValue, uint32_t c
     return ilen;
 }
 
-/****************************************
+/** 3DMMEx: **************************************
     Current username
 ****************************************/
 bool GetUserName(char *psz, int cchMax)
@@ -97,13 +97,13 @@ bool GetUserName(char *psz, int cchMax)
 
 bool FGetAppConfigDir(char *psz, int32_t cchMax)
 {
-    // Try XDG_CONFIG_HOME first
+    // 3DMMEx: Try XDG_CONFIG_HOME first
     if (GetEnvironmentVariable("XDG_CONFIG_HOME", psz, cchMax) != 0)
     {
         return true;
     }
 
-    // Use "$HOME/.config" instead
+    // 3DMMEx: Use "$HOME/.config" instead
     const char *homedir = getenv("HOME");
     if (homedir == NULL || strlen(homedir) == 0)
     {
@@ -131,6 +131,6 @@ bool FGetDocumentsDir(char *psz, int32_t cchMax)
 
 bool FGetResourcesDir(char *psz, int32_t cchMax)
 {
-    // not used
+    // 3DMMEx: not used
     return false;
 }

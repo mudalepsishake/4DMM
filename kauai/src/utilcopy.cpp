@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@
 #include <cstring>
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill a block with a specific byte value.
 ***************************************************************************/
 void FillPb(void *pv, int32_t cb, uint8_t b)
@@ -26,7 +26,7 @@ void FillPb(void *pv, int32_t cb, uint8_t b)
     memset(pv, b, cb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clear a block.
 ***************************************************************************/
 void ClearPb(void *pv, int32_t cb)
@@ -37,7 +37,7 @@ void ClearPb(void *pv, int32_t cb)
     memset(pv, 0, cb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reverse a block. Useful for exchanging two blocks or avoiding
     recursion.
 ***************************************************************************/
@@ -50,9 +50,9 @@ void ReversePb(void *pv, int32_t cb)
 
     __asm {
 
-        // esi - high end of block
-        // edi - low end of block
-        // ecx - number of bytes to swap
+        // 3DMMv1.0: esi - high end of block
+        // 3DMMv1.0: edi - low end of block
+        // 3DMMv1.0: ecx - number of bytes to swap
 
 		mov		edi,pv
 		mov		esi,edi
@@ -76,7 +76,7 @@ LLoop:
 LDone:
     }
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     uint8_t *pb1, *pb2;
     uint8_t b;
@@ -88,10 +88,10 @@ LDone:
         *pb2-- = b;
     }
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reverse a list of shorts.
 ***************************************************************************/
 void ReverseRgsw(void *pv, int32_t csw)
@@ -102,9 +102,9 @@ void ReverseRgsw(void *pv, int32_t csw)
 #ifdef IN_80386
 
     __asm {
-        // esi - high end of block
-        // edi - low end of block
-        // ecx - number of shorts to swap
+        // 3DMMv1.0: esi - high end of block
+        // 3DMMv1.0: edi - low end of block
+        // 3DMMv1.0: ecx - number of shorts to swap
 
 		mov		edi,pv
 		mov		esi,edi
@@ -129,7 +129,7 @@ LLoop:
 LDone:
     }
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     int32_t *psw1, *psw2;
     int32_t sw;
@@ -141,10 +141,10 @@ LDone:
         *psw2-- = sw;
     }
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reverse a list of longs.
 ***************************************************************************/
 void ReverseRglw(void *pv, int32_t clw)
@@ -155,9 +155,9 @@ void ReverseRglw(void *pv, int32_t clw)
 #ifdef IN_80386
 
     __asm {
-        // esi - high end of block
-        // edi - low end of block
-        // ecx - number of longs to swap
+        // 3DMMv1.0: esi - high end of block
+        // 3DMMv1.0: edi - low end of block
+        // 3DMMv1.0: ecx - number of longs to swap
 
 		mov		edi,pv
 		mov		esi,edi
@@ -182,7 +182,7 @@ LLoop:
 LDone:
     }
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     int32_t *plw1, *plw2;
     int32_t lw;
@@ -194,10 +194,10 @@ LDone:
         *plw2-- = lw;
     }
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap two adjacent blocks of size cb1 and cb2 respectively.
 ***************************************************************************/
 void SwapBlocks(void *pv, int32_t cb1, int32_t cb2)
@@ -211,7 +211,7 @@ void SwapBlocks(void *pv, int32_t cb1, int32_t cb2)
     ReversePb(pv, cb1 + cb2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap the contents of two blocks of the same size.
 ***************************************************************************/
 void SwapPb(void *pv1, void *pv2, int32_t cb)
@@ -223,8 +223,8 @@ void SwapPb(void *pv1, void *pv2, int32_t cb)
 #ifdef IN_80386
 
     __asm {
-        // edi -> memory to swap, first pointer
-        // esi -> memory to swap, second pointer
+        // 3DMMv1.0: edi -> memory to swap, first pointer
+        // 3DMMv1.0: esi -> memory to swap, second pointer
 
 		mov		edi,pv1
 		mov		esi,pv2
@@ -262,7 +262,7 @@ LByteLoop:
 LDone:
     }
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     uint8_t *pb1 = (uint8_t *)pv1;
     uint8_t *pb2 = (uint8_t *)pv2;
@@ -276,10 +276,10 @@ LDone:
         *pb2++ = b;
     }
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the entry at ivSrc to be immediately before the element that is
     currently at ivTarget. If ivTarget > ivSrc, the entry actually ends
     up at (ivTarget - 1) and the entry at ivTarget doesn't move. If
@@ -299,7 +299,7 @@ void MoveElement(void *prgv, int32_t cbElement, int32_t ivSrc, int32_t ivTarget)
     if (ivTarget == ivSrc || ivTarget == ivSrc + 1)
         return;
 
-    // swap the blocks
+    // 3DMMv1.0: swap the blocks
     if (ivSrc < ivTarget)
     {
         SwapBlocks(PvAddBv(prgv, LwMul(ivSrc, cbElement)), cbElement, LwMul(ivTarget - 1 - ivSrc, cbElement));
@@ -310,7 +310,7 @@ void MoveElement(void *prgv, int32_t cbElement, int32_t ivSrc, int32_t ivTarget)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check for equality of two blocks.
 ***************************************************************************/
 bool FEqualRgb(const void *pv1, const void *pv2, int32_t cb)
@@ -322,7 +322,7 @@ bool FEqualRgb(const void *pv1, const void *pv2, int32_t cb)
     return memcmp(pv1, pv2, cb) == 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compare the two buffers byte for byte and return a the number of bytes
     that match.
 ***************************************************************************/
@@ -337,33 +337,33 @@ int32_t CbEqualRgb(const void *pv1, const void *pv2, int32_t cb)
     uint8_t *pb;
 
     __asm {
-        // edi -> memory to swap, first pointer
-        // esi -> memory to swap, second pointer
+        // 3DMMv1.0: edi -> memory to swap, first pointer
+        // 3DMMv1.0: esi -> memory to swap, second pointer
 
 		mov		edi,pv1
 		mov		esi,pv2
 
-            // compare extra bytes.
+            // 3DMMv1.0: compare extra bytes.
 		mov		ecx,cb
-		and		ecx,3 // (ecx) = length mod 4
-		repe	cmpsb // compare odd bytes
-		jnz		LMiss // mismatch, go report how far we got
+		and		ecx,3 // 3DMMv1.0: (ecx) = length mod 4
+		repe	cmpsb // 3DMMv1.0: compare odd bytes
+		jnz		LMiss // 3DMMv1.0: mismatch, go report how far we got
 
-                // compare longs
-		mov		ecx,cb // (ecx) = length in bytes
-		shr		ecx,2 // (ecx) = length in longs
-		repe	cmpsd // compare longs
-		jz		LHit // matched all the way
+                // 3DMMv1.0: compare longs
+		mov		ecx,cb // 3DMMv1.0: (ecx) = length in bytes
+		shr		ecx,2 // 3DMMv1.0: (ecx) = length in longs
+		repe	cmpsd // 3DMMv1.0: compare longs
+		jz		LHit // 3DMMv1.0: matched all the way
 
-                // esi (and edi) points to the long after the one which caused the
-                // mismatch. Back up 1 long and find the byte. Since we know the
-                // long didn't match, we can assume one of the bytes won't.
-		sub		esi,4 // back up
-		sub		edi,4 // back up
-		mov		ecx,5 // ensure that ecx doesn't count out
-		repe	cmpsb // find mismatch byte
+                // 3DMMv1.0: esi (and edi) points to the long after the one which caused the
+                // 3DMMv1.0: mismatch. Back up 1 long and find the byte. Since we know the
+                // 3DMMv1.0: long didn't match, we can assume one of the bytes won't.
+		sub		esi,4 // 3DMMv1.0: back up
+		sub		edi,4 // 3DMMv1.0: back up
+		mov		ecx,5 // 3DMMv1.0: ensure that ecx doesn't count out
+		repe	cmpsb // 3DMMv1.0: find mismatch byte
 
-            // esi points to the byte after the one that did not match.
+            // 3DMMv1.0: esi points to the byte after the one that did not match.
 LMiss:
 		dec		esi
 		dec		edi
@@ -373,15 +373,15 @@ LMiss:
     return pb - (uint8_t *)pv1;
 
 LHit:
-    // We matched all the way to the end.
+    // 3DMMv1.0: We matched all the way to the end.
     return cb;
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     const uint8_t *pb1 = (const uint8_t *)pv1;
     const uint8_t *pb2 = (const uint8_t *)pv2;
 
-    // Compare the buffers four bytes at a time
+    // 3DMMEx: Compare the buffers four bytes at a time
     if (cb >= 4)
     {
         const int32_t *plw1 = (const int32_t *)pv1;
@@ -390,10 +390,10 @@ LHit:
 
         for (; clw-- > 0 && *plw1 == *plw2; plw1++, plw2++)
         {
-            // do nothing
+            // 3DMMEx: do nothing
         }
 
-        // Start single byte comparison after last dword match
+        // 3DMMEx: Start single byte comparison after last dword match
         pb1 = (uint8_t *)plw1;
         pb2 = (uint8_t *)plw2;
 
@@ -401,17 +401,17 @@ LHit:
         cb = cb - cbMatch;
     }
 
-    // Compare one byte at a time for the remainder
+    // 3DMMEx: Compare one byte at a time for the remainder
     for (; cb-- > 0 && *pb1 == *pb2; pb1++, pb2++)
     {
-        // do nothing
+        // 3DMMEx: do nothing
     }
     return pb1 - (uint8_t *)pv1;
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compare the two buffers byte for byte and return an fcmp indicating
     their relationship to each other.
 ***************************************************************************/
@@ -430,7 +430,7 @@ uint32_t FcmpCompareRgb(const void *pv1, const void *pv2, int32_t cb)
     return ((uint8_t *)pv1)[cbMatch] < ((uint8_t *)pv2)[cbMatch] ? fcmpLt : fcmpGt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy data without overlap.
 ****************************************************************************/
 void CopyPb(const void *pv1, void *pv2, int32_t cb)
@@ -443,7 +443,7 @@ void CopyPb(const void *pv1, void *pv2, int32_t cb)
     memcpy(pv2, pv1, cb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy data with possible overlap.
 ***************************************************************************/
 void BltPb(const void *pv1, void *pv2, int32_t cb)

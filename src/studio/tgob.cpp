@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
   tgob.cpp
 
@@ -18,7 +18,7 @@
 ASSERTNAME
 RTCLASS(TGOB)
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Constructor for text gobs.
  *
@@ -33,7 +33,7 @@ TGOB::TGOB(GCB *pgcb) : GOB(pgcb)
     _dypFont = vapp.DypTextDef();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Constructor for text gobs.
  *
@@ -44,7 +44,7 @@ TGOB::TGOB(int32_t hid) : GOB(hid)
     _acrBack = kacrClear;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Draw this text.
  *
@@ -66,18 +66,18 @@ void TGOB::Draw(PGNV pgnv, RC *prcClip)
     int32_t xp, yp;
     STN stnDraw(_stn);
 
-    // Use a temporary stn here for the displayed text. For example, the tgob
-    // text may be 'hello', but the dispayed text may be 'hel..'. This means
-    // any dots will be added to the displayed string if required every time
-    // we pass through here. If we don't do this then the following would
-    // happen. On the first pass through here can find that we need to add
-    // the dots and left justify the text, (Eg 'hello' becomes 'hel..'). On
-    // the next pass however, we would find that 'hel..' does indeed fit in the
-    // tgob ok and we would centre justify it. The user would see the text shift.
+    // 3DMMv1.0: Use a temporary stn here for the displayed text. For example, the tgob
+    // 3DMMv1.0: text may be 'hello', but the dispayed text may be 'hel..'. This means
+    // 3DMMv1.0: any dots will be added to the displayed string if required every time
+    // 3DMMv1.0: we pass through here. If we don't do this then the following would
+    // 3DMMv1.0: happen. On the first pass through here can find that we need to add
+    // 3DMMv1.0: the dots and left justify the text, (Eg 'hello' becomes 'hel..'). On
+    // 3DMMv1.0: the next pass however, we would find that 'hel..' does indeed fit in the
+    // 3DMMv1.0: tgob ok and we would centre justify it. The user would see the text shift.
 
     GetRc(&rc, cooLocal);
 
-    /* REVIEW peted: what happens for right-justify?  Why do we have to do
+    /* 3DMMv1.0: REVIEW peted: what happens for right-justify?  Why do we have to do
         this at all?  Why doesn't Kauai just take an RC, and then left-, right-,
         or center-align as appropriate, depending on the "SetFontAlign"
         setting? */
@@ -87,7 +87,7 @@ void TGOB::Draw(PGNV pgnv, RC *prcClip)
     pgnv->SetOnn(_onn);
     pgnv->SetFontSize(_dypFont);
 
-    // Center justify the text if it fits in the gob. Otherwise left justify it.
+    // 3DMMv1.0: Center justify the text if it fits in the gob. Otherwise left justify it.
     pgnv->GetRcFromStn(&rcText, &stnDraw, 0, 0);
 
     if (rcText.Dxp() < rc.Dxp())
@@ -122,7 +122,7 @@ void TGOB::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Create Tgob's for any of the text based browsers
  * 		using the font specified by idsFont
@@ -166,7 +166,7 @@ PTGOB TGOB::PtgobCreate(int32_t kidFrm, int32_t idsFont, int32_t tav, int32_t hi
         pstdio = (PSTDIO)vapp.Pkwa()->PgobFromCls(kclsSTDIO);
         Assert(pstdio != pvNil, "Creating a TGOB with no STDIO present");
         pstdio->GetStnMisc(idsFont, &stn);
-        vapp.FGetOnn(&stn, &onn); //  Ignore failure
+        vapp.FGetOnn(&stn, &onn); // 3DMMv1.0:  Ignore failure
         if (onn != onnNil)
             ptgob->SetFont(onn);
     }
@@ -177,7 +177,7 @@ PTGOB TGOB::PtgobCreate(int32_t kidFrm, int32_t idsFont, int32_t tav, int32_t hi
     return ptgob;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     SetAlign
         set the text alignment for this TGOB
 
@@ -193,7 +193,7 @@ void TGOB::SetAlign(int32_t tah, int32_t tav)
         _tav = tav;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     GetAlign
         Gets the text alignment for this TGOB
 
@@ -211,7 +211,7 @@ void TGOB::GetAlign(int32_t *ptah, int32_t *ptav)
 
 #ifdef DEBUG
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
  *
  *	Mark memory used by the TGOB
  *
@@ -229,7 +229,7 @@ void TGOB::MarkMem(void)
     TGOB_PAR::MarkMem();
 }
 
-/*****************************************************************************\
+/** 3DMMv1.0: ***************************************************************************\
  *
  *	Assert the validity of the TGOB
  *
@@ -245,4 +245,4 @@ void TGOB::AssertValid(uint32_t grf)
     TGOB_PAR::AssertValid(fobjAllocated);
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

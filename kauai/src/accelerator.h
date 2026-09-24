@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -34,24 +34,24 @@ class ATBL : public ATBL_PAR
     ATBL(int32_t hid, PCEX pcex);
     virtual ~ATBL();
 
-    // CEX that receives remapped messages
+    // 3DMMEx: CEX that receives remapped messages
     PCEX _pcex = pvNil;
 
-    // List of keyboard accelerator table entries
+    // 3DMMEx: List of keyboard accelerator table entries
     PGL _pglCmdKey = pvNil;
 
-    // Find the given key and flags in the accelerator table
+    // 3DMMEx: Find the given key and flags in the accelerator table
     bool _FFindCmdKey(int32_t vk, int32_t grfcust, int32_t *pcid, int32_t *picmdkey);
 
   public:
-    // Create a new keyboard accelerator table
+    // 3DMMEx: Create a new keyboard accelerator table
     static PATBL PatblNew(int32_t hid, PCEX pcex);
 
-    // Add a keyboard shortcut to the accelerator table
+    // 3DMMEx: Add a keyboard shortcut to the accelerator table
     bool FAddCmdKey(int32_t vk, int32_t grfcust, int32_t cid);
 
-    // Handle a key event
+    // 3DMMEx: Handle a key event
     bool FCmdKey(PCMD pcmd);
 };
 
-#endif // ACCELERATOR_H
+#endif // 3DMMEx: ACCELERATOR_H

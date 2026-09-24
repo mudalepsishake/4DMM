@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/**************************************************************
+/** 3DMMv1.0: ************************************************************
 
    Browser Class
 
@@ -34,13 +34,13 @@
 #ifndef BRWD_H
 #define BRWD_H
 
-const int32_t kcmhlBrowser = 0x11000; // nice medium level for the Browser
+const int32_t kcmhlBrowser = 0x11000; // 3DMMv1.0: nice medium level for the Browser
 const int32_t kcbMaxCrm = 300000;
-const int32_t kdwTotalPhysLim = 10240000; // 10MB	heuristic
-const int32_t kdwAvailPhysLim = 1024000;  // 1MB heuristic
+const int32_t kdwTotalPhysLim = 10240000; // 3DMMv1.0: 10MB	heuristic
+const int32_t kdwAvailPhysLim = 1024000;  // 3DMMv1.0: 1MB heuristic
 const auto kBrwsScript = (kstDefault << 16) | kchidBrowserDismiss;
 
-/************************************
+/** 3DMMv1.0: **********************************
 
     Browser Context	CLass
     Optional context to carry over
@@ -65,7 +65,7 @@ class BRCN : public BRCN_PAR
     int32_t ithumPageFirst;
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser ThumbFile Cki Struct
 
@@ -95,7 +95,7 @@ struct TFC
 VERIFY_STRUCT_SIZE(TFC, 12);
 const BOM kbomTfc = 0x5f000000;
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Display Class
 
@@ -112,28 +112,28 @@ class BRWD : public BRWD_PAR
     CMD_MAP_DEC(BRWD)
 
   protected:
-    int32_t _kidFrmFirst;     // kid of first frame
-    int32_t _kidControlFirst; // kid of first control button
-    int32_t _dxpFrmOffset;    // x inset of thumb in frame
-    int32_t _dypFrmOffset;    // y inset of thumb in frame
-    int32_t _sidDefault;      // default sid
-    int32_t _thumDefault;     // default thum
-    PBRCN _pbrcn;             // context carryover
-    int32_t _idsFont;         // string id of Font
-    int32_t _kidThumOverride; // projects may override one thum gobid
-    int32_t _ithumOverride;   // projects may override one thum gobid
-    PTGOB _ptgobPage;         // for page numbers
+    int32_t _kidFrmFirst;     // 3DMMv1.0: kid of first frame
+    int32_t _kidControlFirst; // 3DMMv1.0: kid of first control button
+    int32_t _dxpFrmOffset;    // 3DMMv1.0: x inset of thumb in frame
+    int32_t _dypFrmOffset;    // 3DMMv1.0: y inset of thumb in frame
+    int32_t _sidDefault;      // 3DMMv1.0: default sid
+    int32_t _thumDefault;     // 3DMMv1.0: default thum
+    PBRCN _pbrcn;             // 3DMMv1.0: context carryover
+    int32_t _idsFont;         // 3DMMv1.0: string id of Font
+    int32_t _kidThumOverride; // 3DMMv1.0: projects may override one thum gobid
+    int32_t _ithumOverride;   // 3DMMv1.0: projects may override one thum gobid
+    PTGOB _ptgobPage;         // 3DMMv1.0: for page numbers
     PSTDIO _pstdio;
 
-    // Display State variables
-    int32_t _cthumCD;        // Non-user content
-    int32_t _ithumSelect;    // Hilited frame
-    int32_t _ithumPageFirst; // Index to thd of first frame on current page
-    int32_t _cfrmPageCur;    // Number of visible thumbnails per current page
-    int32_t _cfrm;           // Total frames possible per page
-    int32_t _cthumScroll;    // #items to scroll on fwd/back.  default ivNil -> page scrolling
-    bool _fWrapScroll;       // Wrap around.  Default = fTrue;
-    bool _fNoRepositionSel;  // Don't reposition selection : default = fFalse;
+    // 3DMMv1.0: Display State variables
+    int32_t _cthumCD;        // 3DMMv1.0: Non-user content
+    int32_t _ithumSelect;    // 3DMMv1.0: Hilited frame
+    int32_t _ithumPageFirst; // 3DMMv1.0: Index to thd of first frame on current page
+    int32_t _cfrmPageCur;    // 3DMMv1.0: Number of visible thumbnails per current page
+    int32_t _cfrm;           // 3DMMv1.0: Total frames possible per page
+    int32_t _cthumScroll;    // 3DMMv1.0: #items to scroll on fwd/back.  default ivNil -> page scrolling
+    bool _fWrapScroll;       // 3DMMv1.0: Wrap around.  Default = fTrue;
+    bool _fNoRepositionSel;  // 3DMMv1.0: Don't reposition selection : default = fFalse;
 
   protected:
     void _SetScrollState(void);
@@ -192,7 +192,7 @@ class BRWD : public BRWD_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWD(PGCB pgcb) : BRWD_PAR(pgcb)
     {
@@ -205,34 +205,34 @@ class BRWD : public BRWD_PAR
     void Init(PCMD pcmd, int32_t ithumSelect, int32_t ithumDisplay, PSTDIO pstdio, bool fWrapScroll = fTrue,
               int32_t cthumScroll = ivNil);
     bool FDraw(void);
-    bool FCreateAllTgob(void); // For any text based browsers
+    bool FCreateAllTgob(void); // 3DMMv1.0: For any text based browsers
 
     //
-    // Command Handlers
-    // Selection does not exit the browser
+    // 3DMMv1.0: Command Handlers
+    // 3DMMv1.0: Selection does not exit the browser
     //
-    bool FCmdFwd(PCMD pcmd);  // Page fwd
-    bool FCmdBack(PCMD pcmd); // Page back
+    bool FCmdFwd(PCMD pcmd);  // 3DMMv1.0: Page fwd
+    bool FCmdBack(PCMD pcmd); // 3DMMv1.0: Page back
     bool FCmdSelect(PCMD pcmd);
-    bool FCmdSelectThum(PCMD pcmd); // Set viewing page
+    bool FCmdSelectThum(PCMD pcmd); // 3DMMv1.0: Set viewing page
     virtual void Release(void) override;
-    virtual bool FCmdCancel(PCMD pcmd); // See brwb
+    virtual bool FCmdCancel(PCMD pcmd); // 3DMMv1.0: See brwb
     virtual bool FCmdDel(PCMD pcmd)
     {
         return fTrue;
-    } // See brwm
+    } // 3DMMv1.0: See brwm
     virtual bool FCmdOk(PCMD pcmd);
     virtual bool FCmdFile(PCMD pcmd)
     {
         return fTrue;
-    } // See brwm
+    } // 3DMMv1.0: See brwm
     virtual bool FCmdChangeCel(PCMD pcmd)
     {
         return fTrue;
-    } // See brwa
+    } // 3DMMv1.0: See brwa
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
     Browser List Context CLass
     Optional context to carry over
@@ -261,18 +261,18 @@ class BRCNL : public BRCNL_PAR
 };
 
 //
-//	Thumbnail descriptors : one per thumbnail
+// 3DMMv1.0:	Thumbnail descriptors : one per thumbnail
 //
 const int32_t kglstnGrow = 5;
 const int32_t kglthdGrow = 10;
 struct THD
 {
     union {
-        TAG tag; // TAG pointing to content
+        TAG tag; // 3DMMv1.0: TAG pointing to content
         struct
         {
-            int32_t lwFill1; // sid
-            int32_t lwFill2; // pcrf
+            int32_t lwFill1; // 3DMMv1.0: sid
+            int32_t lwFill2; // 3DMMv1.0: pcrf
             uint32_t grfontMask;
             uint32_t grfont;
         };
@@ -281,17 +281,17 @@ struct THD
             int32_t _lwFill1;
             int32_t _lwFill2;
             CTG ctg;
-            CHID chid; // CHID of CD content
+            CHID chid; // 3DMMv1.0: CHID of CD content
         };
     };
 
-    CNO cno;       // GOKD cno
-    CHID chidThum; // GOKD's parent's CHID (relative to GOKD parent's parent)
-    int32_t ithd;  // Original index for this THD, before sorting (used to
-                   // retrieve proper STN for the BRWN-derived browsers)
+    CNO cno;       // 3DMMv1.0: GOKD cno
+    CHID chidThum; // 3DMMv1.0: GOKD's parent's CHID (relative to GOKD parent's parent)
+    int32_t ithd;  // 3DMMv1.0: Original index for this THD, before sorting (used to
+                   // 3DMMv1.0: retrieve proper STN for the BRWN-derived browsers)
 };
 
-/* Browser Content List Base --  create one of these when you want a list of a
+/* 3DMMv1.0: Browser Content List Base --  create one of these when you want a list of a
     specific kind of content and you don't care about the names. */
 #define BCL_PAR BASE
 typedef class BCL *PBCL;
@@ -343,7 +343,7 @@ class BCL : public BCL_PAR
     }
 };
 
-/* Browser Content List with Strings -- create one of these when you need to
+/* 3DMMv1.0: Browser Content List with Strings -- create one of these when you need to
     browse content by name */
 #define BCLS_PAR BCL
 typedef class BCLS *PBCLS;
@@ -382,7 +382,7 @@ class BCLS : public BCLS_PAR
     }
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser List Class
    Derived from the Display Class
@@ -392,13 +392,13 @@ class BCLS : public BCLS_PAR
 #define kclsBRWL KLCONST4('B', 'R', 'W', 'L')
 typedef class BRWL *PBRWL;
 
-// Browser Selection Flags
-// This specifies what the sorting is based on
+// 3DMMv1.0: Browser Selection Flags
+// 3DMMv1.0: This specifies what the sorting is based on
 enum BWS
 {
     kbwsIndex = 1,
     kbwsChid = 2,
-    kbwsCnoRoot = 3, // defaults to CnoRoot if ctg of Par is ctgNil
+    kbwsCnoRoot = 3, // 3DMMv1.0: defaults to CnoRoot if ctg of Par is ctgNil
     kbwsLim
 };
 
@@ -411,19 +411,19 @@ class BRWL : public BRWL_PAR
   protected:
     bool _fEnableAccel;
 
-    // Thumnail descriptor lists
-    PCRM _pcrm;  // Chunky resource manager
-    PGL _pglthd; // Thumbnail descriptor	gl
-    PGST _pgst;  // Chunk name
+    // 3DMMv1.0: Thumnail descriptor lists
+    PCRM _pcrm;  // 3DMMv1.0: Chunky resource manager
+    PGL _pglthd; // 3DMMv1.0: Thumbnail descriptor	gl
+    PGST _pgst;  // 3DMMv1.0: Chunk name
 
-    // Browser Search (List) parameters
-    BWS _bws;         // Selection type flag
-    bool _fSinglePar; // Single parent search
-    CKI _ckiRoot;     // Grandparent cno=cnoNil => global search
-    CTG _ctgContent;  // Parent
+    // 3DMMv1.0: Browser Search (List) parameters
+    BWS _bws;         // 3DMMv1.0: Selection type flag
+    bool _fSinglePar; // 3DMMv1.0: Single parent search
+    CKI _ckiRoot;     // 3DMMv1.0: Grandparent cno=cnoNil => global search
+    CTG _ctgContent;  // 3DMMv1.0: Parent
 
   protected:
-    // BRWL List
+    // 3DMMv1.0: BRWL List
     bool _FInitNew(PCMD pcmd, BWS bws, int32_t ThumSelect, CKI ckiRoot, CTG ctgContent);
     bool _FCreateBuildThd(CKI ckiRoot, CTG ctgContent, bool fBuildGl = fTrue);
     virtual bool _FGetContent(PCRM pcrm, CKI *pcki, CTG ctg, bool fBuildGl);
@@ -436,9 +436,9 @@ class BRWL : public BRWL_PAR
     virtual bool _FUpdateLists() override
     {
         return fTrue;
-    } // Eg, to include user sounds
+    } // 3DMMv1.0: Eg, to include user sounds
 
-    // BRWL util
+    // 3DMMv1.0: BRWL util
     void _SortThd(void);
     virtual void _GetThumFromIthum(int32_t ithum, void *pThumSelect, int32_t *psid) override;
     virtual void _ReleaseThumFrame(int32_t ifrm) override;
@@ -448,7 +448,7 @@ class BRWL : public BRWL_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWL(PGCB pgcb) : BRWL_PAR(pgcb)
     {
@@ -460,7 +460,7 @@ class BRWL : public BRWL_PAR
                        PSTDIO pstdio, PBRCNL pbrcnl = pvNil, bool fWrapScroll = fTrue, int32_t cthumScroll = ivNil);
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Text Class
    Derived from the Display Class
@@ -487,11 +487,11 @@ class BRWT : public BRWT_PAR
     virtual bool _FSetThumFrame(int32_t istn, PGOB pgobPar) override;
     virtual void _ReleaseThumFrame(int32_t ifrm) override
     {
-    } // No gob to release
+    } // 3DMMv1.0: No gob to release
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWT(PGCB pgcb) : BRWT_PAR(pgcb)
     {
@@ -505,7 +505,7 @@ class BRWT : public BRWT_PAR
                int32_t cthumScroll = ivNil);
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Named List Class
    Derived from the Browser List Class
@@ -529,7 +529,7 @@ class BRWN : public BRWN_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWN(PGCB pgcb) : BRWN_PAR(pgcb)
     {
@@ -542,12 +542,12 @@ class BRWN : public BRWN_PAR
     virtual bool FCmdOk(PCMD pcmd) override;
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Studio Specific Browser Classes
 
 *************************************/
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Action Class
    Derived from the Browser Text Class
@@ -565,14 +565,14 @@ class BRWA : public BRWA_PAR
     MARKMEM
 
   protected:
-    int32_t _celnStart;                    // Starting cel number
-    PAPE _pape;                            // Actor Preview Entity
-    void _ProcessSelection(void) override; // Action Preview
+    int32_t _celnStart;                    // 3DMMv1.0: Starting cel number
+    PAPE _pape;                            // 3DMMv1.0: Actor Preview Entity
+    void _ProcessSelection(void) override; // 3DMMv1.0: Action Preview
     virtual void _ApplySelection(int32_t thumSelect, int32_t sid) override;
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWA(PGCB pgcb) : BRWA_PAR(pgcb)
     {
@@ -589,7 +589,7 @@ class BRWA : public BRWA_PAR
     virtual bool FCmdChangeCel(PCMD pcmd) override;
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Prop & Actor Class
    Derived from the Browser List Class
@@ -604,10 +604,12 @@ class BRWP : public BRWP_PAR
 
   protected:
     virtual void _ApplySelection(int32_t thumSelect, int32_t sid) override;
+    virtual bool _FUpdateLists() override;
+    virtual bool _FSetThumFrame(int32_t ithd, PGOB pgobPar) override;
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWP(PGCB pgcb) : BRWP_PAR(pgcb)
     {
@@ -617,7 +619,7 @@ class BRWP : public BRWP_PAR
     static PBRWP PbrwpNew(PRCA prca, int32_t kidGlass);
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Background Class
    Derived from the Browser List Class
@@ -635,7 +637,7 @@ class BRWB : public BRWB_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWB(PGCB pgcb) : BRWB_PAR(pgcb)
     {
@@ -646,7 +648,7 @@ class BRWB : public BRWB_PAR
     virtual bool FCmdCancel(PCMD pcmd) override;
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Camera Class
    Derived from the Browser List Class
@@ -667,7 +669,7 @@ class BRWC : public BRWC_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWC(PGCB pgcb) : BRWC_PAR(pgcb)
     {
@@ -679,7 +681,7 @@ class BRWC : public BRWC_PAR
     virtual bool FCmdCancel(PCMD pcmd) override;
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Music Class (midi, speech & fx)
    Derived from the Browser Named List Class
@@ -693,18 +695,18 @@ class BRWM : public BRWM_PAR
     RTCLASS_DEC
 
   protected:
-    int32_t _sty; // Identifies type of sound
-    PCRF _pcrf;   // NOT created here (autosave or BRWI file)
+    int32_t _sty; // 3DMMv1.0: Identifies type of sound
+    PCRF _pcrf;   // 3DMMv1.0: NOT created here (autosave or BRWI file)
 
     virtual void _ApplySelection(int32_t thumSelect, int32_t sid) override;
-    virtual bool _FUpdateLists() override; // By all entries in pcrf of correct type
-    void _ProcessSelection(void) override; // Sound Preview
+    virtual bool _FUpdateLists() override; // 3DMMv1.0: By all entries in pcrf of correct type
+    void _ProcessSelection(void) override; // 3DMMv1.0: Sound Preview
     bool _FAddThd(STN *pstn, CKI *pcki);
     bool _FSndListed(CNO cno, int32_t *pithd = pvNil);
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWM(PGCB pgcb) : BRWM_PAR(pgcb)
     {
@@ -713,11 +715,11 @@ class BRWM : public BRWM_PAR
     ~BRWM(void){};
 
     static PBRWM PbrwmNew(PRCA prca, int32_t kidGlass, int32_t sty, PSTDIO pstdio);
-    virtual bool FCmdFile(PCMD pcmd) override; // Upon portfolio completion
-    virtual bool FCmdDel(PCMD pcmd) override;  // Delete user sound
+    virtual bool FCmdFile(PCMD pcmd) override; // 3DMMv1.0: Upon portfolio completion
+    virtual bool FCmdDel(PCMD pcmd) override;  // 3DMMv1.0: Delete user sound
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Import Sound Class
    Derived from the Browser List Class
@@ -734,13 +736,13 @@ class BRWI : public BRWI_PAR
     MARKMEM
 
   protected:
-    // The following are already handled by BRWM
-    // virtual void _ProcessSelection(void) override;
+    // 3DMMv1.0: The following are already handled by BRWM
+    // 3DMMEx: virtual void _ProcessSelection(void) override;
     virtual void _ApplySelection(int32_t thumSelect, int32_t sid) override;
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWI(PGCB pgcb) : BRWI_PAR(pgcb)
     {
@@ -752,7 +754,7 @@ class BRWI : public BRWI_PAR
     bool FInit(PCMD pcmd, CKI cki, PSTDIO pstdio);
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Browser Roll Call Class
    Derived from the Display Class
@@ -769,7 +771,7 @@ class BRWR : public BRWR_PAR
 
   protected:
     CTG _ctg;
-    PCRM _pcrm; // Chunky resource manager
+    PCRM _pcrm; // 3DMMv1.0: Chunky resource manager
     bool _fApplyingSel;
 
   protected:
@@ -784,7 +786,7 @@ class BRWR : public BRWR_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     BRWR(PGCB pgcb) : BRWR_PAR(pgcb)
     {
@@ -806,13 +808,13 @@ class BRWR : public BRWR_PAR
 };
 
 const int32_t kglcmgGrow = 8;
-struct CMG // Gokd Cno Map
+struct CMG // 3DMMv1.0: Gokd Cno Map
 {
-    CNO cnoTmpl; // Content cno
-    CNO cnoGokd; // Thumbnail gokd cno
+    CNO cnoTmpl; // 3DMMv1.0: Content cno
+    CNO cnoGokd; // 3DMMv1.0: Thumbnail gokd cno
 };
 
-/************************************
+/** 3DMMv1.0: **********************************
 
    Fne for  Thumbnails
    Enumerates current product first
@@ -839,7 +841,7 @@ class FNET : public FNET_PAR
 
   public:
     //
-    // Constructors and destructors
+    // 3DMMv1.0: Constructors and destructors
     //
     FNET(void) : FNET_PAR()
     {

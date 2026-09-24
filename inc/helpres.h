@@ -1,21 +1,21 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 //
-// Ids for each mbmp per gob within the studio
+// 3DMMv1.0: Ids for each mbmp per gob within the studio
 //
-// REVIEW:  these are currently the same ID's as the tools.  Conflicts?
+// 3DMMv1.0: REVIEW:  these are currently the same ID's as the tools.  Conflicts?
 //
-// The tools are different visuals from the ones actually used in the studio
-// for the following reason(s)
+// 3DMMv1.0: The tools are different visuals from the ones actually used in the studio
+// 3DMMv1.0: for the following reason(s)
 //
-//  1.  the tools may need to be treated different visually - ie. grayed out
-//              like in Creative Writer.  A wash may not cut it this time
+// 3DMMv1.0:  1.  the tools may need to be treated different visually - ie. grayed out
+// 3DMMv1.0:              like in Creative Writer.  A wash may not cut it this time
 //
-//      2.      We can always name the mbmp's in the studio to these names if necessary
+// 3DMMv1.0:      2.      We can always name the mbmp's in the studio to these names if necessary
 //
-//  CAVEAT:  This list must keep up to date with the real studio graphics (for now)
-//               and kid/mbmp IDs!
+// 3DMMv1.0:  CAVEAT:  This list must keep up to date with the real studio graphics (for now)
+// 3DMMv1.0:               and kid/mbmp IDs!
 //
 
 #define mbmpStudio 0x20000
@@ -106,7 +106,7 @@
 #define mbmpBrowserOk 0x2005D
 #define mbmpBrowserPageFwd 0x2005E
 #define mbmpBrowserPageBack 0x2005F
-#define mbmpBrowserFrame 0x20060 // Next 0x100 are reserved
+#define mbmpBrowserFrame 0x20060 // 3DMMv1.0: Next 0x100 are reserved
 #define mbmpBrowserFrameLim 0x2015F
 #define mbmpCameraFrame 0x20160
 #define mbmpWorkspace 0x20161
@@ -123,12 +123,12 @@
 #define mbmpScrollBackground 0x2016C
 #define mbmpTextsScrollType 0x2016D
 #define mbmpBrowserObj 0x2016E
-#define mbmpBrowserThumb 0x20170 // Next 0x100 are reserved
+#define mbmpBrowserThumb 0x20170 // 3DMMv1.0: Next 0x100 are reserved
 #define mbmpBrowserThumbLim 0X2026F
 #define mbmpActorsRotateNorm 0x20270
 #define mbmpActorsTransformNorm 0x20271
-#define mbmpBrwsSceneFrame 0x20273 // CNO for Scene browser frame
-#define mbmpBrwsActorFrame 0x20275 // CNO for Actor browser frame
+#define mbmpBrwsSceneFrame 0x20273 // 3DMMv1.0: CNO for Scene browser frame
+#define mbmpBrwsActorFrame 0x20275 // 3DMMv1.0: CNO for Actor browser frame
 #define mbmpBrwsMaterial 0x20276
 #define mbmpBrwsCMaterial 0x20277
 #define mbmpBrwsThreeD 0x20278
@@ -136,12 +136,12 @@
 #define mbmpBrwsForeColor 0x2027A
 #define mbmpBrwsBackColor 0x2027B
 #define mbmpBrwsTextSize 0x2027C
-#define mbmpActorsBrowser 0x2027D      // the button itself
-#define mbmpActorsPropBrowser 0x2027E  // the button itself
-#define mbmpActorsSpletters 0x2027F    // the button itself
-#define mbmpSoundsEfxBrowser 0x20281   // the button itself
-#define mbmpSoundsMicBrowser 0x20282   // the button itself
-#define mbmpSoundsMusicBrowser 0x20283 // the button itself
+#define mbmpActorsBrowser 0x2027D      // 3DMMv1.0: the button itself
+#define mbmpActorsPropBrowser 0x2027E  // 3DMMv1.0: the button itself
+#define mbmpActorsSpletters 0x2027F    // 3DMMv1.0: the button itself
+#define mbmpSoundsEfxBrowser 0x20281   // 3DMMv1.0: the button itself
+#define mbmpSoundsMicBrowser 0x20282   // 3DMMv1.0: the button itself
+#define mbmpSoundsMusicBrowser 0x20283 // 3DMMv1.0: the button itself
 #define mbmpPlayStop 0x20284
 #define mbmpSceneChoices 0x20285
 #define mbmpVolumeControl 0x20286
@@ -175,7 +175,7 @@
 #define mbmpWordBoxCursor 0x202A2
 #define mbmpCutWordBox 0x202A3
 
-////////// temporary
+/// 3DMMv1.0: /////// temporary
 #define helppic1016_bmp 0x202B0
 #define helppic1016d_bmp 0x202B1
 #define helppic1016r_bmp 0x202B2

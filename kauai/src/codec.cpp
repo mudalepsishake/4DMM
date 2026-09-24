@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,13 +16,13 @@ ASSERTNAME
 RTCLASS(CODM)
 RTCLASS(CODC)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The header on a compressed block consists of the cfmt (a long in big
     endian order) and the decompressed length (a long in big endian order).
 ***************************************************************************/
 const int32_t kcbCodecHeader = 2 * SIZEOF(int32_t);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the compression manager. pcodc is an optional default
     codec. cfmt is the default compression format.
 ***************************************************************************/
@@ -40,7 +40,7 @@ CODM::CODM(PCODC pcodc, int32_t cfmt)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the compression manager.
 ***************************************************************************/
 CODM::~CODM(void)
@@ -63,7 +63,7 @@ CODM::~CODM(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CODM.
 ***************************************************************************/
 void CODM::AssertValid(uint32_t grf)
@@ -74,7 +74,7 @@ void CODM::AssertValid(uint32_t grf)
     AssertNilOrPo(_pglpcodc, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CODM.
 ***************************************************************************/
 void CODM::MarkMem(void)
@@ -96,9 +96,9 @@ void CODM::MarkMem(void)
         MarkMemObj(_pglpcodc);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the default compression type.
 ***************************************************************************/
 void CODM::SetCfmtDefault(int32_t cfmt)
@@ -114,7 +114,7 @@ void CODM::SetCfmtDefault(int32_t cfmt)
     _cfmtDef = cfmt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a codec to the compression manager.
 ***************************************************************************/
 bool CODM::FRegisterCodec(PCODC pcodc)
@@ -132,7 +132,7 @@ bool CODM::FRegisterCodec(PCODC pcodc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether we can encode or decode the given format.
 ***************************************************************************/
 bool CODM::FCanDo(int32_t cfmt, bool fEncode)
@@ -146,7 +146,7 @@ bool CODM::FCanDo(int32_t cfmt, bool fEncode)
     return _FFindCodec(fEncode, cfmt, &pcodc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Gets the type of compression used on the block (assuming it is
     compressed).
 ***************************************************************************/
@@ -169,7 +169,7 @@ bool CODM::FGetCfmtFromBlck(PBLCK pblck, int32_t *pcfmt)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for a codec that can handle the given format.
 ***************************************************************************/
 bool CODM::_FFindCodec(bool fEncode, int32_t cfmt, PCODC *ppcodc)
@@ -203,7 +203,7 @@ bool CODM::_FFindCodec(bool fEncode, int32_t cfmt, PCODC *ppcodc)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compress or decompress an hq of data. Note that the value of *phq
     may change. cfmt should be cfmtNil to decompress.
 ***************************************************************************/
@@ -247,7 +247,7 @@ bool CODM::_FCodePhq(int32_t cfmt, HQ *phq)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compress or decompress a block of data. If pvDst is nil, just fill
     *pcbDst with the required destination buffer size. This is just an
     estimate in the compress case.
@@ -265,24 +265,24 @@ bool CODM::_FCode(int32_t cfmt, void *pvSrc, int32_t cbSrc, void *pvDst, int32_t
 
     if (cfmtNil != cfmt)
     {
-        // Encode the data
+        // 3DMMv1.0: Encode the data
         if (pvNil == pvDst || cbDst >= cbSrc)
             cbDst = cbSrc - 1;
 
         if (cbDst <= kcbCodecHeader)
         {
-            // destination is smaller than the minimum compressed size, so
-            // no sense trying.
+            // 3DMMv1.0: destination is smaller than the minimum compressed size, so
+            // 3DMMv1.0: no sense trying.
             return fFalse;
         }
 
-        // make sure we have a codec for this format
+        // 3DMMv1.0: make sure we have a codec for this format
         if (!_FFindCodec(fTrue, cfmt, &pcodc))
             return fFalse;
 
         if (pvNil == pvDst)
         {
-            // this is our best guess at the compressed size
+            // 3DMMv1.0: this is our best guess at the compressed size
             *pcbDst = cbDst;
             return fTrue;
         }
@@ -307,18 +307,18 @@ bool CODM::_FCode(int32_t cfmt, void *pvSrc, int32_t cbSrc, void *pvDst, int32_t
     }
     else
     {
-        // decode
+        // 3DMMv1.0: decode
         if (0 >= (cbSrc -= kcbCodecHeader))
             return fFalse;
 
-        // get the format and decompressed size
+        // 3DMMv1.0: get the format and decompressed size
         prgb = (uint8_t *)pvSrc;
         cfmt = LwFromBytes(prgb[0], prgb[1], prgb[2], prgb[3]);
         *pcbDst = LwFromBytes(prgb[4], prgb[5], prgb[6], prgb[7]);
         if (!FIn(*pcbDst, 1, pvNil == pvDst ? kcbMax : cbDst + 1))
             return fFalse;
 
-        // make sure we have a codec for this format
+        // 3DMMv1.0: make sure we have a codec for this format
         if (!_FFindCodec(fFalse, cfmt, &pcodc))
             return fFalse;
 

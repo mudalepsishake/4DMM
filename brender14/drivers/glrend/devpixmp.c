@@ -1,0 +1,1132 @@
+/* BRenderModern:
+ * Device pixelmap methods
+ *
+ * TODO:
+ * - Cleanup dangling pointers when a back/depth buffer is destroyed.
+ */
+
+#include <string.h>
+#include "drv.h"
+#include "brassert.h"
+
+/* BRenderModern:
+ * Default dispatch table for device (defined at end of file)
+ */
+static const struct br_device_pixelmap_dispatch devicePixelmapDispatch;
+
+static br_error custom_query(br_value *pvalue, void **extra, br_size_t *pextra_size, void *block, const struct br_tv_template_entry *tep)
+{
+    const br_device_pixelmap *self = block;
+
+    if(tep->token == BRT_OPENGL_TEXTURE_U32) {
+        if(self->use_type == BRT_OFFSCREEN)
+            pvalue->u32 = self->asBack.glTex;
+        else if(self->use_type == BRT_DEPTH)
+            pvalue->u32 = self->asDepth.glDepth;
+        else
+            pvalue->u32 = 0;
+
+        return BRE_OK;
+    } else if(tep->token == BRT_CLUT_O) {
+        if(self->use_type == BRT_OFFSCREEN)
+            pvalue->o = (br_object *)self->asBack.clut;
+        else
+            pvalue->o = NULL;
+
+        return BRE_OK;
+    }
+
+    return BRE_UNKNOWN;
+}
+
+static const br_tv_custom custom = {
+    .query      = custom_query,
+    .set        = NULL,
+    .extra_size = NULL,
+};
+
+/* BRenderModern:
+ * Device pixelmap info. template
+ */
+#define F(f) offsetof(struct br_device_pixelmap, f)
+static br_tv_template_entry devicePixelmapTemplateEntries[] = {
+    {BRT(WIDTH_I32),          F(pm_width),        BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U16, 0                    },
+    {BRT(HEIGHT_I32),         F(pm_height),       BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U16, 0                    },
+    {BRT(PIXEL_TYPE_U8),      F(pm_type),         BRTV_QUERY | BRTV_ALL, BRTV_CONV_I32_U8,  0                    },
+    {BRT(OUTPUT_FACILITY_O),  F(output_facility), BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY,    0                    },
+    {BRT(FACILITY_O),         F(output_facility), BRTV_QUERY,            BRTV_CONV_COPY,    0                    },
+    {BRT(CLUT_O),             0,                  BRTV_QUERY | BRTV_ALL, BRTV_CONV_CUSTOM,  (br_uintptr_t)&custom},
+    {BRT(IDENTIFIER_CSTR),    F(pm_identifier),   BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY,    0                    },
+    {BRT(MSAA_SAMPLES_I32),   F(msaa_samples),    BRTV_QUERY | BRTV_ALL, BRTV_CONV_COPY,    0                    },
+    {DEV(OPENGL_TEXTURE_U32), 0,                  BRTV_QUERY | BRTV_ALL, BRTV_CONV_CUSTOM,  (br_uintptr_t)&custom},
+};
+#undef F
+
+/* BRenderModern:
+ * (Re)create the renderbuffers and attach them to the framebuffer.
+ */
+static br_error recreate_renderbuffers(br_device_pixelmap *self, const GladGLContext *gl)
+{
+    GLuint fbo           = 0;
+    GLenum binding_point = self->msaa_samples > 1 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+
+    UASSERT(self->use_type == BRT_OFFSCREEN || self->use_type == BRT_DEPTH);
+
+    if(self->use_type == BRT_OFFSCREEN) {
+        const GLenum              draw_buffers[1] = {GL_COLOR_ATTACHMENT0};
+        const br_pixelmap_gl_fmt *fmt             = DeviceGLGetFormatDetails(self->pm_type);
+
+        fbo = self->asBack.glFbo;
+        UASSERT(fbo != 0);
+
+        /* BRenderModern: Delete */
+        gl->DeleteTextures(1, &self->asBack.glTex);
+
+        /* BRenderModern: Create */
+        gl->GenTextures(1, &self->asBack.glTex);
+        gl->BindTexture(binding_point, self->asBack.glTex);
+
+        if(self->msaa_samples) {
+            gl->TexImage2DMultisample(binding_point, self->msaa_samples, fmt->internal_format, self->pm_width, self->pm_height, GL_TRUE);
+        } else {
+            gl->TexParameteri(binding_point, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            gl->TexImage2D(binding_point, 0, fmt->internal_format, self->pm_width, self->pm_height, 0, fmt->format, fmt->type, NULL);
+        }
+
+        DeviceGLObjectLabelF(gl, GL_TEXTURE, self->asBack.glTex, "%s:colour", self->pm_identifier);
+
+        gl->BindTexture(binding_point, 0);
+
+        /* BRenderModern: Attach */
+        gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+        gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, binding_point, self->asBack.glTex, 0);
+        gl->DrawBuffers(1, draw_buffers);
+    } else if(self->use_type == BRT_DEPTH) {
+        fbo = self->asDepth.backbuffer->asBack.glFbo;
+        UASSERT(fbo != 0);
+
+        /* BRenderModern: Delete */
+        gl->DeleteTextures(1, &self->asDepth.glDepth);
+
+        /* BRenderModern: Create */
+        gl->GenTextures(1, &self->asDepth.glDepth);
+        gl->BindTexture(binding_point, self->asDepth.glDepth);
+
+        if(self->msaa_samples) {
+            gl->TexImage2DMultisample(binding_point, self->msaa_samples, GL_DEPTH_COMPONENT, self->pm_width, self->pm_height, GL_TRUE);
+        } else {
+            gl->TexImage2D(binding_point, 0, GL_DEPTH_COMPONENT, self->pm_width, self->pm_height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+        }
+
+        DeviceGLObjectLabelF(gl, GL_TEXTURE, self->asDepth.glDepth, "%s:depth", self->pm_identifier);
+
+        gl->BindTexture(binding_point, 0);
+
+        /* BRenderModern: Attach */
+        gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+        gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, binding_point, self->asDepth.glDepth, 0);
+    }
+
+    DeviceGLObjectLabelF(gl, GL_FRAMEBUFFER, fbo, "%s:fbo", self->pm_identifier);
+
+    if(gl->CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+        return BRE_FAIL;
+    }
+    gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+    return BRE_OK;
+}
+
+static void delete_gl_resources(br_device_pixelmap *self, const GladGLContext *gl)
+{
+    if(self->use_type == BRT_DEPTH) {
+        // BRenderModern: FIXME: We should be destroyed before our parent.
+        // BRenderModern: FIXME: If we haven't, should I bind the parent and detach?
+        gl->DeleteTextures(1, &self->asDepth.glDepth);
+    } else if(self->use_type == BRT_OFFSCREEN) {
+        gl->DeleteFramebuffers(1, &self->asBack.glFbo);
+        gl->DeleteTextures(1, &self->asBack.glTex);
+    }
+}
+
+static void BR_CMETHOD_DECL(br_device_pixelmap_gl, free)(br_object *_self)
+{
+    br_device_pixelmap  *self = (br_device_pixelmap *)_self;
+    const GladGLContext *gl   = DevicePixelmapGLGetGLContext(self);
+
+    UASSERT(self->num_refs == 0);
+
+    BrLogTrace("GLREND", "Freeing %s", self->pm_identifier);
+
+    delete_gl_resources(self, gl);
+
+    ObjectContainerRemove(self->output_facility, (br_object *)self);
+
+    DevicePixelmapGLDecRef(self->screen);
+
+    BrResFreeNoCallback(self);
+}
+
+static const char *BR_CMETHOD_DECL(br_device_pixelmap_gl, identifier)(br_object *self)
+{
+    return ((br_device_pixelmap *)self)->pm_identifier;
+}
+
+static br_token BR_CMETHOD_DECL(br_device_pixelmap_gl, type)(br_object *self)
+{
+    (void)self;
+    return BRT_DEVICE_PIXELMAP;
+}
+
+static br_boolean BR_CMETHOD_DECL(br_device_pixelmap_gl, isType)(br_object *self, br_token t)
+{
+    (void)self;
+    return (t == BRT_DEVICE_PIXELMAP) || (t == BRT_OBJECT);
+}
+
+static br_device *BR_CMETHOD_DECL(br_device_pixelmap_gl, device)(br_object *self)
+{
+    (void)self;
+    return ((br_device_pixelmap *)self)->device;
+}
+
+static br_size_t BR_CMETHOD_DECL(br_device_pixelmap_gl, space)(br_object *self)
+{
+    (void)self;
+    return sizeof(br_device_pixelmap);
+}
+
+static br_tv_template *BR_CMETHOD_DECL(br_device_pixelmap_gl, templateQuery)(br_object *_self)
+{
+    br_device_pixelmap *self = (br_device_pixelmap *)_self;
+
+    if(self->device->templates.devicePixelmapTemplate == NULL)
+        self->device->templates.devicePixelmapTemplate = BrTVTemplateAllocate(self->device, devicePixelmapTemplateEntries,
+                                                                              BR_ASIZE(devicePixelmapTemplateEntries));
+
+    return self->device->templates.devicePixelmapTemplate;
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, resize)(br_device_pixelmap *self, br_int_32 width, br_int_32 height)
+{
+    const GladGLContext *gl = DevicePixelmapGLGetGLContext(self);
+
+    self->pm_width  = width;
+    self->pm_height = height;
+    return recreate_renderbuffers(self, gl);
+}
+
+/* BRenderModern:
+ * Structure used to unpack the 'match' tokens/values
+ */
+struct pixelmapMatchTokens {
+    br_int_32 width;
+    br_int_32 height;
+    br_int_32 pixel_bits;
+    br_uint_8 type;
+    br_token  use_type;
+    br_int_32 msaa_samples;
+};
+
+#define F(f) offsetof(struct pixelmapMatchTokens, f)
+static br_tv_template_entry pixelmapMatchTemplateEntries[] = {
+    {BRT_WIDTH_I32,        NULL, F(width),        BRTV_SET, BRTV_CONV_COPY},
+    {BRT_HEIGHT_I32,       NULL, F(height),       BRTV_SET, BRTV_CONV_COPY},
+    {BRT_PIXEL_BITS_I32,   NULL, F(pixel_bits),   BRTV_SET, BRTV_CONV_COPY},
+    {BRT_PIXEL_TYPE_U8,    NULL, F(type),         BRTV_SET, BRTV_CONV_COPY},
+    {BRT_USE_T,            NULL, F(use_type),     BRTV_SET, BRTV_CONV_COPY},
+    {BRT_MSAA_SAMPLES_I32, NULL, F(msaa_samples), BRTV_SET, BRTV_CONV_COPY},
+};
+#undef F
+
+br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, match)(br_device_pixelmap *self, br_device_pixelmap **newpm, br_token_value *tv)
+{
+    br_int_32                  count;
+    br_error                   err;
+    br_device_pixelmap        *pm;
+    const char                *typestring;
+    const br_pixelmap_gl_fmt  *fmt;
+    const GladGLContext       *gl;
+    br_gl_context_state       *ctx;
+    struct pixelmapMatchTokens mt = {
+        .width        = self->pm_width,
+        .height       = self->pm_height,
+        .pixel_bits   = -1,
+        .type         = BR_PMT_MAX,
+        .use_type     = BRT_NONE,
+        .msaa_samples = 0,
+    };
+
+    gl  = DevicePixelmapGLGetGLContext(self);
+    ctx = GLContextState(gl);
+
+    if(self->device->templates.pixelmapMatchTemplate == NULL) {
+        self->device->templates.pixelmapMatchTemplate = BrTVTemplateAllocate(self->device, pixelmapMatchTemplateEntries,
+                                                                             BR_ASIZE(pixelmapMatchTemplateEntries));
+    }
+
+    err = BrTokenValueSetMany(&mt, &count, NULL, tv, self->device->templates.pixelmapMatchTemplate);
+    if(err != BRE_OK)
+        return err;
+
+    if(mt.use_type == BRT_NO_RENDER)
+        mt.use_type = BRT_OFFSCREEN;
+
+    switch(mt.use_type) {
+        case BRT_OFFSCREEN:
+            typestring = "backbuffer";
+            break;
+        case BRT_DEPTH:
+            typestring = "depth";
+
+            /* BRenderModern:
+             * Depth buffers must be matched with the backbuffer.
+             */
+            if(self->use_type != BRT_OFFSCREEN)
+                return BRE_UNSUPPORTED;
+
+            /* BRenderModern:
+             * Can't have >1 depth buffer.
+             */
+            if(self->asBack.depthbuffer != NULL)
+                return BRE_FAIL;
+
+            switch(mt.pixel_bits) {
+                case 16:
+                    mt.type = BR_PMT_DEPTH_16;
+                    break;
+                case -1:
+                case 32:
+                    mt.type = BR_PMT_DEPTH_FP32;
+                    break;
+                default:
+                    return BRE_UNSUPPORTED;
+            }
+
+            break;
+        default:
+            return BRE_UNSUPPORTED;
+    }
+
+    /* BRenderModern:
+     * Only allow backbuffers to be instantiated from the frontbuffer.
+     */
+    if(self->use_type == BRT_NONE && mt.use_type != BRT_OFFSCREEN)
+        return BRE_UNSUPPORTED;
+
+    if(mt.type == BR_PMT_MAX)
+        mt.type = self->pm_type;
+
+    if((fmt = DeviceGLGetFormatDetails(mt.type)) == NULL)
+        return BRE_FAIL;
+
+    /* BRenderModern:
+     * Refuse creation of indexed pixelmaps.
+     */
+    if(fmt->indexed)
+        return BRE_FAIL;
+
+    if(mt.msaa_samples < 0)
+        mt.msaa_samples = 0;
+    else if(mt.msaa_samples > ctx->limits.max_samples)
+        mt.msaa_samples = ctx->limits.max_samples;
+
+    pm                  = BrResAllocate(self->device, sizeof(br_device_pixelmap), BR_MEMORY_OBJECT);
+    pm->dispatch        = &devicePixelmapDispatch;
+    pm->pm_identifier   = BrResSprintf(pm, BR_GLREND_DEBUG_USER_PREFIX "%s:%dx%d", typestring, mt.width, mt.height);
+    pm->device          = self->device;
+    pm->output_facility = self->output_facility;
+    pm->use_type        = mt.use_type;
+    pm->msaa_samples    = mt.msaa_samples;
+    pm->screen          = self->screen;
+    DevicePixelmapGLIncRef(self->screen);
+
+    pm->pm_type     = mt.type;
+    pm->pm_width    = mt.width;
+    pm->pm_height   = mt.height;
+    pm->pm_flags    = BR_PMF_NO_ACCESS;
+    pm->pm_origin_x = 0;
+    pm->pm_origin_y = 0;
+    pm->pm_base_x   = 0;
+    pm->pm_origin_y = 0;
+
+    if(mt.use_type == BRT_OFFSCREEN) {
+        pm->asBack.depthbuffer = NULL;
+        pm->asBack.clut        = DeviceClutGLAllocate(pm, gl);
+        gl->GenFramebuffers(1, &pm->asBack.glFbo);
+    } else {
+        UASSERT(mt.use_type == BRT_DEPTH);
+        self->asBack.depthbuffer = pm;
+        pm->asDepth.backbuffer   = self;
+    }
+
+    if(recreate_renderbuffers(pm, gl) != BRE_OK) {
+        DevicePixelmapGLDecRef(self->screen);
+        delete_gl_resources(pm, gl);
+        BrResFreeNoCallback(pm);
+        return BRE_FAIL;
+    }
+
+    /* BRenderModern:
+     * Copy origin over.
+     */
+    pm->pm_origin_x = self->pm_origin_x;
+    pm->pm_origin_y = self->pm_origin_y;
+
+    *newpm = pm;
+    ObjectContainerAddFront(self->output_facility, (br_object *)pm);
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleStretchCopy)(br_device_pixelmap *self, br_rectangle *d,
+                                                                             br_device_pixelmap *src, br_rectangle *s)
+{
+    const GladGLContext *gl = DevicePixelmapGLGetGLContext(self);
+
+    /* BRenderModern:
+     * Device->Device non-addressable stretch copy.
+     */
+    GLbitfield   bits;
+    GLuint       srcFbo, dstFbo;
+    br_rectangle srect, drect;
+
+    /* BRenderModern:
+     * Refusing copy/blit to screen.
+     */
+    if(self->use_type == BRT_NONE)
+        return BRE_FAIL;
+
+    if(DevicePixelmapGLRectangleClip(&srect, s, (const br_pixelmap *)src) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    if(DevicePixelmapGLRectangleClip(&drect, d, (const br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    if(self->use_type == BRT_OFFSCREEN) {
+        if(src->use_type != BRT_OFFSCREEN)
+            return BRE_FAIL;
+        dstFbo = self->asBack.glFbo;
+        srcFbo = src->asBack.glFbo;
+        bits   = GL_COLOR_BUFFER_BIT;
+    } else if(self->use_type == BRT_DEPTH) {
+        if(src->use_type != BRT_DEPTH)
+            return BRE_FAIL;
+
+        dstFbo = self->asDepth.backbuffer->asBack.glFbo;
+        srcFbo = src->asDepth.backbuffer->asBack.glFbo;
+        bits   = GL_DEPTH_BUFFER_BIT;
+    } else {
+        return BRE_FAIL;
+    }
+
+    /* BRenderModern:
+     * Ignore self-blit.
+     */
+    if(self == src)
+        return BRE_OK;
+
+    gl->BindFramebuffer(GL_READ_FRAMEBUFFER, srcFbo);
+    gl->BindFramebuffer(GL_DRAW_FRAMEBUFFER, dstFbo);
+
+    gl->BlitFramebuffer(srect.x, srect.y, srect.x + srect.w, srect.y + srect.h, drect.x, drect.y, drect.x + drect.w, drect.y + drect.h,
+                        bits, GL_NEAREST);
+
+    gl->BindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    gl->BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopy)(br_device_pixelmap *self, br_point *p, br_device_pixelmap *src,
+                                                                      br_rectangle *sr)
+{
+    /* BRenderModern: Device->Device non-addressable same-size copy. */
+    br_rectangle r = {
+        .x = p->x,
+        .y = p->y,
+        .w = src->pm_width,
+        .h = src->pm_height,
+    };
+
+    return BR_CMETHOD(br_device_pixelmap_gl, rectangleStretchCopy)(self, &r, src, sr);
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleFill)(br_device_pixelmap *self, br_rectangle *rect, br_uint_32 colour)
+{
+    GLuint               fbo;
+    GLbitfield           mask;
+    br_rectangle         drect;
+    const GladGLContext *gl = DevicePixelmapGLGetGLContext(self);
+
+    /* BRenderModern:
+     * Clip rectangle to pixelmap
+     */
+    if(DevicePixelmapGLRectangleClip(&drect, rect, (br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    if(self->use_type == BRT_OFFSCREEN) {
+        br_uint_8 r8 = 0, g8 = 0, b8 = 0, a8 = 255;
+        BrColourUnpack(colour, self->pm_type, &r8, &g8, &b8, &a8);
+
+        fbo  = self->asBack.glFbo;
+        mask = GL_COLOR_BUFFER_BIT;
+
+        gl->ColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        gl->ClearColor((float)r8 / 255.0f, (float)g8 / 255.0f, (float)b8 / 255.0f, (float)a8 / 255.0f);
+    } else if(self->use_type == BRT_DEPTH) {
+        UASSERT(colour == 0xFFFFFFFF);
+        fbo  = self->asDepth.backbuffer->asBack.glFbo;
+        mask = GL_DEPTH_BUFFER_BIT;
+        gl->DepthMask(GL_TRUE);
+        gl->ClearDepth(1.0f);
+    } else {
+        return BRE_UNSUPPORTED;
+    }
+
+    gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+    gl->Viewport(0, 0, self->pm_width, self->pm_height);
+
+    gl->Enable(GL_SCISSOR_TEST);
+    gl->Scissor(drect.x, drect.y, drect.w, drect.h);
+
+    gl->Clear(mask);
+
+    gl->Disable(GL_SCISSOR_TEST);
+
+    gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD(br_device_pixelmap_gl, rectangleStretchCopyTo)(br_device_pixelmap *self, br_rectangle *d,
+                                                                          br_device_pixelmap *_src, br_rectangle *s)
+{
+    /* BRenderModern: Pixelmap->Device, addressable stretch copy. */
+
+    const GladGLContext      *gl     = DevicePixelmapGLGetGLContext(self);
+    br_gl_context_state      *ctx    = GLContextState(gl);
+    br_pixelmap              *src    = (br_pixelmap *)_src;
+    br_buffer_stored         *stored = src->stored;
+    br_rectangle              srect, drect;
+    br_boolean                tex_tmp = BR_FALSE;
+    GLuint                    tex;
+    br_boolean                clut_tmp = BR_FALSE;
+    GLuint                    clut     = 0;
+    const br_pixelmap_gl_fmt *fmt;
+
+    if(self->use_type != BRT_OFFSCREEN)
+        return BRE_UNSUPPORTED;
+
+    if(DevicePixelmapGLRectangleClip(&srect, s, src) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    if(DevicePixelmapGLRectangleClip(&drect, d, (const br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+#if BRENDER_LEGACY_3DMM_MODEL_ABI
+    /*
+     * 3DMM presents its decoded background as a full-size RGB888 memory
+     * pixelmap.  The generic glrend memory->device path turns that memory
+     * pixelmap into a temporary texture and draws it with the rectangle
+     * shader.  In the legacy fixed-ABI integration that operation reports
+     * success while the destination FBO remains black.
+     *
+     * For this exact compatibility case, upload directly into the colour
+     * texture attached to the offscreen FBO.  This keeps normal BRender
+     * pixelmap copies unchanged and gives 3DMM a deliberately narrow bridge.
+     */
+    if(self->msaa_samples == 0 && self->asBack.glTex != 0 &&
+       self->pm_type == src->type && src->type == BR_PMT_RGB_888 &&
+       srect.x == 0 && srect.y == 0 && srect.w == src->width && srect.h == src->height &&
+       drect.x == 0 && drect.y == 0 && drect.w == self->pm_width && drect.h == self->pm_height &&
+       src->width == self->pm_width && src->height == self->pm_height &&
+       src->pixels != NULL && src->base_x == 0 && src->base_y == 0 && src->row_bytes > 0 &&
+       (src->flags & (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)) == (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)) {
+        const br_pixelmap_gl_fmt *direct_fmt = DeviceGLGetFormatDetails(src->type);
+        const br_size_t row_bytes = (br_size_t)src->width * (br_size_t)(direct_fmt != NULL ? direct_fmt->bytes : 0);
+        const br_size_t image_bytes = row_bytes * (br_size_t)src->height;
+        br_uint_8 *flipped = NULL;
+        GLint old_unpack_alignment = 4;
+        GLint old_unpack_row_length = 0;
+        GLint old_texture = 0;
+        GLenum gl_error = GL_NO_ERROR;
+
+        if(direct_fmt != NULL && direct_fmt->bytes != 0 &&
+           row_bytes <= (br_size_t)src->row_bytes && src->height != 0 &&
+           image_bytes / (br_size_t)src->height == row_bytes) {
+            flipped = BrMemAllocate(image_bytes, BR_MEMORY_SCRATCH);
+            if(flipped != NULL) {
+                const br_uint_8 *src_base = (const br_uint_8 *)src->pixels;
+                for(br_uint_16 y = 0; y < src->height; ++y) {
+                    memcpy(flipped + (br_size_t)y * row_bytes,
+                           src_base + (br_size_t)(src->height - y - 1) * (br_size_t)src->row_bytes,
+                           row_bytes);
+                }
+
+                gl->GetIntegerv(GL_UNPACK_ALIGNMENT, &old_unpack_alignment);
+                gl->GetIntegerv(GL_UNPACK_ROW_LENGTH, &old_unpack_row_length);
+                gl->GetIntegerv(GL_TEXTURE_BINDING_2D, &old_texture);
+                while(gl->GetError() != GL_NO_ERROR)
+                    ;
+                gl->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
+                gl->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+                gl->BindTexture(GL_TEXTURE_2D, self->asBack.glTex);
+                gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self->pm_width, self->pm_height,
+                                  direct_fmt->format, direct_fmt->type, flipped);
+                gl_error = gl->GetError();
+                gl->BindTexture(GL_TEXTURE_2D, (GLuint)old_texture);
+                gl->PixelStorei(GL_UNPACK_ROW_LENGTH, old_unpack_row_length);
+                gl->PixelStorei(GL_UNPACK_ALIGNMENT, old_unpack_alignment);
+                BrMemFree(flipped);
+
+                if(gl_error == GL_NO_ERROR) {
+                    static br_uint_32 direct_ok_count;
+                    if(direct_ok_count < 64) {
+                        BrWarning("3DMM glrend direct background upload OK dst=%p tex=%u fbo=%u src=%p wh=%ux%u row=%d",
+                                  (void *)self, (unsigned)self->asBack.glTex, (unsigned)self->asBack.glFbo,
+                                  (void *)src, (unsigned)src->width, (unsigned)src->height, (int)src->row_bytes);
+                        ++direct_ok_count;
+                    }
+                    return BRE_OK;
+                }
+
+                BrWarning("3DMM glrend direct background upload GL error=0x%04X dst=%p tex=%u fbo=%u",
+                          (unsigned)gl_error, (void *)self, (unsigned)self->asBack.glTex, (unsigned)self->asBack.glFbo);
+                return BRE_FAIL;
+            }
+        }
+
+        BrWarning("3DMM glrend direct background upload setup failed dst=%p src=%p fmt=%p wh=%ux%u row=%d",
+                  (void *)self, (void *)src, (void *)direct_fmt, (unsigned)src->width, (unsigned)src->height, (int)src->row_bytes);
+        return BRE_FAIL;
+    }
+
+    if(src->type == BR_PMT_RGB_888) {
+        static br_uint_32 direct_bypass_count;
+        if(direct_bypass_count < 64) {
+            BrWarning("3DMM glrend direct RGB888 upload bypassed dst=%p use=%u msaa=%d tex=%u dst_type=%u src=%p src_type=%u src_wh=%ux%u dst_wh=%ux%u srect=%d,%d,%d,%d drect=%d,%d,%d,%d base=%d,%d row=%d flags=0x%08X",
+                      (void *)self, (unsigned)self->use_type, (int)self->msaa_samples, (unsigned)self->asBack.glTex,
+                      (unsigned)self->pm_type, (void *)src, (unsigned)src->type,
+                      (unsigned)src->width, (unsigned)src->height, (unsigned)self->pm_width, (unsigned)self->pm_height,
+                      (int)srect.x, (int)srect.y, (int)srect.w, (int)srect.h,
+                      (int)drect.x, (int)drect.y, (int)drect.w, (int)drect.h,
+                      (int)src->base_x, (int)src->base_y, (int)src->row_bytes, (unsigned)src->flags);
+            ++direct_bypass_count;
+        }
+    }
+#endif
+
+    if(stored != NULL && ObjectDevice(stored) == self->device) {
+        tex = BufferStoredGLGetTexture(stored);
+        fmt = stored->fmt;
+    } else {
+        tex     = DeviceGLPixelmapToGLTexture(gl, src);
+        tex_tmp = BR_TRUE;
+        fmt     = DeviceGLGetFormatDetails(src->type);
+    }
+
+    if(fmt == NULL) {
+        return BRE_FAIL;
+    }
+
+    clut = self->asBack.clut->gl_tex ? self->asBack.clut->gl_tex : ctx->tex_white;
+    if(fmt->indexed && src->map != NULL) {
+        if(src->map->stored != NULL) {
+            clut = BufferStoredGLGetCLUTTexture(stored, self, clut);
+        } else {
+            clut     = DeviceGLPixelmapToGLTexture(gl, src->map);
+            clut_tmp = BR_TRUE;
+        }
+    }
+
+    if(tex == 0) {
+        if(clut != 0 && clut_tmp)
+            gl->DeleteTextures(1, &clut);
+        return BRE_FAIL;
+    }
+
+    br_gl_rect_data rect_data = {
+        .mvp      = {},
+        .src_rect = {{(float)srect.x / (float)src->width, (float)srect.y / (float)src->height, (float)srect.w / (float)src->width,
+                      (float)srect.h / (float)src->height}},
+        .dst_rect = {{(float)drect.x / (float)self->pm_width, (float)drect.y / (float)self->pm_height,
+                      (float)drect.w / (float)self->pm_width, (float)drect.h / (float)self->pm_height}},
+        .vertical_flip = 1,
+        .indexed       = (float)fmt->indexed,
+    };
+
+    BrGLMatrix4Orthographic(&rect_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+
+    gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+    gl->Viewport(0, 0, self->pm_width, self->pm_height);
+
+    if(fmt->indexed) {
+        ShaderGLRectDrawCLUT(&ctx->rect_shader, gl, &rect_data, tex, clut);
+    } else {
+        ShaderGLRectDraw(&ctx->rect_shader, gl, &rect_data, tex);
+    }
+
+    if(tex_tmp)
+        gl->DeleteTextures(1, &tex);
+
+    if(clut_tmp)
+        gl->DeleteTextures(1, &clut);
+
+    gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyTo)(br_device_pixelmap *self, br_point *p, br_device_pixelmap *src,
+                                                                        br_rectangle *sr)
+{
+    /* BRenderModern: Pixelmap->Device, addressable same-size copy. */
+
+    br_rectangle r = {
+        .x = p->x,
+        .y = p->y,
+        .w = src->pm_width,
+        .h = src->pm_height,
+    };
+
+    return BR_CMETHOD(br_device_pixelmap_gl, rectangleStretchCopyTo)(self, &r, src, sr);
+}
+
+#define DevicePixelmapMemAddress(pm, x, y, bpp)                                                                                                         \
+    ((char *)(((br_device_pixelmap *)(pm))->pm_pixels) + (((br_device_pixelmap *)(pm))->pm_base_y + (y)) * ((br_device_pixelmap *)(pm))->pm_row_bytes + \
+     (((br_device_pixelmap *)(pm))->pm_base_x + (x)) * (bpp))
+
+/* BRenderModern:
+ * Device->Pixelmap, addressable same-size copy.
+ */
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_device_pixelmap *self, br_point *p, br_device_pixelmap *dest,
+                                                                          br_rectangle *r)
+{
+    br_error                  err;
+    void                     *row_temp;
+    const br_pixelmap_gl_fmt *fmt;
+    br_rectangle              srect;
+    br_point                  dpoint;
+    br_uint_16                bytes_per_pixel;
+    void                     *dst_pixels;
+    const GladGLContext      *gl = DevicePixelmapGLGetGLContext(self);
+    GLint                     old_pack_alignment = 4;
+    GLint                     old_pack_row_length = 0;
+    br_int_32                 pack_row_pixels = 0;
+    br_boolean                direct_readback = BR_FALSE;
+    br_uint_8                *packed_pixels = NULL;
+    br_size_t                 bytes_per_subrow;
+    br_size_t                 packed_bytes;
+
+    /*
+     * The old glrend path required BR_PMF_LINEAR here because it read
+     * glReadPixels() directly into the destination. That precondition makes
+     * the v164 padded-row temporary path unreachable: BRender deliberately
+     * clears BR_PMF_LINEAR whenever RGB888 row alignment adds padding.
+     *
+     * rectangleCopyFrom() below now owns that distinction. Tight positive
+     * rows use direct readback; padded/inverted rows use a tight temporary
+     * buffer and DevicePixelmapMemAddress() for the final row copy. Therefore
+     * the destination only needs accessible pixels and whole-pixel rows.
+     */
+    if(dest->pm_pixels == NULL || !(dest->pm_flags & BR_PMF_ROW_WHOLEPIXELS))
+        return BRE_FAIL;
+
+    if(PixelmapRectangleClipTwo(&srect, &dpoint, r, p, (br_pixelmap *)dest, (br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    if((fmt = DeviceGLGetFormatDetails(dest->pm_type)) == NULL)
+        return BRE_FAIL;
+
+    if((err = DevicePixelmapGLBindFramebuffer(gl, GL_READ_FRAMEBUFFER, self)) != BRE_OK)
+        return err;
+
+    bytes_per_pixel = BrPixelmapPixelSize((br_pixelmap *)dest) >> 3;
+    if(bytes_per_pixel == 0)
+        return BRE_FAIL;
+
+    dst_pixels       = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y, bytes_per_pixel);
+    bytes_per_subrow = (br_size_t)srect.w * (br_size_t)bytes_per_pixel;
+
+    /*
+     * glReadPixels advances output rows according to GL_PACK_* state, not the
+     * destination pixelmap's pm_row_bytes. Modern BRender memory pixelmaps
+     * can pad RGB888 rows to whole-pixel boundaries (for example 782px =>
+     * 2352 bytes even though the visible RGB payload is only 2346 bytes).
+     *
+     * v163 tried to express that padded stride through GL_PACK_ROW_LENGTH.
+     * On the 3DMM WGL path that works for naturally tight widths but padded
+     * rows can come back untouched/black. Avoid making GL own BRender's row
+     * layout at all: only read directly when the destination row is already
+     * exactly the visible payload width. Any padded, inverted, or otherwise
+     * non-tight destination is read into a tight temporary buffer, then copied
+     * row-by-row through DevicePixelmapMemAddress(). That makes the memory
+     * pixelmap's stride a BRender concern instead of an OpenGL pack-state one.
+     */
+    if(dest->pm_row_bytes > 0 &&
+       (br_size_t)dest->pm_row_bytes == bytes_per_subrow) {
+        pack_row_pixels = srect.w;
+        direct_readback = BR_TRUE;
+    }
+
+    gl->GetIntegerv(GL_PACK_ALIGNMENT, &old_pack_alignment);
+    gl->GetIntegerv(GL_PACK_ROW_LENGTH, &old_pack_row_length);
+
+    if(direct_readback) {
+        gl->PixelStorei(GL_PACK_ALIGNMENT, 1);
+        gl->PixelStorei(GL_PACK_ROW_LENGTH, pack_row_pixels);
+        gl->ReadPixels(srect.x, self->pm_height - srect.y - srect.h, srect.w, srect.h,
+                       fmt->format, fmt->type, dst_pixels);
+    } else {
+        packed_bytes = bytes_per_subrow * (br_size_t)srect.h;
+        if(srect.h != 0 && packed_bytes / (br_size_t)srect.h != bytes_per_subrow) {
+            gl->PixelStorei(GL_PACK_ROW_LENGTH, old_pack_row_length);
+            gl->PixelStorei(GL_PACK_ALIGNMENT, old_pack_alignment);
+            return BRE_FAIL;
+        }
+
+        packed_pixels = BrMemAllocate(packed_bytes, BR_MEMORY_SCRATCH);
+        if(packed_pixels == NULL) {
+            gl->PixelStorei(GL_PACK_ROW_LENGTH, old_pack_row_length);
+            gl->PixelStorei(GL_PACK_ALIGNMENT, old_pack_alignment);
+            return BRE_FAIL;
+        }
+
+        gl->PixelStorei(GL_PACK_ALIGNMENT, 1);
+        gl->PixelStorei(GL_PACK_ROW_LENGTH, 0);
+        gl->ReadPixels(srect.x, self->pm_height - srect.y - srect.h, srect.w, srect.h,
+                       fmt->format, fmt->type, packed_pixels);
+    }
+
+    gl->PixelStorei(GL_PACK_ROW_LENGTH, old_pack_row_length);
+    gl->PixelStorei(GL_PACK_ALIGNMENT, old_pack_alignment);
+
+#if BRENDER_LEGACY_3DMM_MODEL_ABI
+    {
+        static br_uint_32 readback_stride_diag_count;
+        if(readback_stride_diag_count < 64) {
+            BrWarning("3DMM glrend readback stride dst=%p wh=%ux%u row=%d flags=0x%08X linear=%d whole=%d bpp=%u rect=%d,%d,%d,%d dpoint=%d,%d pack_row_pixels=%d path=%s",
+                      (void *)dest, (unsigned)dest->pm_width, (unsigned)dest->pm_height,
+                      (int)dest->pm_row_bytes, (unsigned)dest->pm_flags,
+                      !!(dest->pm_flags & BR_PMF_LINEAR), !!(dest->pm_flags & BR_PMF_ROW_WHOLEPIXELS),
+                      (unsigned)bytes_per_pixel,
+                      (int)srect.x, (int)srect.y, (int)srect.w, (int)srect.h,
+                      (int)dpoint.x, (int)dpoint.y, (int)pack_row_pixels,
+                      direct_readback ? "direct-tight" : "tight-temp");
+            ++readback_stride_diag_count;
+        }
+    }
+#endif
+
+    if(direct_readback) {
+        row_temp = BrScratchAllocate(bytes_per_subrow);
+        if(row_temp == NULL)
+            return BRE_FAIL;
+
+        for(br_uint_16 j = 0; j < srect.h / 2; ++j) {
+            void *top = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + j, bytes_per_pixel);
+            void *bot = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + srect.h - j - 1, bytes_per_pixel);
+
+            memcpy(row_temp, top, bytes_per_subrow);
+            memcpy(top, bot, bytes_per_subrow);
+            memcpy(bot, row_temp, bytes_per_subrow);
+        }
+        BrScratchFree(row_temp);
+    } else {
+        for(br_uint_16 j = 0; j < srect.h; ++j) {
+            void *dst_row = DevicePixelmapMemAddress(dest, dpoint.x, dpoint.y + j, bytes_per_pixel);
+            const void *src_row = packed_pixels + (br_size_t)(srect.h - j - 1) * bytes_per_subrow;
+            memcpy(dst_row, src_row, bytes_per_subrow);
+        }
+        BrMemFree(packed_pixels);
+    }
+
+    /* BRenderModern: TODO: If on little-endian systems, swap the byte order. */
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD(br_device_pixelmap_gl, text)(br_device_pixelmap *self, br_point *point, br_font *font, const char *text, br_uint_32 colour)
+{
+
+    size_t                 len = strlen(text);
+    br_point               pp;
+    const br_gl_text_font *gl_font;
+    const GladGLContext   *gl  = DevicePixelmapGLGetGLContext(self);
+    br_gl_context_state   *ctx = GLContextState(gl);
+    br_gl_text_data       *text_data;
+    br_uint_8              r8 = 0, g8 = 0, b8 = 0, a8 = 255;
+
+    /* BRenderModern:
+     * Make sure we're an offscreen pixelmap.
+     */
+    if(self->use_type != BRT_OFFSCREEN)
+        return BRE_UNSUPPORTED;
+
+    /* BRenderModern:
+     * Quit if off top, bottom or right screen
+     */
+    if(PixelmapPointClip(&pp, point, (br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    if(pp.y <= -font->glyph_y || pp.y >= self->pm_height || pp.x >= self->pm_width)
+        return BRE_OK;
+
+    /* BRenderModern:
+     * Ensure we're a valid font.
+     */
+
+    if(font == BrFontFixed3x5)
+        gl_font = &ctx->font_fixed3x5;
+    else if(font == BrFontProp4x6)
+        gl_font = &ctx->font_prop4x6;
+    else if(font == BrFontProp7x9)
+        gl_font = &ctx->font_prop7x9;
+    else
+        return BRE_FAIL;
+
+    /* BRenderModern:
+     * All valid, set up the render state.
+     */
+
+    /* BRenderModern:
+     * Create the per-model/text state.
+     */
+    text_data = BrScratchAllocate(sizeof(br_gl_text_data));
+    BrGLMatrix4Orthographic(&text_data->mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+
+    BrColourUnpack(colour, self->pm_type, &r8, &g8, &b8, &a8);
+    BrGLVector4FSet(&text_data->colour, r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
+
+    gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+    gl->Viewport(0, 0, self->pm_width, self->pm_height);
+
+    ShaderGLTextBegin(&ctx->text_shader, gl, gl_font);
+
+    br_rectangle r = {
+        .x = point->x,
+        .y = point->y,
+        .h = font->glyph_y,
+        .w = 0,
+    };
+
+    do {
+        size_t chunk = len;
+        if(chunk > BR_GL_TEXT_CHUNK_SIZE) {
+            chunk = BR_GL_TEXT_CHUNK_SIZE;
+        }
+
+        for(size_t i = 0; i < chunk; ++i) {
+            br_uint_32   glyph = (br_uint_32)text[i];
+            br_uint_16   width = (font->flags & BR_FONTF_PROPORTIONAL) ? font->width[glyph] : font->glyph_x;
+            br_rectangle dr;
+
+            r.w = width;
+
+            /* BRenderModern:
+             * Bail early if the rest of the string is entirely offscreen.
+             */
+            dr = r;
+            if(DevicePixelmapGLRectangleClip(&dr, &r, (br_pixelmap *)self) == BR_CLIP_REJECT) {
+                chunk = i;
+                len   = chunk;
+                break;
+            }
+
+            // BRenderModern: clang-format off
+            text_data->rects[i] = (br_vector4_f){{
+                (float)dr.x / (float)self->pm_width,
+                (float)dr.y / (float)self->pm_height,
+                (float)dr.w / (float)self->pm_width,
+                (float)dr.h / (float)self->pm_height
+            }};
+            text_data->chars[i] = (br_uint_32)glyph;
+            // BRenderModern: clang-format on
+
+            r.x += width + 1;
+            r.w += width;
+        }
+
+        ShaderGLTextDrawInstanced(&ctx->text_shader, gl, text_data, (GLsizei)chunk);
+
+        len -= chunk;
+        text += chunk;
+    } while(len > 0);
+
+    BrScratchFree(text_data);
+
+    ShaderGLTextEnd(&ctx->text_shader, gl);
+    gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, line)(br_device_pixelmap *self, br_point *s, br_point *e, br_uint_32 colour)
+{
+    br_point             spoint, epoint;
+    br_uint_8            r8 = 0, g8 = 0, b8 = 0, a8 = 255;
+    br_gl_line_data      line_data;
+    const GladGLContext *gl  = DevicePixelmapGLGetGLContext(self);
+    br_gl_context_state *ctx = GLContextState(gl);
+
+    if(PixelmapLineClip(&spoint, &epoint, s, e, (br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    BrColourUnpack(colour, self->pm_type, &r8, &g8, &b8, &a8);
+
+    BrGLMatrix4Orthographic(&line_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+    line_data.start  = (br_vector2_f){{(float)spoint.x / (float)self->pm_width, 1.0f - ((float)spoint.y / (float)self->pm_height)}};
+    line_data.end    = (br_vector2_f){{(float)epoint.x / (float)self->pm_width, 1.0f - ((float)epoint.y / (float)self->pm_height)}};
+    BrGLVector4FSet(&line_data.colour, r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
+
+    gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+    gl->Viewport(0, 0, self->pm_width, self->pm_height);
+    ShaderGLLineDraw(&ctx->line_shader, gl, &line_data, GL_LINES, 2);
+    gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return BRE_OK;
+}
+
+static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, pixelSet)(br_device_pixelmap *self, br_point *p, br_uint_32 colour)
+{
+    br_point             point;
+    br_uint_8            r8 = 0, g8 = 0, b8 = 0, a8 = 255;
+    br_gl_line_data      line_data;
+    const GladGLContext *gl  = DevicePixelmapGLGetGLContext(self);
+    br_gl_context_state *ctx = GLContextState(gl);
+
+    if(PixelmapPointClip(&point, p, (br_pixelmap *)self) == BR_CLIP_REJECT)
+        return BRE_OK;
+
+    BrColourUnpack(colour, self->pm_type, &r8, &g8, &b8, &a8);
+
+    /* BRenderModern:
+     * FIXME: For some reason I cbf figuring out now, when rendering a point, both components need a -1.
+     */
+    BrGLMatrix4Orthographic(&line_data.mvp, 0.0f, 1.0f, 0.0f, 1.0f, -1.0f, 1.0f);
+    line_data.start = (br_vector2_f){{(float)(point.x - 1) / (float)self->pm_width, 1.0f - ((float)(point.y - 1) / (float)self->pm_height)}};
+    BrGLVector4FSet(&line_data.colour, r8 / 255.0f, g8 / 255.0f, b8 / 255.0f, a8 / 255.0f);
+
+    /* BRenderModern:
+     * What is a point, but half a line?
+     */
+    gl->BindFramebuffer(GL_FRAMEBUFFER, self->asBack.glFbo);
+    gl->Viewport(0, 0, self->pm_width, self->pm_height);
+    ShaderGLLineDraw(&ctx->line_shader, gl, &line_data, GL_POINTS, 1);
+    gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return BRE_OK;
+}
+
+void DevicePixelmapGLIncRef(br_device_pixelmap *self)
+{
+    UASSERT(self->num_refs >= 0);
+    ++self->num_refs;
+}
+
+void DevicePixelmapGLDecRef(br_device_pixelmap *self)
+{
+    UASSERT(self->num_refs > 0);
+    --self->num_refs;
+}
+
+br_rectangle DevicePixelmapGLGetViewport(const br_device_pixelmap *pm)
+{
+    br_rectangle rect = {
+        .x = pm->pm_base_x,
+        .y = 0,
+        .w = pm->pm_width,
+        .h = pm->pm_height,
+    };
+
+    /* BRenderModern: FIXME: Figure out a better way to detect a sub-pixelmap. */
+    if(pm->dispatch != &devicePixelmapDispatch) {
+        const br_device_pixelmap *parent = pm->asSub.parent;
+        rect.y                           = parent->pm_height - (pm->pm_height + pm->pm_base_y);
+    }
+
+    return rect;
+}
+
+const GladGLContext *DevicePixelmapGLGetGLContext(br_device_pixelmap *self)
+{
+    return &self->screen->asFront.glad_gl_context;
+}
+
+br_gl_context_state *GLContextState(const GladGLContext *gl)
+{
+    return gl->userptr;
+}
+
+/* BRenderModern:
+ * Default dispatch table for device pixelmap
+ */
+static const struct br_device_pixelmap_dispatch devicePixelmapDispatch = {
+    .__reserved0 = NULL,
+    .__reserved1 = NULL,
+    .__reserved2 = NULL,
+    .__reserved3 = NULL,
+    ._free       = BR_CMETHOD_REF(br_device_pixelmap_gl, free),
+    ._identifier = BR_CMETHOD_REF(br_device_pixelmap_gl, identifier),
+    ._type       = BR_CMETHOD_REF(br_device_pixelmap_gl, type),
+    ._isType     = BR_CMETHOD_REF(br_device_pixelmap_gl, isType),
+    ._device     = BR_CMETHOD_REF(br_device_pixelmap_gl, device),
+    ._space      = BR_CMETHOD_REF(br_device_pixelmap_gl, space),
+
+    ._templateQuery = BR_CMETHOD_REF(br_device_pixelmap_gl, templateQuery),
+    ._query         = BR_CMETHOD_REF(br_object, query),
+    ._queryBuffer   = BR_CMETHOD_REF(br_object, queryBuffer),
+    ._queryMany     = BR_CMETHOD_REF(br_object, queryMany),
+    ._queryManySize = BR_CMETHOD_REF(br_object, queryManySize),
+    ._queryAll      = BR_CMETHOD_REF(br_object, queryAll),
+    ._queryAllSize  = BR_CMETHOD_REF(br_object, queryAllSize),
+
+    ._validSource = BR_CMETHOD_REF(br_device_pixelmap_null, validSource),
+    ._resize      = BR_CMETHOD_REF(br_device_pixelmap_gl, resize),
+    ._match       = BR_CMETHOD_REF(br_device_pixelmap_gl, match),
+    ._allocateSub = BR_CMETHOD_REF(br_device_pixelmap_gl, allocateSub),
+
+    ._copy         = BR_CMETHOD_REF(br_device_pixelmap_gen, copy),
+    ._copyTo       = BR_CMETHOD_REF(br_device_pixelmap_gen, copyTo),
+    ._copyFrom     = BR_CMETHOD_REF(br_device_pixelmap_gen, copyFrom),
+    ._fill         = BR_CMETHOD_REF(br_device_pixelmap_gen, fill),
+    ._doubleBuffer = BR_CMETHOD_REF(br_device_pixelmap_fail, doubleBuffer),
+
+    ._copyDirty         = BR_CMETHOD_REF(br_device_pixelmap_gen, copyDirty),
+    ._copyToDirty       = BR_CMETHOD_REF(br_device_pixelmap_gen, copyToDirty),
+    ._copyFromDirty     = BR_CMETHOD_REF(br_device_pixelmap_gen, copyFromDirty),
+    ._fillDirty         = BR_CMETHOD_REF(br_device_pixelmap_gen, fillDirty),
+    ._doubleBufferDirty = BR_CMETHOD_REF(br_device_pixelmap_gen, doubleBufferDirty),
+
+    ._rectangle                = BR_CMETHOD_REF(br_device_pixelmap_gen, rectangle),
+    ._rectangle2               = BR_CMETHOD_REF(br_device_pixelmap_gen, rectangle2),
+    ._rectangleCopy            = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleCopy),
+    ._rectangleCopyTo          = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleCopyTo),
+    ._rectangleCopyFrom        = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleCopyFrom),
+    ._rectangleStretchCopy     = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleStretchCopy),
+    ._rectangleStretchCopyTo   = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleStretchCopyTo),
+    ._rectangleStretchCopyFrom = BR_CMETHOD_REF(br_device_pixelmap_fail, rectangleStretchCopyFrom),
+    ._rectangleFill            = BR_CMETHOD_REF(br_device_pixelmap_gl, rectangleFill),
+    ._pixelSet                 = BR_CMETHOD_REF(br_device_pixelmap_gl, pixelSet),
+    ._line                     = BR_CMETHOD_REF(br_device_pixelmap_gl, line),
+    ._copyBits                 = BR_CMETHOD_REF(br_device_pixelmap_fail, copyBits),
+
+    ._text       = BR_CMETHOD_REF(br_device_pixelmap_gl, text),
+    ._textBounds = BR_CMETHOD_REF(br_device_pixelmap_gen, textBounds),
+
+    ._rowSize  = BR_CMETHOD_REF(br_device_pixelmap_fail, rowSize),
+    ._rowQuery = BR_CMETHOD_REF(br_device_pixelmap_fail, rowQuery),
+    ._rowSet   = BR_CMETHOD_REF(br_device_pixelmap_fail, rowSet),
+
+    ._pixelQuery        = BR_CMETHOD_REF(br_device_pixelmap_fail, pixelQuery),
+    ._pixelAddressQuery = BR_CMETHOD_REF(br_device_pixelmap_fail, pixelAddressQuery),
+
+    ._pixelAddressSet = BR_CMETHOD_REF(br_device_pixelmap_fail, pixelAddressSet),
+    ._originSet       = BR_CMETHOD_REF(br_device_pixelmap_gen, originSet),
+
+    ._flush        = BR_CMETHOD_REF(br_device_pixelmap_fail, flush),
+    ._synchronise  = BR_CMETHOD_REF(br_device_pixelmap_fail, synchronise),
+    ._directLock   = BR_CMETHOD_REF(br_device_pixelmap_fail, directLock),
+    ._directUnlock = BR_CMETHOD_REF(br_device_pixelmap_fail, directUnlock),
+    ._getControls  = BR_CMETHOD_REF(br_device_pixelmap_fail, getControls),
+    ._setControls  = BR_CMETHOD_REF(br_device_pixelmap_fail, setControls),
+
+    ._handleWindowEvent = BR_CMETHOD_REF(br_device_pixelmap_gen, handleWindowEvent),
+};

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK, Mark Cave-Ayland
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -24,7 +24,7 @@ const int32_t kdtsMinSlip = kdtsSecond / 30;
 #define FMS_LUTHREAD_SLEEP_DELAY 5
 #define FMS_LUTHREAD_FRAMES_PENDING 8192
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Constructor for our own midi stream api implementation.
 ***************************************************************************/
 FMS::FMS(PFNMIDI pfn, uintptr_t luUser)
@@ -44,7 +44,7 @@ FMS::FMS(PFNMIDI pfn, uintptr_t luUser)
     _vlmBase = kvlmFull;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for our midi stream.
 ***************************************************************************/
 FMS::~FMS(void)
@@ -94,7 +94,7 @@ FMS::~FMS(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new FMS.
 ***************************************************************************/
 PFMS FMS::PfmsNew(PFNMIDI pfn, uintptr_t luUser)
@@ -110,7 +110,7 @@ PFMS FMS::PfmsNew(PFNMIDI pfn, uintptr_t luUser)
     return poms;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Initialize the FMS.
 ***************************************************************************/
 bool FMS::_FInit(void)
@@ -161,7 +161,7 @@ bool FMS::_FInit(void)
         STN stnFileName = PszLit("soundfont.sf3");
         STN stnSoundFontPath;
 
-        // Try app resources directory
+        // 3DMMEx: Try app resources directory
         AssertDo(fniExe.FGetResourcesDir(), "Could not find resources directory");
         fniExe.FSetLeaf(&stnFileName);
         fniExe.GetStnPath(&stnSoundFontPath);
@@ -181,7 +181,7 @@ bool FMS::_FInit(void)
         goto LFail;
     }
 
-    // Check the output format is correct
+    // 3DMMEx: Check the output format is correct
     if (pdevice->playback.format != ma_format_f32)
     {
         Bug("expected f32 format");
@@ -194,7 +194,7 @@ bool FMS::_FInit(void)
         goto LFail;
     }
 
-    // Create the stream and start playing it
+    // 3DMMEx: Create the stream and start playing it
     _pastream = MiniaudioStream::PastreamNew(MiniaudioManager::Pmanager());
     AssertPo(_pastream, 0);
     _hth = std::thread([this] { return this->_LuThread(); });
@@ -224,7 +224,7 @@ LFail:
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of a FMS.
 ***************************************************************************/
 void FMS::AssertValid(uint32_t grf)
@@ -236,7 +236,7 @@ void FMS::AssertValid(uint32_t grf)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory for the FMS.
 ***************************************************************************/
 void FMS::MarkMem(void)
@@ -248,9 +248,9 @@ void FMS::MarkMem(void)
     MarkMemObj(_pastream);
     _mutx.Leave();
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Open the stream.
 ***************************************************************************/
 bool FMS::_FOpen(void)
@@ -264,7 +264,7 @@ bool FMS::_FOpen(void)
     _fChanged = _fStop = fFalse;
     _fOpen = fTrue;
 
-    // set our volume level
+    // 3DMMEx: set our volume level
     SetVlm(_vlmBase);
 
 LDone:
@@ -273,7 +273,7 @@ LDone:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Close the stream.
 ***************************************************************************/
 bool FMS::_FClose(void)
@@ -295,7 +295,7 @@ bool FMS::_FClose(void)
         return fFalse;
     }
 
-    // reset the device
+    // 3DMMEx: reset the device
     _Reset();
 
     _fOpen = fFalse;
@@ -305,7 +305,7 @@ bool FMS::_FClose(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Reset the midi device.
 ***************************************************************************/
 void FMS::_Reset(void)
@@ -315,7 +315,7 @@ void FMS::_Reset(void)
     fluid_synth_system_reset(_flsynth);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the volume for the midi stream output device.
 ***************************************************************************/
 void FMS::SetVlm(int32_t vlm)
@@ -330,7 +330,7 @@ void FMS::SetVlm(int32_t vlm)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the current volume.
 ***************************************************************************/
 int32_t FMS::VlmCur(void)
@@ -340,7 +340,7 @@ int32_t FMS::VlmCur(void)
     return _vlmBase;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return whether the midi stream output device is active.
 ***************************************************************************/
 bool FMS::FActive(void)
@@ -348,7 +348,7 @@ bool FMS::FActive(void)
     return (_fOpen == fTrue);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Activate or deactivate the Midi stream output object.
 ***************************************************************************/
 bool FMS::FActivate(bool fActivate)
@@ -358,7 +358,7 @@ bool FMS::FActivate(bool fActivate)
     return fActivate ? _FOpen() : _FClose();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Queue a buffer to the midi stream.
 ***************************************************************************/
 bool FMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPlay, uintptr_t luData)
@@ -391,7 +391,7 @@ bool FMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPl
 
     if (1 == _pglmsb->IvMac())
     {
-        // Start the buffer
+        // 3DMMEx: Start the buffer
         _fChanged = fTrue;
         _hevt.Set();
     }
@@ -401,7 +401,7 @@ bool FMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPl
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Stop the stream and release all buffers. The buffer notifies are
     asynchronous.
 ***************************************************************************/
@@ -421,14 +421,14 @@ void FMS::StopPlaying(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: The midi stream playback thread.
 ***************************************************************************/
 uint32_t FMS::_LuThread(void)
 {
     AssertThis(0);
     MSB msb;
-    bool fChanged; // whether the event went off
+    bool fChanged; // 3DMMEx: whether the event went off
     uint32_t tsCur;
     const int32_t klwInfinite = klwMax;
     int32_t dtsWait = klwInfinite;
@@ -443,7 +443,7 @@ uint32_t FMS::_LuThread(void)
         _mutx.Enter();
         if (_fChanged && !fChanged)
         {
-            // the event went off before we got the mutx.
+            // 3DMMEx: the event went off before we got the mutx.
             dtsWait = klwInfinite;
             goto LLoop;
         }
@@ -451,36 +451,36 @@ uint32_t FMS::_LuThread(void)
         _fChanged = fFalse;
         if (!fChanged)
         {
-            // play the event
+            // 3DMMEx: play the event
             if (_pmev < _pmevLim)
             {
                 if (MEVT_SHORTMSG == (_pmev->dwEvent >> 24))
                 {
                     switch (_pmev->dwEvent & 0xf0)
                     {
-                    case 0x80: /* Note off */
+                    case 0x80: /* 3DMMEx: Note off */
                         fluid_synth_noteoff(_flsynth, _pmev->dwEvent & 0xf, (_pmev->dwEvent & 0x7f00) >> 8);
                         break;
 
-                    case 0x90: /* Note on */
+                    case 0x90: /* 3DMMEx: Note on */
                         fluid_synth_noteon(_flsynth, _pmev->dwEvent & 0xf, (_pmev->dwEvent & 0x7f00) >> 8,
                                            (_pmev->dwEvent & 0x7f0000) >> 16);
                         break;
 
-                    case 0xb0: /* Control change */
+                    case 0xb0: /* 3DMMEx: Control change */
                         fluid_synth_cc(_flsynth, _pmev->dwEvent & 0xf, (_pmev->dwEvent & 0x7f00) >> 8,
                                        (_pmev->dwEvent & 0x7f0000) >> 16);
                         break;
 
-                    case 0xc0: /* Program change */
+                    case 0xc0: /* 3DMMEx: Program change */
                         fluid_synth_program_change(_flsynth, _pmev->dwEvent & 0xf, (_pmev->dwEvent & 0x7f00) >> 8);
                         break;
 
-                    case 0xd0: /* Channel pressure */
+                    case 0xd0: /* 3DMMEx: Channel pressure */
                         fluid_synth_channel_pressure(_flsynth, _pmev->dwEvent & 0xf, (_pmev->dwEvent & 0x7f00) >> 8);
                         break;
 
-                    case 0xe0: /* Pitch wheel */
+                    case 0xe0: /* 3DMMEx: Pitch wheel */
                         fluid_synth_pitch_bend(_flsynth, _pmev->dwEvent & 0xf,
                                                ((_pmev->dwEvent & 0x7f00) >> 8) | ((_pmev->dwEvent & 0x7f0000) >> 9));
                         break;
@@ -507,8 +507,8 @@ uint32_t FMS::_LuThread(void)
                 goto LLoop;
             }
 
-            // ran out of events in the current buffer - see if we should
-            // repeat it
+            // 3DMMEx: ran out of events in the current buffer - see if we should
+            // 3DMMEx: repeat it
             _pglmsb->Get(0, &msb);
             if (msb.cactPlay == 1)
             {
@@ -517,7 +517,7 @@ uint32_t FMS::_LuThread(void)
             }
             else
             {
-                // repeat the current buffer
+                // 3DMMEx: repeat the current buffer
                 if (msb.cactPlay > 0)
                     msb.cactPlay--;
                 msb.ibStart = 0;
@@ -526,7 +526,7 @@ uint32_t FMS::_LuThread(void)
         }
         else if (_fStop)
         {
-            // release all buffers
+            // 3DMMEx: release all buffers
             _fStop = fFalse;
             _imsbCur = _pglmsb->IvMac();
             _ReleaseBuffers();
@@ -534,12 +534,12 @@ uint32_t FMS::_LuThread(void)
 
         if (0 == _pglmsb->IvMac())
         {
-            // no buffers to play
+            // 3DMMEx: no buffers to play
             dtsWait = klwInfinite;
         }
         else
         {
-            // start playing the new buffers
+            // 3DMMEx: start playing the new buffers
             _pglmsb->Get(0, &msb);
             _pmev = (PMEV)PvAddBv(msb.pvData, msb.ibStart);
             _pmevLim = (PMEV)PvAddBv(msb.pvData, msb.cb);
@@ -558,7 +558,7 @@ uint32_t FMS::_LuThread(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: The midi stream playback thread.
 ***************************************************************************/
 uint32_t FMS::_LuRenderThread(void)
@@ -596,7 +596,7 @@ LFail:
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Release all buffers up to _imsbCur. Assumes that we have the mutx
     checked out exactly once.
 ***************************************************************************/
@@ -615,7 +615,7 @@ void FMS::_ReleaseBuffers(void)
 
         _mutx.Leave();
 
-        // call the notify proc
+        // 3DMMEx: call the notify proc
         (*_pfnCall)(_luUser, msb.pvData, msb.luData);
 
         _mutx.Enter();

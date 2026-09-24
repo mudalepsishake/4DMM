@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Mark Cave-Ayland
     Project: Kauai
 
@@ -29,7 +29,7 @@ RTCLASS(GVGS)
 BEGIN_CMD_MAP_BASE(GVGS)
 END_CMD_MAP(&GVGS::FCmdAll, pvNil, kgrfcmmAll)
 
-const int32_t kcmhlGvgs = kswMin; // put videos at the head of the list
+const int32_t kcmhlGvgs = kswMin; // 3DMMEx: put videos at the head of the list
 
 PGVID GVID::PgvidNew(PFNI pfni, PGOB pgobBase, bool fHwndBased, int32_t hid)
 {
@@ -118,7 +118,7 @@ bool GVGS::_FInit(PFNI pfni, PGOB pgobBase)
     _pgobBase = pgobBase;
     pfni->GetStnPath(&stnPath);
 
-    // Check the output format is correct
+    // 3DMMEx: Check the output format is correct
     pdevice = MiniaudioManager::Pmanager()->Pengine()->pDevice;
     if (pdevice->playback.format != ma_format_f32)
     {
@@ -148,7 +148,7 @@ bool GVGS::_FInit(PFNI pfni, PGOB pgobBase)
         goto LFail;
     }
 
-    // Find width and height
+    // 3DMMEx: Find width and height
     gst_element_set_state(_nscb.pipeline, GST_STATE_PAUSED);
     vsink = gst_bin_get_by_name(GST_BIN(_nscb.pipeline), "vsink");
     sample = gst_app_sink_try_pull_preroll(GST_APP_SINK_CAST(vsink), 1 * GST_SECOND);
@@ -180,7 +180,7 @@ bool GVGS::_FInit(PFNI pfni, PGOB pgobBase)
     }
     _dyp = gint_val;
 
-    // Determine the total number of frames in the file
+    // 3DMMEx: Determine the total number of frames in the file
     query = gst_query_new_duration(GST_FORMAT_DEFAULT);
     res = gst_element_query(_nscb.pipeline, query);
     if (!res)
@@ -195,7 +195,7 @@ bool GVGS::_FInit(PFNI pfni, PGOB pgobBase)
     gst_sample_unref(sample);
     gst_object_unref(vsink);
 
-    // Create surface
+    // 3DMMEx: Create surface
     _surface = SDL_CreateRGBSurface(0, _dxp, _dyp, 32, 0, 0, 0, 0);
     if (_surface == NULL)
     {
@@ -203,12 +203,12 @@ bool GVGS::_FInit(PFNI pfni, PGOB pgobBase)
         goto LFail;
     }
 
-    // Create the stream and start playing it
+    // 3DMMEx: Create the stream and start playing it
     _pastream = MiniaudioStream::PastreamNew(MiniaudioManager::Pmanager());
     AssertPo(_pastream, 0);
     AssertDo(_pastream->FPlay(), "Could not play");
 
-    // Create GNV for the screen
+    // 3DMMEx: Create GNV for the screen
     pgobScreen = GOB::PgobScreen();
     _pgnv = NewObj GNV(pgobScreen, pgobScreen->Pgpt());
     if (_pgnv == pvNil)
@@ -224,19 +224,19 @@ LFail:
 
 static void NewVideoSample(GstAppSink *vsink, NSCB *nscb)
 {
-    // Retrieve video frame and signal playback thread
+    // 3DMMEx: Retrieve video frame and signal playback thread
     nscb->vsample = gst_app_sink_pull_sample(vsink);
     nscb->hevt.Set();
 }
 
 static void NewAudioSample(GstAppSink *asink, NSCB *nscb)
 {
-    // Retrieve audio frame and signal playback thread
+    // 3DMMEx: Retrieve audio frame and signal playback thread
     nscb->asample = gst_app_sink_pull_sample(asink);
     nscb->hevt.Set();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: The video stream playback thread.
 ***************************************************************************/
 uint32_t GVGS::_LuThread(void)
@@ -283,8 +283,8 @@ uint32_t GVGS::_LuThread(void)
                 buffer = gst_sample_get_buffer(_nscb.vsample);
                 if (gst_buffer_map(buffer, &map, GST_MAP_READ))
                 {
-                    // Update the surface with the mapped buffer and indicate
-                    // to command handler that a frame is ready to display
+                    // 3DMMEx: Update the surface with the mapped buffer and indicate
+                    // 3DMMEx: to command handler that a frame is ready to display
                     CopyPb(map.data, _surface->pixels, _dxp * 4 * _dyp);
                     _nscb.fFrameReady = true;
                     gst_buffer_unmap(buffer, &map);
@@ -447,8 +447,8 @@ bool GVGS::FCmdAll(PCMD pcmd)
 
     if (_nscb.fFrameReady == fTrue)
     {
-        // Draw the frame in the command handler to ensure that the SDL surface
-        // is updated from the main thread (SDL is not completely thread safe)
+        // 3DMMEx: Draw the frame in the command handler to ensure that the SDL surface
+        // 3DMMEx: is updated from the main thread (SDL is not completely thread safe)
         _pgnv->DrawSurface(_surface, &_rc);
         _nscb.fFrameReady = false;
     }
@@ -472,4 +472,4 @@ void GVGS::MarkMem(void)
     MarkMemObj(_pastream);
     MarkMemObj(_pgnv);
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Texture map (br_pixmap wrapper) class
 
@@ -9,7 +9,7 @@ ASSERTNAME
 
 RTCLASS(TMAP)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A PFNRPO to read TMAP objects.
 ***************************************************************************/
 bool TMAP::FReadTmap(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -36,11 +36,15 @@ bool TMAP::FReadTmap(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a TMAP from a chunk
 ***************************************************************************/
-PTMAP TMAP::PtmapRead(PCFL pcfl, CTG ctg, CNO cno)
+PTMAP TMAP::PtmapRead(PCFL pcfl, CTG ctg, CNO cno, bool fKeepIndexed)
 {
+#if defined(BRENDER_MODERN_14)
+    BrModernLog("TMAP::PtmapRead BEGIN ctg=0x%08lX cno=0x%08lX keep_indexed=%d",
+                (unsigned long)ctg, (unsigned long)cno, (int)fKeepIndexed);
+#endif
     TMAPF tmapf;
     BLCK blck;
     TMAP *ptmap;
@@ -58,7 +62,15 @@ PTMAP TMAP::PtmapRead(PCFL pcfl, CTG ctg, CNO cno)
         SwapBytesBom(&tmapf, kbomTmapf);
     Assert(kboCur == tmapf.bo, "bad TMAPF");
 
-    ptmap->_bpmp.identifier = (char *)ptmap; // to get TMAP from a (BPMP *)
+#if defined(BRENDER_MODERN_14)
+    // TMAP embeds an application-owned memory pixelmap.  Explicitly initialise
+    // the post-1995 fields so glrend never mistakes it for a device pixelmap.
+    ptmap->_bpmp._reserved = 0;
+    ptmap->_bpmp.mip_offset = 0;
+    ptmap->_bpmp.user = pvNil;
+    ptmap->_bpmp.stored = pvNil;
+#endif
+    ptmap->_bpmp.identifier = (char *)ptmap; // 3DMMv1.0: to get TMAP from a (BPMP *)
     if (!FAllocPv((void **)&ptmap->_bpmp.pixels, LwMul(tmapf.cbRow, tmapf.dyp), fmemClear, mprNormal))
     {
         goto LFail;
@@ -78,13 +90,30 @@ PTMAP TMAP::PtmapRead(PCFL pcfl, CTG ctg, CNO cno)
     {
         goto LFail;
     }
+
+    // The bundled 1995 BRender library has smooth RGB888 primitives for
+    // solid materials and an unlit RGB888 texture primitive, but it does not
+    // contain the later indexed-texture + RGB888-shade-table primitive.
+    // Convert ordinary colour maps to RGB888 at runtime; the global shade
+    // table is explicitly requested with fKeepIndexed and stays untouched.
+    if (BWLD::FTrueColorMode() && !fKeepIndexed && !ptmap->_FConvertToRgb888())
+        goto LFail;
+#if defined(BRENDER_MODERN_14)
+    BrModernLog("TMAP::PtmapRead SUCCESS tmap=%p bpmp=%p type=%u pixels=%p row=%ld wh=%ux%u flags=0x%04X stored=%p",
+                ptmap, &ptmap->_bpmp, (unsigned)ptmap->_bpmp.type, ptmap->_bpmp.pixels,
+                (long)ptmap->_bpmp.row_bytes, (unsigned)ptmap->_bpmp.width, (unsigned)ptmap->_bpmp.height,
+                (unsigned)ptmap->_bpmp.flags, ptmap->_bpmp.stored);
+#endif
     return ptmap;
 LFail:
+#if defined(BRENDER_MODERN_14)
+    BrModernLog("TMAP::PtmapRead FAIL ctg=0x%08lX cno=0x%08lX", (unsigned long)ctg, (unsigned long)cno);
+#endif
     ReleasePpo(&ptmap);
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a TMAP from a BRender BPMP...used only for importing PIX's
 ***************************************************************************/
 PTMAP TMAP::PtmapNewFromBpmp(BPMP *pbpmp)
@@ -102,20 +131,73 @@ PTMAP TMAP::PtmapNewFromBpmp(BPMP *pbpmp)
 }
 
 /***************************************************************************
+    Expand an indexed colour map through 3DMM's active palette into BRender's
+    B,G,R RGB888 byte layout.  This is a runtime representation only.
+***************************************************************************/
+bool TMAP::_FConvertToRgb888(void)
+{
+    AssertBaseThis(0);
+
+    if (_bpmp.type == BR_PMT_RGB_888)
+        return fTrue;
+    if (_bpmp.type != BR_PMT_INDEX_8 || _bpmp.pixels == pvNil || _bpmp.width == 0 || _bpmp.height == 0)
+        return fFalse;
+
+    PGL pglclr = GPT::PglclrGetPalette();
+    if (pglclr == pvNil || pglclr->IvMac() < 256)
+    {
+        ReleasePpo(&pglclr);
+        return fFalse;
+    }
+
+    const int32_t cbRowSrc = LwAbs(_bpmp.row_bytes);
+    const int32_t cbRowDst = (LwMul(_bpmp.width, 3) + 3) & ~3;
+    const uint8_t *prgbSrc = (const uint8_t *)_bpmp.pixels;
+    uint8_t *prgbNew = pvNil;
+    if (!FAllocPv((void **)&prgbNew, LwMul(cbRowDst, _bpmp.height), fmemClear, mprNormal))
+    {
+        ReleasePpo(&pglclr);
+        return fFalse;
+    }
+
+    for (int32_t yp = 0; yp < _bpmp.height; yp++)
+    {
+        const uint8_t *prgbSrcRow = prgbSrc + LwMul(yp, cbRowSrc);
+        uint8_t *prgbDstRow = prgbNew + LwMul(yp, cbRowDst);
+        for (int32_t xp = 0; xp < _bpmp.width; xp++)
+        {
+            CLR clr;
+            pglclr->Get(prgbSrcRow[xp], &clr);
+            prgbDstRow[LwMul(xp, 3) + 0] = clr.bBlue;
+            prgbDstRow[LwMul(xp, 3) + 1] = clr.bGreen;
+            prgbDstRow[LwMul(xp, 3) + 2] = clr.bRed;
+        }
+    }
+
+    FreePpv((void **)&_bpmp.pixels);
+    _bpmp.pixels = prgbNew;
+    _bpmp.row_bytes = (br_int_16)cbRowDst;
+    _bpmp.type = BR_PMT_RGB_888;
+    _bpmp.map = pvNil;
+    ReleasePpo(&pglclr);
+    return fTrue;
+}
+
+/** 3DMMv1.0: *************************************************************************
     destructor
 ***************************************************************************/
 TMAP::~TMAP(void)
 {
     if (_fImported)
     {
-        // REVIEW *****: this crashes BRender...why?
-        //		BrMemFree(_bpmp.pixels);
+        // 3DMMv1.0: REVIEW *****: this crashes BRender...why?
+        // 3DMMv1.0:		BrMemFree(_bpmp.pixels);
     }
     else
         FreePpv((void **)&_bpmp.pixels);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a TMAP to a chunk
 ***************************************************************************/
 bool TMAP::FWrite(PCFL pcfl, CTG ctg, CNO *pcno)
@@ -131,7 +213,7 @@ bool TMAP::FWrite(PCFL pcfl, CTG ctg, CNO *pcno)
     return FWrite(&blck);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a TMAP to the given FLO
 ***************************************************************************/
 bool TMAP::FWrite(PBLCK pblck)
@@ -164,7 +246,7 @@ bool TMAP::FWrite(PBLCK pblck)
     (((bRed1) - (bRed2)) * ((bRed1) - (bRed2)) + ((bGreen1) - (bGreen2)) * ((bGreen1) - (bGreen2)) +                   \
      ((bBlue1) - (bBlue2)) * ((bBlue1) - (bBlue2)))
 
-/*
+/* 3DMMv1.0:
  *	PtmapReadNative	--	Creates a TMAP object, reading the data from a .BMP file
  *
  *	input:
@@ -199,7 +281,7 @@ PTMAP TMAP::PtmapReadNative(FNI *pfni, PGL pglclr)
             AssertIn(pglclr->IvMac(), 0, 257);
 
             //
-            // Do a closest color match
+            // 3DMMv1.0: Do a closest color match
             //
 
             pglCache = GL::PglNew(SIZEOF(int32_t), pglclrSrc->IvMac());
@@ -265,19 +347,21 @@ PTMAP TMAP::PtmapReadNative(FNI *pfni, PGL pglclr)
         ReleasePpo(&pglclrSrc);
 
         ptmap = TMAP::PtmapNew(prgb, dxp, dyp);
+        if (ptmap != pvNil && BWLD::FTrueColorMode() && !ptmap->_FConvertToRgb888())
+            ReleasePpo(&ptmap);
     }
 
     return ptmap;
 }
-#else  // !MAC
+#else  // 3DMMEx: !MAC
 PTMAP TMAP::PtmapReadNative(FNI *pfni)
 {
-    RawRtn(); // REVIEW peted: NYI
+    RawRtn(); // 3DMMv1.0: REVIEW peted: NYI
     return pvNil;
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-/*
+/* 3DMMv1.0:
  *	PtmapNew	--	Given pixel data and attributes, creates a new TMAP with
  *		the given information.
  *
@@ -298,6 +382,12 @@ PTMAP TMAP::PtmapNew(uint8_t *prgbPixels, int32_t dxp, int32_t dyp)
     if ((ptmap = NewObj TMAP) != pvNil)
     {
         ptmap->_fImported = fFalse;
+#if defined(BRENDER_MODERN_14)
+        ptmap->_bpmp._reserved = 0;
+        ptmap->_bpmp.mip_offset = 0;
+        ptmap->_bpmp.user = pvNil;
+        ptmap->_bpmp.stored = pvNil;
+#endif
         ptmap->_bpmp.identifier = (char *)ptmap;
         ptmap->_bpmp.pixels = prgbPixels;
         ptmap->_bpmp.map = pvNil;
@@ -310,10 +400,15 @@ PTMAP TMAP::PtmapNew(uint8_t *prgbPixels, int32_t dxp, int32_t dyp)
         ptmap->_bpmp.origin_x = ptmap->_bpmp.origin_y = 0;
     }
     AssertPo(ptmap, 0);
+#if defined(BRENDER_MODERN_14)
+    if (ptmap != pvNil)
+        BrModernLog("TMAP::PtmapNew tmap=%p bpmp=%p pixels=%p wh=%ldx%ld",
+                    ptmap, &ptmap->_bpmp, ptmap->_bpmp.pixels, (long)dxp, (long)dyp);
+#endif
     return ptmap;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FWriteTmapChkFile
         Writes a stand-alone file with a TMAP chunk in it.  The file can
         be later read in by the CHCM class with the FILE command.
@@ -417,7 +512,7 @@ void TMAP::_SortInverseTable(uint8_t *prgb, int32_t cbRgb, BRCLR brclrLo, BRCLR 
     prgbRead = prgb;
     while (cbRgb--)
     {
-        pbrclr = 0; // pbrclr from index *prgb;
+        pbrclr = 0; // 3DMMv1.0: pbrclr from index *prgb;
         if (*pbrclr <= brclrPivot)
         {
             prgbRead++;
@@ -436,10 +531,10 @@ void TMAP::_SortInverseTable(uint8_t *prgb, int32_t cbRgb, BRCLR brclrLo, BRCLR 
     if (cbRgb2 > 1)
         _SortInverseTable(prgb2, cbRgb2, brclrPivot + 1, brclrHi);
 }
-#endif // NOT_YET_REVIEWED
+#endif // 3DMMv1.0: NOT_YET_REVIEWED
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TMAP.
 ***************************************************************************/
 void TMAP::AssertValid(uint32_t grf)
@@ -449,7 +544,7 @@ void TMAP::AssertValid(uint32_t grf)
         AssertPvCb(_bpmp.pixels, LwMul(_bpmp.row_bytes, _bpmp.height));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the TMAP.
 ***************************************************************************/
 void TMAP::MarkMem(void)
@@ -459,4 +554,4 @@ void TMAP::MarkMem(void)
     if (!_fImported)
         MarkPv(_bpmp.pixels);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

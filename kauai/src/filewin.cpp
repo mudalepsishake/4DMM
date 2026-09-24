@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@ ASSERTNAME
 const uint32_t kfpError = 0xFFFFFFFF;
 kpriv HANDLE _HfileOpen(PSZ pszFile, bool fCreate, uint32_t grffil);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open or create the file by calling CreateFile.  Returns hBadWin on
     failure.
 ***************************************************************************/
@@ -36,7 +36,7 @@ kpriv HANDLE _HfileOpen(PSZ psz, bool fCreate, uint32_t grffil)
                       pvNil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open or create the file.  If the file is already open, sets the
     permissions according to grffil.
 ***************************************************************************/
@@ -56,14 +56,14 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
         Assert(!fCreate, "can't create an open file");
         if ((~_grffil & grffil) == 0)
         {
-            // permissions are already set high enough
+            // 3DMMv1.0: permissions are already set high enough
             fRet = fTrue;
             goto LRet;
         }
         CloseHandle(_hfile);
         _hfile = hBadWin;
 
-        // maintain the permissions we had before
+        // 3DMMv1.0: maintain the permissions we had before
         grffil |= _grffil & kgrffilPerm;
     }
 
@@ -71,7 +71,7 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
 
     if (hBadWin == _hfile)
     {
-        // if it was open, re-open it with old permissions
+        // 3DMMv1.0: if it was open, re-open it with old permissions
         if (_fOpen)
         {
             _hfile = _HfileOpen(_fni._stnFile.Psz(), fFalse, _grffil);
@@ -94,7 +94,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close the file.
 ***************************************************************************/
 void FIL::_Close(bool fFinal)
@@ -120,7 +120,7 @@ void FIL::_Close(bool fFinal)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Flush the file (and its volume?).
 ***************************************************************************/
 void FIL::Flush(void)
@@ -135,7 +135,7 @@ void FIL::Flush(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Seek to the given fp - assumes the mutx is already entered.
 ***************************************************************************/
 void FIL::_SetFpPos(FP fp)
@@ -152,7 +152,7 @@ void FIL::_SetFpPos(FP fp)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the length of the file.  This doesn't zero the appended portion.
 ***************************************************************************/
 bool FIL::FSetFpMac(FP fp)
@@ -182,7 +182,7 @@ bool FIL::FSetFpMac(FP fp)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of the file.
 ***************************************************************************/
 FP FIL::FpMac(void)
@@ -209,7 +209,7 @@ FP FIL::FpMac(void)
     return fp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a block from the file.
 ***************************************************************************/
 bool FIL::FReadRgb(void *pv, int32_t cb, FP fp)
@@ -251,7 +251,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a block to the file.
 ***************************************************************************/
 bool FIL::FWriteRgb(const void *pv, int32_t cb, FP fp)
@@ -293,7 +293,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap the names of the two files.  They should be in the same directory.
 ***************************************************************************/
 bool FIL::FSwapNames(PFIL pfil)
@@ -351,7 +351,7 @@ bool FIL::FSwapNames(PFIL pfil)
     fRet = fTrue;
 
 LFail:
-    // reopen the files
+    // 3DMMv1.0: reopen the files
     _FOpen(fFalse, _grffil);
     pfil->_FOpen(fFalse, pfil->_grffil);
 
@@ -368,7 +368,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rename a file.  The new fni should be on the same volume.
     This may fail without an error code being set.
 ***************************************************************************/
@@ -388,7 +388,7 @@ bool FIL::FRename(FNI *pfni)
     if (fRet)
         _fni = *pfni;
 
-    // reopen the file
+    // 3DMMv1.0: reopen the file
     if (!_FOpen(fFalse, _grffil))
         fRet = fFalse;
 

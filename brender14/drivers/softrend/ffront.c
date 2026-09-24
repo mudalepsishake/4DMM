@@ -1,0 +1,70 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: ffront.c 1.1 1997/12/10 16:51:52 jon Exp $
+ * $Locker: $
+ *
+ * Primitive renderer filters that will call primitives with near SZ values
+ */
+#include <stddef.h>
+#include <string.h>
+
+#include "drv.h"
+#include "shortcut.h"
+#include "brassert.h"
+
+void BR_ASM_CALL RenderForceFront1(brp_block *block, brp_vertex *v0)
+{
+    brp_vertex v[1];
+
+    v[0] = *v0;
+
+    v[0].comp[C_SZ] = BR_SCALAR(0.0);
+
+    brp_render1(block->chain, v + 0);
+}
+
+void BR_ASM_CALL RenderForceFront2(brp_block *block, brp_vertex *v0, brp_vertex *v1)
+{
+    brp_vertex v[2];
+
+    v[0] = *v0;
+    v[1] = *v1;
+
+    v[0].comp[C_SZ] = BR_SCALAR(0.0);
+    v[1].comp[C_SZ] = BR_SCALAR(0.0);
+
+    brp_render2(block->chain, v + 0, v + 1);
+}
+
+void BR_ASM_CALL RenderForceFront3(brp_block *block, brp_vertex *v0, brp_vertex *v1, brp_vertex *v2)
+{
+    brp_vertex v[3];
+
+    v[0] = *v0;
+    v[1] = *v1;
+    v[2] = *v2;
+
+    v[0].comp[C_SZ] = BR_SCALAR(0.0);
+    v[1].comp[C_SZ] = BR_SCALAR(0.0);
+    v[2].comp[C_SZ] = BR_SCALAR(0.0);
+
+    brp_render3(block->chain, v + 0, v + 1, v + 2);
+}
+
+void BR_ASM_CALL RenderForceFront4(brp_block *block, brp_vertex *v0, brp_vertex *v1, brp_vertex *v2, brp_vertex *v3)
+{
+    brp_vertex v[4];
+
+    v[0] = *v0;
+    v[1] = *v1;
+    v[2] = *v2;
+    v[3] = *v3;
+
+    v[0].comp[C_SZ] = BR_SCALAR(0.0);
+    v[1].comp[C_SZ] = BR_SCALAR(0.0);
+    v[2].comp[C_SZ] = BR_SCALAR(0.0);
+    v[3].comp[C_SZ] = BR_SCALAR(0.0);
+
+    brp_render4(block->chain, v + 0, v + 1, v + 2, v + 3);
+}

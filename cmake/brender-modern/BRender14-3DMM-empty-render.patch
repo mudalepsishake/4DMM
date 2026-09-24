@@ -1,0 +1,24 @@
+diff --git a/core/v1db/render.c b/core/v1db/render.c
+index f082ac5..b1e715f 100644
+--- a/core/v1db/render.c
++++ b/core/v1db/render.c
+@@ -62,6 +62,19 @@ void BR_PUBLIC_ENTRY BrDbModelRender(br_actor *actor, br_model *model, br_materi
+         return;
+     }
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * 3DMM legitimately uses empty model actors as structural placeholders.
++     * They carry no renderable geometry, but their actor children may contain
++     * the real prepared models. Modern BRender normally treats an unprepared
++     * model as fatal, which aborts traversal before those children are reached.
++     * Preserve the strict failure for every non-empty model and only make the
++     * historical 0-vertex/0-face placeholder a no-op render.
++     */
++    if(model->prepared == NULL && model->stored == NULL && model->nvertices == 0 && model->nfaces == 0)
++        return;
++#endif
++
+     if(model->prepared == NULL && model->stored == NULL)
+         BR_ERROR1("Tried to render un-prepared model %s", model->identifier ? model->identifier : "<NULL>");
+ 

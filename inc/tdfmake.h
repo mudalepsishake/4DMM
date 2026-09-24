@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tdfmake.h: Three-D Font authoring tool
 
@@ -15,4 +15,4 @@
 #include <stdio.h>
 #include "frame.h"
 
-#endif //! TDFMAKE_H
+#endif //! 3DMMv1.0: TDFMAKE_H

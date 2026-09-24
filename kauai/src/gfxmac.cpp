@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -30,9 +30,9 @@ ACR kacrCyan(0, kbMax, kbMax);
 ACR kacrMagenta(kbMax, 0, kbMax);
 ACR kacrClear(fTrue, fTrue);
 ACR kacrInvert(fFalse, fFalse);
-#endif // SYMC
+#endif // 3DMMv1.0: SYMC
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the color as the current foreground color.
 ***************************************************************************/
 void ACR::_SetFore(void)
@@ -55,7 +55,7 @@ void ACR::_SetFore(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the color as the current background color.
 ***************************************************************************/
 void ACR::_SetBack(void)
@@ -78,15 +78,15 @@ void ACR::_SetBack(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to flush any pending graphics operations.
 ***************************************************************************/
 void GPT::Flush(void)
 {
-    // does nothing on Mac.
+    // 3DMMv1.0: does nothing on Mac.
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to set the current color table.
     While using fpalIdentity the following cautions apply:
 
@@ -115,7 +115,7 @@ void GPT::SetActiveColors(PGL pglclr, uint32_t grfpal)
         goto LFail;
     (*hclt)->ctSeed = GetCTSeed();
 
-    // REVIEW shonk: Mac: does it work to call SetPalette with a nil palette?
+    // 3DMMv1.0: REVIEW shonk: Mac: does it work to call SetPalette with a nil palette?
     if (pvNil != pglclr && 0 < (cclr = LwMin(256, pglclr->IvMac())))
     {
         if (hNil ==
@@ -137,13 +137,13 @@ void GPT::SetActiveColors(PGL pglclr, uint32_t grfpal)
         }
         if (grfpal & fpalIdentity)
         {
-            // set the first entry to white (with just pmExplicit)
+            // 3DMMv1.0: set the first entry to white (with just pmExplicit)
             scr.red = scr.green = scr.blue = (ushort)-1;
             SetEntryColor(hpal, 0, &scr);
             SetEntryUsage(hpal, 0, pmExplicit, -1);
             (*hclt)->ctTable[0].rgb = scr;
 
-            // set all possible ending entries to black (with just pmExplicit)
+            // 3DMMv1.0: set all possible ending entries to black (with just pmExplicit)
             scr.red = scr.green = scr.blue = 0;
             for (iv = 1; iv <= 8; iv <<= 1)
             {
@@ -163,12 +163,12 @@ void GPT::SetActiveColors(PGL pglclr, uint32_t grfpal)
     hpalOld = GetPalette(PPRT(-1));
     SetPalette(PPRT(-1), hpal, fFalse);
 
-    // activate the palette
+    // 3DMMv1.0: activate the palette
     if (hNil != (hwnd = (HWND)FrontWindow()))
         ActivatePalette((PPRT)hwnd);
     else
     {
-        // to activate the palette, create a window offscreen and then destroy it
+        // 3DMMv1.0: to activate the palette, create a window offscreen and then destroy it
         RCS rcs;
 
         rcs = qd.screenBits.bounds;
@@ -189,7 +189,7 @@ void GPT::SetActiveColors(PGL pglclr, uint32_t grfpal)
     _fForcePalOnSys = FPure(grfpal & fpalIdentity);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to determine if the main screen supports this depth
     and color status.
 ***************************************************************************/
@@ -198,7 +198,7 @@ bool GPT::FCanScreen(int32_t cbitPixel, bool fColor)
     if (cbitPixel == 24)
         cbitPixel = 32;
 
-    // assert that cbitPixel is in {1,2,4,8,16,32}
+    // 3DMMv1.0: assert that cbitPixel is in {1,2,4,8,16,32}
     AssertIn(cbitPixel, 1, 33);
     AssertVar((cbitPixel & (cbitPixel - 1)) == 0, "bad cbitPixel value", &cbitPixel);
     HGD hgd;
@@ -208,7 +208,7 @@ bool GPT::FCanScreen(int32_t cbitPixel, bool fColor)
     return HasDepth(hgd, (short)cbitPixel, 1, fColor ? 1 : 0) != 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to attempt to set the depth and/or color status of the
     main screen (the one with the menu bar).
 ***************************************************************************/
@@ -217,7 +217,7 @@ bool GPT::FSetScreenState(int32_t cbitPixel, bool tColor)
     if (cbitPixel == 24)
         cbitPixel = 32;
 
-    // assert that cbitPixel is in {0,1,2,4,8,16,32}
+    // 3DMMv1.0: assert that cbitPixel is in {0,1,2,4,8,16,32}
     AssertIn(cbitPixel, 0, 33);
     AssertVar((cbitPixel & (cbitPixel - 1)) == 0, "bad cbitPixel value", &cbitPixel);
     AssertT(tColor);
@@ -234,7 +234,7 @@ bool GPT::FSetScreenState(int32_t cbitPixel, bool tColor)
     return (noErr == SetDepth(hgd, (short)cbitPixel, 1, swT));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to get the state of the main screen.
 ***************************************************************************/
 void GPT::GetScreenState(int32_t *pcbitPixel, bool *pfColor)
@@ -255,7 +255,7 @@ void GPT::GetScreenState(int32_t *pcbitPixel, bool *pfColor)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new GPT.
 ***************************************************************************/
 PGPT GPT::PgptNew(PPRT pprt, HGD hgd)
@@ -272,7 +272,7 @@ PGPT GPT::PgptNew(PPRT pprt, HGD hgd)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a port.
 ***************************************************************************/
 GPT::~GPT(void)
@@ -293,7 +293,7 @@ GPT::~GPT(void)
     ReleasePpo(&_pregnClip);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the clut that should be used for off-screen GPT's.
 ***************************************************************************/
 HCLT GPT::_HcltUse(int32_t cbitPixel)
@@ -316,7 +316,7 @@ HCLT GPT::_HcltUse(int32_t cbitPixel)
     return _hcltDef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create an offscreen port.
 ***************************************************************************/
 PGPT GPT::PgptNewOffscreen(RC *prc, int32_t cbitPixel)
@@ -330,7 +330,7 @@ PGPT GPT::PgptNewOffscreen(RC *prc, int32_t cbitPixel)
     if (cbitPixel == 24)
         cbitPixel = 32;
 
-    // assert that cbitPixel is in {1,2,4,8,16,32}
+    // 3DMMv1.0: assert that cbitPixel is in {1,2,4,8,16,32}
     AssertIn(cbitPixel, 1, 33);
     AssertVar((cbitPixel & (cbitPixel - 1)) == 0, "bad cbitPixel value", &cbitPixel);
 
@@ -350,7 +350,7 @@ PGPT GPT::PgptNewOffscreen(RC *prc, int32_t cbitPixel)
     return pgpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this is an offscreen bitmap, return the pointer to the pixels and
     optionally get the bounds. Must balance with a call to Unlock().
 ***************************************************************************/
@@ -371,7 +371,7 @@ uint8_t *GPT::PrgbLockPixels(RC *prc)
     return (uint8_t *)(*hpix)->baseAddr;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this is an offscreen bitmap, return the number of bytes per row.
 ***************************************************************************/
 int32_t GPT::CbRow(void)
@@ -385,7 +385,7 @@ int32_t GPT::CbRow(void)
     return (*hpix)->rowBytes & 0x7FFF;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this is an offscreen bitmap, return the number of bits per pixel.
 ***************************************************************************/
 int32_t GPT::CbitPixel(void)
@@ -397,7 +397,7 @@ int32_t GPT::CbitPixel(void)
     return _cbitPixel;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a PICT and its an associated GPT.
     This should be balanced with a call to PpicRelease().
 ***************************************************************************/
@@ -425,7 +425,7 @@ PGPT GPT::PgptNewPic(RC *prc)
     return pgpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Closes a metafile based GPT and returns the picture produced from
     drawing into the GPT.
 ***************************************************************************/
@@ -458,7 +458,7 @@ PPIC GPT::PpicRelease(void)
     return ppic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill or frame a rectangle.
 ***************************************************************************/
 void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
@@ -472,7 +472,7 @@ void GPT::DrawRcs(RCS *prcs, GDD *pgdd)
     _Fill(prcs, pgdd, pfn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to fill a rectangle.
 ***************************************************************************/
 void GPT::_FillRcs(RCS *prcs)
@@ -481,7 +481,7 @@ void GPT::_FillRcs(RCS *prcs)
     PaintRect(prcs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to frame a rectangle.
 ***************************************************************************/
 void GPT::_FrameRcs(RCS *prcs)
@@ -490,7 +490,7 @@ void GPT::_FrameRcs(RCS *prcs)
     FrameRect(prcs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hilite the rectangle by reversing white and the system hilite color.
 ***************************************************************************/
 void GPT::HiliteRcs(RCS *prcs, GDD *pgdd)
@@ -502,12 +502,12 @@ void GPT::HiliteRcs(RCS *prcs, GDD *pgdd)
     Set(pgdd->prcsClip);
     ForeColor(blackColor);
     pgdd->acrBack._SetBack();
-    *(uint8_t *)0x938 &= 0x7f; /* use color highlighting */
+    *(uint8_t *)0x938 &= 0x7f; /* 3DMMv1.0: use color highlighting */
     InvertRect(prcs);
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill or frame an oval.
 ***************************************************************************/
 void GPT::DrawOval(RCS *prcs, GDD *pgdd)
@@ -521,7 +521,7 @@ void GPT::DrawOval(RCS *prcs, GDD *pgdd)
     _Fill(prcs, pgdd, pfn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to fill an oval.
 ***************************************************************************/
 void GPT::_FillOval(RCS *prcs)
@@ -530,7 +530,7 @@ void GPT::_FillOval(RCS *prcs)
     PaintOval(prcs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to frame an oval.
 ***************************************************************************/
 void GPT::_FrameOval(RCS *prcs)
@@ -539,7 +539,7 @@ void GPT::_FrameOval(RCS *prcs)
     FrameOval(prcs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill or frame a polygon.
 ***************************************************************************/
 void GPT::DrawPoly(HQ hqoly, GDD *pgdd)
@@ -553,7 +553,7 @@ void GPT::DrawPoly(HQ hqoly, GDD *pgdd)
     _Fill(&hqoly, pgdd, pfn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to fill a polygon.
 ***************************************************************************/
 void GPT::_FillPoly(HQ *phqoly)
@@ -563,7 +563,7 @@ void GPT::_FillPoly(HQ *phqoly)
     PaintPoly((PolyHandle)*phqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to frame a polygon.
 ***************************************************************************/
 void GPT::_FramePoly(HQ *phqoly)
@@ -573,7 +573,7 @@ void GPT::_FramePoly(HQ *phqoly)
     FramePoly((PolyHandle)*phqoly);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw a line.
 ***************************************************************************/
 void GPT::DrawLine(PTS *ppts1, PTS *ppts2, GDD *pgdd)
@@ -589,7 +589,7 @@ void GPT::DrawLine(PTS *ppts1, PTS *ppts2, GDD *pgdd)
     _Fill(rgpts, pgdd, (PFNDRW)_DrawLine);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback (PFNDRW) to draw a line.
 ***************************************************************************/
 void GPT::_DrawLine(PTS *prgpts)
@@ -599,7 +599,7 @@ void GPT::_DrawLine(PTS *prgpts)
     LineTo(prgpts[1].h, prgpts[1].v);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Low level routine to fill/frame a shape.
 ***************************************************************************/
 void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
@@ -611,11 +611,11 @@ void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
         PenSize((short)pgdd->dxpPen, (short)pgdd->dypPen);
     if (pgdd->grfgdd & fgddPattern)
     {
-        // pattern fill
+        // 3DMMv1.0: pattern fill
         APT apt = pgdd->apt;
         ACR acrBack = pgdd->acrBack;
 
-        // check for a solid pattern
+        // 3DMMv1.0: check for a solid pattern
         if (apt.FSolidFore() || acrFore == acrBack)
             goto LSolid;
         if (apt.FSolidBack())
@@ -625,14 +625,14 @@ void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
         }
 
         Assert(acrFore != acrBack, "fore and back colors still equal!");
-        // Make sure we have one of these forms:
-        //   (*, *)
-        //   (clear, *)
-        //   (invert, *)
-        //   (invert, clear)
+        // 3DMMv1.0: Make sure we have one of these forms:
+        // 3DMMv1.0:   (*, *)
+        // 3DMMv1.0:   (clear, *)
+        // 3DMMv1.0:   (invert, *)
+        // 3DMMv1.0:   (invert, clear)
         if (acrBack == kacrInvert || acrBack == kacrClear && acrFore != kacrInvert)
         {
-            // swap them and invert the pattern
+            // 3DMMv1.0: swap them and invert the pattern
             acrFore = acrBack;
             acrBack = pgdd->acrFore;
             apt.Invert();
@@ -641,28 +641,28 @@ void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
         PenPat((Pattern *)apt.rgb);
         if (acrFore == kacrInvert)
         {
-            // do (invert, clear)
+            // 3DMMv1.0: do (invert, clear)
             PenMode(patXor);
             ForeColor(blackColor);
             (this->*pfn)(pv);
             if (acrBack != kacrClear)
             {
-                // need (invert, *), have already done (invert, clear)
-                // so still need to do (clear, *)
+                // 3DMMv1.0: need (invert, *), have already done (invert, clear)
+                // 3DMMv1.0: so still need to do (clear, *)
                 goto LClear;
             }
         }
         else if (acrFore == kacrClear)
         {
         LClear:
-            // do (clear, *)
+            // 3DMMv1.0: do (clear, *)
             PenMode(notPatOr);
             acrBack._SetFore();
             (this->*pfn)(pv);
         }
         else
         {
-            // do (*, *)
+            // 3DMMv1.0: do (*, *)
             PenMode(patCopy);
             acrFore._SetFore();
             acrBack._SetBack();
@@ -671,10 +671,10 @@ void GPT::_Fill(void *pv, GDD *pgdd, PFNDRW pfn)
     }
     else
     {
-        // solid color
+        // 3DMMv1.0: solid color
     LSolid:
         if (acrFore == kacrClear)
-            goto LDone; // nothing to do
+            goto LDone; // 3DMMv1.0: nothing to do
 
         PenPat(&qd.black);
         if (acrFore == kacrInvert)
@@ -694,7 +694,7 @@ LDone:
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the given rectangle.
 ***************************************************************************/
 void GPT::ScrollRcs(RCS *prcs, int32_t dxp, int32_t dyp, GDD *pgdd)
@@ -715,7 +715,7 @@ void GPT::ScrollRcs(RCS *prcs, int32_t dxp, int32_t dyp, GDD *pgdd)
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the text.
 ***************************************************************************/
 void GPT::DrawRgch(achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pdsf)
@@ -741,7 +741,7 @@ void GPT::DrawRgch(achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pdsf)
     BackColor(whiteColor);
     if (acrFore == kacrInvert)
     {
-        // do (invert, clear)
+        // 3DMMv1.0: do (invert, clear)
         TextMode(srcXor);
         MoveTo(pts.h, pts.v);
         DrawText(prgch, 0, (short)cch);
@@ -789,7 +789,7 @@ void GPT::DrawRgch(achar *prgch, int32_t cch, PTS pts, GDD *pgdd, DSF *pdsf)
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the bounding text rectangle (in port coordinates).
 ***************************************************************************/
 void GPT::GetRcsFromRgch(RCS *prcs, achar *prgch, int32_t cch, PTS pts, DSF *pdsf)
@@ -799,7 +799,7 @@ void GPT::GetRcsFromRgch(RCS *prcs, achar *prgch, int32_t cch, PTS pts, DSF *pds
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the text properties in the current port and get the bounding
     rectangle for the text.
 
@@ -825,8 +825,8 @@ void GPT::_GetRcsFromRgch(RCS *prcs, achar *prgch, short cch, PTS *ppts, DSF *pd
     short dxp;
     short ftc;
 
-    // REVIEW shonk: avoid small font sizes (the OS will crash) - is this true
-    // on newer machines (020 and better)?
+    // 3DMMv1.0: REVIEW shonk: avoid small font sizes (the OS will crash) - is this true
+    // 3DMMv1.0: on newer machines (020 and better)?
     ftc = vntl.FtcFromOnn(pdsf->onn);
     TextFont(ftc);
     TextFace((short)pdsf->grfont);
@@ -875,7 +875,7 @@ void GPT::_GetRcsFromRgch(RCS *prcs, achar *prgch, short cch, PTS *ppts, DSF *pd
     ppts->v = ypTop + fin.ascent;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Lock the pixels for the port if this is an offscreen PixMap.
     Must be balanced by a call to Unlock.
 ***************************************************************************/
@@ -887,7 +887,7 @@ void GPT::Lock(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlock the pixels for the port if this is an offscreen PixMap.
 ***************************************************************************/
 void GPT::Unlock(void)
@@ -900,7 +900,7 @@ void GPT::Unlock(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Select our graf-port and device.  Must be balanced by a call to
     Restore.  Set/Restore combinations are nestable for distinct ports
     (but not for the same port).  If this is a picture GPT, intersect
@@ -925,13 +925,13 @@ void GPT::Set(RCS *prcsClip)
 
     if (hNil != _hpic)
     {
-        // in a picture GPT, clip to the bounding rectangle
+        // 3DMMv1.0: in a picture GPT, clip to the bounding rectangle
         rc.FIntersect(&_rcOff);
     }
 
     if (_fNewClip || rc != _rcClip)
     {
-        // have to set the clipping
+        // 3DMMv1.0: have to set the clipping
         if (pvNil == _pregnClip)
             rcT = rc;
         else
@@ -959,22 +959,22 @@ void GPT::Set(RCS *prcsClip)
         HPIX hpix = ((PCPRT)qd.thePort)->portPixMap;
         if ((*(*hpix)->pmTable)->ctSeed != (*hclt)->ctSeed)
         {
-            // change the color table without doing any color mapping
-            // REVIEW shonk: not sure we want to use UpdateGWorld - it does pixel mapping
-            // REVIEW shonk: does UpdateGWorld just copy the color table or does it do
-            // other stuff, including changing the seed?
+            // 3DMMv1.0: change the color table without doing any color mapping
+            // 3DMMv1.0: REVIEW shonk: not sure we want to use UpdateGWorld - it does pixel mapping
+            // 3DMMv1.0: REVIEW shonk: does UpdateGWorld just copy the color table or does it do
+            // 3DMMv1.0: other stuff, including changing the seed?
             NewCode();
             int32_t lw;
             RCS rcs = _rcOff;
 
-            // REVIEW shonk: check for errors
+            // 3DMMv1.0: REVIEW shonk: check for errors
             lw = UpdateGWorld((PGWR *)&_pprt, _cbitPixel, &rcs, hclt, hNil, keepLocal);
         }
     }
     _fSet = fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Restores the saved port and device (from a call to Set).
 ***************************************************************************/
 void GPT::Restore(void)
@@ -992,14 +992,14 @@ void GPT::Restore(void)
     GetGWorld((PGWR *)&pprt, &hgd);
     Assert(pprt == _pprt, "why aren't we set - someone didn't restore");
     Assert(hgd == _hgd || _hgd == hNil, "gdevice set wrong");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     SetGWorld((PGWR)_pprtSav, _hgdSav);
     Unlock();
     _fSet = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the PixMapHandle for the given port.
 ***************************************************************************/
 HPIX GPT::_Hpix(void)
@@ -1009,7 +1009,7 @@ HPIX GPT::_Hpix(void)
     return ((PCPRT)_pprt)->portPixMap;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy bits from pgptSrc to this GPT.
 ***************************************************************************/
 void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
@@ -1023,7 +1023,7 @@ void GPT::CopyPixels(PGPT pgptSrc, RCS *prcsSrc, RCS *prcsDst, GDD *pgdd)
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the picture in the given rectangle.
 ***************************************************************************/
 void GPT::DrawPic(PPIC ppic, RCS *prcs, GDD *pgdd)
@@ -1038,7 +1038,7 @@ void GPT::DrawPic(PPIC ppic, RCS *prcs, GDD *pgdd)
     Restore();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the masked bitmap in the given rectangle with reference point
     *ppts.  pgdd->prcsClip is the clipping rectangle.
 ***************************************************************************/
@@ -1051,7 +1051,7 @@ void GPT::DrawMbmp(PMBMP pmbmp, RCS *prcs, GDD *pgdd)
     RC rc, rcT;
     HPIX hpix;
 
-    // REVIEW shonk: fix DrawMbmp to use the rcs.
+    // 3DMMv1.0: REVIEW shonk: fix DrawMbmp to use the rcs.
 
     pmbmp->GetRc(&rc);
     rc.Offset(prcs->left, prcs->top);
@@ -1077,9 +1077,9 @@ void GPT::DrawMbmp(PMBMP pmbmp, RCS *prcs, GDD *pgdd)
     }
     else
     {
-        // need to create a temporary offscreen GPT for the Mask, set the Mask
-        // area to white in this GPT, then create an offscreen GPT for the
-        // actual MBMP graphic, then blt these to this GPT.
+        // 3DMMv1.0: need to create a temporary offscreen GPT for the Mask, set the Mask
+        // 3DMMv1.0: area to white in this GPT, then create an offscreen GPT for the
+        // 3DMMv1.0: actual MBMP graphic, then blt these to this GPT.
         PT ptDst;
         PGPT pgpt;
         RCS rcsDst;
@@ -1099,7 +1099,7 @@ void GPT::DrawMbmp(PMBMP pmbmp, RCS *prcs, GDD *pgdd)
         pmbmp->DrawMask((uint8_t *)(*hpix)->baseAddr, (*hpix)->rowBytes & 0x7FFF, rc.Dyp(), prcs->left - ptDst.xp,
                         prcs->top - ptDst.yp);
 
-        // set the mask bits to black
+        // 3DMMv1.0: set the mask bits to black
         Set(pgdd->prcsClip);
         ForeColor(blackColor);
         BackColor(whiteColor);
@@ -1138,7 +1138,7 @@ void GPT::DrawMbmp(PMBMP pmbmp, RCS *prcs, GDD *pgdd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test the validity of the port.
 ***************************************************************************/
 void GPT::AssertValid(uint32_t grf)
@@ -1151,15 +1151,15 @@ void GPT::AssertValid(uint32_t grf)
     AssertNilOrVarMem(_hgdSav);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to mark static GPT memory.
 ***************************************************************************/
 void GPT::MarkStaticMem(void)
 {
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the font table.
 ***************************************************************************/
 bool NTL::FInit(void)
@@ -1186,7 +1186,7 @@ bool NTL::FInit(void)
             goto LFail;
     }
 
-    // add the system font
+    // 3DMMv1.0: add the system font
     GetFontName(0, (uint8_t *)st);
     ftcT = 0;
     if (!_pgst->FFindSt(st, &_onnSystem, fgstUserSorted) && !_pgst->FInsertSt(_onnSystem, st, &ftcT))
@@ -1201,7 +1201,7 @@ bool NTL::FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the system font code for this font number.
 ***************************************************************************/
 short NTL::FtcFromOnn(int32_t onn)
@@ -1213,12 +1213,12 @@ short NTL::FtcFromOnn(int32_t onn)
     return (short)ftc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return true iff the font is a fixed pitch font.
 ***************************************************************************/
 bool NTL::FFixedPitch(int32_t onn)
 {
-#ifdef REVIEW // shonk: implement FFixedPitch on Mac
+#ifdef REVIEW // 3DMMv1.0: shonk: implement FFixedPitch on Mac
     AssertThis(0);
     Assert(FValidOnn(onn), "bad onn");
     LOGFONT lgf;
@@ -1230,7 +1230,7 @@ bool NTL::FFixedPitch(int32_t onn)
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new rectangular region.  If prc is nil, the region will be
     empty.
 ***************************************************************************/
@@ -1249,7 +1249,7 @@ bool FCreateRgn(HRGN *phrgn, RC *prc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Free the region and set *phrgn to nil.
 ***************************************************************************/
 void FreePhrgn(HRGN *phrgn)
@@ -1263,7 +1263,7 @@ void FreePhrgn(HRGN *phrgn)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the region rectangular.  If prc is nil, the region will be empty.
     If *phrgn is hNil, creates the region.  *phrgn may change even if
     *phrgn is not nil.
@@ -1286,7 +1286,7 @@ bool FSetRectRgn(HRGN *phrgn, RC *prc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the union of hrgnSrc1 and hrgnSrc2 into hrgnDst.  The parameters
     need not be distinct.  Returns success/failure.
 ***************************************************************************/
@@ -1299,7 +1299,7 @@ bool FUnionRgn(HRGN hrgnDst, HRGN hrgnSrc1, HRGN hrgnSrc2)
     return QDError() == noErr;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the intersection of hrgnSrc1 and hrgnSrc2 into hrgnDst.  The parameters
     need not be distinct.  Returns success/failure.
 ***************************************************************************/
@@ -1314,7 +1314,7 @@ bool FIntersectRgn(HRGN hrgnDst, HRGN hrgnSrc1, HRGN hrgnSrc2, bool *pfEmpty)
     return QDError() == noErr;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put hrgnSrc - hrgnSrcSub into hrgnDst.  The parameters need not be
     distinct.  Returns success/failure.
 ***************************************************************************/
@@ -1327,7 +1327,7 @@ bool FDiffRgn(HRGN hrgnDst, HRGN hrgnSrc, HRGN hrgnSrcSub)
     return QDError() == noErr;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the region is rectangular and put the bounding rectangle
     in *prc (if not nil).
 ***************************************************************************/
@@ -1344,7 +1344,7 @@ bool FRectRgn(HRGN hrgn, RC *prc)
     return (*hrgn)->rgnSize == 10;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return true iff the region is empty.
 ***************************************************************************/
 bool FEmptyRgn(HRGN hrgn, RC *prc)
@@ -1359,7 +1359,7 @@ bool FEmptyRgn(HRGN hrgn, RC *prc)
     return EmptyRgn(hrgn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return true iff the two regions are equal.
 ***************************************************************************/
 bool FEqualRgn(HRGN hrgn1, HRGN hrgn2)

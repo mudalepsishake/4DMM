@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* CSAPI.H - API entry header file for CSAPI
+/* 3DMMv1.0: CSAPI.H - API entry header file for CSAPI
  *
  * See Csapi.Doc for details on the CSAPI.
  * Note that the double slash comment // should not be used in this file
@@ -14,24 +14,24 @@
 #define CSAPI_H
 
 #ifdef NT
-typedef unsigned SC_MDR; /* main dictionary reference*/
-typedef unsigned SC_UDR; /* user dictionary reference*/
+typedef unsigned SC_MDR; /* 3DMMv1.0: main dictionary reference*/
+typedef unsigned SC_UDR; /* 3DMMv1.0: user dictionary reference*/
 #else
-typedef unsigned short SC_MDR; /* main dictionary reference*/
-typedef unsigned short SC_UDR; /* user dictionary reference*/
+typedef unsigned short SC_MDR; /* 3DMMv1.0: main dictionary reference*/
+typedef unsigned short SC_UDR; /* 3DMMv1.0: user dictionary reference*/
 #endif
-typedef unsigned short SC_CC; /* Spell Check Command Code */
+typedef unsigned short SC_CC; /* 3DMMv1.0: Spell Check Command Code */
 
-/* SPLID is the replacement for SID due to a conflict with the Windows NT
+/* 3DMMv1.0: SPLID is the replacement for SID due to a conflict with the Windows NT
     header files.  References to sid i.e. sidSA are left unchanged for
     the sake of less required code changes. */
-typedef unsigned long SC_SPLID; /* Spell Id type */
-typedef unsigned short SC_SCIS; /* SpellCheckInputStatus*/
-typedef unsigned short SC_SCRS; /* SpellCheckReturnStatus */
+typedef unsigned long SC_SPLID; /* 3DMMv1.0: Spell Id type */
+typedef unsigned short SC_SCIS; /* 3DMMv1.0: SpellCheckInputStatus*/
+typedef unsigned short SC_SCRS; /* 3DMMv1.0: SpellCheckReturnStatus */
 
-typedef unsigned short SC_LID; /* two byte language identifier code */
+typedef unsigned short SC_LID; /* 3DMMv1.0: two byte language identifier code */
 
-/* Comment out as needed */
+/* 3DMMv1.0: Comment out as needed */
 typedef unsigned char SC_BYTE;
 typedef unsigned short SC_WORD;
 typedef char SC_CHAR;
@@ -41,7 +41,7 @@ typedef int SC_BOOL;
 typedef short SC_BOOL;
 #endif
 
-/* All undefined or unused chars should be mapped to bIgnore. */
+/* 3DMMv1.0: All undefined or unused chars should be mapped to bIgnore. */
 typedef struct WizSpecChars
 {
     SC_BYTE bIgnore;
@@ -63,43 +63,43 @@ typedef struct WizSpecChars
 #endif
 #endif
 
-/************************** Structure Typedefs *************/
+/** 3DMMv1.0: ************************ Structure Typedefs *************/
 
-typedef SC_WORD SC_SEC; /* Spell Error Code.  Low byte for major code, High byte for minor.*/
+typedef SC_WORD SC_SEC; /* 3DMMv1.0: Spell Error Code.  Low byte for major code, High byte for minor.*/
 
 typedef struct SpellInputBuffer
 {
-    unsigned short cch;         /* Total characters in buffer area  */
-    unsigned short cMdr;        /* Count of MDR's specified in lrgMdr */
-    unsigned short cUdr;        /* Should not reference Exclusion UDR's.
+    unsigned short cch;         /* 3DMMv1.0: Total characters in buffer area  */
+    unsigned short cMdr;        /* 3DMMv1.0: Count of MDR's specified in lrgMdr */
+    unsigned short cUdr;        /* 3DMMv1.0: Should not reference Exclusion UDR's.
                                     Count of UDR's specified in lrgUdr */
-    unsigned short wSpellState; /* State relative to previous SpellCheck() call */
-    SC_CHAR SC_FAR *lrgch;      /* ptr to buf area of text to be spell checked */
-    SC_MDR SC_FAR *lrgMdr;      /* List of main dicts to use when spelling the buffer */
-    SC_UDR SC_FAR *lrgUdr;      /* Should not reference Exclusion UDR's.
+    unsigned short wSpellState; /* 3DMMv1.0: State relative to previous SpellCheck() call */
+    SC_CHAR SC_FAR *lrgch;      /* 3DMMv1.0: ptr to buf area of text to be spell checked */
+    SC_MDR SC_FAR *lrgMdr;      /* 3DMMv1.0: List of main dicts to use when spelling the buffer */
+    SC_UDR SC_FAR *lrgUdr;      /* 3DMMv1.0: Should not reference Exclusion UDR's.
                               List of user dicts to use when spelling the buffer */
 } SC_SIB;
 typedef SC_SIB SC_FAR *LPSC_SIB;
 
 typedef struct SpellReturnBuffer
 {
-    /* These fields are set by the SpellCheck() function */
-    /* reference word in error or flagged into SC_SIB. */
-    unsigned short ichError; /*position in the SC_SIB */
-    unsigned short cchError; /*Length of error "word" in SC_SIB.*/
+    /* 3DMMv1.0: These fields are set by the SpellCheck() function */
+    /* 3DMMv1.0: reference word in error or flagged into SC_SIB. */
+    unsigned short ichError; /* 3DMMv1.0: position in the SC_SIB */
+    unsigned short cchError; /* 3DMMv1.0: Length of error "word" in SC_SIB.*/
 
-    /* These fields are set by the SpellCheck() function. */
-    SC_SCRS scrs;          /*spell check return status. Set by SC()*/
-    unsigned short csz;    /*count of sz's put in buffer. Set by SC*/
-    unsigned short cchMac; /* Current total of chars in buffer. */
+    /* 3DMMv1.0: These fields are set by the SpellCheck() function. */
+    SC_SCRS scrs;          /* 3DMMv1.0: spell check return status. Set by SC()*/
+    unsigned short csz;    /* 3DMMv1.0: count of sz's put in buffer. Set by SC*/
+    unsigned short cchMac; /* 3DMMv1.0: Current total of chars in buffer. */
 
-    /* These fields MUST be set by the app, NULL pointers are invalid */
-    unsigned short cch;         /* total space in lrgch.  Set by App. */
-    SC_CHAR SC_FAR *lrgsz;      /* ptr to alternatives.
+    /* 3DMMv1.0: These fields MUST be set by the app, NULL pointers are invalid */
+    unsigned short cch;         /* 3DMMv1.0: total space in lrgch.  Set by App. */
+    SC_CHAR SC_FAR *lrgsz;      /* 3DMMv1.0: ptr to alternatives.
                              format: word\0word\0...word\0\0*/
-    SC_BYTE SC_FAR *lrgbRating; /* ptr to Rating value for each sugg. returned.
+    SC_BYTE SC_FAR *lrgbRating; /* 3DMMv1.0: ptr to Rating value for each sugg. returned.
                              Parallel to lrgsz array.  Allocated by App.*/
-    unsigned short cbRate;      /* Number of elements in lrgbRating.
+    unsigned short cbRate;      /* 3DMMv1.0: Number of elements in lrgbRating.
                                    Set by App. lrgbRating must be this long.*/
 } SC_SRB;
 typedef SC_SRB SC_FAR *LPSC_SRB;
@@ -113,32 +113,32 @@ typedef struct mdrs
 typedef SC_MDRS SC_FAR *LPSC_MDRS;
 
 #ifndef MAC
-typedef SC_CHAR SC_FAR *LPSC_PATH; /* ptr to full Sz path string. */
+typedef SC_CHAR SC_FAR *LPSC_PATH; /* 3DMMv1.0: ptr to full Sz path string. */
 #else
 typedef struct spath
 {
     short volRefNum;
     int32_t dirID;
-    SC_CHAR *lpszFilePath; /* lpSzFile is local Sz path string for MAC,
+    SC_CHAR *lpszFilePath; /* 3DMMv1.0: lpSzFile is local Sz path string for MAC,
                            it is the local file path which will be
                            used with the volRefNum.
                         */
 } SC_PATH;
 typedef SC_PATH *LPSC_PATH;
-#endif /* !MAC */
+#endif /* 3DMMv1.0: !MAC */
 
-/*-------------------------------------------------------*/
-/* All Defines*/
+/* 3DMMv1.0: -------------------------------------------------------*/
+/* 3DMMv1.0: All Defines*/
 
-/* Explicit word delimeters. */
+/* 3DMMv1.0: Explicit word delimeters. */
 #define chSpaceSpell                                                                                                   \
-    0x20 /* ' ' space.  Also used to delimit                                                                           \
+    0x20 /* 3DMMEx: ' ' space.  Also used to delimit                                                                           \
             "change always" pairs */
 #define chTabSpell                                                                                                     \
-    0x09 /* TAB.  Can be word delimeter or a                                                                           \
+    0x09 /* 3DMMEx: TAB.  Can be word delimeter or a                                                                           \
             string delimiter for "change once" lists.*/
-/*** Additional Word Delimeters. */
-/* [] {} () <> /  EmDash EnDash Ellipsis New_Paragraph */
+/** 3DMMv1.0: * Additional Word Delimeters. */
+/* 3DMMv1.0: [] {} () <> /  EmDash EnDash Ellipsis New_Paragraph */
 
 #define chLParenSpell 0x28
 #define chRParenSpell 0x29
@@ -150,82 +150,82 @@ typedef SC_PATH *LPSC_PATH;
 #define chGreaterThanSpell 0x3E
 #define chForwardSlashSpell 0x2F
 
-/* Spell Id Engine Defines */
-#define sidSA 1  /* SoftArt */
-#define sidHM 2  /* Houghton-Mifflin (InfoSoft) */
-#define sidML 3  /* MicroLytics */
-#define sidLS 4  /* LanSer Data */
-#define sidCT 5  /* Center of Educational Technology */
-#define sidHS 6  /* HSoft */
-#define sidMO 7  /* MorphoLogic */
-#define sidTI 8  /* TiP */
-#define sidKF 9  /* Korea Foreign Language University */
-#define sidPI 10 /* Priberam Informatica Lince */
-#define sidGS 11 /* Glyph Systems */
-#define sidRA 12 /* Radiar */
-#define sidIN 13 /* Intracom */
+/* 3DMMv1.0: Spell Id Engine Defines */
+#define sidSA 1  /* 3DMMv1.0: SoftArt */
+#define sidHM 2  /* 3DMMv1.0: Houghton-Mifflin (InfoSoft) */
+#define sidML 3  /* 3DMMv1.0: MicroLytics */
+#define sidLS 4  /* 3DMMv1.0: LanSer Data */
+#define sidCT 5  /* 3DMMv1.0: Center of Educational Technology */
+#define sidHS 6  /* 3DMMv1.0: HSoft */
+#define sidMO 7  /* 3DMMv1.0: MorphoLogic */
+#define sidTI 8  /* 3DMMv1.0: TiP */
+#define sidKF 9  /* 3DMMv1.0: Korea Foreign Language University */
+#define sidPI 10 /* 3DMMv1.0: Priberam Informatica Lince */
+#define sidGS 11 /* 3DMMv1.0: Glyph Systems */
+#define sidRA 12 /* 3DMMv1.0: Radiar */
+#define sidIN 13 /* 3DMMv1.0: Intracom */
 
-/* IPG two byte language id's.  Returned in SC_LID field. */
-#define ksclidAmerican 0x0409       /* "AM" American English   */
-#define ksclidAustralian 0x0c09     /* "EA" English Australian */
-#define ksclidBritish 0x0809        /* "BR" English            */
-#define ksclidCatalan 0x0403        /* "CT" Catalan            */
-#define ksclidDanish 0x0406         /* "DA" Danish             */
-#define ksclidDutch 0x0413          /* "NL" Dutch              */
-#define ksclidDutchPreferred 0x0013 /* "NL" Dutch Preferred    */
-#define ksclidFinnish 0x040b        /* "FI" Finish             */
-#define ksclidFrench 0x040c         /* "FR" French             */
-#define ksclidFrenchCanadian 0x0c0c /* "FC" French Canadian    */
-#define ksclidGerman 0x0407         /* "GE" German             */
-#define ksclidSwissGerman 0x0807    /* "GS" German Swiss       */
-#define ksclidItalian 0x0410        /* "IT" Italian            */
-#define ksclidNorskBokmal 0x0414    /* "NO" Norwegian Bokmal   */
-#define ksclidNorskNynorsk 0x0814   /* "NN" Norwegian Nynorsk  */
-#define ksclidPortBrazil 0x0416     /* "PB" Portuguese Brazil  */
-#define ksclidPortIberian 0x0816    /* "PT" Portuguese Iberian */
-#define ksclidSpanish 0x040a        /* "SP" Spanish            */
-#define ksclidSwedish 0x041d        /* "SW" Swedish            */
-#define ksclidRussian 0x0419        /* "RU" Russian            */
-#define ksclidCzech 0x0405          /* "CZ" Czech              */
-#define ksclidHungarian 0x040e      /* "HU" Hungarian          */
-#define ksclidPolish 0x0415         /* "PL" Polish             */
-#define ksclidTurkish 0x041f        /* "TR" Turkish            */
-/* African languages */
-#define ksclidSutu 0x0430      /* "ST" Sutu               */
-#define ksclidTsonga 0x0431    /* "TS" Tsonga             */
-#define ksclidTswana 0x0432    /* "TN" Tswana             */
-#define ksclidVenda 0x0433     /* "VE" Venda			   */
-#define ksclidXhosa 0x0434     /* "XH" Xhosa              */
-#define ksclidZulu 0x0435      /* "ZU" Zulu               */
-#define ksclidAfrikaans 0x0436 /* "AF" Afrikaans          */
-/* These are currently not used, but added for future support. */
+/* 3DMMv1.0: IPG two byte language id's.  Returned in SC_LID field. */
+#define ksclidAmerican 0x0409       /* 3DMMv1.0: "AM" American English   */
+#define ksclidAustralian 0x0c09     /* 3DMMv1.0: "EA" English Australian */
+#define ksclidBritish 0x0809        /* 3DMMv1.0: "BR" English            */
+#define ksclidCatalan 0x0403        /* 3DMMv1.0: "CT" Catalan            */
+#define ksclidDanish 0x0406         /* 3DMMv1.0: "DA" Danish             */
+#define ksclidDutch 0x0413          /* 3DMMv1.0: "NL" Dutch              */
+#define ksclidDutchPreferred 0x0013 /* 3DMMv1.0: "NL" Dutch Preferred    */
+#define ksclidFinnish 0x040b        /* 3DMMv1.0: "FI" Finish             */
+#define ksclidFrench 0x040c         /* 3DMMv1.0: "FR" French             */
+#define ksclidFrenchCanadian 0x0c0c /* 3DMMv1.0: "FC" French Canadian    */
+#define ksclidGerman 0x0407         /* 3DMMv1.0: "GE" German             */
+#define ksclidSwissGerman 0x0807    /* 3DMMv1.0: "GS" German Swiss       */
+#define ksclidItalian 0x0410        /* 3DMMv1.0: "IT" Italian            */
+#define ksclidNorskBokmal 0x0414    /* 3DMMv1.0: "NO" Norwegian Bokmal   */
+#define ksclidNorskNynorsk 0x0814   /* 3DMMv1.0: "NN" Norwegian Nynorsk  */
+#define ksclidPortBrazil 0x0416     /* 3DMMv1.0: "PB" Portuguese Brazil  */
+#define ksclidPortIberian 0x0816    /* 3DMMv1.0: "PT" Portuguese Iberian */
+#define ksclidSpanish 0x040a        /* 3DMMv1.0: "SP" Spanish            */
+#define ksclidSwedish 0x041d        /* 3DMMv1.0: "SW" Swedish            */
+#define ksclidRussian 0x0419        /* 3DMMv1.0: "RU" Russian            */
+#define ksclidCzech 0x0405          /* 3DMMv1.0: "CZ" Czech              */
+#define ksclidHungarian 0x040e      /* 3DMMv1.0: "HU" Hungarian          */
+#define ksclidPolish 0x0415         /* 3DMMv1.0: "PL" Polish             */
+#define ksclidTurkish 0x041f        /* 3DMMv1.0: "TR" Turkish            */
+/* 3DMMv1.0: African languages */
+#define ksclidSutu 0x0430      /* 3DMMv1.0: "ST" Sutu               */
+#define ksclidTsonga 0x0431    /* 3DMMv1.0: "TS" Tsonga             */
+#define ksclidTswana 0x0432    /* 3DMMv1.0: "TN" Tswana             */
+#define ksclidVenda 0x0433     /* 3DMMv1.0: "VE" Venda			   */
+#define ksclidXhosa 0x0434     /* 3DMMv1.0: "XH" Xhosa              */
+#define ksclidZulu 0x0435      /* 3DMMv1.0: "ZU" Zulu               */
+#define ksclidAfrikaans 0x0436 /* 3DMMv1.0: "AF" Afrikaans          */
+/* 3DMMv1.0: These are currently not used, but added for future support. */
 #define ksclidArabic 0x0401
 #define ksclidHebrew 0x040d
 #define ksclidJapanese 0x0411
-#define ksclidLatin 0x041a    /* Croato-Serbian (Latin)   */
-#define ksclidCyrillic 0x081a /* Serbo-Croatian (Cyrillic) */
+#define ksclidLatin 0x041a    /* 3DMMv1.0: Croato-Serbian (Latin)   */
+#define ksclidCyrillic 0x081a /* 3DMMv1.0: Serbo-Croatian (Cyrillic) */
 #define ksclidSlovak 0x041b
 
 #define LID_UNKNOWN 0xffff
 #define ksclidUnknown 0xffff
 
-/* Ram Cache User Dictionary Reference. */
-#define udrChangeOnce 0xfffc   /* UDR reserved reference for Change Once list    */
-#define udrChangeAlways 0xfffd /* UDR reserved reference for Change Always list  */
-#define udrIgnoreAlways 0xfffe /* UDR reserved reference for Ingore Always list. */
+/* 3DMMv1.0: Ram Cache User Dictionary Reference. */
+#define udrChangeOnce 0xfffc   /* 3DMMv1.0: UDR reserved reference for Change Once list    */
+#define udrChangeAlways 0xfffd /* 3DMMv1.0: UDR reserved reference for Change Always list  */
+#define udrIgnoreAlways 0xfffe /* 3DMMv1.0: UDR reserved reference for Ingore Always list. */
 
-/* Word List property types.  Note: Code relies on being == to above udr's! */
+/* 3DMMv1.0: Word List property types.  Note: Code relies on being == to above udr's! */
 #define ChangeOnceProp udrChangeOnce
 #define ChangeAlwaysProp udrChangeAlways
 #define IgnoreAlwaysProp udrIgnoreAlways
 
-/* Bitfield definitions for SpellInit() Status */
+/* 3DMMv1.0: Bitfield definitions for SpellInit() Status */
 #define fscisWildCardSupport 0x0001
 #define fscisMultiDictSupport 0x0002
 #define fscisHyphenationSupport 0x0004
 #define scisNULL 0x0000
 
-/* Spell Check Command Definitions */
+/* 3DMMv1.0: Spell Check Command Definitions */
 #define sccVerifyWord 1
 #define sccVerifyBuffer 2
 #define sccSuggest 3
@@ -234,14 +234,14 @@ typedef SC_PATH *LPSC_PATH;
 #define sccWildcard 6
 #define sccAnagram 7
 
-/* Flag values for SpellState field in Sib. */
+/* 3DMMv1.0: Flag values for SpellState field in Sib. */
 #define fssIsContinued 0x0001
-/* Call is continuing from where last call returned.  Must be cleared
+/* 3DMMv1.0: Call is continuing from where last call returned.  Must be cleared
    for first call into SpellCheck().
 */
 
 #define fssStartsSentence 0x0002
-/* First word in buffer is known to be start of
+/* 3DMMv1.0: First word in buffer is known to be start of
    sentence/paragraph/document.  This is only used if the
    fSibIsContinued bit is not set.  It should not be needed if the
    fSibIsContinued bit is being used.  If this bit is set during a
@@ -249,7 +249,7 @@ typedef SC_PATH *LPSC_PATH;
 */
 
 #define fssIsEditedChange 0x0004
-/* The run of text represented in the SC_SIB is a change from either
+/* 3DMMv1.0: The run of text represented in the SC_SIB is a change from either
    a change pair (change always or change once) edit, or from a
    user specified change, possibly from a suggestion list presented
    to the user.  This text should be checked for repeat word
@@ -261,104 +261,104 @@ typedef SC_PATH *LPSC_PATH;
 */
 
 #define fssNoStateInfo 0x0000
-/* App is responsible for checking for all repeat word and sentence
+/* 3DMMv1.0: App is responsible for checking for all repeat word and sentence
    punctuation, and avoiding processing loops such as change always
    can=can can.
 */
-/* End of Sib Spell State flag definitions. */
+/* 3DMMv1.0: End of Sib Spell State flag definitions. */
 
-/* Spell Check return status identifiers */
-#define scrsNoErrors 0                    /* All buffer processed. */
-#define scrsUnknownInputWord 1            /* Unknown word. */
-#define scrsReturningChangeAlways 2       /* Returning a Change Always word in SC_SRB. */
-#define scrsReturningChangeOnce 3         /* Returning a Change Once word in SC_SRB. */
-#define scrsInvalidHyphenation 4          /* Error in hyphenation point.*/
-#define scrsErrorCapitalization 5         /* Cap pattern not valid. */
-#define scrsWordConsideredAbbreviation 6  /* Word is considered an abbreviation. */
-#define scrsHyphChangesSpelling 7         /* Word changes spelling when not hyphenated. */
-#define scrsNoMoreSuggestions 8           /* All methods used. */
-#define scrsMoreInfoThanBufferCouldHold 9 /* More return data than fit in buffer */
-#define scrsNoSentenceStartCap 10         /* Start of sentence was not capitalized. */
-#define scrsRepeatWord 11                 /* Repeat word found. */
-#define scrsExtraSpaces 12                /* Too many spaces for context.*/
-#define scrsMissingSpace 13               /* Too few space(s) between words or sentences. */
-#define scrsInitialNumeral 14             /* Word starts with numeral & soFlagInitialNumeral set */
+/* 3DMMv1.0: Spell Check return status identifiers */
+#define scrsNoErrors 0                    /* 3DMMv1.0: All buffer processed. */
+#define scrsUnknownInputWord 1            /* 3DMMv1.0: Unknown word. */
+#define scrsReturningChangeAlways 2       /* 3DMMv1.0: Returning a Change Always word in SC_SRB. */
+#define scrsReturningChangeOnce 3         /* 3DMMv1.0: Returning a Change Once word in SC_SRB. */
+#define scrsInvalidHyphenation 4          /* 3DMMv1.0: Error in hyphenation point.*/
+#define scrsErrorCapitalization 5         /* 3DMMv1.0: Cap pattern not valid. */
+#define scrsWordConsideredAbbreviation 6  /* 3DMMv1.0: Word is considered an abbreviation. */
+#define scrsHyphChangesSpelling 7         /* 3DMMv1.0: Word changes spelling when not hyphenated. */
+#define scrsNoMoreSuggestions 8           /* 3DMMv1.0: All methods used. */
+#define scrsMoreInfoThanBufferCouldHold 9 /* 3DMMv1.0: More return data than fit in buffer */
+#define scrsNoSentenceStartCap 10         /* 3DMMv1.0: Start of sentence was not capitalized. */
+#define scrsRepeatWord 11                 /* 3DMMv1.0: Repeat word found. */
+#define scrsExtraSpaces 12                /* 3DMMv1.0: Too many spaces for context.*/
+#define scrsMissingSpace 13               /* 3DMMv1.0: Too few space(s) between words or sentences. */
+#define scrsInitialNumeral 14             /* 3DMMv1.0: Word starts with numeral & soFlagInitialNumeral set */
 
-/* Spell Error Codes */
+/* 3DMMv1.0: Spell Error Codes */
 #define secNOERRORS 0
-/* Major Error Codes. Low Byte of SEC*/
+/* 3DMMv1.0: Major Error Codes. Low Byte of SEC*/
 #define secOOM 1
-#define secModuleError 2 /* Something wrong with parameters, or state of spell module. */
-#define secIOErrorMdr 3  /* Read,write,or share error with Mdr. */
-#define secIOErrorUdr 4  /* Read,write,or share error with Udr. */
+#define secModuleError 2 /* 3DMMv1.0: Something wrong with parameters, or state of spell module. */
+#define secIOErrorMdr 3  /* 3DMMv1.0: Read,write,or share error with Mdr. */
+#define secIOErrorUdr 4  /* 3DMMv1.0: Read,write,or share error with Udr. */
 
-/* Minor Error Codes. Not set unless major code also set. */
-/* High Byte of SEC word var. */
-#define secModuleAlreadyBusy (128 << 8)      /* For non-reentrant code */
-#define secInvalidID (129 << 8)              /* Not yet inited or already terminated.*/
-#define secInvalidWsc (130 << 8)             /* Illegal values in SC_WSC struct */
-#define secInvalidMdr (131 << 8)             /* Mdr not registered with spell session */
-#define secInvalidUdr (132 << 8)             /* Udr not registered with spell session */
-#define secInvalidSCC (133 << 8)             /* SC_CC unknown (spellcheck() only ) */
-#define secInvalidMainDict (134 << 8)        /* Specified dictionary not correct format */
-#define secOperNotMatchedUserDict (135 << 8) /* Illegal operation for user dictionary type. */
-#define secFileReadError (136 << 8)          /* Generic read error */
-#define secFileWriteError (137 << 8)         /* Generic write error */
-#define secFileCreateError (138 << 8)        /* Generic create error */
-#define secFileShareError (139 << 8)         /* Generic share error */
-#define secModuleNotTerminated (140 << 8)    /* Module not able to be terminated completely.*/
-#define secUserDictFull (141 << 8)           /* Could not update Udr without exceeding limit.*/
-#define secInvalidUdrEntry (142 << 8)        /* invalid chars in string(s) */
-#define secUdrEntryTooLong (143 << 8)        /* Entry too long, or invalid chars in string(s) */
-#define secMdrCountExceeded (144 << 8)       /* Too many Mdr references */
-#define secUdrCountExceeded (145 << 8)       /* Too many udr references */
-#define secFileOpenError (146 << 8)          /* Generic Open error */
-#define secFileTooLargeError (147 << 8)      /* Generic file too large error */
-#define secUdrReadOnly (148 << 8)            /* Attempt to add to or write RO udr */
+/* 3DMMv1.0: Minor Error Codes. Not set unless major code also set. */
+/* 3DMMv1.0: High Byte of SEC word var. */
+#define secModuleAlreadyBusy (128 << 8)      /* 3DMMv1.0: For non-reentrant code */
+#define secInvalidID (129 << 8)              /* 3DMMv1.0: Not yet inited or already terminated.*/
+#define secInvalidWsc (130 << 8)             /* 3DMMv1.0: Illegal values in SC_WSC struct */
+#define secInvalidMdr (131 << 8)             /* 3DMMv1.0: Mdr not registered with spell session */
+#define secInvalidUdr (132 << 8)             /* 3DMMv1.0: Udr not registered with spell session */
+#define secInvalidSCC (133 << 8)             /* 3DMMv1.0: SC_CC unknown (spellcheck() only ) */
+#define secInvalidMainDict (134 << 8)        /* 3DMMv1.0: Specified dictionary not correct format */
+#define secOperNotMatchedUserDict (135 << 8) /* 3DMMv1.0: Illegal operation for user dictionary type. */
+#define secFileReadError (136 << 8)          /* 3DMMv1.0: Generic read error */
+#define secFileWriteError (137 << 8)         /* 3DMMv1.0: Generic write error */
+#define secFileCreateError (138 << 8)        /* 3DMMv1.0: Generic create error */
+#define secFileShareError (139 << 8)         /* 3DMMv1.0: Generic share error */
+#define secModuleNotTerminated (140 << 8)    /* 3DMMv1.0: Module not able to be terminated completely.*/
+#define secUserDictFull (141 << 8)           /* 3DMMv1.0: Could not update Udr without exceeding limit.*/
+#define secInvalidUdrEntry (142 << 8)        /* 3DMMv1.0: invalid chars in string(s) */
+#define secUdrEntryTooLong (143 << 8)        /* 3DMMv1.0: Entry too long, or invalid chars in string(s) */
+#define secMdrCountExceeded (144 << 8)       /* 3DMMv1.0: Too many Mdr references */
+#define secUdrCountExceeded (145 << 8)       /* 3DMMv1.0: Too many udr references */
+#define secFileOpenError (146 << 8)          /* 3DMMv1.0: Generic Open error */
+#define secFileTooLargeError (147 << 8)      /* 3DMMv1.0: Generic file too large error */
+#define secUdrReadOnly (148 << 8)            /* 3DMMv1.0: Attempt to add to or write RO udr */
 
-/* Spell Options bitfield definitions */
-#define soSuggestFromUserDict 0x00000001L /* Suggest from user dictionaries. */
-#define soIgnoreAllCaps 0x00000002L       /* Ignore words in all UPPERCASE. */
-#define soIgnoreMixedDigits 0x00000004L   /* Ignore words with any numbers in it. */
-#define soIgnoreRomanNumerals 0x00000008L /* Ignore words composed of all roman numerals. */
+/* 3DMMv1.0: Spell Options bitfield definitions */
+#define soSuggestFromUserDict 0x00000001L /* 3DMMv1.0: Suggest from user dictionaries. */
+#define soIgnoreAllCaps 0x00000002L       /* 3DMMv1.0: Ignore words in all UPPERCASE. */
+#define soIgnoreMixedDigits 0x00000004L   /* 3DMMv1.0: Ignore words with any numbers in it. */
+#define soIgnoreRomanNumerals 0x00000008L /* 3DMMv1.0: Ignore words composed of all roman numerals. */
 #define soFindUncappedSentences                                                                                        \
-    0x00000010L /* Flag sentences which don't start with a cap.                                                        \
+    0x00000010L /* 3DMMEx: Flag sentences which don't start with a cap.                                                        \
                  * (Soft-Art only)                                                                                     \
                  */
 #define soFindMissingSpaces                                                                                            \
-    0x00000020L                      /* Flag missing spaces between words/sentences.                                   \
+    0x00000020L                      /* 3DMMEx: Flag missing spaces between words/sentences.                                   \
                                       * (Soft-Art only)                                                                \
                                       */
-#define soFindRepeatWord 0x00000040L /* Flag repeated words. */
+#define soFindRepeatWord 0x00000040L /* 3DMMv1.0: Flag repeated words. */
 #define soFindExtraSpaces                                                                                              \
-    0x00000080L /* Flag extra spaces between words.                                                                    \
+    0x00000080L /* 3DMMEx: Flag extra spaces between words.                                                                    \
                  * (Soft-Art only)                                                                                     \
                  */
 #define soFindSpacesBeforePunc                                                                                         \
-    0x00000100L /* Flag spaces preceeding                                                                              \
+    0x00000100L /* 3DMMEx: Flag spaces preceeding                                                                              \
                  *  the chars below:                                                                                   \
                  *     ) ] } > , ; % . ? !                                                                             \
                  * (Soft-Art only)                                                                                     \
                  */
 #define soFindSpacesAfterPunc                                                                                          \
-    0x00000200L /* Flag spaces following                                                                               \
+    0x00000200L /* 3DMMEx: Flag spaces following                                                                               \
                  *  the chars below:                                                                                   \
                  *     ( [ { $                                                                                         \
                  * (Soft-Art only)                                                                                     \
                  */
 #define soRateSuggestions                                                                                              \
-    0x00000400L                           /* Rate the suggestions on scale                                             \
+    0x00000400L                           /* 3DMMEx: Rate the suggestions on scale                                             \
                                            *  of 1-255, 255 being most likely                                          \
                                            * (Soft-Art only)                                                           \
                                            */
-#define soFindInitialNumerals 0x00000800L /* Flag words starting with number(s) */
+#define soFindInitialNumerals 0x00000800L /* 3DMMv1.0: Flag words starting with number(s) */
 #define soReportUDHits                                                                                                 \
-    0x00001000L                    /* Report (via scrsNoErrorsUDHit) where                                             \
+    0x00001000L                    /* 3DMMEx: Report (via scrsNoErrorsUDHit) where                                             \
                                     *  user dict was used during verification                                          \
                                     */
-#define soQuickSuggest 0x00002000L /* Don't use typo suggest code (Soft-Art only) */
+#define soQuickSuggest 0x00002000L /* 3DMMv1.0: Don't use typo suggest code (Soft-Art only) */
 #define soUseAllOpenUdr                                                                                                \
-    0x00004000L /* Automatically use all udr's opened                                                                  \
+    0x00004000L /* 3DMMEx: Automatically use all udr's opened                                                                  \
                  * after this option is set, or all opened udr's                                                       \
                  * with mdr's opened after this option is set.                                                         \
                  * This option does not allow exclusion dicts to                                                       \
@@ -366,32 +366,32 @@ typedef SC_PATH *LPSC_PATH;
                  * (HM only)                                                                                           \
                  */
 #define soSwapMdr                                                                                                      \
-    0x00008000L /* Keep the most recent 2 mdr's around.                                                                \
+    0x00008000L /* 3DMMEx: Keep the most recent 2 mdr's around.                                                                \
                  * swap between them instead of actually closing                                                       \
                  * and reopening mdr's.                                                                                \
                  * (HM only)                                                                                           \
                  */
 #define soSglStepSugg                                                                                                  \
-    0x00010000L /* Break after each suggestion task for faster                                                         \
+    0x00010000L /* 3DMMEx: Break after each suggestion task for faster                                                         \
                  * return of control to the application.                                                               \
                  * (HM only)                                                                                           \
                  */
 #define soIgnoreSingleLetter                                                                                           \
-    0x00020000L /* Do not check single letters: e.g., "a)".                                                            \
+    0x00020000L /* 3DMMEx: Do not check single letters: e.g., "a)".                                                            \
                  * (HS only)                                                                                           \
                  */
 
-#define soLangMode 0xF0000000L /* Language Mode mask */
-/* Hebrew Language Modes -- (CT only) */
+#define soLangMode 0xF0000000L /* 3DMMv1.0: Language Mode mask */
+/* 3DMMv1.0: Hebrew Language Modes -- (CT only) */
 #define soHebrewFullScript 0x00000000L
 #define soHebrewPartialScript 0x10000000L
 #define soHebrewMixedScript 0x20000000L
 #define soHebrewMixedAuthorizedScript 0x30000000L
-/* French Language Modes -- (HM only) */
+/* 3DMMv1.0: French Language Modes -- (HM only) */
 #define soFrenchDialectDefault 0x00000000L
 #define soFrenchUnaccentedUppercase 0x10000000L
 #define soFrenchAccentedUppercase 0x20000000L
-/* Russian Language Modes -- (HM only) */
+/* 3DMMv1.0: Russian Language Modes -- (HM only) */
 #define soRussianDialectDefault 0x00000000L
 #define soRussianIE 0x10000000L
 #define soRussianIO 0x20000000L
@@ -411,7 +411,7 @@ typedef SC_PATH *LPSC_PATH;
 
 #define sdcDumpMdrAll 400
 #define sdcDumpMdr1 401
-#endif /* DEBUG */
+#endif /* 3DMMv1.0: DEBUG */
 
 #ifdef MAC
 #define SC_PASCAL pascal
@@ -424,7 +424,7 @@ typedef SC_PATH *LPSC_PATH;
 
 #ifndef WIN
 
-/* Exported Function Prototypes */
+/* 3DMMv1.0: Exported Function Prototypes */
 
 extern GLOBALSEC SpellVer(SC_WORD SC_FAR *, SC_WORD SC_FAR *, SC_WORD SC_FAR *);
 extern GLOBALSEC SpellInit(SC_SPLID SC_FAR *, SC_WSC SC_FAR *);
@@ -453,6 +453,6 @@ extern void CsapiResTerm(void);
 extern void CsapiResFlush(void);
 #endif
 
-#endif /* !WIN */
+#endif /* 3DMMEx: !WIN */
 
-#endif /* !CSAPI_H */
+#endif /* 3DMMv1.0: !CSAPI_H */

@@ -4,18 +4,30 @@ add_library(bren)
 target_sources(bren
     PRIVATE
     "${PROJECT_SOURCE_DIR}/bren/bwld.cpp"
-    "${PROJECT_SOURCE_DIR}/bren/stderr.c"
-    "${PROJECT_SOURCE_DIR}/bren/stdfile.c"
     "${PROJECT_SOURCE_DIR}/bren/tmap.cpp"
     "${PROJECT_SOURCE_DIR}/bren/zbmp.cpp"
 )
 
-if (WIN32)
-    target_sources(
-        bren
+# Modern BRender already supplies its own compatible stdio/diagnostic/memory
+# handlers. The 1995 copies in bren/ use older callback-structure layouts and
+# would also duplicate BRender 1.4's global default-handler symbols.
+if (NOT "${3DMM_BRENDER_LIBRARY}" STREQUAL "Modern")
+    target_sources(bren
         PRIVATE
-        "${PROJECT_SOURCE_DIR}/bren/stdmemwin.c"
+        "${PROJECT_SOURCE_DIR}/bren/stderr.c"
+        "${PROJECT_SOURCE_DIR}/bren/stdfile.c"
     )
+    if (WIN32)
+        target_sources(bren PRIVATE "${PROJECT_SOURCE_DIR}/bren/stdmemwin.c")
+    endif()
+endif()
+
+# BRender 1.4 still declares BrFixedMulDiv for its legacy fixed-point API,
+# but its modern fixed.c no longer defines that one helper. 3DMM's fixed ABI
+# reaches it through BR_MULDIV, so provide the missing compatibility symbol in
+# our existing BRender glue library rather than modifying the fetched tree.
+if ("${3DMM_BRENDER_LIBRARY}" STREQUAL "Modern")
+    target_sources(bren PRIVATE "${PROJECT_SOURCE_DIR}/bren/brfixed_compat.cpp")
 endif()
 
 target_include_directories(bren PUBLIC "${PROJECT_SOURCE_DIR}/bren/inc")
@@ -86,7 +98,8 @@ if (NOT "${3DMM_AUDIOMAN_LIBRARY}" STREQUAL "None")
     )
 endif()
 
-add_executable(studio)
+# On non-windows WIN32 is a no-op
+add_executable(studio WIN32)
 target_sources(studio
     PRIVATE
     "${PROJECT_SOURCE_DIR}/src/studio/ape.cpp"
@@ -105,10 +118,6 @@ target_sources(studio
     "${PROJECT_SOURCE_DIR}/src/studio/utest.cpp"
 )
 if (WIN32)
-    set_target_properties(
-        studio
-        PROPERTIES WIN32_EXECUTABLE ON
-    )
     target_sources(
         studio
         PRIVATE
@@ -116,6 +125,57 @@ if (WIN32)
         "${PROJECT_SOURCE_DIR}/src/studio/utest.rc"
         "${PROJECT_SOURCE_DIR}/src/studio/utest.rc2"
     )
+    if ("${3DMM_BRENDER_LIBRARY}" STREQUAL "Modern")
+        target_sources(studio PRIVATE "${PROJECT_SOURCE_DIR}/src/studio/brmodernwin.cpp")
+        # The 1.4 core/full targets do not pull renderer drivers into the
+        # application.  Link glrend explicitly so BrDrv1GLBegin and the
+        # public brglrend.h interface are available to the Win32 bridge.
+        target_link_libraries(studio PRIVATE BRender::Drivers::GLRend opengl32 dbghelp)
+
+        # modernbrlog1: keep linker symbols beside the installed executable.
+        # The optimized build can still crash at an RVA that is difficult to
+        # identify without its PDB; the MAP file gives us a compact symbol
+        # reference that survives the user's normal source/version backup.
+        if (MSVC)
+            target_link_options(studio PRIVATE /MAP)
+            add_custom_command(
+                TARGET studio POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_INSTALL_PREFIX}"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "$<TARGET_FILE_DIR:studio>/3dmovie.map"
+                        "${CMAKE_INSTALL_PREFIX}/3dmovie.map"
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        "$<TARGET_PDB_FILE:studio>"
+                        "${CMAKE_INSTALL_PREFIX}/3dmovie.pdb"
+                VERBATIM
+            )
+        endif()
+    endif()
+    if (MSVC AND "${3DMM_BRENDER_LIBRARY}" STREQUAL "Original")
+        # perf1: compile the RGB888 TA24 clipping guard into every MSVC Original build, including RelWithDebInfo.
+        # The original library's TriangleRenderPIZ2TA24 symbol is renamed to
+        # TriangleRenderPIZ2TA24_orig in elib/brender/wind/brzbmxr.lib.
+        target_sources(studio PRIVATE "${PROJECT_SOURCE_DIR}/bren/ta24clip.cpp")
+        # tdtdiag1: inspect final RGB888 Gouraud vertex colours reaching the legacy rasterizer.
+        target_sources(studio PRIVATE "${PROJECT_SOURCE_DIR}/bren/rgb888shade_diag.cpp")
+
+        # Never leave an older installed 3dmovie.exe available after a failed
+        # relink.  Also remove the incremental-link PDB/ILK before every link:
+        # MSVC can otherwise abort with LNK1285 on a stale/corrupt 3dmovie.pdb.
+        add_custom_command(
+            TARGET studio PRE_LINK
+            COMMAND ${CMAKE_COMMAND} -E rm -f "${CMAKE_INSTALL_PREFIX}/3dmovie.exe"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "$<TARGET_PDB_FILE:studio>"
+            COMMAND ${CMAKE_COMMAND} -E rm -f "$<TARGET_FILE_DIR:studio>/3dmovie.ilk"
+            VERBATIM
+        )
+        add_custom_command(
+            TARGET studio POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_INSTALL_PREFIX}"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:studio>" "${CMAKE_INSTALL_PREFIX}/3dmovie.exe"
+            VERBATIM
+        )
+    endif()
 endif()
 
 if(3DMM_GUI STREQUAL "SDL")
@@ -182,6 +242,17 @@ if (NOT 3DMM_PRECOMPILED_CHUNKY_PATH)
         "${PROJECT_SOURCE_DIR}/src/shared/shared.cht"
         "${PROJECT_SOURCE_DIR}/src/shared/sharecd.cht"
     )
+
+    # studio.cht includes easels.cht and the other Studio chunk sources.
+    # Ninja/MSVC does not reliably honor IMPLICIT_DEPENDS for those includes,
+    # so content-only changes to easels.cht could leave the old studio.chk in
+    # place. Make the included chunks explicit dependencies of the preprocessed
+    # top-level Studio resource.
+    add_custom_command(
+        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/chomp/studio/studio.cht.i"
+        APPEND
+        DEPENDS ${studio-chunk-sources}
+    )
 endif()
 
 target_link_libraries(studio
@@ -201,10 +272,31 @@ if (WIN32)
         mpr     # Required for WNetGetUser()
         vfw32   # Required for ICInfo in _wHaveICMCodec
         msacm32 # Required for acmFormatTagDetailsA in _wHaveACMCodec
+        comdlg32 # Required for the native Dress/Color colour picker
     )
 endif()
 
 set_property(TARGET studio PROPERTY OUTPUT_NAME 3dmovie)
+
+# 4DMM native model -> VXP2 converter. Keep the conversion core isolated from
+# the Win32 shell so the same code can later be linked directly into 4DMM.
+# GLB uses the locally maintained cgltf copy already present in BRender 1.4;
+# FBX/ZIP decompression uses the locally maintained stb zlib code there too.
+if (WIN32)
+    add_executable(obj2vxp2 WIN32
+        "${PROJECT_SOURCE_DIR}/tools/obj2vxp2/obj2vxp2_core.cpp"
+        "${PROJECT_SOURCE_DIR}/tools/obj2vxp2/obj2vxp2_gltf.cpp"
+        "${PROJECT_SOURCE_DIR}/tools/obj2vxp2/obj2vxp2_fbx.cpp"
+        "${PROJECT_SOURCE_DIR}/tools/obj2vxp2/obj2vxp2_win.cpp"
+        "${PROJECT_SOURCE_DIR}/tools/obj2vxp2/zip_read.cpp"
+        "${PROJECT_SOURCE_DIR}/tools/obj2vxp2/zip_store.cpp"
+    )
+    target_include_directories(obj2vxp2 PRIVATE "${PROJECT_SOURCE_DIR}/tools/obj2vxp2")
+    target_compile_features(obj2vxp2 PRIVATE cxx_std_17)
+    target_compile_definitions(obj2vxp2 PRIVATE UNICODE _UNICODE)
+    target_link_libraries(obj2vxp2 PRIVATE ole32 windowscodecs shell32 comdlg32 comctl32)
+    install(TARGETS obj2vxp2 RUNTIME DESTINATION tools/obj2vxp2)
+endif()
 
 if(MSVC)
     target_link_options(studio
@@ -223,38 +315,6 @@ if(MSVC)
             $<$<CONFIG:DEBUG>:/NODEFAULTLIB:libcmt.lib>
         )
     endif()
-endif()
-
-if (APPLE)
-    set(icon_name "app.icns")
-    set(icon_path "${PROJECT_SOURCE_DIR}/src/studio/macos/${icon_name}")
-    target_sources(
-        studio
-        PRIVATE
-        ${icon_path}
-    )
-
-    set_target_properties(
-        studio
-        PROPERTIES
-        OUTPUT_NAME "3D Movie Maker"
-        MACOSX_BUNDLE ON
-        MACOSX_BUNDLE_INFO_PLIST "${PROJECT_SOURCE_DIR}/src/studio/macos/Info.plist.in"
-        MACOSX_BUNDLE_EXECUTABLE_NAME "3D Movie Maker"
-        MACOSX_BUNDLE_BUNDLE_NAME "3DMMEx"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "com.3dmmex.3dmovie"
-        MACOSX_BUNDLE_BUNDLE_VERSION "${GIT_VERSION}"
-        MACOSX_BUNDLE_ICON_FILE ${icon_name}
-        RESOURCE ${icon_path}
-    )
-
-    add_custom_command(
-        TARGET studio
-        POST_BUILD
-        COMMAND plutil -lint "$<TARGET_BUNDLE_CONTENT_DIR:studio>/Info.plist"
-        COMMENT "Validating generated plist"
-        VERBATIM
-    )
 endif()
 
 set_property(
@@ -288,71 +348,10 @@ set_property(
     "${PROJECT_SOURCE_DIR}/projects/mummy.3mm"
     "${PROJECT_SOURCE_DIR}/projects/surprise.3mm"
 )
-set_property(
-    TARGET studio
-    PROPERTY 3DMM_CONTENT
-    "${PROJECT_SOURCE_DIR}/content-files/3dmovie.ms"
-    "${PROJECT_SOURCE_DIR}/content-files/actor.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/actresl.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/bkgds.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/mtrl.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/bkgds.3cn"
-    "${PROJECT_SOURCE_DIR}/content-files/mtrls.3cn"
-    "${PROJECT_SOURCE_DIR}/content-files/prop.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/snds.3cn"
-    "${PROJECT_SOURCE_DIR}/content-files/sound.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/tbox.3th"
-    "${PROJECT_SOURCE_DIR}/content-files/tdfs.3cn"
-    "${PROJECT_SOURCE_DIR}/content-files/tmpls.3cn"
-)
-set_property(
-    TARGET studio
-    PROPERTY 3DMM_CUTSCENES
-    "${PROJECT_SOURCE_DIR}/content-files/04logn3.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/05logn4.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/backstag.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/cntdwn5.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/goida.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/goprj.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/gostu.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/idea2.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/idea3.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/idea4.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/logn1.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/logn5.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/logn06.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/mhole2.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/proj1.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/proj2.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/proj3.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/proj4.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/proj5.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/proj6.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/projt2.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/ticket1.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/ticket2.avi"
-    "${PROJECT_SOURCE_DIR}/content-files/tools1.avi"
-)
 
 # Please pay attention to the ending / in each DIRECTORY declaration. It
 # affects the destination!
-
-if(APPLE)
-    set(resources_path "./3D Movie Maker.app/Contents/Resources")
-else()
-    set(resources_path ".")
-endif()
-set(resources_path "$<PATH:NORMAL_PATH,${resources_path}>")
-
-set(mskids_path "${resources_path}/Microsoft Kids")
-set(mskids_3dmm_path "${mskids_path}/3D Movie Maker")
-set(mczee_path "${mskids_path}/Users/McZee")
-set(melanie_path "${mskids_path}/Users/Melanie")
-
-install(TARGETS studio
-    RUNTIME DESTINATION .
-    BUNDLE DESTINATION .
-)
+install(TARGETS studio RUNTIME DESTINATION .)
 
 if (3DMM_PRECOMPILED_CHUNKY_PATH)
     set(chunky_files
@@ -368,88 +367,38 @@ if (3DMM_PRECOMPILED_CHUNKY_PATH)
     foreach(chunky_file ${chunky_files})
         install(
             FILES "${3DMM_PRECOMPILED_CHUNKY_PATH}/${chunky_file}"
-            DESTINATION "${mskids_3dmm_path}"
+            DESTINATION "Microsoft Kids/3D Movie Maker"
         )
     endforeach()
 else()
     # HACK(bruxisma): This is due to UTEST.CHT not generating 3DMOVIE.CHK
     #                 Renaming it to 3DMOVIE.CHT would resolve this.
     install(FILES $<FILTER:$<TARGET_PROPERTY:studio,CHOMPED_CHUNKS>,EXCLUDE,.+utest[.]chk$>
-      DESTINATION "${mskids_3dmm_path}")
+      DESTINATION "Microsoft Kids/3D Movie Maker")
     install(FILES $<FILTER:$<TARGET_PROPERTY:studio,CHOMPED_CHUNKS>,INCLUDE,.+utest[.]chk$>
       RENAME 3dmovie.chk
-      DESTINATION "${mskids_3dmm_path}")
+      DESTINATION "Microsoft Kids/3D Movie Maker")
 endif()
 install(FILES $<TARGET_PROPERTY:studio,3DMM_PROJECTS>
-  DESTINATION "${melanie_path}")
+  DESTINATION "Microsoft Kids/Users/Melanie")
 install(FILES $<TARGET_PROPERTY:studio,3DMM_SAMPLES>
-  DESTINATION "${mczee_path}")
-install(FILES $<TARGET_PROPERTY:studio,3DMM_CONTENT>
-  DESTINATION "${mskids_3dmm_path}")
-
-if(KAUAI_HAS_VIDEO)
-    install(
-        FILES $<TARGET_PROPERTY:studio,3DMM_CUTSCENES>
-        DESTINATION "Microsoft Kids/3D Movie Maker"
-    )
-else()
-    # Generate placeholder files to avoid "I can't find this CD" errors
-    set(placeholder_avi "${CMAKE_CURRENT_BINARY_DIR}/placeholder.avi")
-    file(TOUCH "${placeholder_avi}")
-
-    get_property(cutscene_paths
-        TARGET studio
-        PROPERTY 3DMM_CUTSCENES
-    )
-
-    foreach(cutscene_path ${cutscene_paths})
-        cmake_path(GET cutscene_path FILENAME cutscene_name)
-        install(
-            FILES "${placeholder_avi}"
-            RENAME "${cutscene_name}"
-            DESTINATION "${mskids_3dmm_path}"
-        )
-    endforeach()
-
-endif()
+  DESTINATION "Microsoft Kids/Users/McZee")
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/content-files/"
+  DESTINATION "Microsoft Kids/3D Movie Maker")
 
 if (WIN32 AND 3DMM_GUI STREQUAL "SDL")
     # Install SDL DLLs
     install(FILES $<TARGET_FILE:SDL2::SDL2> $<TARGET_FILE:SDL2_ttf::SDL2_ttf>
-        DESTINATION ${resources_path})
+        DESTINATION .)
 
     if (FluidSynth_FOUND)
         # Install FluidSynth DLLs
-        install(DIRECTORY "${FluidSynth_ROOT}/bin/" DESTINATION ${resources_path}
+        install(DIRECTORY "${FluidSynth_ROOT}/bin/" DESTINATION .
             PATTERN "*.exe" EXCLUDE)
     endif()
 endif()
 
 # Copy soundfont if required
 if(NOT "${3DMM_SOUNDFONT_PATH}" STREQUAL "")
-    install(FILES "${3DMM_SOUNDFONT_PATH}" DESTINATION ${resources_path})
-endif()
-
-if (APPLE)
-
-    set(MACOSX_CODESIGNING_IDENTITY "-" CACHE STRING "Code signing identity used for signing bundle")
-    if (MACOSX_CODESIGNING_IDENTITY STREQUAL "-")
-        message("Using ad-hoc signing for bundle")
-    endif()
-
-    install(CODE "
-        include(BundleUtilities)
-
-        get_filename_component(install_prefix \"\${CMAKE_INSTALL_PREFIX}\" ABSOLUTE)
-        fixup_bundle(
-            \"\${install_prefix}/3D Movie Maker.app\"
-            \"\"
-            \"${DOWNLOADED_FRAMEWORKS_PATH}\"
-        )
-
-        execute_process(
-            COMMAND codesign --force --deep --sign \"${MACOSX_CODESIGNING_IDENTITY}\" \"\${install_prefix}/3D Movie Maker.app\"
-            COMMAND_ERROR_IS_FATAL ANY
-        )
-    ")
+    install(FILES "${3DMM_SOUNDFONT_PATH}" DESTINATION .)
 endif()

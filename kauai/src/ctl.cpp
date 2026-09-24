@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -13,18 +13,18 @@
 #include "frame.h"
 ASSERTNAME
 
-// what we set the system max to for scroll bars
-const int32_t _klwMaxScroll = 20000; // should be less than 32K
+// 3DMMv1.0: what we set the system max to for scroll bars
+const int32_t _klwMaxScroll = 20000; // 3DMMv1.0: should be less than 32K
 
 #ifdef WIN
 achar _szCtlProp[] = PszLit("CTL");
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 RTCLASS(CTL)
 RTCLASS(SCB)
 RTCLASS(WSB)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a control.
 ***************************************************************************/
 CTL::CTL(PGCB pgcb) : GOB(pgcb)
@@ -32,7 +32,7 @@ CTL::CTL(PGCB pgcb) : GOB(pgcb)
     _hctl = hNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for controls.
 ***************************************************************************/
 CTL::~CTL(void)
@@ -48,16 +48,16 @@ CTL::~CTL(void)
         gnv.Set();
         DisposeControl(_hctl);
         gnv.Restore();
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
         RemoveProp(_hctl, _szCtlProp);
         DestroyWindow(_hctl);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
         _hctl = hNil;
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sets the OS control for the CTL.  If this fails, it frees the control.
 ***************************************************************************/
 bool CTL::_FSetHctl(HCTL hctl)
@@ -67,33 +67,33 @@ bool CTL::_FSetHctl(HCTL hctl)
     {
 #ifdef MAC
         SetCRefCon(hctl, (int32_t)this);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
         if (!SetProp(hctl, _szCtlProp, (HANDLE)this))
         {
             DestroyWindow(hctl);
             return fFalse;
         }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
         _hctl = hctl;
     }
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the CTL associated with the given HCTL.
 ***************************************************************************/
 PCTL CTL::PctlFromHctl(HCTL hctl)
 {
 #ifdef MAC
     return (PCTL)GetCRefCon(hctl);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
     return (PCTL)GetProp(hctl, _szCtlProp);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The control may have been moved - move the OS control.
 ***************************************************************************/
 void CTL::_NewRc(void)
@@ -117,9 +117,9 @@ void CTL::_NewRc(void)
     {
         GNV gnv(this);
 
-        // clip out everything - hide it, then move and size it
-        // don't make it visible again - we do that in the Draw
-        // routine
+        // 3DMMv1.0: clip out everything - hide it, then move and size it
+        // 3DMMv1.0: don't make it visible again - we do that in the Draw
+        // 3DMMv1.0: routine
         rc.Zero();
         gnv.ClipRc(&rc);
         gnv.Set();
@@ -128,15 +128,15 @@ void CTL::_NewRc(void)
         SizeControl(_hctl, rcs.right - rcs.left, rcs.bottom - rcs.top);
         gnv.Restore();
     }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
     MoveWindow(_hctl, rcs.left, rcs.top, rcs.right - rcs.left, rcs.bottom - rcs.top, fFalse);
     InvalidateRect(_hctl, pvNil, fFalse);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
 #ifdef MAC
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw routine for a control.
 ***************************************************************************/
 void CTL::Draw(PGNV pgnv, RC *prcClip)
@@ -167,9 +167,9 @@ void CTL::Draw(PGNV pgnv, RC *prcClip)
         pgnv->CopyPixels(&gnv, &rc, &rc);
     }
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a scroll bar.
 ***************************************************************************/
 PSCB SCB::PscbNew(PGCB pgcb, uint32_t grfscb, int32_t val, int32_t valMin, int32_t valMax)
@@ -194,7 +194,7 @@ PSCB SCB::PscbNew(PGCB pgcb, uint32_t grfscb, int32_t val, int32_t valMin, int32
     return pscb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to return the normal width of a vertical scroll bar.
 ***************************************************************************/
 int32_t SCB::DxpNormal(void)
@@ -205,12 +205,12 @@ int32_t SCB::DxpNormal(void)
     if (_dxp > 0)
         return _dxp;
     return (_dxp = GetSystemMetrics(SM_CXVSCROLL));
-#else // WIN
+#else // 3DMMv1.0: WIN
     return 16;
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to return the normal width of a horizontal scroll bar.
 ***************************************************************************/
 int32_t SCB::DypNormal(void)
@@ -221,12 +221,12 @@ int32_t SCB::DypNormal(void)
     if (_dyp > 0)
         return _dyp;
     return (_dyp = GetSystemMetrics(SM_CYHSCROLL));
-#else // WIN
+#else // 3DMMv1.0: WIN
     return 16;
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the standard rectangles for document window scroll bars.  grfscb
     should contain fscbHorz or fscbVert.
 ***************************************************************************/
@@ -252,7 +252,7 @@ void SCB::GetStandardRc(uint32_t grfscb, RC *prcAbs, RC *prcRel)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the standard client window rectangle (assuming the given set of
     scroll bars).
 ***************************************************************************/
@@ -267,7 +267,7 @@ void SCB::GetClientRc(uint32_t grfscb, RC *prcAbs, RC *prcRel)
         prcAbs->ypBottom = -SCB::DypNormal() + !(grfscb & fscbShowBottom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the actual system scroll bar.
 ***************************************************************************/
 bool SCB::_FCreate(int32_t val, int32_t valMin, int32_t valMax, uint32_t grfscb)
@@ -295,7 +295,7 @@ bool SCB::_FCreate(int32_t val, int32_t valMin, int32_t valMax, uint32_t grfscb)
         return fFalse;
     ValidRc(pvNil);
     redraw = true;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
     RECT rcs(rc);
     hctl = CreateWindow(PszLit("SCROLLBAR"), PszLit(""), (_fVert ? SBS_VERT : SBS_HORZ) | WS_CHILD | WS_VISIBLE,
@@ -304,13 +304,13 @@ bool SCB::_FCreate(int32_t val, int32_t valMin, int32_t valMax, uint32_t grfscb)
         return fFalse;
     SetScrollRange(hctl, SB_CTL, 0, _klwMaxScroll, fFalse);
     SetScrollPos(hctl, SB_CTL, 0, fFalse);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
     SetValMinMax(val, valMin, valMax, redraw);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the value of the scroll bar.
 ***************************************************************************/
 void SCB::SetVal(int32_t val, bool fRedraw)
@@ -324,18 +324,18 @@ void SCB::SetVal(int32_t val, bool fRedraw)
     lwCur = LwMulDiv(_klwMaxScroll, _val - _valMin, LwMax(1, _valMax - _valMin));
 
 #ifdef MAC
-    // REVIEW shonk: Mac: implement fRedraw false
+    // 3DMMv1.0: REVIEW shonk: Mac: implement fRedraw false
     GNV gnv(this);
     gnv.Set();
     SetCtlValue(_Hctl(), (short)lwCur);
     gnv.Restore();
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
     SetScrollPos(_Hctl(), SB_CTL, lwCur, fRedraw);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the min and max of the scroll bar.
 ***************************************************************************/
 void SCB::SetValMinMax(int32_t val, int32_t valMin, int32_t valMax, bool fRedraw)
@@ -353,7 +353,7 @@ void SCB::SetValMinMax(int32_t val, int32_t valMin, int32_t valMax, bool fRedraw
     lwCur = LwMulDiv(_klwMaxScroll, _val - _valMin, LwMax(1, _valMax - _valMin));
 
 #ifdef MAC
-    // REVIEW shonk: Mac: implement fRedraw false
+    // 3DMMv1.0: REVIEW shonk: Mac: implement fRedraw false
     GNV gnv(this);
     gnv.Set();
     if (_valMax == _valMin)
@@ -362,14 +362,14 @@ void SCB::SetValMinMax(int32_t val, int32_t valMin, int32_t valMax, bool fRedraw
         SetCtlMax(_Hctl(), (short)_klwMaxScroll);
     SetCtlValue(_Hctl(), (short)lwCur);
     gnv.Restore();
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
     SetScrollPos(_Hctl(), SB_CTL, lwCur, fRedraw);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
 #ifdef MAC
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The hwnd has been activated or deactivated - redraw and validate.
 ***************************************************************************/
 void SCB::_ActivateHwnd(bool fActive)
@@ -390,12 +390,12 @@ void SCB::_ActivateHwnd(bool fActive)
         if (!(*_Hctl())->contrlVis)
         {
             ValidRc(pvNil, kginDraw);
-            InvalRc(pvNil, kginDraw); // this makes it visible
+            InvalRc(pvNil, kginDraw); // 3DMMv1.0: this makes it visible
         }
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle mouse tracking for a scroll bar.
 ***************************************************************************/
 void SCB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -421,9 +421,9 @@ void SCB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
         in = TrackControl(_Hctl(), pts, pvNil);
         gnv.Restore();
 
-        // send the final position - this will get recorded
-        // note that the _Hctl() has the wrong value so the
-        // gob should call SetValue in response to this command
+        // 3DMMv1.0: send the final position - this will get recorded
+        // 3DMMv1.0: note that the _Hctl() has the wrong value so the
+        // 3DMMv1.0: gob should call SetValue in response to this command
         vpcex->EnqueueCid(cidEndScroll, PgobPar(), pvNil, Hid(),
                           _valMin + LwMulDiv((int32_t)GetCtlValue(_Hctl()), _valMax - _valMin, _klwMaxScroll));
         break;
@@ -437,12 +437,12 @@ void SCB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
         pt.yp = yp;
         for (;; GetPtMouse(&pt, &fDown))
         {
-            // get the new hilite state
+            // 3DMMv1.0: get the new hilite state
             pts.h = (short)pt.xp + (*_Hctl())->contrlRect.left;
             pts.v = (short)pt.yp + (*_Hctl())->contrlRect.top;
             fLit = fDown && (TestControl(_Hctl(), pts) == in);
 
-            // hilite the scroll bar appropriately
+            // 3DMMv1.0: hilite the scroll bar appropriately
             gnv.Set();
             if (fLit)
                 HiliteControl(_Hctl(), in);
@@ -450,13 +450,13 @@ void SCB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
                 HiliteControl(_Hctl(), 0);
             gnv.Restore();
 
-            // see if we're done
+            // 3DMMv1.0: see if we're done
             if (!fDown)
                 break;
 
             if (fLit)
             {
-                // send the command - this doesn't get recorded
+                // 3DMMv1.0: send the command - this doesn't get recorded
                 ClearPb(&cmd, SIZEOF(cmd));
                 cmd.cid = cidDoScroll;
                 cmd.pcmh = PgobPar();
@@ -484,15 +484,15 @@ void SCB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
             }
         }
 
-        // send the final position - this will get recorded
+        // 3DMMv1.0: send the final position - this will get recorded
         vpcex->EnqueueCid(cidEndScroll, PgobPar(), pvNil, Hid(), _val);
         break;
     }
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
 #ifdef WIN
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Called in response to a Win WM_HSCROLL or WM_VSCROLL message.
 ***************************************************************************/
 void SCB::TrackScroll(int32_t sb, int32_t lwVal)
@@ -527,7 +527,7 @@ void SCB::TrackScroll(int32_t sb, int32_t lwVal)
         cmd.rglw[2] = _valMin + LwMulDiv(lwVal, _valMax - _valMin, _klwMaxScroll);
         break;
 
-    // these values just push an end-scroll command
+    // 3DMMv1.0: these values just push an end-scroll command
     case SB_THUMBPOSITION:
         _fSentEndScroll = fFalse;
         lwVal = LwMax(0, LwMin(_klwMaxScroll, lwVal));
@@ -542,14 +542,14 @@ void SCB::TrackScroll(int32_t sb, int32_t lwVal)
         val = _valMax;
         goto LEndScroll;
     case SB_ENDSCROLL:
-        // NOTE: _fSentEndScroll is so we don't send another EndScroll
-        // here if we've already sent one (in response to an SB_THUMBPOSITION,
-        // SB_TOP or SB_BOTTOM), since this value will generally be wrong.
+        // 3DMMv1.0: NOTE: _fSentEndScroll is so we don't send another EndScroll
+        // 3DMMv1.0: here if we've already sent one (in response to an SB_THUMBPOSITION,
+        // 3DMMv1.0: SB_TOP or SB_BOTTOM), since this value will generally be wrong.
         val = _val;
         goto LEndScroll;
 
     default:
-        // do nothing
+        // 3DMMv1.0: do nothing
         return;
     }
 
@@ -566,9 +566,9 @@ LEndScroll:
         _fSentEndScroll = fTrue;
     }
 }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a window size box.
 ***************************************************************************/
 PWSB WSB::PwsbNew(PGOB pgob, uint32_t grfgob)
@@ -608,7 +608,7 @@ PWSB WSB::PwsbNew(PGOB pgob, uint32_t grfgob)
 }
 
 #ifdef MAC
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the size box icon.
 ***************************************************************************/
 void WSB::Draw(PGNV pgnv, RC *prcClip)
@@ -639,7 +639,7 @@ void WSB::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The hwnd has been activated or deactivated - redraw and validate.
 ***************************************************************************/
 void WSB::_ActivateHwnd(bool fActive)
@@ -647,4 +647,4 @@ void WSB::_ActivateHwnd(bool fActive)
     ValidRc(pvNil, kginDraw);
     InvalRc(pvNil, kginDraw);
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC

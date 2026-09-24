@@ -7,7 +7,7 @@
 #include "socdef.h"
 #include "kidgs.chh"
 
-// Localized strings
+// Localized strings (includes the 3MM/VMM movie filter)
 #include "studio/utestgst.cht"
 
 //

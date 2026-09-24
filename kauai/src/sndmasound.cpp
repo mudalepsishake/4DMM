@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -12,14 +12,14 @@ ASSERTNAME
 
 #include "sndmapri.h"
 
-// Sound files smaller than this size will be stored in memory
+// 3DMMEx: Sound files smaller than this size will be stored in memory
 const int32_t kcbSoundMax = 64 * 1024;
 
 RTCLASS(MiniaudioCachedSound);
 
 MiniaudioCachedSound::MiniaudioCachedSound()
 {
-    // do nothing
+    // 3DMMEx: do nothing
 }
 
 bool MiniaudioCachedSound::FReadMiniaudioCachedSound(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco,
@@ -59,7 +59,7 @@ PMiniaudioCachedSound MiniaudioCachedSound::PMiniaudioCachedSoundNew(PFLO pflo, 
     if (pvNil == (pmacsound = NewObj MiniaudioCachedSound))
         return pvNil;
 
-    // Decompress the sound if required
+    // 3DMMEx: Decompress the sound if required
     if (fPacked)
     {
         pmacsound->_blckData.Set(pflo, fPacked);
@@ -74,20 +74,20 @@ PMiniaudioCachedSound MiniaudioCachedSound::PMiniaudioCachedSoundNew(PFLO pflo, 
 
         pmacsound->_blckData.Set(pflo);
 
-        // Cache the data in memory if it's small enough
+        // 3DMMEx: Cache the data in memory if it's small enough
         if (pmacsound->_blckData.Cb() < kcbSoundMax)
         {
             HQ hqSound = hqNil;
             if (pmacsound->_blckData.FReadHq(&hqSound))
             {
-                // Block takes ownership of the HQ
+                // 3DMMEx: Block takes ownership of the HQ
                 pmacsound->_blckData.SetHq(&hqSound);
             }
             FreePhq(&hqSound);
         }
     }
 
-    // Cleanup
+    // 3DMMEx: Cleanup
     AssertPo(pmacsound, 0);
     return pmacsound;
 }
@@ -115,4 +115,4 @@ void MiniaudioCachedSound::MarkMem()
     MiniaudioCachedSound_PAR::MarkMem();
     MarkMemObj(&_blckData);
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

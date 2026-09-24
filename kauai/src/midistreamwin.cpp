@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -16,7 +16,7 @@ ASSERTNAME
 
 RTCLASS(WMSB)
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Constructor for the MIDI stream interface.
 ***************************************************************************/
 WMSB::WMSB(PFNMIDI pfn, uintptr_t luUser)
@@ -32,7 +32,7 @@ WMSB::WMSB(PFNMIDI pfn, uintptr_t luUser)
     _vlmBase = kvlmFull;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Reset the midi device.
 ***************************************************************************/
 void WMSB::_Reset(void)
@@ -42,8 +42,8 @@ void WMSB::_Reset(void)
 
     midiOutReset(_hms);
 
-    // Reset channel pressure and pitch wheel on all channels.
-    // We shouldn't have to do this, but some drivers don't reset these.
+    // 3DMMEx: Reset channel pressure and pitch wheel on all channels.
+    // 3DMMEx: We shouldn't have to do this, but some drivers don't reset these.
     for (iv = 0; iv < 16; iv++)
     {
         midiOutShortMsg(_hms, 0xD0 | iv);
@@ -51,7 +51,7 @@ void WMSB::_Reset(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the system volume level.
 ***************************************************************************/
 void WMSB::_GetSysVol(void)
@@ -62,19 +62,19 @@ void WMSB::_GetSysVol(void)
     switch (_tBogusDriver)
     {
     case tYes:
-        // just use vluSysVolFake...
+        // 3DMMEx: just use vluSysVolFake...
         _luVolSys = vluSysVolFake;
         return;
 
     case tMaybe:
-        // need to determine if midiOutGetVolume really works for this
-        // driver.
+        // 3DMMEx: need to determine if midiOutGetVolume really works for this
+        // 3DMMEx: driver.
 
-        // Some drivers will only ever tell us what we last gave them -
-        // irregardless of what the user has set the value to. Those drivers
-        // will always give us full volume the first time we ask.
+        // 3DMMEx: Some drivers will only ever tell us what we last gave them -
+        // 3DMMEx: irregardless of what the user has set the value to. Those drivers
+        // 3DMMEx: will always give us full volume the first time we ask.
 
-        // We also look for drivers that give us nonsense values.
+        // 3DMMEx: We also look for drivers that give us nonsense values.
 
         if (0 != midiOutGetVolume(_hms, &_luVolSys) || _luVolSys == ULONG_MAX || 0 != midiOutSetVolume(_hms, 0ul) ||
             0 != midiOutGetVolume(_hms, &lu0) || 0 != midiOutSetVolume(_hms, 0x7FFF7FFFul) ||
@@ -95,7 +95,7 @@ void WMSB::_GetSysVol(void)
     default:
         if (0 != midiOutGetVolume(_hms, &_luVolSys))
         {
-            // failed - use the fake value
+            // 3DMMEx: failed - use the fake value
             _luVolSys = vluSysVolFake;
         }
         else
@@ -104,7 +104,7 @@ void WMSB::_GetSysVol(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the system volume level.
 ***************************************************************************/
 void WMSB::_SetSysVol(uint32_t luVol)
@@ -113,7 +113,7 @@ void WMSB::_SetSysVol(uint32_t luVol)
     midiOutSetVolume(_hms, DWORD(luVol));
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the system volume level from the current values of _vlmBase
     and _luVolSys. We set the system volume to the result of scaling
     _luVolSys by _vlmBase.
@@ -126,7 +126,7 @@ void WMSB::_SetSysVlm(void)
     _SetSysVol(luVol);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the volume for the midi stream output device.
 ***************************************************************************/
 void WMSB::SetVlm(int32_t vlm)
@@ -141,7 +141,7 @@ void WMSB::SetVlm(int32_t vlm)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the current volume.
 ***************************************************************************/
 int32_t WMSB::VlmCur(void)
@@ -151,7 +151,7 @@ int32_t WMSB::VlmCur(void)
     return _vlmBase;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return whether the midi stream output device is active.
 ***************************************************************************/
 bool WMSB::FActive(void)
@@ -159,7 +159,7 @@ bool WMSB::FActive(void)
     return hNil != _hms;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Activate or deactivate the Midi stream output object.
 ***************************************************************************/
 bool WMSB::FActivate(bool fActivate)

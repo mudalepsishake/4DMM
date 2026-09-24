@@ -92,30 +92,10 @@ if(WIN32)
         PUBLIC
         winmm
     )
-elseif(UNIX AND NOT APPLE)
+elseif(UNIX)
     target_sources(KauaiBase
         PRIVATE
         "${PROJECT_SOURCE_DIR}/kauai/src/platlinux.cpp"
-    )
-elseif(APPLE)
-    target_sources(KauaiBase
-        PRIVATE
-        "${PROJECT_SOURCE_DIR}/kauai/src/platmacos.mm"
-    )
-    set_property(
-        SOURCE "${PROJECT_SOURCE_DIR}/kauai/src/platmacos.mm"
-        PROPERTY
-        COMPILE_FLAGS "-fobjc-arc"
-    )
-    target_link_libraries(
-        KauaiBase
-        PRIVATE
-        iconv
-    )
-    target_link_libraries(
-        KauaiBase
-        PUBLIC
-        "-framework Foundation"
     )
 else()
     message(FATAL_ERROR "TODO: Select a platform module")
@@ -410,7 +390,6 @@ target_link_libraries(
 )
 
 # Video: video playback
-set(KAUAI_HAS_VIDEO ON PARENT_SCOPE)
 if (3DMM_GUI STREQUAL "Win32")
     add_library(KauaiVideo
         "${PROJECT_SOURCE_DIR}/kauai/src/videowin.cpp"
@@ -439,7 +418,6 @@ elseif(3DMM_GUI STREQUAL "SDL" AND GST_FOUND)
     )
 else()
     message(WARNING "Video playback not implemented on GUI platform: ${3DMM_GUI}")
-    set(KAUAI_HAS_VIDEO OFF PARENT_SCOPE)
 
     # Use stub implementation
     add_library(KauaiVideo

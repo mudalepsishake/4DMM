@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     srecma.cpp: Sound recorder using Miniaudio
 
@@ -66,7 +66,7 @@ void SREC::OnDataProc(ma_device *pDevice, void *pOutput, const void *pInput, ma_
         psrec->_fHaveSound = fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new SREC
 ***************************************************************************/
 PSREC SREC::PsrecNew(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax)
@@ -85,7 +85,7 @@ PSREC SREC::PsrecNew(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t
     return psrec;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Init this SREC
 ***************************************************************************/
 bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax)
@@ -106,11 +106,11 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
     _fHaveSound = fFalse;
     _fInitDevice = fFalse;
 
-    // Currently only 8-bit audio is supported
+    // 3DMMEx: Currently only 8-bit audio is supported
     _format = ma_format_u8;
     Assert(ma_get_bytes_per_frame(_format, _cchan) == cbSample, "cbSample is incorrect");
 
-    // Maximum number of frames
+    // 3DMMEx: Maximum number of frames
     _cFrameMac = (dtsMax * csampSec) / kdtsSecond;
 
     int32_t cb = _cFrameMac * _cchan * _cbSample;
@@ -119,7 +119,7 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
         return fFalse;
     }
 
-    // Initialise the device
+    // 3DMMEx: Initialise the device
     AssertVar(cbSample == 1, "Unsupported cbSample", &cbSample);
     ma_device_config deviceConfig = ma_device_config_init(ma_device_type_capture);
     deviceConfig.capture.format = _format;
@@ -138,14 +138,14 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
     return _fInitDevice;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Clean up and delete this SREC
 ***************************************************************************/
 SREC::~SREC(void)
 {
     AssertBaseThis(0);
 
-    // make sure nothing is playing or recording
+    // 3DMMEx: make sure nothing is playing or recording
     if (_fRecording || _fPlaying)
         FStop();
 
@@ -163,7 +163,7 @@ SREC::~SREC(void)
     FreePhq(&_hqBuffer);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Start recording
 ***************************************************************************/
 bool SREC::FStart(void)
@@ -179,12 +179,12 @@ bool SREC::FStart(void)
         ma_device_stop(&_device);
     }
 
-    // Reset state
+    // 3DMMEx: Reset state
     _fHaveSound = fFalse;
     _cFrame = 0;
     _ibBuffer = 0;
 
-    // Start streaming audio
+    // 3DMMEx: Start streaming audio
     result = ma_device_start(&_device);
     _fRecording = (result == MA_SUCCESS);
     AssertVar(_fRecording, "ma_device_start failed", &result);
@@ -192,7 +192,7 @@ bool SREC::FStart(void)
     return _fRecording;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Stop recording or playing
 ***************************************************************************/
 bool SREC::FStop(void)
@@ -223,7 +223,7 @@ bool SREC::FStop(void)
     return fStopped;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Start playing the current sound
 ***************************************************************************/
 bool SREC::FPlay(void)
@@ -235,7 +235,7 @@ bool SREC::FPlay(void)
     ma_result result = MA_SUCCESS;
     void *pvFrames = pvNil;
 
-    // Reinitialise the playback buffer/sound
+    // 3DMMEx: Reinitialise the playback buffer/sound
     if (_fInitPlaybackSound)
     {
         ma_sound_uninit(&_sound);
@@ -251,7 +251,7 @@ bool SREC::FPlay(void)
     pvFrames = PvLockHq(_hqBuffer);
     if (pvFrames != pvNil)
     {
-        // Create the playback buffer
+        // 3DMMEx: Create the playback buffer
         ma_audio_buffer_config config = ma_audio_buffer_config_init(_format, _cchan, _cFrame, pvFrames, pvNil);
         config.sampleRate = _csampSec;
         result = ma_audio_buffer_init(&config, &_playbackBuffer);
@@ -268,7 +268,7 @@ bool SREC::FPlay(void)
 
     if (result == MA_SUCCESS)
     {
-        // Create the sound
+        // 3DMMEx: Create the sound
         ma_engine *pengine = MiniaudioManager::Pmanager()->Pengine();
         Assert(pengine != pvNil, "no engine");
 
@@ -285,7 +285,7 @@ bool SREC::FPlay(void)
 
     if (result == MA_SUCCESS)
     {
-        // Play the sound
+        // 3DMMEx: Play the sound
         result = ma_sound_start(&_sound);
         AssertVar(result == MA_SUCCESS, "ma_sound_start failed", &result);
         _fPlaying = (ma_sound_is_playing(&_sound));
@@ -294,14 +294,14 @@ bool SREC::FPlay(void)
     return _fPlaying;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Are we recording?
 ***************************************************************************/
 bool SREC::FRecording(void)
 {
     AssertThis(0);
 
-    // Check if we reached the end of the recording
+    // 3DMMEx: Check if we reached the end of the recording
     if (_fRecording && _fHaveSound)
     {
         AssertDo(FStop(), "can't stop");
@@ -310,14 +310,14 @@ bool SREC::FRecording(void)
     return _fRecording;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Are we playing the current sound?
 ***************************************************************************/
 bool SREC::FPlaying(void)
 {
     AssertThis(0);
 
-    // Check if we are still playing
+    // 3DMMEx: Check if we are still playing
     if (_fPlaying)
     {
         if (!ma_sound_is_playing(&_sound))
@@ -329,7 +329,7 @@ bool SREC::FPlaying(void)
     return _fPlaying;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Save the current sound to the given FNI
 ***************************************************************************/
 bool SREC::FSave(PFNI pfni)
@@ -351,12 +351,12 @@ bool SREC::FSave(PFNI pfni)
     if (pvFrames == pvNil)
         goto LFail;
 
-    // Create the encoder
+    // 3DMMEx: Create the encoder
     encoderConfig = ma_encoder_config_init(ma_encoding_format_wav, _format, _cchan, _csampSec);
 
 #if defined(UNICODE)
     result = ma_encoder_init_file_w(stnPath.Psz(), &encoderConfig, &encoder);
-#else // !UNICODE
+#else // 3DMMEx: !UNICODE
     result = ma_encoder_init_file(stnPath.Psz(), &encoderConfig, &encoder);
 #endif
     AssertVar(result == MA_SUCCESS, "Failed to initialise encoder", &result);
@@ -365,7 +365,7 @@ bool SREC::FSave(PFNI pfni)
 
     fInitEncoder = fTrue;
 
-    // Write all of the frames to the encoder
+    // 3DMMEx: Write all of the frames to the encoder
     result = ma_encoder_write_pcm_frames(&encoder, pvFrames, _cFrame, &cframeWritten);
     AssertVar(result == MA_SUCCESS, "Failed to write PCM frames", &result);
     Assert(cframeWritten == _cFrame, "Did not write all frames");
@@ -378,10 +378,10 @@ LFail:
 
     if (fInitEncoder)
     {
-        // If we wrote frames this will flush to disk
+        // 3DMMEx: If we wrote frames this will flush to disk
         ma_encoder_uninit(&encoder);
 
-        // If we didn't succeed, delete the temp file
+        // 3DMMEx: If we didn't succeed, delete the temp file
         if (!fRet)
             AssertDo(pfni->FDelete(), "Couldn't delete the temporary file");
     }
@@ -393,7 +393,7 @@ LFail:
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of the SREC.
 ***************************************************************************/
 void SREC::AssertValid(uint32_t grf)
@@ -401,7 +401,7 @@ void SREC::AssertValid(uint32_t grf)
     SREC_PAR::AssertValid(fobjAllocated);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory used by the SREC
 ***************************************************************************/
 void SREC::MarkMem(void)
@@ -410,4 +410,4 @@ void SREC::MarkMem(void)
     SREC_PAR::MarkMem();
     MarkHq(_hqBuffer);
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

@@ -1,4 +1,4 @@
-/*
+/* 3DMMEx:
  * Windows platform functions
  */
 
@@ -9,7 +9,7 @@
 #include <SDL.h>
 #endif
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Universal scalable application clock and other time stuff
 ***************************************************************************/
 const uint32_t kdtsSecond = 1000;
@@ -17,7 +17,7 @@ const uint32_t kdtsSecond = 1000;
 uint32_t TsCurrentSystem(void)
 {
 #if defined(KAUAI_WIN32)
-    // n.b. WIN: timeGetTime is more accurate than GetTickCount
+    // 3DMMEx: n.b. WIN: timeGetTime is more accurate than GetTickCount
     return timeGetTime();
 #elif defined(KAUAI_SDL)
     return SDL_GetTicks();
@@ -32,8 +32,8 @@ uint32_t DtsCaret(void)
 #if defined(KAUAI_WIN32)
     return GetCaretBlinkTime();
 #elif defined(KAUAI_SDL)
-    // Return the default caret blink time on Windows
-    const uint32_t kdtsCaret = 530; // milliseconds
+    // 3DMMEx: Return the default caret blink time on Windows
+    const uint32_t kdtsCaret = 530; // 3DMMEx: milliseconds
     return kdtsCaret;
 #else
     RawRtn();
@@ -66,12 +66,12 @@ static bool FFindSpecialDir(int32_t csidl, char *psz, int32_t cchMax)
 
 bool FGetAppConfigDir(char *psz, int32_t cchMax)
 {
-    // Get the path to the roaming AppData directory
+    // 3DMMEx: Get the path to the roaming AppData directory
     return FFindSpecialDir(CSIDL_APPDATA, psz, cchMax);
 }
 
 bool FGetDocumentsDir(char *psz, int32_t cchMax)
 {
-    // Get the path to the user's documents directory
+    // 3DMMEx: Get the path to the user's documents directory
     return FFindSpecialDir(CSIDL_PERSONAL, psz, cchMax);
 }

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tdf.h: Three-D Font class
 
@@ -14,7 +14,7 @@
 #ifndef TDF_H
 #define TDF_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     3-D Font class
 ****************************************/
 typedef class TDF *PTDF;
@@ -27,10 +27,10 @@ class TDF : public TDF_PAR
     MARKMEM
 
   protected:
-    int32_t _cch; // count of chars
-    BRS _dyrMax;  // max character height
-    BRS *_prgdxr; // character widths
-    BRS *_prgdyr; // character heights
+    int32_t _cch; // 3DMMv1.0: count of chars
+    BRS _dyrMax;  // 3DMMv1.0: max character height
+    BRS *_prgdxr; // 3DMMv1.0: character widths
+    BRS *_prgdyr; // 3DMMv1.0: character heights
 
   protected:
     TDF(void)
@@ -42,7 +42,7 @@ class TDF : public TDF_PAR
     static bool FReadTdf(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
     ~TDF(void);
 
-    // This authoring-only API creates a new TDF based on a set of models
+    // 3DMMv1.0: This authoring-only API creates a new TDF based on a set of models
     static bool FCreate(PCRF pcrf, PGL pglkid, STN *pstn, CKI *pckiTdf = pvNil);
 
     PMODL PmodlFetch(CHID chid);
@@ -54,4 +54,4 @@ class TDF : public TDF_PAR
     }
 };
 
-#endif // TDF_H
+#endif // 3DMMv1.0: TDF_H

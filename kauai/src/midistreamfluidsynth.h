@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK, Mark Cave-Ayland
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #include <fluidsynth.h>
 #include "sndma.h"
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     FluidSynth midi stream class.
 ***************************************************************************/
 typedef class FMS *PFMS;
@@ -39,9 +39,9 @@ class FMS : public FMS_PAR
         uintptr_t luData;
     };
 
-    PFNMIDI _pfnCall;         // call back function
-    uintptr_t _luUser;        // user data to send back
-    std::atomic<bool> _fOpen; // device is open
+    PFNMIDI _pfnCall;         // 3DMMEx: call back function
+    uintptr_t _luUser;        // 3DMMEx: user data to send back
+    std::atomic<bool> _fOpen; // 3DMMEx: device is open
 
     MUTX _mutx;
 
@@ -55,11 +55,11 @@ class FMS : public FMS_PAR
 
     PMiniaudioStream _pastream;
 
-    int32_t _vlmBase; // our current volume
+    int32_t _vlmBase; // 3DMMEx: our current volume
 
-    std::atomic<bool> _fChanged; // the event has been signalled
-    std::atomic<bool> _fStop;    // tells the aux thread to stop all buffers
-    std::atomic<bool> _fDone;    // tells the aux thread to return
+    std::atomic<bool> _fChanged; // 3DMMEx: the event has been signalled
+    std::atomic<bool> _fStop;    // 3DMMEx: tells the aux thread to stop all buffers
+    std::atomic<bool> _fDone;    // 3DMMEx: tells the aux thread to return
 
     int32_t _imsbCur;
     PGL _pglmsb;
@@ -94,4 +94,4 @@ class FMS : public FMS_PAR
     virtual void StopPlaying(void) override;
 };
 
-#endif //! MIDISTREAMFLUIDSYNTH_H
+#endif //! 3DMMEx: MIDISTREAMFLUIDSYNTH_H

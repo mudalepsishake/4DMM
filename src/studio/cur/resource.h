@@ -1,9 +1,9 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by cursors.rc
+// 3DMMv1.0: {{NO_DEPENDENCIES}}
+// 3DMMv1.0: Microsoft Visual C++ generated include file.
+// 3DMMv1.0: Used by cursors.rc
 //
 #define IDC_MOTION_MATCH_SOUND 101
 #define IDC_LOOPER_SOUND 102
@@ -12,7 +12,7 @@
 #define IDC_CURSOR2 105
 #define IDC_CURSOR3 106
 
-// Next default values for new objects
+// 3DMMv1.0: Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

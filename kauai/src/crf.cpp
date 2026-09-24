@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -25,7 +25,7 @@ RTCLASS(CRF)
 RTCLASS(CRM)
 RTCLASS(CABO)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for base cacheable object.
 ***************************************************************************/
 BACO::BACO(void)
@@ -36,7 +36,7 @@ BACO::BACO(void)
     _fAttached = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor.
 ***************************************************************************/
 BACO::~BACO(void)
@@ -46,7 +46,7 @@ BACO::~BACO(void)
     ReleasePpo(&_pcrf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the BACO to a FLO - just make the FLO a BLCK and write to
     the block.
 ***************************************************************************/
@@ -58,28 +58,28 @@ bool BACO::FWriteFlo(PFLO pflo)
     return FWrite(&blck);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Placeholder function for BACO generic writer.
 ***************************************************************************/
 bool BACO::FWrite(PBLCK pblck)
 {
     AssertThis(0);
-    RawRtn(); // Derived class should be defining this
+    RawRtn(); // 3DMMv1.0: Derived class should be defining this
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Placeholder function for BACO generic cb-getter.
 ***************************************************************************/
 int32_t BACO::CbOnFile(void)
 {
     AssertThis(0);
-    RawRtn(); // Derived class should be defining this
+    RawRtn(); // 3DMMv1.0: Derived class should be defining this
     return 0;
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a BACO.
 ***************************************************************************/
 void BACO::AssertValid(uint32_t grf)
@@ -89,7 +89,7 @@ void BACO::AssertValid(uint32_t grf)
     AssertNilOrVarMem(_pcrf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the BACO.
 ***************************************************************************/
 void BACO::MarkMem(void)
@@ -99,9 +99,9 @@ void BACO::MarkMem(void)
     if (!_fAttached)
         MarkMemObj(_pcrf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Release a reference to the BACO.  If the reference count goes to zero
     and the BACO is not attached, it is deleted.
 ***************************************************************************/
@@ -125,7 +125,7 @@ void BACO::Release(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Detach a BACO from its CRF.
 ***************************************************************************/
 void BACO::Detach(void)
@@ -142,21 +142,21 @@ void BACO::Detach(void)
         delete this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the crep for the BACO.
 ***************************************************************************/
 void BACO::SetCrep(int32_t crep)
 {
     AssertThis(0);
-    // An AddRef followed by Release is done so that BacoReleased() is
-    // called if this BACO's _cactRef is 0...if crep is crepToss, this
-    // detaches this BACO from the cache.
+    // 3DMMv1.0: An AddRef followed by Release is done so that BacoReleased() is
+    // 3DMMv1.0: called if this BACO's _cactRef is 0...if crep is crepToss, this
+    // 3DMMv1.0: detaches this BACO from the cache.
     AddRef();
     _crep = crep;
     Release();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for CRF.  Increments the open count on the CFL.
 ***************************************************************************/
 CRF::CRF(PCFL pcfl, int32_t cbMax)
@@ -170,7 +170,7 @@ CRF::CRF(PCFL pcfl, int32_t cbMax)
     _cbMax = cbMax;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the CRF.  Decrements the open count on the CFL and frees
     all the cached data.
 ***************************************************************************/
@@ -179,15 +179,15 @@ CRF::~CRF(void)
     AssertBaseThis(fobjAllocated);
     CRE cre;
 
-    _cactRef++; // so we don't get "deleted" while detaching the BACOs
+    _cactRef++; // 3DMMv1.0: so we don't get "deleted" while detaching the BACOs
     if (pvNil != _pglcre)
     {
         while (_pglcre->IvMac() > 0)
         {
             _pglcre->Get(0, &cre);
-            cre.pbaco->AddRef(); // so it doesn't go away when being detached
+            cre.pbaco->AddRef(); // 3DMMv1.0: so it doesn't go away when being detached
             cre.pbaco->Detach();
-            cre.pbaco->_pcrf = pvNil; // we're going away!
+            cre.pbaco->_pcrf = pvNil; // 3DMMv1.0: we're going away!
             Debug(_cactRef--;) cre.pbaco->Release();
         }
         ReleasePpo(&_pglcre);
@@ -196,7 +196,7 @@ CRF::~CRF(void)
     ReleasePpo(&_pcfl);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new chunky resource file cache.
 ***************************************************************************/
 PCRF CRF::PcrfNew(PCFL pcfl, int32_t cbMax)
@@ -213,7 +213,7 @@ PCRF CRF::PcrfNew(PCFL pcfl, int32_t cbMax)
     return pcrf;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the size of the cache. This is most effecient when cbMax is 0
     (all non-required BACOs are flushed) or is bigger than the current
     cbMax.
@@ -237,8 +237,8 @@ void CRF::SetCbMax(int32_t cbMax)
                 Assert(cre.pbaco->_fAttached, "BACO not attached!");
                 cre.pbaco->Detach();
 
-                // have to start over in case other BACOs got deleted or
-                // reference counts went to zero
+                // 3DMMv1.0: have to start over in case other BACOs got deleted or
+                // 3DMMv1.0: reference counts went to zero
                 icre = _pglcre->IvMac();
             }
         }
@@ -249,7 +249,7 @@ void CRF::SetCbMax(int32_t cbMax)
     _cbMax = cbMax;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pre-fetch the object.  Returns tYes if the chunk is successfully cached,
     tNo if the chunk isn't in the CRF and tMaybe if there wasn't room
     to cache the chunk.
@@ -263,11 +263,11 @@ tribool CRF::TLoad(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc, int32_t crep)
     int32_t icre;
     BLCK blck;
 
-    // see if this CRF contains this resource type
+    // 3DMMv1.0: see if this CRF contains this resource type
     if (rscNil != rsc && !_pcfl->FFind(kctgRsc, rsc))
         return tNo;
 
-    // see if it's in the cache
+    // 3DMMv1.0: see if it's in the cache
     if (_FFindCre(ctg, cno, pfnrpo, &icre))
     {
         _pglcre->Get(icre, &cre);
@@ -277,11 +277,11 @@ tribool CRF::TLoad(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc, int32_t crep)
         return tYes;
     }
 
-    // see if it's in the chunky file
+    // 3DMMv1.0: see if it's in the chunky file
     if (!_pcfl->FFind(ctg, cno, &blck))
         return tNo;
 
-    // get the approximate size of the object
+    // 3DMMv1.0: get the approximate size of the object
     if (!(*pfnrpo)(this, ctg, cno, &blck, pvNil, &cre.cb))
         return tMaybe;
 
@@ -308,17 +308,17 @@ tribool CRF::TLoad(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc, int32_t crep)
     cre.pbaco->_cno = cno;
     cre.pbaco->_crep = crep;
 
-    AddRef(); // until the baco is attached it needs a reference count
+    AddRef(); // 3DMMv1.0: until the baco is attached it needs a reference count
     cre.pbaco->_fAttached = fFalse;
     cre.pfnrpo = pfnrpo;
     cre.cactRelease = _cactRelease++;
 
-    // indexes may have changed, get the location to insert again
+    // 3DMMv1.0: indexes may have changed, get the location to insert again
     AssertDo(!_FFindCre(ctg, cno, pfnrpo, &icre), "how did this happen?");
 
     if (!_pglcre->FInsert(icre, &cre))
     {
-        // can't keep it loaded
+        // 3DMMv1.0: can't keep it loaded
         ReleasePpo(&cre.pbaco);
         return tMaybe;
     }
@@ -326,12 +326,12 @@ tribool CRF::TLoad(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc, int32_t crep)
     _cbCur += cre.cb;
     cre.pbaco->_fAttached = fTrue;
     cre.pbaco->Release();
-    Release(); // baco successfully attached, so release its reference count
+    Release(); // 3DMMv1.0: baco successfully attached, so release its reference count
 
     return tYes;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the object is loaded and increment its reference count.  If
     successful, must be balanced with a call to ReleasePpo.
 ***************************************************************************/
@@ -347,11 +347,11 @@ PBACO CRF::PbacoFetch(CTG ctg, CNO cno, PFNRPO pfnrpo, bool *pfError, RSC rsc)
     if (pvNil != pfError)
         *pfError = fFalse;
 
-    // see if this CRF contains this resource type
+    // 3DMMv1.0: see if this CRF contains this resource type
     if (rscNil != rsc && !_pcfl->FFind(kctgRsc, rsc))
         return pvNil;
 
-    // see if it's in the cache
+    // 3DMMv1.0: see if it's in the cache
     if (_FFindCre(ctg, cno, pfnrpo, &icre))
     {
         _pglcre->Get(icre, &cre);
@@ -360,11 +360,11 @@ PBACO CRF::PbacoFetch(CTG ctg, CNO cno, PFNRPO pfnrpo, bool *pfError, RSC rsc)
         return cre.pbaco;
     }
 
-    // see if it's in the chunky file
+    // 3DMMv1.0: see if it's in the chunky file
     if (!_pcfl->FFind(ctg, cno, &blck))
         return pvNil;
 
-    // get the object and its size
+    // 3DMMv1.0: get the object and its size
     if (!(*pfnrpo)(this, ctg, cno, &blck, &cre.pbaco, &cre.cb))
     {
         if (pvNil != pfError)
@@ -385,12 +385,12 @@ PBACO CRF::PbacoFetch(CTG ctg, CNO cno, PFNRPO pfnrpo, bool *pfError, RSC rsc)
     cre.pbaco->_fAttached = fFalse;
     cre.pfnrpo = pfnrpo;
 
-    // indexes may have changed, get the location to insert again
+    // 3DMMv1.0: indexes may have changed, get the location to insert again
     AssertDo(!_FFindCre(ctg, cno, pfnrpo, &icre), "how did this happen?");
 
     if (!_pglcre->FInsert(icre, &cre))
     {
-        // return the pbaco anyway.  when it's released it will go away
+        // 3DMMv1.0: return the pbaco anyway.  when it's released it will go away
         if (pvNil != pfError)
             *pfError = fTrue;
         return cre.pbaco;
@@ -402,14 +402,14 @@ PBACO CRF::PbacoFetch(CTG ctg, CNO cno, PFNRPO pfnrpo, bool *pfError, RSC rsc)
 
     if (_cbCur > _cbMax)
     {
-        // purge some stuff
+        // 3DMMv1.0: purge some stuff
         _FPurgeCb(_cbCur - _cbMax, klwMax);
     }
 
     return cre.pbaco;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the object is loaded, increment its reference count and return it.
     If it's not already loaded, just return nil.
 ***************************************************************************/
@@ -421,7 +421,7 @@ PBACO CRF::PbacoFind(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc)
     CRE cre;
     int32_t icre;
 
-    // see if it's in the cache
+    // 3DMMv1.0: see if it's in the cache
     if (!_FFindCre(ctg, cno, pfnrpo, &icre) || rscNil != rsc && !_pcfl->FFind(kctgRsc, rsc))
     {
         return pvNil;
@@ -433,7 +433,7 @@ PBACO CRF::PbacoFind(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc)
     return cre.pbaco;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the baco indicated chunk is cached, set its crep.  Returns true
     iff the baco was cached.
 ***************************************************************************/
@@ -445,7 +445,7 @@ bool CRF::FSetCrep(int32_t crep, CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc)
     CRE cre;
     int32_t icre;
 
-    // see if it's in the cache
+    // 3DMMv1.0: see if it's in the cache
     if (!_FFindCre(ctg, cno, pfnrpo, &icre) || rscNil != rsc && !_pcfl->FFind(kctgRsc, rsc))
     {
         return fFalse;
@@ -457,7 +457,7 @@ bool CRF::FSetCrep(int32_t crep, CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return this if the chunk is in this crf, otherwise return nil. The
     caller is not given a reference count.
 ***************************************************************************/
@@ -473,7 +473,7 @@ PCRF CRF::PcrfFindChunk(CTG ctg, CNO cno, RSC rsc)
     return this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the _fAttached flag.  If it's false, make sure the BACO is not
     in the CRF.
 ***************************************************************************/
@@ -501,7 +501,7 @@ void CRF::BacoDetached(PBACO pbaco)
     _pglcre->Delete(icre);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The BACO was released.  See if it should be flushed.
 ***************************************************************************/
 void CRF::BacoReleased(PBACO pbaco)
@@ -529,12 +529,12 @@ void CRF::BacoReleased(PBACO pbaco)
 
     if (pbaco->_crep <= crepToss || _cbCur > _cbMax)
     {
-        // toss it
+        // 3DMMv1.0: toss it
         pbaco->Detach();
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the cre corresponding to the (ctg, cno, pfnrpo).  Set *picre to
     its location (or where it would be if it were in the list).
 ***************************************************************************/
@@ -545,7 +545,7 @@ bool CRF::_FFindCre(CTG ctg, CNO cno, PFNRPO pfnrpo, int32_t *picre)
     CRE *qrgcre, *qcre;
     int32_t icreMin, icreLim, icre;
 
-    // Do a binary search.  The CREs are sorted by (ctg, cno, pfnrpo).
+    // 3DMMv1.0: Do a binary search.  The CREs are sorted by (ctg, cno, pfnrpo).
     qrgcre = (CRE *)_pglcre->QvGet(0);
     for (icreMin = 0, icreLim = _pglcre->IvMac(); icreMin < icreLim;)
     {
@@ -575,7 +575,7 @@ bool CRF::_FFindCre(CTG ctg, CNO cno, PFNRPO pfnrpo, int32_t *picre)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the cre corresponding to the BACO.  Set *picre to its location.
 ***************************************************************************/
 bool CRF::_FFindBaco(PBACO pbaco, int32_t *picre)
@@ -592,7 +592,7 @@ bool CRF::_FFindBaco(PBACO pbaco, int32_t *picre)
     ctg = pbaco->_ctg;
     cno = pbaco->_cno;
 
-    // Do a binary search.  The CREs are sorted by (ctg, cno, pfnrpo).
+    // 3DMMv1.0: Do a binary search.  The CREs are sorted by (ctg, cno, pfnrpo).
     qrgcre = (CRE *)_pglcre->QvGet(0);
     for (icreMin = 0, icreLim = _pglcre->IvMac(); icreMin < icreLim;)
     {
@@ -614,7 +614,7 @@ bool CRF::_FFindBaco(PBACO pbaco, int32_t *picre)
         }
         else
         {
-            // we've found the (ctg, cno), now look for the BACO
+            // 3DMMv1.0: we've found the (ctg, cno), now look for the BACO
             for (icreMin = icre; icreMin-- > 0;)
             {
                 qcre = qrgcre + icreMin;
@@ -646,7 +646,7 @@ bool CRF::_FFindBaco(PBACO pbaco, int32_t *picre)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Try to purge at least cbPurge bytes of space.  Doesn't free anything
     with a crep > crepLast or that is locked.
 ***************************************************************************/
@@ -662,17 +662,17 @@ bool CRF::_FPurgeCb(int32_t cbPurge, int32_t crepLast)
 
     while (0 < (icreMac = _pglcre->IvMac()))
     {
-        // We want to find the "best" element to free.  This is determined by
-        // keeping a "best so far" element, which we compare each element to.
-        // If the cre has a larger crep, it is worse, so just continue.
-        // If the cre has a smaller crep, it is better.  When the crep values
-        // are the same, we score it based on when the cre was last released
-        // (how many releases have happened since the cre was last used) and
-        // how different the cb is from cbPurge.  Each release is worth
-        // kcbRelease bytes.  Bytes short of cbPurge are considered worse
-        // (by a factor of 3) than bytes beyond cbPurge, so we favor elements
-        // that are larger than cbPurge.
-        // REVIEW shonk: tune kcbRelease and the weighting factor...
+        // 3DMMv1.0: We want to find the "best" element to free.  This is determined by
+        // 3DMMv1.0: keeping a "best so far" element, which we compare each element to.
+        // 3DMMv1.0: If the cre has a larger crep, it is worse, so just continue.
+        // 3DMMv1.0: If the cre has a smaller crep, it is better.  When the crep values
+        // 3DMMv1.0: are the same, we score it based on when the cre was last released
+        // 3DMMv1.0: (how many releases have happened since the cre was last used) and
+        // 3DMMv1.0: how different the cb is from cbPurge.  Each release is worth
+        // 3DMMv1.0: kcbRelease bytes.  Bytes short of cbPurge are considered worse
+        // 3DMMv1.0: (by a factor of 3) than bytes beyond cbPurge, so we favor elements
+        // 3DMMv1.0: that are larger than cbPurge.
+        // 3DMMv1.0: REVIEW shonk: tune kcbRelease and the weighting factor...
         const int32_t kcbRelease = 256;
         int32_t icre, crep;
         int32_t lw, dcb;
@@ -717,7 +717,7 @@ bool CRF::_FPurgeCb(int32_t cbPurge, int32_t crepLast)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CRF (chunky resource file).
 ***************************************************************************/
 void CRF::AssertValid(uint32_t grf)
@@ -730,7 +730,7 @@ void CRF::AssertValid(uint32_t grf)
     AssertIn(_cactRelease, 0, kcbMax);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by a CRF.
 ***************************************************************************/
 void CRF::MarkMem(void)
@@ -748,13 +748,13 @@ void CRF::MarkMem(void)
         _pglcre->Get(icre, &cre);
         AssertPo(cre.pbaco, 0);
         Assert(cre.pbaco->_fAttached, "baco claims to not be attached!");
-        cre.pbaco->_fAttached = fTrue; // safety to avoid infinite recursion
+        cre.pbaco->_fAttached = fTrue; // 3DMMv1.0: safety to avoid infinite recursion
         MarkMemObj(cre.pbaco);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for Chunky resource manager.
 ***************************************************************************/
 CRM::~CRM(void)
@@ -775,7 +775,7 @@ CRM::~CRM(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new CRM.
 ***************************************************************************/
 PCRM CRM::PcrmNew(int32_t ccrfInit)
@@ -794,7 +794,7 @@ PCRM CRM::PcrmNew(int32_t ccrfInit)
     return pcrm;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Prefetch the object if there is room in the cache.  Assigns the fetched
     object the given priority (crep).
 ***************************************************************************/
@@ -818,7 +818,7 @@ tribool CRM::TLoad(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc, int32_t crep)
     return tNo;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the object is loaded and increment its reference count.  If
     successful, must be balanced with a call to ReleasePpo.  If this fails,
     and pfError is not nil, *pfError is set iff the chunk exists but
@@ -849,7 +849,7 @@ PBACO CRM::PbacoFetch(CTG ctg, CNO cno, PFNRPO pfnrpo, bool *pfError, RSC rsc)
     return pbaco;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the object is loaded, increment its reference count and return it.
     If it's not already loaded, just return nil.
 ***************************************************************************/
@@ -866,7 +866,7 @@ PBACO CRM::PbacoFind(CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc)
     return pcrf->PbacoFind(ctg, cno, pfnrpo);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the chunk is cached, set its crep.  Returns true iff the chunk
     was cached.
 ***************************************************************************/
@@ -888,7 +888,7 @@ bool CRM::FSetCrep(int32_t crep, CTG ctg, CNO cno, PFNRPO pfnrpo, RSC rsc)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return which CRF the given chunk is in. The caller is not given a
     reference count.
 ***************************************************************************/
@@ -913,7 +913,7 @@ PCRF CRM::PcrfFindChunk(CTG ctg, CNO cno, RSC rsc)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a chunky file to the list of chunky resource files, by
     creating the chunky resource file object and adding it to the GL
 ***************************************************************************/
@@ -939,7 +939,7 @@ bool CRM::FAddCfl(PCFL pcfl, int32_t cbMax, int32_t *piv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the icrf'th CRF.
 ***************************************************************************/
 PCRF CRM::PcrfGet(int32_t icrf)
@@ -957,7 +957,7 @@ PCRF CRM::PcrfGet(int32_t icrf)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the sanity of the CRM
 ***************************************************************************/
 void CRM::AssertValid(uint32_t grfobj)
@@ -966,7 +966,7 @@ void CRM::AssertValid(uint32_t grfobj)
     AssertPo(_pglpcrf, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     mark the memory associated with the CRM
 ***************************************************************************/
 void CRM::MarkMem(void)
@@ -986,9 +986,9 @@ void CRM::MarkMem(void)
         MarkMemObj(pcrf);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A PFNRPO to read GHQ objects.
 ***************************************************************************/
 bool GHQ::FReadGhq(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -1024,7 +1024,7 @@ bool GHQ::FReadGhq(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int3
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a GHQ.
 ***************************************************************************/
 void GHQ::AssertValid(uint32_t grf)
@@ -1034,7 +1034,7 @@ void GHQ::AssertValid(uint32_t grf)
         AssertHq(hq);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the GHQ.
 ***************************************************************************/
 void GHQ::MarkMem(void)
@@ -1042,10 +1042,10 @@ void GHQ::MarkMem(void)
     GHQ_PAR::MarkMem();
     MarkHq(hq);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CABO.
 ***************************************************************************/
 void CABO::AssertValid(uint32_t grf)
@@ -1054,7 +1054,7 @@ void CABO::AssertValid(uint32_t grf)
     AssertNilOrPo(po, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the CABO.
 ***************************************************************************/
 void CABO::MarkMem(void)
@@ -1062,4 +1062,4 @@ void CABO::MarkMem(void)
     CABO_PAR::MarkMem();
     MarkMemObj(po);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

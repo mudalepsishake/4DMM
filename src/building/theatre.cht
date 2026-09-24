@@ -202,33 +202,14 @@ OBJECT( "Theater1 McZee", kgobTheatre1McZee , 550, kcrsHand1 )
 
   	REP_ANIM( CHID( kst5, krepDefault ), "Decsion and shadow puppet.")
 		DEBUGCMD( PrintStr("Theater McZee: State 5") );
-		If( GLOBAL( fMovie ) == fTrue );
-			SETGLOBAL( fMovie, fFalse ); 				
-			DISABLEHOTSPOTS(kflgBuildingMin);
- 			WAIT_FOR_TRANSITION();	   			// Pause to allow transition to complete.
-
-			VOICE( kwav21_thr1a, ktpc21_thr1a );			
-			cnt=kcell251;						// Animation "thr1_" (Shadow puppet animation).
-			While( cnt <= kcell308 );
-				Cell( cnt++, 0, 0, 6 );
-			End;
-			ENDVOICE();
-
-			ENABLEHOTSPOTS(kflgBuildingMin);
-			SETGLOBAL(kstEntry, kst3);			// Set the entry point to the movie	object to kst3.
-			CREATEMOVIE();
-		Else;
-			.fHelpState=1;
-
-			If( GLOBAL(fHelpOn)	== fTrue );
-				.MzNextAction = 	kst6;	// Help1 animation after...
-				ChangeStateThis( kst2 ); 	// Leaning onto stage.
-			Else;
-				.MzNextAction = 	kst4;	// Goto wait animation after...
-				ChangeStateThis( kst2 ); 	// Leaning onto stage.
-			End;
-
-		End; 
+		// State 5 is the "movie selected" theatre entry.  The -o playback
+		// runner enters here directly, so create the theatre movie object
+		// immediately.  This bypasses McZee's yes/no prompt and shadow-puppet
+		// ceremony and lets the existing kgobMovie/TATR playback path take over.
+		SETGLOBAL( fMovie, fFalse );
+		DISABLEHOTSPOTS(kflgBuildingMin);
+		SETGLOBAL(kstEntry, kst3);			// Set the entry point to the movie object to kst3.
+		CREATEMOVIE();
 	ENDCHUNK
 
 	REP_ANIM( CHID( kst6, krepDefault ), "Theater help1 animation" )

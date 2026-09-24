@@ -1,4 +1,4 @@
-/**
+/** 3DMMEx:
  * Test resource utilities
  **/
 
@@ -7,12 +7,12 @@
 
 #include "util.h"
 
-/**
+/** 3DMMEx:
  * @brief Set the FNI to the test resources directory.
  */
 void GetTestResourcePath(PFNI pfniTestResourcePath);
 
-/**
+/** 3DMMEx:
  * @brief Find a test resource file by name. Set the given FNI to the path if found.
  *
  * @param pfni FNI to set to the path to the resource
@@ -21,7 +21,7 @@ void GetTestResourcePath(PFNI pfniTestResourcePath);
  */
 bool FFindTestResource(PFNI pfni, PCSZ pszName);
 
-/**
+/** 3DMMEx:
  * @brief Set the FNI to the test resource. Fails the test if not found.
  *
  * @param pfni FNI to set to the path to the resource
@@ -29,4 +29,4 @@ bool FFindTestResource(PFNI pfni, PCSZ pszName);
  **/
 void GetTestResource(PFNI pfni, PCSZ pszName);
 
-#endif // KAUAI_TEST_RESOURCES_H
+#endif // 3DMMEx: KAUAI_TEST_RESOURCES_H

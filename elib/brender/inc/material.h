@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: material.h 1.19 1995/05/25 13:37:32 sam Exp $
@@ -27,41 +27,41 @@ extern "C"
         br_ufraction kd;
         br_ufraction ks;
 
-        /*
+        /* BRender:
          * Specular power
          */
         br_scalar power;
 
-        /*
+        /* BRender:
          * Controls how texture is rendered
          */
         br_uint_32 flags;
 
-        /*
+        /* BRender:
          * 2x3 transform applied to model U,V
          */
         br_matrix23 map_transform;
 
-        /*
+        /* BRender:
          * The direct index ramp base and range
          */
         br_uint_8 index_base;
         br_uint_8 index_range;
 
-        /*
+        /* BRender:
          * Pointers to colour map
          */
         br_pixelmap *colour_map;
 
-        /*
+        /* BRender:
          * Pointers to tables
          */
-        br_pixelmap *screendoor; /* Screen door opacity  */
+        br_pixelmap *screendoor; /* BRender: Screen door opacity  */
 
-        br_pixelmap *index_shade; /* Index shading		*/
-        br_pixelmap *index_blend; /* Index blending		*/
+        br_pixelmap *index_shade; /* BRender: Index shading		*/
+        br_pixelmap *index_blend; /* BRender: Index blending		*/
 
-        /*
+        /* BRender:
          * Private fields
          */
         br_uint_8 prep_flags;
@@ -70,7 +70,7 @@ extern "C"
 
     } br_material;
 
-    /*
+    /* BRender:
      * Bits for br_material->flags
      */
     enum
@@ -101,13 +101,13 @@ extern "C"
 #endif
     };
 
-/*
+/* BRender:
  * Backwards compatibility
  */
 #define BR_MATF_GOURAUD BR_MATF_SMOOTH
 #define BR_MATF_MAP_COLOUR 0
 
-    /*
+    /* BRender:
      * Flags to BrMaterialUpdate()
      */
     enum
@@ -119,7 +119,7 @@ extern "C"
         BR_MATU_ALL = 0x7fff
     };
 
-    /*
+    /* BRender:
      * Flags to BrMapUpdate()
      */
     enum
@@ -127,7 +127,7 @@ extern "C"
         BR_MAPU_ALL = 0x7fff
     };
 
-    /*
+    /* BRender:
      * Flags to BrTableUpdate()
      */
     enum

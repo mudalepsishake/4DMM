@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef UTILINT_H
 #define UTILINT_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Scalar constants
 ****************************************/
 const bool fTrue = 1;
@@ -30,7 +30,7 @@ enum tribool
 };
 #define AssertT(t) AssertIn(t, 0, tLim)
 
-// standard comparison flags
+// 3DMMv1.0: standard comparison flags
 enum
 {
     fcmpEq = 0x0001,
@@ -47,7 +47,7 @@ const uint32_t kgrfcmpNe = (fcmpGt | fcmpLt);
 #define cvNil (-1L)
 #define pvNil 0
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Memory access asserts
 ****************************************/
 #ifdef DEBUG
@@ -57,16 +57,16 @@ inline void AssertNilOrPvCb(const void *pv, int32_t cb)
     if (pv != pvNil)
         AssertPvCb(pv, cb);
 }
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define AssertPvCb(pv, cb)
 #define AssertNilOrPvCb(pv, cb)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
 #define AssertThisMem() AssertPvCb(this, SIZEOF(*this))
 #define AssertVarMem(pvar) AssertPvCb(pvar, SIZEOF(*(pvar)))
 #define AssertNilOrVarMem(pvar) AssertNilOrPvCb(pvar, SIZEOF(*(pvar)))
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Scalar APIs
 ****************************************/
 inline bool FIn(int32_t lw, int32_t lwMin, int32_t lwLim)
@@ -195,7 +195,7 @@ inline int32_t LwMulSw(int16_t sw1, int16_t sw2)
 
 #ifdef MC_68020
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Motorola 68020 routines.
 ***************************************************************************/
 extern "C"
@@ -209,7 +209,7 @@ int32_t LwMulDivMod(int32_t lw, int32_t lwMul, int32_t lwDiv, int32_t *plwRem);
 
 #elif defined(IN_80386)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Intel 80386 routines.
 ***************************************************************************/
 inline int32_t LwMulDiv(int32_t lw, int32_t lwMul, int32_t lwDiv)
@@ -245,9 +245,9 @@ void MulLw(int32_t lw1, int32_t lw2, int32_t *plwHigh, uint32_t *pluLow);
 uint32_t LuMulDiv(uint32_t lu, uint32_t luMul, uint32_t luDiv);
 void MulLu(uint32_t lu1, uint32_t lu2, uint32_t *pluHigh, uint32_t *pluLow);
 
-#else //! MC_68020 && !IN_80386
+#else //! 3DMMv1.0: MC_68020 && !IN_80386
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Other processors.  These generally use floating point.
 ***************************************************************************/
 int32_t LwMulDiv(int32_t lw, int32_t lwMul, int32_t lwDiv);
@@ -256,7 +256,7 @@ void MulLw(int32_t lw1, int32_t lw2, int32_t *plwHigh, uint32_t *pluLow);
 uint32_t LuMulDiv(uint32_t lu, uint32_t luMul, uint32_t luDiv);
 void MulLu(uint32_t lu1, uint32_t lu2, uint32_t *pluHigh, uint32_t *pluLow);
 
-#endif //! MC_68020 && !IN_80386
+#endif //! 3DMMv1.0: MC_68020 && !IN_80386
 
 int32_t LwMulDivAway(int32_t lw, int32_t lwMul, int32_t lwDiv);
 uint32_t LuMulDivAway(uint32_t lu, uint32_t luMul, uint32_t luDiv);
@@ -298,19 +298,19 @@ bool FAdjustIv(int32_t *piv, int32_t iv, int32_t cvIns, int32_t cvDel);
 #ifdef DEBUG
 void AssertIn(int32_t lw, int32_t lwMin, int32_t lwLim);
 int32_t LwMul(int32_t lw1, int32_t lw2);
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define AssertIn(lw, lwMin, lwLim)
 inline int32_t LwMul(int32_t lw1, int32_t lw2)
 {
     return lw1 * lw2;
 }
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Byte Swapping
 ****************************************/
 
-// byte order mask
+// 3DMMv1.0: byte order mask
 typedef uint32_t BOM;
 
 void SwapBytesBom(void *pv, BOM bom);
@@ -323,31 +323,31 @@ const BOM kbomSwapLong = 0xC0000000;
 const BOM kbomLeaveShort = 0x00000000;
 const BOM kbomLeaveLong = 0x80000000;
 
-/* You can chain up to 16 of these (2 bits each) */
+/* 3DMMv1.0: You can chain up to 16 of these (2 bits each) */
 #define BomField(bomNew, bomLast) ((bomNew) | ((bomLast) >> 2))
 
 #ifdef DEBUG
 void AssertBomRglw(BOM bom, int32_t cb);
 void AssertBomRgsw(BOM bom, int32_t cb);
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define AssertBomRglw(bom, cb)
 #define AssertBomRgsw(bom, cb)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-// FUTURE: remove redundant types
+// 3DMMEx: FUTURE: remove redundant types
 typedef class PT PTS;
 typedef class RC RCS;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Rectangle and point stuff
 ****************************************/
-// options for PT::Transform and RC::Transform
+// 3DMMv1.0: options for PT::Transform and RC::Transform
 enum
 {
     fptNil,
-    fptNegateXp = 1,  // negate xp values (and swap them in an RC)
-    fptNegateYp = 2,  // negate yp values (and swap them in an RC)
-    fptTranspose = 4, // swap xp and yp values (done after negating)
+    fptNegateXp = 1,  // 3DMMv1.0: negate xp values (and swap them in an RC)
+    fptNegateYp = 2,  // 3DMMv1.0: negate yp values (and swap them in an RC)
+    fptTranspose = 4, // 3DMMv1.0: swap xp and yp values (done after negating)
 };
 
 class RC;
@@ -360,7 +360,7 @@ class PT
     int32_t yp;
 
   public:
-    // constructors
+    // 3DMMv1.0: constructors
     PT(void)
     {
     }
@@ -376,9 +376,9 @@ class PT
     {
         *this = pts;
     }
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 
-    // interaction with other points
+    // 3DMMv1.0: interaction with other points
     bool operator==(PT &pt)
     {
         return xp == pt.xp && yp == pt.yp;
@@ -413,7 +413,7 @@ class PT
         yp += dyp;
     }
 
-    // map the point from prcSrc to prcDst coordinates
+    // 3DMMv1.0: map the point from prcSrc to prcDst coordinates
     void Map(RC *prcSrc, RC *prcDst);
     PT PtMap(RC *prcSrc, RC *prcDst);
 
@@ -429,7 +429,7 @@ class RC
     int32_t ypBottom;
 
   public:
-    // constructors
+    // 3DMMv1.0: constructors
     RC(void)
     {
     }
@@ -449,7 +449,7 @@ class RC
     {
         *this = rcs;
     }
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 
 #ifdef KAUAI_SDL
     operator SDL_Rect(void);
@@ -458,7 +458,7 @@ class RC
     {
         *this = rcs;
     }
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
     void Zero(void)
     {
@@ -473,7 +473,7 @@ class RC
         xpRight = xp2;
         ypBottom = yp2;
     }
-    // use klwMin / 2 and klwMax / 2 so Dxp and Dyp are correct
+    // 3DMMv1.0: use klwMin / 2 and klwMax / 2 so Dxp and Dyp are correct
     void Max(void)
     {
         AssertThisMem();
@@ -486,7 +486,7 @@ class RC
         return xpLeft == klwMin / 2 && ypTop == klwMin / 2 && xpRight == klwMax / 2 && ypBottom == klwMax / 2;
     }
 
-    // interaction with other rc's and pt's
+    // 3DMMv1.0: interaction with other rc's and pt's
     bool operator==(RC &rc);
     bool operator!=(RC &rc);
     RC &operator+=(PT &pt)
@@ -530,7 +530,7 @@ class RC
         return PT(xpLeft, ypBottom);
     }
 
-    // map the rectangle from prcSrc to prcDst coordinates
+    // 3DMMv1.0: map the rectangle from prcSrc to prcDst coordinates
     void Map(RC *prcSrc, RC *prcDst);
 
     void Transform(uint32_t grfpt);
@@ -584,7 +584,7 @@ class RC
                     int32_t *pircHeight);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     fractions (ratio/rational)
 ****************************************/
 class RAT
@@ -595,12 +595,12 @@ class RAT
     int32_t _lwNum;
     int32_t _lwDen;
 
-    // the third argument of this constructor is bogus.  This constructor is
-    // provided so the GCD calculation can be skipped when we already know
-    // the numerator and denominator are relatively prime.
+    // 3DMMv1.0: the third argument of this constructor is bogus.  This constructor is
+    // 3DMMv1.0: provided so the GCD calculation can be skipped when we already know
+    // 3DMMv1.0: the numerator and denominator are relatively prime.
     RAT(int32_t lwNum, int32_t lwDen, int32_t lwJunk)
     {
-        // lwNum and lwDen are already relatively prime
+        // 3DMMv1.0: lwNum and lwDen are already relatively prime
         if (lwDen > 0)
         {
             _lwNum = lwNum;
@@ -615,7 +615,7 @@ class RAT
     }
 
   public:
-    // constructors
+    // 3DMMv1.0: constructors
     RAT(void)
     {
         _lwDen = 0;
@@ -639,13 +639,13 @@ class RAT
         AssertThis(0);
     }
 
-    // unary minus
+    // 3DMMv1.0: unary minus
     RAT operator-(void) const
     {
         return RAT(-_lwNum, _lwDen, 0);
     }
 
-    // access functions
+    // 3DMMv1.0: access functions
     int32_t LwNumerator(void)
     {
         return _lwNum;
@@ -672,7 +672,7 @@ class RAT
         return _lwNum / _lwDen;
     }
 
-    // applying to a long (as a multiplicative operator)
+    // 3DMMv1.0: applying to a long (as a multiplicative operator)
     int32_t LwScale(int32_t lw)
     {
         return (_lwNum != _lwDen) ? LwMulDiv(lw, _lwNum, _lwDen) : lw;
@@ -682,7 +682,7 @@ class RAT
         return (_lwNum != _lwDen) ? LwMulDiv(lw, _lwDen, _lwNum) : lw;
     }
 
-    // operator functions
+    // 3DMMv1.0: operator functions
     friend RAT operator+(const RAT &rat1, const RAT &rat2);
     friend RAT operator+(const RAT &rat, int32_t lw)
     {
@@ -768,7 +768,7 @@ class RAT
         return rat._lwDen != 1 || rat._lwNum != lw;
     }
 
-    // operator methods
+    // 3DMMv1.0: operator methods
     RAT &operator=(int32_t lw)
     {
         _lwNum = lw;
@@ -821,7 +821,7 @@ class RAT
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Data versioning utility
 ***************************************************************************/
 struct DVER
@@ -833,4 +833,4 @@ struct DVER
     bool FReadable(int16_t swCur, int16_t swMin);
 };
 
-#endif // UTILINT_H
+#endif // 3DMMv1.0: UTILINT_H

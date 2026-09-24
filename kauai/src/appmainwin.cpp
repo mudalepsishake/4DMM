@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author:
     Project: Kauai
     Reviewed:
@@ -14,7 +14,7 @@ ASSERTNAME
 
 extern WIG vwig;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     WinMain for any frame work app. Sets up vwig and calls FrameMain.
 ***************************************************************************/
 int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hinstPrev, LPSTR pszs, int wShow)
@@ -28,14 +28,14 @@ int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hinstPrev, LPSTR pszs, int wShow)
     APPB::CreateConsole();
 #endif
 
-    // Get argc/argv from MSVC CRT globals
+    // 3DMMEx: Get argc/argv from MSVC CRT globals
 #ifdef _MSC_VER
 #ifdef UNICODE
     vpappb->SetArgv(__wargv, __argc);
-#else  // !UNICODE
+#else  // 3DMMEx: !UNICODE
     vpappb->SetArgv(__argv, __argc);
-#endif // UNICODE
-#endif // _MSC_VER
+#endif // 3DMMEx: UNICODE
+#endif // 3DMMEx: _MSC_VER
 
     FrameMain();
     return 0;

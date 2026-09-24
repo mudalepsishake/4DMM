@@ -1,12 +1,12 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-// KIDSANIM.H  --- Cool defines for cell animations.
+// 3DMMv1.0: KIDSANIM.H  --- Cool defines for cell animations.
 
-// ---------------------------------------------------------
-// Cell animation child ids
-// absolute so they don't overlap; utility
-// ---------------------------------------------------------
+// 3DMMv1.0: ---------------------------------------------------------
+// 3DMMv1.0: Cell animation child ids
+// 3DMMv1.0: absolute so they don't overlap; utility
+// 3DMMv1.0: ---------------------------------------------------------
 
 #define kcellNull 0x0000003f
 

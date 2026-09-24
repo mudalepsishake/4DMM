@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
 
     DOCMBMP methods.
 
@@ -12,7 +12,7 @@ ASSERTNAME
 RTCLASS(DOCMBMP)
 RTCLASS(DCMBMP)
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Constructor for a MBMP document.
 ****************************************************************************/
 DOCMBMP::DOCMBMP(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCE(pdocb, pcfl, ctg, cno)
@@ -20,7 +20,7 @@ DOCMBMP::DOCMBMP(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCE(pdocb, pcfl, c
     _pmbmp = pvNil;
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Destructor for a MBMP document.
 ****************************************************************************/
 DOCMBMP::~DOCMBMP(void)
@@ -28,7 +28,7 @@ DOCMBMP::~DOCMBMP(void)
     ReleasePpo(&_pmbmp);
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Static method to create a new MBMP document.
 ****************************************************************************/
 PDOCMBMP DOCMBMP::PdocmbmpNew(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
@@ -46,7 +46,7 @@ PDOCMBMP DOCMBMP::PdocmbmpNew(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
     return pdocmbmp;
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Create a new display gob for the MBMP document.
 ****************************************************************************/
 PDDG DOCMBMP::PddgNew(PGCB pgcb)
@@ -54,7 +54,7 @@ PDDG DOCMBMP::PddgNew(PGCB pgcb)
     return DCMBMP::PdcmbmpNew(this, _pmbmp, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the size of the thing on file.
 ***************************************************************************/
 int32_t DOCMBMP::_CbOnFile(void)
@@ -62,7 +62,7 @@ int32_t DOCMBMP::_CbOnFile(void)
     return _pmbmp->CbOnFile();
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     Write the data out.
 ****************************************************************************/
 bool DOCMBMP::_FWrite(PBLCK pblck, bool fRedirect)
@@ -73,7 +73,7 @@ bool DOCMBMP::_FWrite(PBLCK pblck, bool fRedirect)
     return _pmbmp->FWrite(pblck);
 }
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
     Read the MBMP.
 *****************************************************************************/
 bool DOCMBMP::_FRead(PBLCK pblck)
@@ -86,7 +86,7 @@ bool DOCMBMP::_FRead(PBLCK pblck)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DOCMBMP.
 ***************************************************************************/
 void DOCMBMP::AssertValid(uint32_t grf)
@@ -95,7 +95,7 @@ void DOCMBMP::AssertValid(uint32_t grf)
     AssertPo(_pmbmp, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DOCMBMP.
 ***************************************************************************/
 void DOCMBMP::MarkMem(void)
@@ -104,9 +104,9 @@ void DOCMBMP::MarkMem(void)
     DOCMBMP_PAR::MarkMem();
     MarkMemObj(_pmbmp);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
     Constructor for a pic display gob.
 *****************************************************************************/
 DCMBMP::DCMBMP(PDOCB pdocb, PMBMP pmbmp, PGCB pgcb) : DDG(pdocb, pgcb)
@@ -114,7 +114,7 @@ DCMBMP::DCMBMP(PDOCB pdocb, PMBMP pmbmp, PGCB pgcb) : DDG(pdocb, pgcb)
     _pmbmp = pmbmp;
 }
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
     Get the min-max for a DCMBMP.
 *****************************************************************************/
 void DCMBMP::GetMinMax(RC *prcMinMax)
@@ -122,7 +122,7 @@ void DCMBMP::GetMinMax(RC *prcMinMax)
     prcMinMax->Set(0, 0, kswMax, kswMax);
 }
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
     Static method to create a new DCMBMP.
 *****************************************************************************/
 PDCMBMP DCMBMP::PdcmbmpNew(PDOCB pdocb, PMBMP pmbmp, PGCB pgcb)
@@ -143,28 +143,28 @@ PDCMBMP DCMBMP::PdcmbmpNew(PDOCB pdocb, PMBMP pmbmp, PGCB pgcb)
     return pdcmbmp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the MBMP.
 ***************************************************************************/
 void DCMBMP::Draw(PGNV pgnv, RC *prcClip)
 {
     RC rcMbmp, rcDdg;
 
-    // retrieve appropriate rectangles
+    // 3DMMv1.0: retrieve appropriate rectangles
     GetRc(&rcDdg, cooLocal);
     _pmbmp->GetRc(&rcMbmp);
     rcMbmp.CenterOnRc(&rcDdg);
 
-    // erase *prcClip
+    // 3DMMv1.0: erase *prcClip
     pgnv->FillRc(prcClip, kacrWhite);
     pgnv->FillRcApt(&rcMbmp, &vaptLtGray, kacrLtGray, kacrWhite);
 
-    // draw mbmp in GPT
+    // 3DMMv1.0: draw mbmp in GPT
     pgnv->DrawMbmp(_pmbmp, &rcMbmp);
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DCMBMP.
 ***************************************************************************/
 void DCMBMP::AssertValid(uint32_t grf)
@@ -173,7 +173,7 @@ void DCMBMP::AssertValid(uint32_t grf)
     AssertPo(_pmbmp, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DCMBMP.
 ***************************************************************************/
 void DCMBMP::MarkMem(void)
@@ -182,4 +182,4 @@ void DCMBMP::MarkMem(void)
     DCMBMP_PAR::MarkMem();
     MarkMemObj(_pmbmp);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

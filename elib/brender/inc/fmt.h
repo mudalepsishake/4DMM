@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: fmt.h 1.5 1995/02/22 21:37:06 sam Exp $
@@ -14,26 +14,26 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Type of things to load from file
      */
     enum
     {
-        BR_FMT_MODELS = 0x0001,   /* Create model definitions from file	*/
-        BR_FMT_ACTORS = 0x0002,   /* Create actor							*/
-        BR_FMT_LIGHTS = 0x0004,   /* Create lights instances				*/
-        BR_FMT_CAMERAS = 0x0008,  /* Create cameras instances				*/
-        BR_FMT_MATERIALS = 0x0010 /* Create materials						*/
+        BR_FMT_MODELS = 0x0001,   /* BRender: Create model definitions from file	*/
+        BR_FMT_ACTORS = 0x0002,   /* BRender: Create actor							*/
+        BR_FMT_LIGHTS = 0x0004,   /* BRender: Create lights instances				*/
+        BR_FMT_CAMERAS = 0x0008,  /* BRender: Create cameras instances				*/
+        BR_FMT_MATERIALS = 0x0010 /* BRender: Create materials						*/
     };
 
-    /*
+    /* BRender:
      * Interchange structure for passing to file format loaders
      *
      * XXX Not yet used by anything
      */
     typedef struct br_fmt_results
     {
-        /*
+        /* BRender:
          * pointers to tables of each loaded allocated by BrFMTxxxLoad()
          */
         br_model *models;
@@ -42,7 +42,7 @@ extern "C"
         br_model *cameras;
         br_model *actors;
 
-        /*
+        /* BRender:
          * Size of each allocated array
          */
         int nmodels;

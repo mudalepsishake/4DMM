@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,18 +16,18 @@
 #ifndef RTXT_H
 #define RTXT_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Character properties - if you change this, make sure to update
     FetchChp and _TGetLwFromChp.
 ***************************************************************************/
 struct CHP
 {
-    uint32_t grfont;   // bold, italic, etc
-    int32_t onn;       // which font
-    int32_t dypFont;   // size of the font
-    int32_t dypOffset; // sub/superscript (-128 to 127)
-    ACR acrFore;       // text color
-    ACR acrBack;       // background color
+    uint32_t grfont;   // 3DMMv1.0: bold, italic, etc
+    int32_t onn;       // 3DMMv1.0: which font
+    int32_t dypFont;   // 3DMMv1.0: size of the font
+    int32_t dypOffset; // 3DMMv1.0: sub/superscript (-128 to 127)
+    ACR acrFore;       // 3DMMv1.0: text color
+    ACR acrBack;       // 3DMMv1.0: background color
 
     void Clear(void)
     {
@@ -38,7 +38,7 @@ struct CHP
 };
 typedef CHP *PCHP;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paragraph properties - if you change these, make sure to update
     FetchPap and _TGetLwFromPap.  The dypExtraLine and numLine fields are
     used to change the height of lines from their default.  The line height
@@ -58,9 +58,9 @@ enum
 {
     ndMin,
     ndNone = ndMin,
-    ndFirst, // just on the left
-    ndRest,  // just on the left
-    ndAll,   // on both sides
+    ndFirst, // 3DMMv1.0: just on the left
+    ndRest,  // 3DMMv1.0: just on the left
+    ndAll,   // 3DMMv1.0: on both sides
     ndLim
 };
 
@@ -82,7 +82,7 @@ const int16_t kdxpDocDef = (kdzpInch * 6);
 
 const achar kchObject = 1;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Generic text document base class
 ***************************************************************************/
 const int32_t kcchMaxTxtbCache = 512;
@@ -99,13 +99,13 @@ class TXTB : public TXTB_PAR
     PFIL _pfil;
     PBSF _pbsf;
     ACR _acrBack;
-    int32_t _dxpDef; // default width of the document
+    int32_t _dxpDef; // 3DMMv1.0: default width of the document
     int32_t _cpMinCache;
     int32_t _cpLimCache;
     achar _rgchCache[kcchMaxTxtbCache];
 
-    int32_t _cactSuspendUndo; // > 0 means don't set up undo records.
-    int32_t _cactCombineUndo; // determines whether we can combine undo records.
+    int32_t _cactSuspendUndo; // 3DMMv1.0: > 0 means don't set up undo records.
+    int32_t _cactCombineUndo; // 3DMMv1.0: determines whether we can combine undo records.
 
     TXTB(PDOCB pdocb = pvNil, uint32_t grfdoc = fdocNil);
     ~TXTB(void);
@@ -118,8 +118,8 @@ class TXTB : public TXTB_PAR
   public:
     virtual void InvalAllDdg(int32_t cp, int32_t ccpIns, int32_t ccpDel, uint32_t grfdoc = fdocUpdate);
 
-    // REVIEW shonk: this is needed for using a text document as input to a lexer.
-    // The bsf returned is read-only!!!!
+    // 3DMMv1.0: REVIEW shonk: this is needed for using a text document as input to a lexer.
+    // 3DMMv1.0: The bsf returned is read-only!!!!
     PBSF Pbsf(void)
     {
         AssertThis(0);
@@ -174,7 +174,7 @@ class TXTB : public TXTB_PAR
     virtual void ExportFormats(PCLIP pclip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Plain text document class
 ***************************************************************************/
 typedef class TXPD *PTXPD;
@@ -195,10 +195,10 @@ class TXPD : public TXPD_PAR
     virtual bool FSaveToFni(FNI *pfni, bool fSetFni) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rich text document class.
 ***************************************************************************/
-const int32_t kcpMaxTxrd = 0x00800000; // 8MB
+const int32_t kcpMaxTxrd = 0x00800000; // 3DMMv1.0: 8MB
 typedef class RTUN *PRTUN;
 
 typedef class TXRD *PTXRD;
@@ -211,56 +211,56 @@ class TXRD : public TXRD_PAR
     MARKMEM
 
   protected:
-    // WARNING: changing these values affects the file format
-    // NOTE: Originally, _FSprmInAg was a virtual TXRD method called to
-    // determine if a sprm stored its value in the AG. This didn't work
-    // well when a subclass had a sprm in an AG (it broke undo for that
-    // sprm). To fix this I (shonk) made _FSprmInAg static and made it
-    // know exactly which sprms use the AG. For sprms in the client range
-    // or above sprmMinObj, odd ones are _not_ in the AG and even ones _are_
-    // in the AG. I couldn't just use the odd/even rule throughout the
-    // range, because that would have required changing values of old
-    // sprms, which would have broken existing rich text documents.
+    // 3DMMv1.0: WARNING: changing these values affects the file format
+    // 3DMMv1.0: NOTE: Originally, _FSprmInAg was a virtual TXRD method called to
+    // 3DMMv1.0: determine if a sprm stored its value in the AG. This didn't work
+    // 3DMMv1.0: well when a subclass had a sprm in an AG (it broke undo for that
+    // 3DMMv1.0: sprm). To fix this I (shonk) made _FSprmInAg static and made it
+    // 3DMMv1.0: know exactly which sprms use the AG. For sprms in the client range
+    // 3DMMv1.0: or above sprmMinObj, odd ones are _not_ in the AG and even ones _are_
+    // 3DMMv1.0: in the AG. I couldn't just use the odd/even rule throughout the
+    // 3DMMv1.0: range, because that would have required changing values of old
+    // 3DMMv1.0: sprms, which would have broken existing rich text documents.
     enum
     {
         sprmNil = 0,
 
-        // character properties
+        // 3DMMv1.0: character properties
         sprmMinChp = 1,
-        sprmStyle = 1,     // bold, italic, etc, font size, dypOffset
-        sprmFont = 2,      // font - in the AG
-        sprmForeColor = 3, // foreground color
-        sprmBackColor = 4, // background color
+        sprmStyle = 1,     // 3DMMv1.0: bold, italic, etc, font size, dypOffset
+        sprmFont = 2,      // 3DMMv1.0: font - in the AG
+        sprmForeColor = 3, // 3DMMv1.0: foreground color
+        sprmBackColor = 4, // 3DMMv1.0: background color
         sprmLimChp,
 
-        // client character properties start at 64
-        sprmMinChpClient = 64, // for subclassed character properties
+        // 3DMMv1.0: client character properties start at 64
+        sprmMinChpClient = 64, // 3DMMv1.0: for subclassed character properties
 
-        // paragraph properties
+        // 3DMMv1.0: paragraph properties
         sprmMinPap = 128,
-        sprmHorz = 128,  // justification, indenting and dxpTab
-        sprmVert = 129,  // numLine and dypExtraLine
-        sprmAfter = 130, // numAfter and dypExtraAfter
+        sprmHorz = 128,  // 3DMMv1.0: justification, indenting and dxpTab
+        sprmVert = 129,  // 3DMMv1.0: numLine and dypExtraLine
+        sprmAfter = 130, // 3DMMv1.0: numAfter and dypExtraAfter
         sprmLimPap,
 
-        // client paragraph properties
-        sprmMinPapClient = 160, // for subclassed paragraph properties
+        // 3DMMv1.0: client paragraph properties
+        sprmMinPapClient = 160, // 3DMMv1.0: for subclassed paragraph properties
 
-        // objects - these apply to a single character, not a range
+        // 3DMMv1.0: objects - these apply to a single character, not a range
         sprmMinObj = 192,
         sprmObject = 192,
     };
 
-    // map property entry
+    // 3DMMv1.0: map property entry
     struct MPE
     {
-        uint32_t spcp; // sprm in the high byte and cp in the low 3 bytes
-        int32_t lw;    // the associated value - meaning depends on the sprm,
-                       // but 0 is _always_ the default
+        uint32_t spcp; // 3DMMv1.0: sprm in the high byte and cp in the low 3 bytes
+        int32_t lw;    // 3DMMv1.0: the associated value - meaning depends on the sprm,
+                       // 3DMMv1.0: but 0 is _always_ the default
     };
     VERIFY_STRUCT_SIZE(MPE, 8);
 
-    // sprm, value, mask triple
+    // 3DMMv1.0: sprm, value, mask triple
     struct SPVM
     {
         uint8_t sprm;
@@ -269,7 +269,7 @@ class TXRD : public TXRD_PAR
     };
     VERIFY_STRUCT_SIZE(SPVM, 12);
 
-    // rich text document properties
+    // 3DMMv1.0: rich text document properties
     struct RDOP
     {
         int16_t bo;
@@ -277,27 +277,27 @@ class TXRD : public TXRD_PAR
         int32_t dxpDef;
         int32_t dypFont;
         int32_t lwAcrBack;
-        // uint8_t rgbStnFont[]; font name
+        // 3DMMEx: uint8_t rgbStnFont[]; font name
     };
     VERIFY_STRUCT_SIZE(RDOP, 16);
 #define kbomRdop 0x5FC00000
 
     PCFL _pcfl;
     PGL _pglmpe;
-    PAG _pagcact; // for sprm's that have more than a long's worth of data
+    PAG _pagcact; // 3DMMv1.0: for sprm's that have more than a long's worth of data
 
-    int32_t _onnDef; // default font and font size
+    int32_t _onnDef; // 3DMMv1.0: default font and font size
     int32_t _dypFontDef;
-    int16_t _oskFont; // osk for the default font
-    STN _stnFontDef;  // name of default font
+    int16_t _oskFont; // 3DMMv1.0: osk for the default font
+    STN _stnFontDef;  // 3DMMv1.0: name of default font
 
-    // cached CHP and PAP (from FetchChp and FetchPap)
+    // 3DMMv1.0: cached CHP and PAP (from FetchChp and FetchPap)
     CHP _chp;
     int32_t _cpMinChp, _cpLimChp;
     PAP _pap;
     int32_t _cpMinPap, _cpLimPap;
 
-    // current undo record
+    // 3DMMv1.0: current undo record
     PRTUN _prtun;
 
     TXRD(PDOCB pdocb = pvNil, uint32_t grfdoc = fdocNil);
@@ -394,7 +394,7 @@ class TXRD : public TXRD_PAR
     virtual void CommitUndo(void) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rich text undo object.
 ***************************************************************************/
 typedef class RTUN *PRTUN;
@@ -407,10 +407,10 @@ class RTUN : public RTUN_PAR
     MARKMEM
 
   protected:
-    int32_t _cactCombine; // RTUNs with different values can't be combined
-    PTXRD _ptxrd;         // copy of replaced text
-    int32_t _cpMin;       // where the text came from in the original RTXD
-    int32_t _ccpIns;      // how many characters the original text was replaced with
+    int32_t _cactCombine; // 3DMMv1.0: RTUNs with different values can't be combined
+    PTXRD _ptxrd;         // 3DMMv1.0: copy of replaced text
+    int32_t _cpMin;       // 3DMMv1.0: where the text came from in the original RTXD
+    int32_t _ccpIns;      // 3DMMv1.0: how many characters the original text was replaced with
 
   public:
     static PRTUN PrtunNew(int32_t cactCombine, PTXRD ptxrd, int32_t cp1, int32_t cp2, int32_t ccpIns);
@@ -422,7 +422,7 @@ class RTUN : public RTUN_PAR
     bool FCombine(PRTUN prtun);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Text document display GOB - DDG for a TXTB.
 ***************************************************************************/
 const int32_t kdxpIndentTxtg = (kdzpInch / 8);
@@ -445,11 +445,11 @@ class TXTG : public TXTG_PAR
     MARKMEM
 
   protected:
-    // line information
+    // 3DMMv1.0: line information
     struct LIN
     {
-        int32_t cpMin;  // the cp of the first character in this line
-        int32_t dypTot; // the total height of lines up to this line
+        int32_t cpMin;  // 3DMMv1.0: the cp of the first character in this line
+        int32_t dypTot; // 3DMMv1.0: the total height of lines up to this line
         int16_t ccp;
         int16_t xpLeft;
         int16_t dyp;
@@ -461,10 +461,10 @@ class TXTG : public TXTG_PAR
     int32_t _ilinDisp;
     int32_t _cpDisp;
     int32_t _dypDisp;
-    int32_t _ilinInval; // LINs from here on have wrong cpMin and dypTot values
+    int32_t _ilinInval; // 3DMMv1.0: LINs from here on have wrong cpMin and dypTot values
     PGNV _pgnv;
 
-    // the selection
+    // 3DMMv1.0: the selection
     int32_t _cpAnchor;
     int32_t _cpOther;
     uint32_t _tsSel;
@@ -475,7 +475,7 @@ class TXTG : public TXTG_PAR
     bool _fClear : 1;
     bool _fSelByWord : 1;
 
-    // the ruler
+    // 3DMMv1.0: the ruler
     PTRUL _ptrul;
 
     TXTG(PTXTB ptxtb, PGCB pgcb);
@@ -539,7 +539,7 @@ class TXTG : public TXTG_PAR
     virtual void GetNaturalSize(int32_t *pdxp, int32_t *pdyp);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Line text document display gob
 ***************************************************************************/
 typedef class TXLG *PTXLG;
@@ -550,7 +550,7 @@ class TXLG : public TXLG_PAR
     RTCLASS_DEC
 
   protected:
-    // the font
+    // 3DMMv1.0: the font
     int32_t _onn;
     uint32_t _grfont;
     int32_t _dypFont;
@@ -563,7 +563,7 @@ class TXLG : public TXLG_PAR
     virtual void _FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin = pvNil, int32_t *pcpLim = pvNil) override;
     virtual void _FetchPap(int32_t cp, PPAP ppap, int32_t *pcpMin = pvNil, int32_t *pcpLim = pvNil) override;
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
     virtual void _ClearSel(void) override;
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid) override;
@@ -575,7 +575,7 @@ class TXLG : public TXLG_PAR
     virtual void SetDxpDoc(int32_t dxp) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rich text document display gob
 ***************************************************************************/
 typedef class TXRG *PTXRG;
@@ -599,7 +599,7 @@ class TXRG : public TXRG_PAR
     virtual bool _FGetOtherSize(int32_t *pdypFont);
     virtual bool _FGetOtherSubSuper(int32_t *pdypOffset);
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
     virtual void _ClearSel(void) override;
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid) override;
@@ -622,7 +622,7 @@ class TXRG : public TXRG_PAR
     virtual void SetDxpTab(int32_t dxp) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The ruler for a rich text document.
 ***************************************************************************/
 typedef class TRUL *PTRUL;
@@ -643,4 +643,4 @@ class TRUL : public TRUL_PAR
     virtual void SetXpLeft(int32_t xpLeft) = 0;
 };
 
-#endif //! RTXT_H
+#endif //! 3DMMv1.0: RTXT_H

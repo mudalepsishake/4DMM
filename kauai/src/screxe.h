@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,7 +17,7 @@
 #ifndef SCREXE_H
 #define SCREXE_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Run-Time Variable Map structure
 ****************************************/
 struct RTVM
@@ -29,7 +29,7 @@ struct RTVM
 bool FFindRtvm(PGL pglrtvm, RTVN *prtvn, int32_t *plwValue, int32_t *pirtvm);
 bool FAssignRtvm(PGL *ppglrtvm, RTVN *prtvn, int32_t lw);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A script.  This is here rather than in scrcom.* because scrcom is
     rarely included in shipping products, but screxe.* is.
 ***************************************************************************/
@@ -45,7 +45,7 @@ class SCPT : public SCPT_PAR
   protected:
     PGL _pgllw;
     PGST _pgstLiterals;
-    PGST _pgstSrcLines = pvNil; // Mapping of instruction pointer to source line number
+    PGST _pgstSrcLines = pvNil; // 3DMMEx: Mapping of instruction pointer to source line number
 
     SCPT(void)
     {
@@ -55,10 +55,10 @@ class SCPT : public SCPT_PAR
     friend class SCCB;
 
 #ifdef DEBUG
-    FNI _fniSrc;      // Source file
-    STN _stnSrcChunk; // Source chunk name
+    FNI _fniSrc;      // 3DMMEx: Source file
+    STN _stnSrcChunk; // 3DMMEx: Source chunk name
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
   public:
     static bool FReadScript(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
@@ -69,7 +69,7 @@ class SCPT : public SCPT_PAR
     bool FGetSourceLine(int32_t ilw, PSTN pstnSourceLine);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Runtime string registry.
 ***************************************************************************/
 typedef class STRG *PSTRG;
@@ -100,7 +100,7 @@ class STRG : public STRG_PAR
     void Delete(int32_t stid);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The script interpreter.
 ***************************************************************************/
 enum
@@ -119,16 +119,16 @@ class SCEB : public SCEB_PAR
     MARKMEM
 
   protected:
-    PRCA _prca; // the chunky resource file list (may be nil)
+    PRCA _prca; // 3DMMv1.0: the chunky resource file list (may be nil)
     PSTRG _pstrg;
-    PGL _pgllwStack;   // the execution stack
-    PGL _pglrtvm;      // the local variables
-    PSCPT _pscpt;      // the script
-    int32_t _ilwMac;   // the length of the script
-    int32_t _ilwCur;   // the current location in the script
-    bool _fError : 1;  // an error has occured
-    bool _fPaused : 1; // if we're paused
-    int32_t _lwReturn; // the return value from the script
+    PGL _pgllwStack;   // 3DMMv1.0: the execution stack
+    PGL _pglrtvm;      // 3DMMv1.0: the local variables
+    PSCPT _pscpt;      // 3DMMv1.0: the script
+    int32_t _ilwMac;   // 3DMMv1.0: the length of the script
+    int32_t _ilwCur;   // 3DMMv1.0: the current location in the script
+    bool _fError : 1;  // 3DMMv1.0: an error has occured
+    bool _fPaused : 1; // 3DMMv1.0: if we're paused
+    int32_t _lwReturn; // 3DMMv1.0: the return value from the script
 
     void _Push(int32_t lw)
     {
@@ -171,7 +171,7 @@ class SCEB : public SCEB_PAR
 
 #ifdef DEBUG
     void _WarnSz(PCSZ psz, ...);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
   public:
     SCEB(PRCA prca = pvNil, PSTRG pstrg = pvNil);
@@ -184,4 +184,4 @@ class SCEB : public SCEB_PAR
     virtual void Free(void);
 };
 
-#endif //! SCREXE_H
+#endif //! 3DMMv1.0: SCREXE_H

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -39,7 +39,7 @@ ON_CID_GEN(cidChooseSubSuper, &TXRG::FCmdApplyProperty, &TXRG::FEnablePropCmd)
 END_CMD_MAP_NIL()
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the rich text doc.
 ***************************************************************************/
 void TXTB::AssertValid(uint32_t grfobj)
@@ -65,7 +65,7 @@ void TXTB::AssertValid(uint32_t grfobj)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the TXTB.
 ***************************************************************************/
 void TXTB::MarkMem(void)
@@ -74,9 +74,9 @@ void TXTB::MarkMem(void)
     TXTB_PAR::MarkMem();
     MarkMemObj(_pbsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the base text document class
 ***************************************************************************/
 TXTB::TXTB(PDOCB pdocb, uint32_t grfdoc) : TXTB_PAR(pdocb, grfdoc)
@@ -85,7 +85,7 @@ TXTB::TXTB(PDOCB pdocb, uint32_t grfdoc) : TXTB_PAR(pdocb, grfdoc)
     _dxpDef = kdxpDocDef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the base text document class
 ***************************************************************************/
 TXTB::~TXTB(void)
@@ -94,7 +94,7 @@ TXTB::~TXTB(void)
     ReleasePpo(&_pfil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initializer for the base text document class.
 ***************************************************************************/
 bool TXTB::_FInit(PFNI pfni, PBSF pbsf, int16_t osk)
@@ -126,7 +126,7 @@ bool TXTB::_FInit(PFNI pfni, PBSF pbsf, int16_t osk)
     else if (!_FLoad(osk))
         return fFalse;
 
-    // append a return character
+    // 3DMMv1.0: append a return character
     ch = kchReturn;
     if (!_pbsf->FReplace(&ch, SIZEOF(achar), _pbsf->IbMac(), 0))
         return fFalse;
@@ -135,12 +135,12 @@ bool TXTB::_FInit(PFNI pfni, PBSF pbsf, int16_t osk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load the document from its file
 ***************************************************************************/
 bool TXTB::_FLoad(int16_t osk)
 {
-    // initialize the BSF to just point to the file
+    // 3DMMv1.0: initialize the BSF to just point to the file
     FLO flo;
     bool fRet = fFalse;
 
@@ -158,12 +158,12 @@ bool TXTB::_FLoad(int16_t osk)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of the text in the text document.
 ***************************************************************************/
 int32_t TXTB::CpMac(void)
 {
-    // Note: we don't do an AssertThis(0) here for debug performance
+    // 3DMMv1.0: Note: we don't do an AssertThis(0) here for debug performance
     AssertThisMem();
     AssertVarMem(_pbsf);
     Assert(_pbsf->IbMac() % SIZEOF(achar) == 0, "IbMac() not divisible by SIZEOF(achar)");
@@ -171,7 +171,7 @@ int32_t TXTB::CpMac(void)
     return _pbsf->IbMac() / SIZEOF(achar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Suspend undo. This increments a count.
 ***************************************************************************/
 void TXTB::SuspendUndo(void)
@@ -180,7 +180,7 @@ void TXTB::SuspendUndo(void)
     _cactSuspendUndo++;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resume undo. This decrements a count.
 ***************************************************************************/
 void TXTB::ResumeUndo(void)
@@ -190,7 +190,7 @@ void TXTB::ResumeUndo(void)
     _cactSuspendUndo--;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set up undo for an action. If this succeeds, you must call either
     CancelUndo or CommitUndo. Default TXTB doesn't create an undo record.
 ***************************************************************************/
@@ -205,7 +205,7 @@ bool TXTB::FSetUndo(int32_t cp1, int32_t cp2, int32_t ccpIns)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Cancel undo.
 ***************************************************************************/
 void TXTB::CancelUndo(void)
@@ -213,7 +213,7 @@ void TXTB::CancelUndo(void)
     ResumeUndo();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Commit the setup undo.
 ***************************************************************************/
 void TXTB::CommitUndo(void)
@@ -221,7 +221,7 @@ void TXTB::CommitUndo(void)
     ResumeUndo();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increments the _cactCombineUndo counter. This is used to determine
     whether the new undo record can be combined with the previous one
     (during typing etc).
@@ -233,7 +233,7 @@ void TXTB::BumpCombineUndo(void)
         _cactCombineUndo++;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Search for some text. If fCaseSensitive is false, we map prgch to all
     lower case. The pcpLim parameter is in case we support regular
     expressions in the future.
@@ -255,16 +255,16 @@ bool TXTB::FFind(const achar *prgch, int32_t cch, int32_t cpMin, int32_t *pcpMin
 
     if (!fCaseSensitive)
     {
-        // TODO: Can't convert this string to lowercase as it's now constant
-        // LowerRgch(prgch, cch);
+        // 3DMMEx: TODO: Can't convert this string to lowercase as it's now constant
+        // 3DMMEx: LowerRgch(prgch, cch);
         RawRtn();
     }
 
     cch--;
     pchLast = prgch + cch;
 
-    // calculate the grfbitUsed bit field - indicating, which characters
-    // appear in the search string.
+    // 3DMMv1.0: calculate the grfbitUsed bit field - indicating, which characters
+    // 3DMMv1.0: appear in the search string.
     ClearPb(grfbitUsed, SIZEOF(grfbitUsed));
     for (pch = prgch; pch <= pchLast; pch++)
     {
@@ -277,35 +277,35 @@ bool TXTB::FFind(const achar *prgch, int32_t cch, int32_t cpMin, int32_t *pcpMin
     {
         for (pch = pchLast;; cpT--, pch--)
         {
-            // get the character and map it to lower case if we're doing
-            // a case insensitive search
+            // 3DMMv1.0: get the character and map it to lower case if we're doing
+            // 3DMMv1.0: a case insensitive search
             ch = _ChFetch(cpT);
             if (!fCaseSensitive)
                 ch = ChLower(ch);
 
-            // see if the character is used anywhere within the search string
+            // 3DMMv1.0: see if the character is used anywhere within the search string
             ibit = (int32_t)(uint8_t)ch;
             if (!(grfbitUsed[IbFromIbit(ibit)] & Fbit(ibit)))
             {
-                // this character isn't anywhere in the search string,
-                // so we can jump by a lot.
+                // 3DMMv1.0: this character isn't anywhere in the search string,
+                // 3DMMv1.0: so we can jump by a lot.
                 cpMin = cpT + 1;
                 break;
             }
 
-            // see if the character matches the corresponding character in
-            // the search string
+            // 3DMMv1.0: see if the character matches the corresponding character in
+            // 3DMMv1.0: the search string
             if (ch != *pch)
             {
-                // character doesn't match, just jump by one
+                // 3DMMv1.0: character doesn't match, just jump by one
                 cpMin++;
                 break;
             }
 
-            // if cpT is back to cpMin, we've got a match
+            // 3DMMv1.0: if cpT is back to cpMin, we've got a match
             if (cpT == cpMin)
             {
-                // we matched
+                // 3DMMv1.0: we matched
                 *pcpMin = cpMin;
                 *pcpLim = cpMin + cch + 1;
                 return fTrue;
@@ -318,7 +318,7 @@ bool TXTB::FFind(const achar *prgch, int32_t cch, int32_t cpMin, int32_t *pcpMin
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Turn the selection of this TXTB's active DDG off.
 ***************************************************************************/
 void TXTB::HideSel(void)
@@ -330,7 +330,7 @@ void TXTB::HideSel(void)
         ((PTXTG)pddg)->HideSel();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection of this TXTB's active DDG to the given range.
 ***************************************************************************/
 void TXTB::SetSel(int32_t cpAnchor, int32_t cpOther, int32_t gin)
@@ -342,7 +342,7 @@ void TXTB::SetSel(int32_t cpAnchor, int32_t cpOther, int32_t gin)
         ((PTXTG)pddg)->SetSel(cpAnchor, cpOther, gin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the selection of this TXTB's acttive DDG is visible (at least
     the _cpOther end of it).
 ***************************************************************************/
@@ -355,7 +355,7 @@ void TXTB::ShowSel(void)
         ((PTXTG)pddg)->ShowSel();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch a character of the stream through the cache.
 ***************************************************************************/
 void TXTB::_CacheRange(int32_t cpMin, int32_t cpLim)
@@ -372,7 +372,7 @@ void TXTB::_CacheRange(int32_t cpMin, int32_t cpLim)
     cpMac = CpMac();
     if (_cpLimCache <= _cpMinCache)
     {
-        // nothing currently cached
+        // 3DMMv1.0: nothing currently cached
         goto LNewCache;
     }
 
@@ -383,7 +383,7 @@ void TXTB::_CacheRange(int32_t cpMin, int32_t cpLim)
         if (_cpMinCache >= cpMin + kcchMaxTxtbCache)
             goto LNewCache;
 
-        // keep front end of old stuff
+        // 3DMMv1.0: keep front end of old stuff
         cpT = LwMax(0, LwMin(cpMin, _cpLimCache - kcchMaxTxtbCache));
         _cpLimCache = LwMin(cpT + kcchMaxTxtbCache, _cpLimCache);
         BltPb(_rgchCache, _rgchCache + (_cpMinCache - cpT), (_cpLimCache - _cpMinCache) * SIZEOF(achar));
@@ -396,14 +396,14 @@ void TXTB::_CacheRange(int32_t cpMin, int32_t cpLim)
         if (cpLim >= _cpLimCache + kcchMaxTxtbCache)
         {
         LNewCache:
-            // just cache around [cpMin, cpLim)
+            // 3DMMv1.0: just cache around [cpMin, cpLim)
             _cpMinCache = LwMax(0, LwMin((cpMin + cpLim - kcchMaxTxtbCache) / 2, cpMac - kcchMaxTxtbCache));
             _cpLimCache = LwMin(_cpMinCache + kcchMaxTxtbCache, cpMac);
             _pbsf->FetchRgb(_cpMinCache * SIZEOF(achar), (_cpLimCache - _cpMinCache) * SIZEOF(achar), _rgchCache);
         }
         else
         {
-            // keep back end old stuff
+            // 3DMMv1.0: keep back end old stuff
             int32_t cpLimCache, cpMinCache;
 
             cpLimCache = LwMin(cpMac, LwMax(cpLim, _cpMinCache + kcchMaxTxtbCache));
@@ -420,7 +420,7 @@ void TXTB::_CacheRange(int32_t cpMin, int32_t cpLim)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Characters have changed, so fix the cache.
 ***************************************************************************/
 void TXTB::_InvalCache(int32_t cp, int32_t ccpIns, int32_t ccpDel)
@@ -429,13 +429,13 @@ void TXTB::_InvalCache(int32_t cp, int32_t ccpIns, int32_t ccpDel)
 
     if (_cpLimCache <= cp || _cpLimCache <= _cpMinCache || ccpIns == 0 && ccpDel == 0)
     {
-        // cache is before the edit or cache is already empty
+        // 3DMMv1.0: cache is before the edit or cache is already empty
         return;
     }
 
     if (_cpMinCache >= cp + ccpDel)
     {
-        // cache is after the edit
+        // 3DMMv1.0: cache is after the edit
         _cpMinCache += ccpIns - ccpDel;
         _cpLimCache += ccpIns - ccpDel;
         return;
@@ -447,19 +447,19 @@ void TXTB::_InvalCache(int32_t cp, int32_t ccpIns, int32_t ccpDel)
         _cpMinCache = _cpLimCache = 0;
     else if (dcpFront >= dcpBack)
     {
-        // keep the front end of the cache
+        // 3DMMv1.0: keep the front end of the cache
         _cpLimCache = cp;
     }
     else
     {
-        // keep the tail end of the cache
+        // 3DMMv1.0: keep the tail end of the cache
         BltPb(_rgchCache + cp + ccpDel - _cpMinCache, _rgchCache, dcpBack * SIZEOF(achar));
         _cpMinCache = cp + ccpIns;
         _cpLimCache = _cpMinCache + dcpBack;
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch a character of the stream through the cache.
 ***************************************************************************/
 achar TXTB::_ChFetch(int32_t cp)
@@ -469,14 +469,14 @@ achar TXTB::_ChFetch(int32_t cp)
 
     if (!FIn(cp, _cpMinCache, _cpLimCache))
     {
-        // not a cache hit
+        // 3DMMv1.0: not a cache hit
         _CacheRange(cp, cp + 1);
     }
 
     return _rgchCache[cp - _cpMinCache];
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch some characters from the text document.
 ***************************************************************************/
 void TXTB::FetchRgch(int32_t cp, int32_t ccp, achar *prgch)
@@ -498,7 +498,7 @@ void TXTB::FetchRgch(int32_t cp, int32_t ccp, achar *prgch)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns non-zero iff cp is the beginning of a paragraph.
 ***************************************************************************/
 bool TXTB::FMinPara(int32_t cp)
@@ -513,8 +513,8 @@ bool TXTB::FMinPara(int32_t cp)
     if (GrfchFromCh(_ChFetch(cp)) & fchIgnore)
         return fFalse;
 
-    // return true iff the first non-ignore character we see
-    // is a break character
+    // 3DMMv1.0: return true iff the first non-ignore character we see
+    // 3DMMv1.0: is a break character
     AssertIn(cp, 1, CpMac());
     while (cp-- > 0)
     {
@@ -525,12 +525,12 @@ bool TXTB::FMinPara(int32_t cp)
             return fFalse;
     }
 
-    // just line feeds!
+    // 3DMMv1.0: just line feeds!
     Warn("isolated line feeds");
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the beginning of the paragraph that cp is in. If cp <= 0,
     returns 0. If cp >= CpMac(), returns the beginning of the last
     paragraph.
@@ -570,7 +570,7 @@ int32_t TXTB::CpMinPara(int32_t cp)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the end of the paragraph that cp is in. If cp < 0, returns 0.
     If cp >= CpMac(), returns CpMac().
 ***************************************************************************/
@@ -586,7 +586,7 @@ int32_t TXTB::CpLimPara(int32_t cp)
     if (cp >= cpLim)
         return cpLim;
 
-    // cp should now be a legal index into the character stream
+    // 3DMMv1.0: cp should now be a legal index into the character stream
     AssertIn(cp, 0, cpLim);
     while (cp > 0 && (GrfchFromCh(_ChFetch(cp)) & fchIgnore))
         cp--;
@@ -607,7 +607,7 @@ int32_t TXTB::CpLimPara(int32_t cp)
     return cpLim;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return cp of the previous character, skipping line feed characters. If
     fWord is true, skip to the beginning of a word.
 ***************************************************************************/
@@ -636,7 +636,7 @@ int32_t TXTB::CpPrev(int32_t cp, bool fWord)
     return cp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return cp of the next character, skipping line feed characters. If
     fWord is true, skip to the beginning of the next word.
 ***************************************************************************/
@@ -668,7 +668,7 @@ int32_t TXTB::CpNext(int32_t cp, bool fWord)
     return cp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate all DDGs on this text doc. Also dirties the document.
     Should be called by any code that edits the document.
 ***************************************************************************/
@@ -681,12 +681,12 @@ void TXTB::InvalAllDdg(int32_t cp, int32_t ccpIns, int32_t ccpDel, uint32_t grfd
     int32_t ipddg;
     PDDG pddg;
 
-    // mark the document dirty
+    // 3DMMv1.0: mark the document dirty
     SetDirty();
     if (fdocNil == grfdoc)
         return;
 
-    // inform the DDGs
+    // 3DMMv1.0: inform the DDGs
     for (ipddg = 0; pvNil != (pddg = PddgGet(ipddg)); ipddg++)
     {
         if ((grfdoc & fdocUpdate) && pddg->FIs(kclsTXTG))
@@ -696,7 +696,7 @@ void TXTB::InvalAllDdg(int32_t cp, int32_t ccpIns, int32_t ccpDel, uint32_t grfd
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the background color of the document.
 ***************************************************************************/
 void TXTB::SetAcrBack(ACR acr, uint32_t grfdoc)
@@ -714,7 +714,7 @@ void TXTB::SetAcrBack(ACR acr, uint32_t grfdoc)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the default width of the document.
 ***************************************************************************/
 void TXTB::SetDxpDef(int32_t dxp)
@@ -733,7 +733,7 @@ void TXTB::SetDxpDef(int32_t dxp)
     InvalAllDdg(0, cpMac, cpMac);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with ccpIns characters from prgch. If ccpIns
     is zero, prgch can be nil. The last character should never be replaced.
 ***************************************************************************/
@@ -755,7 +755,7 @@ bool TXTB::FReplaceRgch(const void *prgch, int32_t ccpIns, int32_t cp, int32_t c
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with the characters in the given FLO.
 ***************************************************************************/
 bool TXTB::FReplaceFlo(PFLO pflo, bool fCopy, int32_t cp, int32_t ccpDel, int16_t osk, uint32_t grfdoc)
@@ -781,7 +781,7 @@ bool TXTB::FReplaceFlo(PFLO pflo, bool fCopy, int32_t cp, int32_t ccpDel, int16_
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cpDst + ccpDel with ccpSrc characters from pbsfSrc starting
     at cpSrc.
 ***************************************************************************/
@@ -805,7 +805,7 @@ bool TXTB::FReplaceBsf(PBSF pbsfSrc, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cpDst + ccpDel with ccpSrc characters from ptxtbSrc starting
     at cpSrc.
 ***************************************************************************/
@@ -818,7 +818,7 @@ bool TXTB::FReplaceTxtb(PTXTB ptxtbSrc, int32_t cpSrc, int32_t ccpSrc, int32_t c
     return FReplaceBsf(ptxtbSrc->_pbsf, cpSrc, ccpSrc, cpDst, ccpDel, grfdoc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the bounds of an object - since plain text doesn't have objects,
     just return false.
 ***************************************************************************/
@@ -834,7 +834,7 @@ bool TXTB::FGetObjectRc(int32_t cp, PGNV pgnv, PCHP pchp, RC *prc)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw an object - since plain text doesn't have objects, just return
     false.
 ***************************************************************************/
@@ -850,7 +850,7 @@ bool TXTB::FDrawObject(int32_t cp, PGNV pgnv, int32_t *pxp, int32_t yp, PCHP pch
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current FNI for the doc. Return false if the doc is not
     currently based on an FNI (it's a new doc or an internal one).
 ***************************************************************************/
@@ -866,7 +866,7 @@ bool TXTB::FGetFni(FNI *pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Export the text.
 ***************************************************************************/
 void TXTB::ExportFormats(PCLIP pclip)
@@ -888,14 +888,14 @@ void TXTB::ExportFormats(PCLIP pclip)
     pclip->EndExport();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for plain text doc.
 ***************************************************************************/
 TXPD::TXPD(PDOCB pdocb, uint32_t grfdoc) : TXPD_PAR(pdocb, grfdoc)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new plain text document.
 ***************************************************************************/
 PTXPD TXPD::PtxpdNew(PFNI pfni, PBSF pbsf, int16_t osk, PDOCB pdocb, uint32_t grfdoc)
@@ -912,7 +912,7 @@ PTXPD TXPD::PtxpdNew(PFNI pfni, PBSF pbsf, int16_t osk, PDOCB pdocb, uint32_t gr
     return ptxpd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new TXLG to display the TXPD.
 ***************************************************************************/
 PDDG TXPD::PddgNew(PGCB pgcb)
@@ -924,7 +924,7 @@ PDDG TXPD::PddgNew(PGCB pgcb)
     return TXLG::PtxlgNew(this, pgcb, onn, fontNil, dypFont, 4);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document and optionally set this fni as the current one.
     If the doc is currently based on an FNI, pfni may be nil, indicating
     that this is a normal save (not save as). If pfni is not nil and
@@ -964,12 +964,12 @@ bool TXPD::FSaveToFni(FNI *pfni, bool fSetFni)
         goto LFail;
     flo.fp += SIZEOF(achar);
     flo.cb -= SIZEOF(achar);
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
 
     if (!_pbsf->FWriteRgb(&flo))
         goto LFail;
 
-    // redirect the BSF to the new file
+    // 3DMMv1.0: redirect the BSF to the new file
     if (fSetFni)
         _pbsf->FReplaceFlo(&flo, fFalse, 0, flo.cb);
 
@@ -993,14 +993,14 @@ bool TXPD::FSaveToFni(FNI *pfni, bool fSetFni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a rich text document.
 ***************************************************************************/
 TXRD::TXRD(PDOCB pdocb, uint32_t grfdoc) : TXRD_PAR(pdocb, grfdoc)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a rich text document.
 ***************************************************************************/
 TXRD::~TXRD(void)
@@ -1011,7 +1011,7 @@ TXRD::~TXRD(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a TXRD.
 ***************************************************************************/
 void TXRD::AssertValid(uint32_t grfobj)
@@ -1034,11 +1034,11 @@ void TXRD::AssertValid(uint32_t grfobj)
             Assert(mpe.spcp < mpePrev.spcp, "non-increasing mpe's");
             mpePrev = mpe;
         }
-        // REVIEW shonk: TXRD::AssertValid: fill out
+        // 3DMMv1.0: REVIEW shonk: TXRD::AssertValid: fill out
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the TXRD.
 ***************************************************************************/
 void TXRD::MarkMem(void)
@@ -1048,9 +1048,9 @@ void TXRD::MarkMem(void)
     MarkMemObj(_pglmpe);
     MarkMemObj(_pagcact);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create or open a rich text document.
 ***************************************************************************/
 PTXRD TXRD::PtxrdNew(PFNI pfni)
@@ -1063,7 +1063,7 @@ PTXRD TXRD::PtxrdNew(PFNI pfni)
     return ptxrd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the rich text document.
 ***************************************************************************/
 bool TXRD::_FInit(PFNI pfni, CTG ctg)
@@ -1101,15 +1101,15 @@ bool TXRD::_FInit(PFNI pfni, CTG ctg)
     _oskFont = koskCur;
     vntl.GetStn(_onnDef, &_stnFontDef);
 
-    // NOTE: don't use vpappb->DypTextDef() so all TXRD's will have the
-    // same _dypFontDef unless explicitly changed in code.
+    // 3DMMv1.0: NOTE: don't use vpappb->DypTextDef() so all TXRD's will have the
+    // 3DMMv1.0: same _dypFontDef unless explicitly changed in code.
     _dypFontDef = 12;
 
     AssertThis(fobjAssertFull);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read a rich text document from a chunk.
 ***************************************************************************/
 PTXRD TXRD::PtxrdReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
@@ -1125,7 +1125,7 @@ PTXRD TXRD::PtxrdReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
     return ptxrd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the given chunk into this TXRD.
 ***************************************************************************/
 bool TXRD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
@@ -1154,7 +1154,7 @@ bool TXRD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
     else if (rdop.bo != kboCur)
         return fFalse;
 
-    // do a sanity check on the default font size and width
+    // 3DMMv1.0: do a sanity check on the default font size and width
     if (!FIn(rdop.dypFont, 4, 256) || !FIn(rdop.dxpDef, 1, kcbMax))
     {
         Bug("bad default font size");
@@ -1173,7 +1173,7 @@ bool TXRD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
     }
     _onnDef = vntl.OnnMapStn(&_stnFontDef, _oskFont);
 
-    // get the text
+    // 3DMMv1.0: get the text
     if (!pcfl->FGetKidChidCtg(ctg, cno, 0, kctgText, &kid) || !pcfl->FFindFlo(kid.cki.ctg, kid.cki.cno, &floText) ||
         floText.cb < SIZEOF(int16_t) || !floText.FReadRgb(&osk, SIZEOF(int16_t), 0))
     {
@@ -1190,7 +1190,7 @@ bool TXRD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
     }
     ReleasePpo(&floText.pfil);
 
-    // get the text properties
+    // 3DMMv1.0: get the text properties
     if (!pcfl->FGetKidChidCtg(ctg, cno, 0, kctgTxtProps, &kid) || !pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck) ||
         pvNil == (_pglmpe = GL::PglRead(&blck, &bo)) || SIZEOF(MPE) != _pglmpe->CbEntry())
     {
@@ -1201,7 +1201,7 @@ bool TXRD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
         SwapBytesRglw(_pglmpe->QvGet(0), LwMul(_pglmpe->IvMac(), SIZEOF(MPE)) / SIZEOF(int32_t));
     }
 
-    // get the text property arguments
+    // 3DMMv1.0: get the text property arguments
     if (pcfl->FGetKidChidCtg(ctg, cno, 0, kctgTxtPropArgs, &kid))
     {
         if (!pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck) || pvNil == (_pagcact = AG::PagRead(&blck, &bo, &osk)) ||
@@ -1228,7 +1228,7 @@ bool TXRD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do any necessary munging of the AG entry on open. Return false if
     we don't recognize this argument type.
 ***************************************************************************/
@@ -1243,7 +1243,7 @@ bool TXRD::_FOpenArg(int32_t icact, uint8_t sprm, int16_t bo, int16_t osk)
     switch (sprm)
     {
     case sprmFont:
-        cb -= SIZEOF(int32_t) + SIZEOF(int16_t); // onn, osk
+        cb -= SIZEOF(int32_t) + SIZEOF(int16_t); // 3DMMv1.0: onn, osk
         if (cb < 0)
         {
             Bug("bad font entry");
@@ -1270,7 +1270,7 @@ bool TXRD::_FOpenArg(int32_t icact, uint8_t sprm, int16_t bo, int16_t osk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current FNI for the doc. Return false if the doc is not
     currently based on an FNI (it's a new doc or an internal one).
 ***************************************************************************/
@@ -1286,12 +1286,12 @@ bool TXRD::FGetFni(FNI *pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ask the user what file they want to save to.
 ***************************************************************************/
 bool TXRD::FGetFniSave(FNI *pfni)
 {
-    // REVIEW shonk: what file type to use on Mac?
+    // 3DMMv1.0: REVIEW shonk: what file type to use on Mac?
     AssertThis(0);
     return FGetFniSaveMacro(pfni, 'CHN2',
                             "\x9"
@@ -1299,7 +1299,7 @@ bool TXRD::FGetFniSave(FNI *pfni)
                             "", PszLit("All files\0*.*\0"), vwig.hwndApp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the rich text document and optionally set this fni as the current
     one. If the doc is currently based on an FNI, pfni may be nil, indicating
     that this is a normal save (not save as). If pfni is not nil and
@@ -1353,7 +1353,7 @@ bool TXRD::FSaveToFni(FNI *pfni, bool fSetFni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save a rich text document to the given chunky file. Fill in *pcki with
     where we put the root chunk.
 ***************************************************************************/
@@ -1385,7 +1385,7 @@ bool TXRD::FSaveToChunk(PCFL pcfl, CKI *pcki, bool fRedirectText)
         goto LFail;
     }
 
-    // add the text chunk and write it
+    // 3DMMv1.0: add the text chunk and write it
     if (!pcfl->FAddChild(pcki->ctg, pcki->cno, 0, _pbsf->IbMac() - SIZEOF(achar) + SIZEOF(int16_t), kctgText, &cnoText,
                          &blckText) ||
         !blckText.FWriteRgb(&osk, SIZEOF(int16_t), 0))
@@ -1426,7 +1426,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new TXRG to display the TXRD.
 ***************************************************************************/
 PDDG TXRD::PddgNew(PGCB pgcb)
@@ -1435,7 +1435,7 @@ PDDG TXRD::PddgNew(PGCB pgcb)
     return TXRG::PtxrgNew(this, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for an MPE for the given spcp. Return false iff there isn't one.
     In either event, fill pimpe with where one would go if it did exist.
 ***************************************************************************/
@@ -1465,7 +1465,7 @@ bool TXRD::_FFindMpe(uint32_t spcp, MPE *pmpe, int32_t *pcpLim, int32_t *pimpe)
         }
     }
 
-    // assume there isn't one
+    // 3DMMv1.0: assume there isn't one
     if (pvNil != pimpe)
         *pimpe = impeMin;
     TrashVar(pmpe);
@@ -1500,7 +1500,7 @@ bool TXRD::_FFindMpe(uint32_t spcp, MPE *pmpe, int32_t *pcpLim, int32_t *pimpe)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the impe'th property, returning all the relevant info about it.
 ***************************************************************************/
 bool TXRD::_FFetchProp(int32_t impe, uint8_t *psprm, int32_t *plw, int32_t *pcpMin, int32_t *pcpLim)
@@ -1532,7 +1532,7 @@ bool TXRD::_FFetchProp(int32_t impe, uint8_t *psprm, int32_t *plw, int32_t *pcpM
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adjust the MPE's after an edit. This may involve deleting some MPE's
     and/or updating the cp's.
 ***************************************************************************/
@@ -1568,19 +1568,19 @@ void TXRD::_AdjustMpe(int32_t cp, int32_t ccpIns, int32_t ccpDel)
         }
         AssertIn(cpT, cp, cp + ccpDel + (sprm < sprmMinObj));
 
-        // special case object sprms
+        // 3DMMv1.0: special case object sprms
         if (sprm >= sprmMinObj)
         {
-            // delete it
+            // 3DMMv1.0: delete it
             AssertIn(cpT, cp, cp + ccpDel);
             _ReleaseSprmLw(sprm, qmpe->lw);
             _pglmpe->Delete(impe);
             continue;
         }
 
-        // fBefore indicates if the last MPE for this sprm should go at cp
-        // or at the beginning of the paragraph at or after cp + ccpIns.
-        // This is only used for paragraph sprms.
+        // 3DMMv1.0: fBefore indicates if the last MPE for this sprm should go at cp
+        // 3DMMv1.0: or at the beginning of the paragraph at or after cp + ccpIns.
+        // 3DMMv1.0: This is only used for paragraph sprms.
         fBefore = (cpT == cp);
 
         impeMin = impe;
@@ -1595,36 +1595,36 @@ void TXRD::_AdjustMpe(int32_t cp, int32_t ccpIns, int32_t ccpDel)
             AssertIn(cpT, 0, kcpMaxTxrd);
         }
 
-        // the entries from impeMin to impe are all in or
-        // at the end of the deleted zone
+        // 3DMMv1.0: the entries from impeMin to impe are all in or
+        // 3DMMv1.0: at the end of the deleted zone
         Assert(impe > impeMin, "no MPE's!");
 
-        // fKeep indicates whether we kept the last MPE
+        // 3DMMv1.0: fKeep indicates whether we kept the last MPE
         fKeep = fTrue;
         if (sprm < sprmMinPap)
         {
-            // a character sprm - put the last one at cp + ccpIns
+            // 3DMMv1.0: a character sprm - put the last one at cp + ccpIns
             AssertIn(cp + ccpIns, 0, CpMac());
             qmpe = (MPE *)_pglmpe->QvGet(--impe);
             qmpe->spcp = _SpcpFromSprmCp(sprm, cp + ccpIns);
         }
         else if (fBefore)
         {
-            // a paragraph sprm - the last one goes at cp
+            // 3DMMv1.0: a paragraph sprm - the last one goes at cp
             AssertIn(cp, 0, kcpMaxTxrd);
             qmpe = (MPE *)_pglmpe->QvGet(--impe);
             qmpe->spcp = _SpcpFromSprmCp(sprm, cp);
         }
         else
         {
-            // a paragraph sprm - the last MPE goes at the beginning of the
-            // next paragraph (if there is one and it doesn't already have an MPE).
+            // 3DMMv1.0: a paragraph sprm - the last MPE goes at the beginning of the
+            // 3DMMv1.0: next paragraph (if there is one and it doesn't already have an MPE).
             cpT = CpLimPara(cp + ccpIns - 1);
             if (cpT < CpMac() &&
                 (impe >= _pglmpe->IvMac() || _SprmFromSpcp((qmpe = (MPE *)_pglmpe->QvGet(impe))->spcp) != sprm ||
                  _CpFromSpcp(qmpe->spcp) + ccpIns - ccpDel > cpT))
             {
-                // put the last one at cpT - if there isn't already one
+                // 3DMMv1.0: put the last one at cpT - if there isn't already one
                 AssertIn(cpT, 0, kcpMaxTxrd);
                 qmpe = (MPE *)_pglmpe->QvGet(--impe);
                 qmpe->spcp = _SpcpFromSprmCp(sprm, cpT);
@@ -1633,7 +1633,7 @@ void TXRD::_AdjustMpe(int32_t cp, int32_t ccpIns, int32_t ccpDel)
                 fKeep = fFalse;
         }
 
-        // delete all the previous ones
+        // 3DMMv1.0: delete all the previous ones
         while (impeMin < impe)
         {
             qmpe = (MPE *)_pglmpe->QvGet(--impe);
@@ -1641,14 +1641,14 @@ void TXRD::_AdjustMpe(int32_t cp, int32_t ccpIns, int32_t ccpDel)
             _pglmpe->Delete(impe);
         }
 
-        // skip the one we kept at the end
+        // 3DMMv1.0: skip the one we kept at the end
         if (fKeep)
             impe++;
     }
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure there is an entry in the AG with the given data. If it's
     already there, increment its reference count. Otherwise, set its
     reference count to 1.
@@ -1667,7 +1667,7 @@ bool TXRD::_FEnsureInAg(uint8_t sprm, void *pv, int32_t cb, int32_t *pjv)
         return fFalse;
     }
 
-    // see if it's already there
+    // 3DMMv1.0: see if it's already there
     for (iv = _pagcact->IvMac(); iv-- > 0;)
     {
         if (_pagcact->FFree(iv))
@@ -1690,7 +1690,7 @@ bool TXRD::_FEnsureInAg(uint8_t sprm, void *pv, int32_t cb, int32_t *pjv)
         }
     }
 
-    // need to add it
+    // 3DMMv1.0: need to add it
     cact = (((uint32_t)sprm) << 24) | 1;
     if (!_pagcact->FAdd(cb, pjv, pv, &cact))
     {
@@ -1701,7 +1701,7 @@ bool TXRD::_FEnsureInAg(uint8_t sprm, void *pv, int32_t cb, int32_t *pjv)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrement the reference count on the given element of the AG and if
     the reference count becomes zero, delete the element.
 ***************************************************************************/
@@ -1726,7 +1726,7 @@ void TXRD::_ReleaseInAg(int32_t jv)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increment the reference count on the given element of the AG.
 ***************************************************************************/
 void TXRD::_AddRefInAg(int32_t jv)
@@ -1745,7 +1745,7 @@ void TXRD::_AddRefInAg(int32_t jv)
     _pagcact->PutFixed(jv - 1, &cact);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: return true iff the given sprm has its argument in
     the _pagcact.
 ***************************************************************************/
@@ -1753,16 +1753,16 @@ bool TXRD::_FSprmInAg(uint8_t sprm)
 {
     if (sprm < sprmMinChpClient || FIn(sprm, sprmMinPap, sprmMinPapClient))
     {
-        // a base TXRD sprm
+        // 3DMMv1.0: a base TXRD sprm
         return sprm == sprmFont;
     }
 
-    // The sprm is a client or object sprm. Even ones are in the AG, odd
-    // ones aren't. See note in rtxt.h where the sprms are defined.
+    // 3DMMv1.0: The sprm is a client or object sprm. Even ones are in the AG, odd
+    // 3DMMv1.0: ones aren't. See note in rtxt.h where the sprms are defined.
     return !(sprm & 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the sprm allocates stuff in the ag, release it. The inverse operation
     of _AddRefSprmLw.
 ***************************************************************************/
@@ -1772,7 +1772,7 @@ void TXRD::_ReleaseSprmLw(uint8_t sprm, int32_t lw)
         _ReleaseInAg(lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the sprm allocates stuff in the ag, addref it. The inverse operation
     of _ReleaseSprmLw.
 ***************************************************************************/
@@ -1782,7 +1782,7 @@ void TXRD::_AddRefSprmLw(uint8_t sprm, int32_t lw)
         _AddRefInAg(lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get an array of SPVM's that describe the differences between pchp and
     pchpDiff. If pchpDiff is nil, pchp is just described. If this
     succeeds, either _ApplyRgspvm or _ReleaseRgspvm should be called.
@@ -1797,7 +1797,7 @@ bool TXRD::_FGetRgspvmFromChp(PCHP pchp, PCHP pchpDiff, SPVM *prgspvm, int32_t *
     int32_t ispvm;
     SPVM spvm;
 
-    // first get the values and masks for the sprm's we have to deal with
+    // 3DMMv1.0: first get the values and masks for the sprm's we have to deal with
     ispvm = 0;
     for (sprm = sprmMinChp; sprm < sprmLimChp; sprm++)
     {
@@ -1818,7 +1818,7 @@ bool TXRD::_FGetRgspvmFromChp(PCHP pchp, PCHP pchpDiff, SPVM *prgspvm, int32_t *
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get an array of SPVM's that describe the differences between ppap and
     ppapDiff. If ppapDiff is nil, ppap is just described. If this
     succeeds, either _ApplyRgspvm or _ReleaseRgspvm should be called.
@@ -1833,7 +1833,7 @@ bool TXRD::_FGetRgspvmFromPap(PPAP ppap, PPAP ppapDiff, SPVM *prgspvm, int32_t *
     int32_t ispvm;
     SPVM spvm;
 
-    // first get the values and masks for the sprm's we have to deal with
+    // 3DMMv1.0: first get the values and masks for the sprm's we have to deal with
     ispvm = 0;
     for (sprm = sprmMinPap; sprm < sprmLimPap; sprm++)
     {
@@ -1854,7 +1854,7 @@ bool TXRD::_FGetRgspvmFromPap(PPAP ppap, PPAP ppapDiff, SPVM *prgspvm, int32_t *
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Release the SPVM's.
 ***************************************************************************/
 void TXRD::_ReleaseRgspvm(SPVM *prgspvm, int32_t cspvm)
@@ -1867,7 +1867,7 @@ void TXRD::_ReleaseRgspvm(SPVM *prgspvm, int32_t cspvm)
         _ReleaseSprmLw(prgspvm[ispvm].sprm, prgspvm[ispvm].lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply the SPVM's to the given range of characters. Assumes that the
     inserts can't fail. If you call this, don't also call _ReleaseRgspvm.
     The caller should have ensured that _pglmpe has room for 2 * cspvm
@@ -1893,11 +1893,11 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
 
         if (!_FFindMpe(mpe.spcp, &mpeT, pvNil, &impe))
         {
-            // there are no MPE's for this sprm at or before this cp
+            // 3DMMv1.0: there are no MPE's for this sprm at or before this cp
             lwRevert = 0;
             if (mpe.lw != 0)
             {
-                // add the mpe
+                // 3DMMv1.0: add the mpe
                 _AddRefSprmLw(spvm.sprm, mpe.lw);
                 AssertDo(_pglmpe->FInsert(impe++, &mpe), 0);
             }
@@ -1905,16 +1905,16 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
         }
         else
         {
-            // see if the MPE we're in the range of starts before this cp
-            // or at it
+            // 3DMMv1.0: see if the MPE we're in the range of starts before this cp
+            // 3DMMv1.0: or at it
             lwRevert = mpeT.lw;
             if (_CpFromSpcp(mpeT.spcp) < cp)
             {
-                // before
+                // 3DMMv1.0: before
                 impe++;
                 if (mpe.lw != mpeT.lw)
                 {
-                    // add an mpe
+                    // 3DMMv1.0: add an mpe
                     mpeT.lw = mpe.lw | (mpeT.lw & ~spvm.lwMask);
                     mpeT.spcp = mpe.spcp;
                     _AddRefSprmLw(spvm.sprm, mpeT.lw);
@@ -1924,7 +1924,7 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
             }
             else
             {
-                // at it - get the valid lwLast value
+                // 3DMMv1.0: at it - get the valid lwLast value
                 Assert(_CpFromSpcp(mpeT.spcp) == cp, 0);
                 lwLast = 0;
                 if (impe > 0)
@@ -1937,7 +1937,7 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
         }
         _AddRefSprmLw(spvm.sprm, lwRevert);
 
-        // adjust all mpe's before cpLim
+        // 3DMMv1.0: adjust all mpe's before cpLim
         for (;;)
         {
             if (impe >= _pglmpe->IvMac())
@@ -1951,7 +1951,7 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
             }
             if ((cpLimT = _CpFromSpcp(mpeT.spcp)) >= cpLim)
             {
-                // see if this MPE can be deleted
+                // 3DMMv1.0: see if this MPE can be deleted
                 if (cpLimT == cpLim && lwLast == mpeT.lw)
                 {
                     _ReleaseSprmLw(spvm.sprm, mpeT.lw);
@@ -1960,13 +1960,13 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
                 break;
             }
 
-            // modify the mpeT
+            // 3DMMv1.0: modify the mpeT
             _ReleaseSprmLw(spvm.sprm, lwRevert);
             lwRevert = mpeT.lw;
             mpeT.lw = mpe.lw | (mpeT.lw & ~spvm.lwMask);
-            // note: the ref count for this MPE was transferred to lwRevert,
-            // so a _ReleaseSprmLw call is not needed after the Delete and Put
-            // below
+            // 3DMMv1.0: note: the ref count for this MPE was transferred to lwRevert,
+            // 3DMMv1.0: so a _ReleaseSprmLw call is not needed after the Delete and Put
+            // 3DMMv1.0: below
             if (lwLast == mpeT.lw)
                 _pglmpe->Delete(impe);
             else
@@ -1980,7 +1980,7 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
         Assert(cpLimT >= cpLim, 0);
         if (cpLimT > cpLim && lwRevert != lwLast)
         {
-            // add another mpe at cpLim with lwRevert
+            // 3DMMv1.0: add another mpe at cpLim with lwRevert
             mpeT.spcp = _SpcpFromSprmCp(spvm.sprm, cpLim);
             mpeT.lw = lwRevert;
             AssertDo(_pglmpe->FInsert(impe, &mpeT), 0);
@@ -1991,7 +1991,7 @@ void TXRD::_ApplyRgspvm(int32_t cp, int32_t ccp, SPVM *prgspvm, int32_t cspvm)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the long associated with the sprm and the difference between the
     two CHPs. pchpOld may be nil. *plwMask indicates which portion of
     the lw is significant. Returns tYes or tNo depending on whether the
@@ -2031,7 +2031,7 @@ tribool TXRD::_TGetLwFromChp(uint8_t sprm, PCHP pchpNew, PCHP pchpOld, int32_t *
             *plw = 0;
         else
         {
-            // data for sprmFont is: int32_t onn, int16_t osk, stn data
+            // 3DMMEx: data for sprmFont is: int32_t onn, int16_t osk, stn data
             STN stn;
             int32_t cb;
             int16_t osk = koskCur;
@@ -2076,7 +2076,7 @@ tribool TXRD::_TGetLwFromChp(uint8_t sprm, PCHP pchpNew, PCHP pchpOld, int32_t *
     return tNo;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the character properties for the given character.
 ***************************************************************************/
 void TXRD::FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin, int32_t *pcpLim)
@@ -2127,7 +2127,7 @@ void TXRD::FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin, int32_t *pcpLim)
                 uint8_t *qrgb;
 
                 qrgb = (uint8_t *)_pagcact->QvGet(mpe.lw - 1, &cb);
-                cb -= SIZEOF(int32_t) + SIZEOF(int16_t); // onn, osk
+                cb -= SIZEOF(int32_t) + SIZEOF(int16_t); // 3DMMv1.0: onn, osk
                 if (!FIn(cb, 0, kcbMaxDataStn + 1))
                 {
                     Warn("bad group element");
@@ -2158,7 +2158,7 @@ LDone:
         *pcpLim = _cpLimChp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply the given character properties to the given range of characters.
 ***************************************************************************/
 bool TXRD::FApplyChp(int32_t cp, int32_t ccp, PCHP pchp, PCHP pchpDiff, uint32_t grfdoc)
@@ -2180,8 +2180,8 @@ bool TXRD::FApplyChp(int32_t cp, int32_t ccp, PCHP pchp, PCHP pchpDiff, uint32_t
         return fFalse;
     }
 
-    // now make sure that _pglmpe has enough room - we need at most 2
-    // entries per sprm.
+    // 3DMMv1.0: now make sure that _pglmpe has enough room - we need at most 2
+    // 3DMMv1.0: entries per sprm.
     if (!_pglmpe->FEnsureSpace(2 * cspvm))
     {
         _ReleaseRgspvm(rgspvm, cspvm);
@@ -2199,7 +2199,7 @@ bool TXRD::FApplyChp(int32_t cp, int32_t ccp, PCHP pchp, PCHP pchpDiff, uint32_t
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the bounds of the whole paragraphs overlapping the range
     [*pcpMin, *pcpMin + *pccp). If fExpand is false, the bounds are of
     whole paragraphs totally contained in the range, with the possible
@@ -2234,7 +2234,7 @@ void TXRD::_GetParaBounds(int32_t *pcpMin, int32_t *pcpLim, bool fExpand)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the long associated with the sprm and the difference between the
     two PAPs. ppapOld may be nil. *plwMask indicates which portion of
     the lw is significant. Returns tYes or tNo depending on whether the
@@ -2294,7 +2294,7 @@ tribool TXRD::_TGetLwFromPap(uint8_t sprm, PPAP ppapNew, PPAP ppapOld, int32_t *
     return tNo;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the paragraph properties for the paragraph containing the given
     character.
 ***************************************************************************/
@@ -2356,7 +2356,7 @@ LDone:
         *pcpLim = _cpLimPap;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply the given paragraph properties to the given range of characters.
     If fExpand is true, the properties of the current paragraph containing
     cp are set regardless of whether cp is at the beginning of the
@@ -2376,7 +2376,7 @@ bool TXRD::FApplyPap(int32_t cp, int32_t ccp, PPAP ppap, PPAP ppapDiff, int32_t 
     int32_t cspvm;
     SPVM rgspvm[sprmLimPap - sprmMinPap];
 
-    // see if there are any paragraphs to deal with
+    // 3DMMv1.0: see if there are any paragraphs to deal with
     cpLim = cp + ccp;
     _GetParaBounds(&cp, &cpLim, fExpand);
     if (pvNil != pcpMin)
@@ -2386,7 +2386,7 @@ bool TXRD::FApplyPap(int32_t cp, int32_t ccp, PPAP ppap, PPAP ppapDiff, int32_t 
 
     if (cpLim <= cp)
     {
-        // no paragraphs to affect
+        // 3DMMv1.0: no paragraphs to affect
         return fTrue;
     }
 
@@ -2400,8 +2400,8 @@ bool TXRD::FApplyPap(int32_t cp, int32_t ccp, PPAP ppap, PPAP ppapDiff, int32_t 
         return fFalse;
     }
 
-    // now make sure that _pglmpe has enough room - we need at most 2
-    // entries per sprm.
+    // 3DMMv1.0: now make sure that _pglmpe has enough room - we need at most 2
+    // 3DMMv1.0: entries per sprm.
     if (!_pglmpe->FEnsureSpace(2 * cspvm))
     {
         _ReleaseRgspvm(rgspvm, cspvm);
@@ -2419,7 +2419,7 @@ bool TXRD::FApplyPap(int32_t cp, int32_t ccp, PPAP ppap, PPAP ppapDiff, int32_t 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set up undo for an action. If this succeeds, you must call either
     CancelUndo or CommitUndo.
 ***************************************************************************/
@@ -2440,7 +2440,7 @@ bool TXRD::FSetUndo(int32_t cp1, int32_t cp2, int32_t ccpIns)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Cancel undo.
 ***************************************************************************/
 void TXRD::CancelUndo(void)
@@ -2450,7 +2450,7 @@ void TXRD::CancelUndo(void)
         ReleasePpo(&_prtun);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Commit the setup undo.
 ***************************************************************************/
 void TXRD::CommitUndo(void)
@@ -2462,7 +2462,7 @@ void TXRD::CommitUndo(void)
         return;
 
     AssertPo(_prtun, 0);
-    // see if this one can be combined with the last one
+    // 3DMMv1.0: see if this one can be combined with the last one
     if (_ipundbLimDone > 0)
     {
         _pglpundb->Get(_ipundbLimDone - 1, &prtunPrev);
@@ -2478,7 +2478,7 @@ LDone:
     ReleasePpo(&_prtun);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with ccpIns characters from prgch. If ccpIns
     is zero, prgch can be nil.
 ***************************************************************************/
@@ -2511,7 +2511,7 @@ bool TXRD::FReplaceRgch(void *prgch, int32_t ccpIns, int32_t cp, int32_t ccpDel,
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with ccpIns characters from prgch, using
     the given chp and pap. If ccpIns is zero, prgch can be nil. pchp
     and/or ppap can be nil.
@@ -2529,7 +2529,7 @@ bool TXRD::FReplaceRgch(void *prgch, int32_t ccpIns, int32_t cp, int32_t ccpDel,
     return _FReplaceCore(prgch, pvNil, fFalse, pvNil, 0, ccpIns, cp, ccpDel, pchp, ppap, grfdoc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with ccpIns characters from prgch, pflo or pbsf,
     using the given chp and pap. If ccpIns is zero, prgch can be nil. pchp
     and/or ppap can be nil.
@@ -2576,8 +2576,8 @@ bool TXRD::_FReplaceCore(void *prgch, PFLO pflo, bool fCopy, PBSF pbsf, int32_t 
         cpLimUndo = LwMax(cp + ccpDel, cpLimUndo);
     }
 
-    // now make sure that _pglmpe has enough room - we need at most 2
-    // entries per sprm.
+    // 3DMMv1.0: now make sure that _pglmpe has enough room - we need at most 2
+    // 3DMMv1.0: entries per sprm.
     if (!_pglmpe->FEnsureSpace(2 * (cspvmChp + cspvmPap)))
         goto LFail;
 
@@ -2628,7 +2628,7 @@ bool TXRD::_FReplaceCore(void *prgch, PFLO pflo, bool fCopy, PBSF pbsf, int32_t 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with the characters in the given FLO.
 ***************************************************************************/
 bool TXRD::FReplaceFlo(PFLO pflo, bool fCopy, int32_t cp, int32_t ccpDel, int16_t osk, uint32_t grfdoc)
@@ -2670,7 +2670,7 @@ bool TXRD::FReplaceFlo(PFLO pflo, bool fCopy, int32_t cp, int32_t ccpDel, int16_
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cp + ccpDel with the characters in the given FLO, using
     the given chp and pap. pchp and/or ppap can be nil.
 ***************************************************************************/
@@ -2693,7 +2693,7 @@ bool TXRD::FReplaceFlo(PFLO pflo, bool fCopy, int32_t cp, int32_t ccpDel, PCHP p
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cpDst + ccpDel with ccpSrc characters from pbsfSrc starting
     at cpSrc.
 ***************************************************************************/
@@ -2728,7 +2728,7 @@ bool TXRD::FReplaceBsf(PBSF pbsfSrc, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cpDst + ccpDel with ccpSrc characters from pbsfSrc starting
     at cpSrc, using the given chp and pap. pchp and/or ppap can be nil.
 ***************************************************************************/
@@ -2747,7 +2747,7 @@ bool TXRD::FReplaceBsf(PBSF pbsfSrc, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
     return _FReplaceCore(pvNil, pvNil, fFalse, pbsfSrc, cpSrc, ccpSrc, cpDst, ccpDel, pchp, ppap, grfdoc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cpDst + ccpDel with ccpSrc characters from pbsfSrc starting
     at cpSrc, using the given chp and pap. pchp and/or ppap can be nil.
 ***************************************************************************/
@@ -2760,13 +2760,13 @@ bool TXRD::FReplaceTxtb(PTXTB ptxtbSrc, int32_t cpSrc, int32_t ccpSrc, int32_t c
     AssertIn(cpDst, 0, CpMac());
     AssertIn(ccpDel, 0, CpMac() - cpDst);
 
-    // NOTE: this cast to PTXRD is just a rude hack to get around
-    // an oddity of C++. TXRD cannot access _pbsf in a TXTB, only in a TXRD.
-    // ptxtbSrc is probably not a TXRD, but the cast still works.
+    // 3DMMv1.0: NOTE: this cast to PTXRD is just a rude hack to get around
+    // 3DMMv1.0: an oddity of C++. TXRD cannot access _pbsf in a TXTB, only in a TXRD.
+    // 3DMMv1.0: ptxtbSrc is probably not a TXRD, but the cast still works.
     return FReplaceBsf(((PTXRD)ptxtbSrc)->_pbsf, cpSrc, ccpSrc, cpDst, ccpDel, grfdoc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace cp to cpDst + ccpDel with ccpSrc characters from pbsfSrc starting
     at cpSrc, using the given chp and pap. pchp and/or ppap can be nil.
 ***************************************************************************/
@@ -2782,14 +2782,14 @@ bool TXRD::FReplaceTxtb(PTXTB ptxtbSrc, int32_t cpSrc, int32_t ccpSrc, int32_t c
     AssertNilOrVarMem(pchp);
     AssertNilOrVarMem(ppap);
 
-    // NOTE: this cast to PTXRD is just a rude hack to get around
-    // an oddity of C++. TXRD cannot access _pbsf in a TXTB, only in a TXRD.
-    // ptxtbSrc is probably not a TXRD, but the cast still works.
+    // 3DMMv1.0: NOTE: this cast to PTXRD is just a rude hack to get around
+    // 3DMMv1.0: an oddity of C++. TXRD cannot access _pbsf in a TXTB, only in a TXRD.
+    // 3DMMv1.0: ptxtbSrc is probably not a TXRD, but the cast still works.
     return _FReplaceCore(pvNil, pvNil, fFalse, ((PTXRD)ptxtbSrc)->_pbsf, cpSrc, ccpSrc, cpDst, ccpDel, pchp, ppap,
                          grfdoc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace stuff in this document with stuff in the given document.
     REVIEW shonk: this doesn't preserve font size if the two docs have
     different default font sizes!
@@ -2805,7 +2805,7 @@ bool TXRD::FReplaceTxrd(PTXRD ptxrd, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
     Assert(ptxrd != this, "can't copy from a rich text doc to itself!");
     int32_t dcp = 0;
 
-    // REVIEW shonk: is there an easy way to make this atomic?
+    // 3DMMv1.0: REVIEW shonk: is there an easy way to make this atomic?
 
     if (CpMac() + ccpSrc >= kcpMaxTxrd)
     {
@@ -2816,21 +2816,21 @@ bool TXRD::FReplaceTxrd(PTXRD ptxrd, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
     if (!FSetUndo(cpDst, cpDst + ccpDel, ccpSrc))
         return fFalse;
 
-    // protect the trailing EOP
+    // 3DMMv1.0: protect the trailing EOP
     if (cpDst + ccpDel == CpMac())
     {
 #ifdef DEBUG
         achar ch;
         ptxrd->FetchRgch(cpSrc + ccpSrc - 1, 1, &ch);
         Assert(ch == kchReturn, "trying to replace trailing EOP");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
         Assert(ccpDel > 0 && ccpSrc > 0, "bad parameters to FReplaceTxrd");
         ccpDel--;
         ccpSrc--;
         dcp = 1;
     }
 
-    // insert the text
+    // 3DMMv1.0: insert the text
     if ((ccpSrc > 0 || ccpDel > 0) && !FReplaceBsf(ptxrd->_pbsf, cpSrc, ccpSrc, cpDst, ccpDel, fdocNil))
     {
         CancelUndo();
@@ -2857,7 +2857,7 @@ bool TXRD::FReplaceTxrd(PTXRD ptxrd, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
 
     if (ccpSrc > 0)
     {
-        // object properties
+        // 3DMMv1.0: object properties
         int32_t cp;
         uint8_t sprm;
         int32_t impe, impeNew;
@@ -2880,7 +2880,7 @@ bool TXRD::FReplaceTxrd(PTXRD ptxrd, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
             if (!fRet)
                 continue;
 
-            // insert the object sprm
+            // 3DMMv1.0: insert the object sprm
             if (_FFindMpe(mpeNew.spcp, pvNil, pvNil, &impeNew))
                 impeNew++;
             if (!_pglmpe->FInsert(impeNew, &mpeNew))
@@ -2894,7 +2894,7 @@ bool TXRD::FReplaceTxrd(PTXRD ptxrd, int32_t cpSrc, int32_t ccpSrc, int32_t cpDs
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy properties from a TXRD to this one. Properties from sprmMin to
     sprmLim are copied.
 ***************************************************************************/
@@ -2916,7 +2916,7 @@ void TXRD::_CopyProps(PTXRD ptxrd, int32_t cpSrc, int32_t cpDst, int32_t ccpSrc,
     int32_t cb;
     void *pv;
 
-    // zero the character properties over the inserted text
+    // 3DMMv1.0: zero the character properties over the inserted text
     spvm.sprm = sprmNil;
     spvm.lw = 0;
     spvm.lwMask = -1;
@@ -2932,27 +2932,27 @@ void TXRD::_CopyProps(PTXRD ptxrd, int32_t cpSrc, int32_t cpDst, int32_t ccpSrc,
             Warn("growing _pglmpe failed");
     }
 
-    // apply the source properties
+    // 3DMMv1.0: apply the source properties
     ptxrd->_FFindMpe(_SpcpFromSprmCp(sprmMin, 0), pvNil, pvNil, &impe);
     while (ptxrd->_FFetchProp(impe++, &sprm, &lw, &cpMin, &cpLim) && sprm < sprmLim)
     {
-        // if this MPE doesn't overlap our source range, ignore it.
+        // 3DMMv1.0: if this MPE doesn't overlap our source range, ignore it.
         if (cpLim <= cpSrc || cpMin >= cpSrc + ccpSrc)
             continue;
 
-        // if this MPE goes to the end of the source range, also carry it
-        // to the end of the destination
+        // 3DMMv1.0: if this MPE goes to the end of the source range, also carry it
+        // 3DMMv1.0: to the end of the destination
         if (cpLim >= cpSrc + ccpSrc)
             cpLim = cpSrc + ccpDst;
 
-        // adjust the min and lim to destination cp values and restrict
-        // them to [cpDst, cpDst + ccpDst).
+        // 3DMMv1.0: adjust the min and lim to destination cp values and restrict
+        // 3DMMv1.0: them to [cpDst, cpDst + ccpDst).
         if ((cpMin += cpDst - cpSrc) < cpDst)
             cpMin = cpDst;
         if ((cpLim += cpDst - cpSrc) > cpDst + ccpDst)
             cpLim = cpDst + ccpDst;
 
-        // if the range is empty, ignore it
+        // 3DMMv1.0: if the range is empty, ignore it
         if (cpMin >= cpLim)
             continue;
 
@@ -2982,7 +2982,7 @@ void TXRD::_CopyProps(PTXRD ptxrd, int32_t cpSrc, int32_t cpDst, int32_t ccpSrc,
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the first object at or after cpMin. Put its location in *pcp and
     allocate a buffer to hold its extra data and put it in *ppv (if ppv is
     not nil). If an object was found, but the buffer couldn't be allocated,
@@ -3029,7 +3029,7 @@ bool TXRD::FFetchObject(int32_t cpMin, int32_t *pcp, void **ppv, int32_t *pcb)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a picture into the rich text document.
 ***************************************************************************/
 bool TXRD::FInsertObject(void *pv, int32_t cb, int32_t cp, int32_t ccpDel, PCHP pchp, uint32_t grfdoc)
@@ -3056,8 +3056,8 @@ bool TXRD::FInsertObject(void *pv, int32_t cb, int32_t cp, int32_t ccpDel, PCHP 
     if (pvNil != pchp && !_FGetRgspvmFromChp(pchp, pvNil, rgspvm, &cspvmChp))
         goto LFail;
 
-    // now make sure that _pglmpe has enough room - we need at most 2
-    // entries per sprm, plus one for the object
+    // 3DMMv1.0: now make sure that _pglmpe has enough room - we need at most 2
+    // 3DMMv1.0: entries per sprm, plus one for the object
     if (!_pglmpe->FEnsureSpace(2 * cspvmChp + 1))
         goto LFail;
 
@@ -3073,7 +3073,7 @@ bool TXRD::FInsertObject(void *pv, int32_t cb, int32_t cp, int32_t ccpDel, PCHP 
     if (cspvmChp > 0)
         _ApplyRgspvm(cp, 1, rgspvm, cspvmChp);
 
-    // insert the object sprm
+    // 3DMMv1.0: insert the object sprm
     if (_FFindMpe(mpe.spcp, pvNil, pvNil, &impe))
         impe++;
     AssertDo(_pglmpe->FInsert(impe, &mpe), "should have been ensured");
@@ -3085,7 +3085,7 @@ bool TXRD::FInsertObject(void *pv, int32_t cb, int32_t cp, int32_t ccpDel, PCHP 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a picture into the rich text document.
 ***************************************************************************/
 bool TXRD::FApplyObjectProps(void *pv, int32_t cb, int32_t cp, uint32_t grfdoc)
@@ -3124,7 +3124,7 @@ bool TXRD::FApplyObjectProps(void *pv, int32_t cb, int32_t cp, uint32_t grfdoc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the bounds of an object.
 ***************************************************************************/
 bool TXRD::FGetObjectRc(int32_t cp, PGNV pgnv, PCHP pchp, RC *prc)
@@ -3143,7 +3143,7 @@ bool TXRD::FGetObjectRc(int32_t cp, PGNV pgnv, PCHP pchp, RC *prc)
     return _FGetObjectRc(mpe.lw - 1, _SprmFromSpcp(mpe.spcp), pgnv, pchp, prc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the object bounds from the AG entry.
 ***************************************************************************/
 bool TXRD::_FGetObjectRc(int32_t icact, uint8_t sprm, PGNV pgnv, PCHP pchp, RC *prc)
@@ -3154,12 +3154,12 @@ bool TXRD::_FGetObjectRc(int32_t icact, uint8_t sprm, PGNV pgnv, PCHP pchp, RC *
     AssertVarMem(pchp);
     AssertVarMem(prc);
 
-    // TXRD has no acceptable object types
+    // 3DMMv1.0: TXRD has no acceptable object types
     TrashVar(prc);
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw an object.
 ***************************************************************************/
 bool TXRD::FDrawObject(int32_t cp, PGNV pgnv, int32_t *pxp, int32_t yp, PCHP pchp, RC *prcClip)
@@ -3179,7 +3179,7 @@ bool TXRD::FDrawObject(int32_t cp, PGNV pgnv, int32_t *pxp, int32_t yp, PCHP pch
     return _FDrawObject(mpe.lw - 1, _SprmFromSpcp(mpe.spcp), pgnv, pxp, yp, pchp, prcClip);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the object.
 ***************************************************************************/
 bool TXRD::_FDrawObject(int32_t icact, uint8_t sprm, PGNV pgnv, int32_t *pxp, int32_t yp, PCHP pchp, RC *prcClip)
@@ -3191,11 +3191,11 @@ bool TXRD::_FDrawObject(int32_t icact, uint8_t sprm, PGNV pgnv, int32_t *pxp, in
     AssertVarMem(pchp);
     AssertVarMem(prcClip);
 
-    // TXRD has no acceptable object types
+    // 3DMMv1.0: TXRD has no acceptable object types
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new rich text undo object for the given rich text document.
 ***************************************************************************/
 PRTUN RTUN::PrtunNew(int32_t cactCombine, PTXRD ptxrd, int32_t cp1, int32_t cp2, int32_t ccpIns)
@@ -3216,7 +3216,7 @@ PRTUN RTUN::PrtunNew(int32_t cactCombine, PTXRD ptxrd, int32_t cp1, int32_t cp2,
     prtun->_ccpIns = ccpIns;
     if (cp1 < cp2)
     {
-        // copy the piece of the txrd.
+        // 3DMMv1.0: copy the piece of the txrd.
         if (pvNil == (prtun->_ptxrd = TXRD::PtxrdNew(pvNil)))
             goto LFail;
         prtun->_ptxrd->SetInternal();
@@ -3232,7 +3232,7 @@ PRTUN RTUN::PrtunNew(int32_t cactCombine, PTXRD ptxrd, int32_t cp1, int32_t cp2,
     return prtun;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a rich text undo object.
 ***************************************************************************/
 RTUN::~RTUN(void)
@@ -3240,7 +3240,7 @@ RTUN::~RTUN(void)
     ReleasePpo(&_ptxrd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Undo this rich text undo object on the given document.
 ***************************************************************************/
 bool RTUN::FUndo(PDOCB pdocb)
@@ -3265,7 +3265,7 @@ bool RTUN::FUndo(PDOCB pdocb)
 
     if (_ccpIns > 0)
     {
-        // copy the piece of the txrd.
+        // 3DMMv1.0: copy the piece of the txrd.
         if (pvNil == (ptxrdNew = TXRD::PtxrdNew(pvNil)))
             return fFalse;
         ptxrdNew->SetInternal();
@@ -3304,7 +3304,7 @@ bool RTUN::FUndo(PDOCB pdocb)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Redo this rich text undo object on the given document.
 ***************************************************************************/
 bool RTUN::FDo(PDOCB pdocb)
@@ -3313,7 +3313,7 @@ bool RTUN::FDo(PDOCB pdocb)
     return FUndo(pdocb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If possible, combine the given rtun with this one. Returns success.
 ***************************************************************************/
 bool RTUN::FCombine(PRTUN prtun)
@@ -3322,23 +3322,23 @@ bool RTUN::FCombine(PRTUN prtun)
     AssertPo(prtun, 0);
     int32_t ccp;
 
-    // if the _cactCombine numbers are different, they can't be combined
+    // 3DMMv1.0: if the _cactCombine numbers are different, they can't be combined
     if (prtun->_cactCombine != _cactCombine)
         return fFalse;
 
-    // if the new record doesn't delete anything and the new text is
-    // at the end of the old text, just adjust _ccpIns.
+    // 3DMMv1.0: if the new record doesn't delete anything and the new text is
+    // 3DMMv1.0: at the end of the old text, just adjust _ccpIns.
     if (prtun->_ptxrd == pvNil && _cpMin + _ccpIns == prtun->_cpMin)
     {
         _ccpIns += prtun->_ccpIns;
         return fTrue;
     }
 
-    // if either of the new records inserts anything, we can't combine the two
+    // 3DMMv1.0: if either of the new records inserts anything, we can't combine the two
     if (prtun->_ccpIns != 0 || _ccpIns != 0)
         return fFalse;
 
-    // handle repeated delete keys
+    // 3DMMv1.0: handle repeated delete keys
     AssertPo(_ptxrd, 0);
     AssertPo(prtun->_ptxrd, 0);
     ccp = prtun->_ptxrd->CpMac() - 1;
@@ -3347,7 +3347,7 @@ bool RTUN::FCombine(PRTUN prtun)
         return _ptxrd->FReplaceTxrd(prtun->_ptxrd, 0, ccp, _ptxrd->CpMac() - 1, 0);
     }
 
-    // handle repeated backspace keys
+    // 3DMMv1.0: handle repeated backspace keys
     if (prtun->_cpMin + ccp == _cpMin)
     {
         if (!_ptxrd->FReplaceTxrd(prtun->_ptxrd, 0, ccp, 0, 0))
@@ -3360,7 +3360,7 @@ bool RTUN::FCombine(PRTUN prtun)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a RTUN.
 ***************************************************************************/
 void RTUN::AssertValid(uint32_t grf)
@@ -3372,7 +3372,7 @@ void RTUN::AssertValid(uint32_t grf)
     Assert(_ccpIns > 0 || _ptxrd != pvNil, "empty RTUN");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the RTUN.
 ***************************************************************************/
 void RTUN::MarkMem(void)
@@ -3381,4 +3381,4 @@ void RTUN::MarkMem(void)
     RTUN_PAR::MarkMem();
     MarkMemObj(_ptxrd);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

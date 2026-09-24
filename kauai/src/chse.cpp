@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ******
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(CHSE)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a chunky source emitter.
 ***************************************************************************/
 CHSE::CHSE(void)
@@ -26,7 +26,7 @@ CHSE::CHSE(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a chunky source emitter.
 ***************************************************************************/
 CHSE::~CHSE(void)
@@ -34,7 +34,7 @@ CHSE::~CHSE(void)
     Uninit();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the chunky source emitter.
 ***************************************************************************/
 void CHSE::Init(PMSNK pmsnkDump, PMSNK pmsnkError)
@@ -54,7 +54,7 @@ void CHSE::Init(PMSNK pmsnkDump, PMSNK pmsnkError)
     AssertThis(fchseDump);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clean up and return the chse to an inactive state.
 ***************************************************************************/
 void CHSE::Uninit(void)
@@ -67,7 +67,7 @@ void CHSE::Uninit(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CHSE.
 ***************************************************************************/
 void CHSE::AssertValid(uint32_t grfchse)
@@ -79,7 +79,7 @@ void CHSE::AssertValid(uint32_t grfchse)
     AssertNilOrPo(_pmsnkError, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CHSE.
 ***************************************************************************/
 void CHSE::MarkMem(void)
@@ -90,9 +90,9 @@ void CHSE::MarkMem(void)
     MarkMemObj(_pmsnkDump);
     MarkMemObj(&_bsf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dumps chunk header.
 ***************************************************************************/
 void CHSE::DumpHeader(CTG ctg, CNO cno, PSTN pstnName, bool fPack)
@@ -118,7 +118,7 @@ void CHSE::DumpHeader(CTG ctg, CNO cno, PSTN pstnName, bool fPack)
         DumpSz(PszLit("\tPACK"));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump a raw data chunk
 ***************************************************************************/
 void CHSE::DumpBlck(PBLCK pblck)
@@ -140,7 +140,7 @@ void CHSE::DumpBlck(PBLCK pblck)
     _DumpBsf(1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump raw data from memory.
 ***************************************************************************/
 void CHSE::DumpRgb(void *prgb, int32_t cb, int32_t cactTab)
@@ -156,7 +156,7 @@ void CHSE::DumpRgb(void *prgb, int32_t cb, int32_t cactTab)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump a parent directive
 ***************************************************************************/
 void CHSE::DumpParentCmd(CTG ctgPar, CNO cnoPar, CHID chid)
@@ -169,7 +169,7 @@ void CHSE::DumpParentCmd(CTG ctgPar, CNO cnoPar, CHID chid)
     DumpSz(stn.Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump a bitmap directive
 ***************************************************************************/
 void CHSE::DumpBitmapCmd(uint8_t bTransparent, int32_t dxp, int32_t dyp, PSTN pstnFile)
@@ -183,7 +183,7 @@ void CHSE::DumpBitmapCmd(uint8_t bTransparent, int32_t dxp, int32_t dyp, PSTN ps
     DumpSz(stn.Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump a file directive
 ***************************************************************************/
 void CHSE::DumpFileCmd(PSTN pstnFile, bool fPacked)
@@ -200,7 +200,7 @@ void CHSE::DumpFileCmd(PSTN pstnFile, bool fPacked)
     DumpSz(stn.Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump an adopt directive
 ***************************************************************************/
 void CHSE::DumpAdoptCmd(CKI *pcki, KID *pkid)
@@ -216,7 +216,7 @@ void CHSE::DumpAdoptCmd(CKI *pcki, KID *pkid)
     DumpSz(stn.Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump the data in the _bsf
 ***************************************************************************/
 void CHSE::_DumpBsf(int32_t cactTab)
@@ -247,7 +247,7 @@ void CHSE::_DumpBsf(int32_t cactTab)
         cb = LwMin(ibMac - ib, SIZEOF(rgb));
         _bsf.FetchRgb(ib, cb, rgb);
 
-        // append the hex
+        // 3DMMv1.0: append the hex
         for (ibT = 0; ibT < SIZEOF(rgb); ibT++)
         {
             if (ibT >= cb)
@@ -260,7 +260,7 @@ void CHSE::_DumpBsf(int32_t cactTab)
         }
         stn1.FAppendSz(PszLit("   // '"));
 
-        // append the ascii
+        // 3DMMv1.0: append the ascii
         for (ibT = 0; ibT < cb; ibT++)
         {
             bT = rgb[ibT];
@@ -275,7 +275,7 @@ void CHSE::_DumpBsf(int32_t cactTab)
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Disassembles a script (pscpt) using the given script compiler (psccb)
     and dumps the result (including a "SCRIPTPF" directive).
 ******************************************************************************/
@@ -294,7 +294,7 @@ bool CHSE::FDumpScript(PSCPT pscpt, PSCCB psccb)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Dumps a GL or AL, including the GL or AL directive. pglb is the GL or AL
     to dump.
 ******************************************************************************/
@@ -310,7 +310,7 @@ void CHSE::DumpList(PGLB pglb)
 
     Assert(fAl || pglb->FIs(kclsGL), "neither a GL or AL!");
 
-    // have a valid GL or AL -- print it out in readable format
+    // 3DMMv1.0: have a valid GL or AL -- print it out in readable format
     cbEntry = pglb->CbEntry();
     AssertIn(cbEntry, 0, kcbMax);
     ivMac = pglb->IvMac();
@@ -326,7 +326,7 @@ void CHSE::DumpList(PGLB pglb)
 
     DumpSz(stn.Psz());
 
-    // print out the entries
+    // 3DMMv1.0: print out the entries
     for (iv = 0; iv < ivMac; iv++)
     {
         if (pglb->FFree(iv))
@@ -341,7 +341,7 @@ void CHSE::DumpList(PGLB pglb)
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Dumps a GG or AG, including the GG or AG directive. pggb is the GG or AG
     to dump.
 ******************************************************************************/
@@ -357,7 +357,7 @@ void CHSE::DumpGroup(PGGB pggb)
 
     Assert(fAg || pggb->FIs(kclsGG), "neither a GG or AG!");
 
-    // have a valid GG or AG -- print it out in readable format
+    // 3DMMv1.0: have a valid GG or AG -- print it out in readable format
     cbFixed = pggb->CbFixed();
     AssertIn(cbFixed, 0, kcbMax);
     ivMac = pggb->IvMac();
@@ -372,7 +372,7 @@ void CHSE::DumpGroup(PGGB pggb)
     }
     DumpSz(stnT.Psz());
 
-    // print out the entries
+    // 3DMMv1.0: print out the entries
     for (iv = 0; iv < ivMac; iv++)
     {
         if (pggb->FFree(iv))
@@ -397,7 +397,7 @@ void CHSE::DumpGroup(PGGB pggb)
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Dumps a GST or AST, including the GST or AST directive. pggb is the GST or
     AST to dump.
 ******************************************************************************/
@@ -415,7 +415,7 @@ bool CHSE::FDumpStringTable(PGSTB pgstb)
 
     Assert(fAst || pgstb->FIs(kclsGST), "neither a GST or AST!");
 
-    // have a valid GST or AST -- print it out in readable format
+    // 3DMMv1.0: have a valid GST or AST -- print it out in readable format
     cbExtra = pgstb->CbExtra();
     AssertIn(cbExtra, 0, kcbMax);
     ivMac = pgstb->IvMac();
@@ -433,7 +433,7 @@ bool CHSE::FDumpStringTable(PGSTB pgstb)
     }
     DumpSz(stn1.Psz());
 
-    // print out the entries
+    // 3DMMv1.0: print out the entries
     for (iv = 0; iv < ivMac; iv++)
     {
         if (pgstb->FFree(iv))

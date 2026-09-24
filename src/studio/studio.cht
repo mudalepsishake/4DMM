@@ -1,5 +1,11 @@
 /* Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
+// 3DMM audio v1: McZee toggle owns Studio UI sounds.
+
+// Camera-track v11: rebuild Studio resources for the native clickable toggle.
+// Camera-track v15: force Studio resource preprocessing after adding the Continue In Place resource id.
+// Camera-track v25: rebuild Studio resources for timeline-aware camera undo and silent tooltips.
+// Color v7: rebuild Studio resources for native colour-picker hotkeys/hitboxes.
 
  /*****************************************************************************\
  *
@@ -44,6 +50,7 @@
 
 //
 // Useful macros
+// Camera-track v16: Depth Motion Tween editor/state fixes.
 //
 
 #include "kidgs.chh"
@@ -77,6 +84,7 @@
 //
 #include "stdiosnd.cht"
 #include "sectools.cht"
+// 3DMMEx camera-track UI extension v8: rebuild after fixing parent-relative button coordinates.
 #include "popups.cht"
 #include "popdn.cht"
 #include "browser.cht"
@@ -226,6 +234,7 @@ CREATE_SCRIPT("Background -- create")
 	.chttActor = chttCompose;
 	.fXYAxis = fFalse;
 	.fRGround = fFalse;
+	.fContinueInPlace = fFalse;
 ENDCHUNK
 
 ////////////////////////////////////////////////////////////////////////
@@ -253,6 +262,7 @@ CHILD_SCRIPT("Reset tools", CHID1(kchidResetTools))
 	.chttActor = chttCompose;
 	.fXYAxis = fFalse;
 	.fRGround = fFalse;
+	.fContinueInPlace = fFalse;
 	EnqueueCid(cidSetTool, khidStudio, chttNone, 0, 0, 0);          // change to Nil tool
 
 	//
@@ -332,6 +342,7 @@ ENDCHUNK
 CHILD_SCRIPT("Reset XZ/XY axis to XZ and respect ground", CHID1(kchidResetXZAxisAndGround))
 	.fXYAxis = fFalse;
 	.fRGround = fFalse;
+	.fContinueInPlace = fFalse;
 ENDCHUNK
 CHILD_SCRIPT("Open doors all the way", CHID1(kchidOpenDoorsAll))
 	.fAllSceneDoors = fTrue;
@@ -843,7 +854,7 @@ REP_ANIM(CHID1(krepDefault), "Default Rep VolumeSlider")
 ENDCHUNK
 REP_ANIM(CHID1(krepMouseDnOn), "MouseDnOn VolumeSlider")
 	// repeat up to 30000 times.
-	.siiLoop = PlaySoundThis(kcctgWave, kwavDing, 2, 0x00010000, 30000, 1, 4);
+	.siiLoop = PlaySoundThis(kcctgWave, kwavDing, 2, 0x00010000, 30000, 1, ksclUISound);
 	While (fTrue);
 		y = YMouseThis();
 		If (y < 0);
@@ -1186,4 +1197,5 @@ ENDCHUNK
 
 
 
-
+
+// Camera-track v21: Manual Camera mode UI/resource rebuild.

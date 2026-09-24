@@ -1,0 +1,296 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: priminfo.h 1.1 1997/12/10 16:52:25 jon Exp $
+ * $Locker: $
+ *
+ * Public interface to primitive renderers from sofware pipeline
+ */
+#ifndef _PRIMINFO_H_
+#define _PRIMINFO_H_
+
+#include "brender.h"
+
+/** BRender:
+ ** Primitive Vertex
+ **/
+
+/* BRender:
+ * Per vertex components - some components share slots (eg, I and A)
+ */
+enum brp_components {
+    C_FLAGS = 0,
+    C_X     = 1,
+    C_Y     = 2,
+    C_Z     = 3,
+    C_W     = 4,
+
+    C_SX = 5,
+    C_SY = 6,
+    C_SZ = 7,
+
+    C_U = 8,
+    C_V = 9,
+
+    C_I = 10,
+    C_A = 10,
+
+    C_R = 11,
+    C_G = 12,
+    C_B = 13,
+
+    C_UI = 10, /* BRender: Unlit versions of RGB and I */
+    C_UR = 11,
+    C_UG = 12,
+    C_UB = 13,
+
+    /* BRender:
+     * Following merged colour slots are only really meaningful as integers
+     *
+     * XXX Unimplemented
+     */
+    C_ARGB = 11, /* BRender: Merged colour and alpha */
+
+    C_URGB = 11, /* BRender: Merged unlit colour and alpha */
+    C_DRGB = 12, /* BRender: Merged diffuse colour and alpha */
+    C_SRGB = 13, /* BRender: Merged specular colour and alpha */
+
+    C_S  = 14,
+    C_SW = 14,
+
+    C_Q = 15, /* BRender: Reciprocal of C_W */
+
+    NUM_COMPONENTS = 16
+};
+
+/* BRender:
+ * Mask bits for selecting which components take part in various operations
+ *
+ * NB: The bit number in the mask is not that same as the component entry
+ * (some components share entries)
+ */
+enum brp_component_masks {
+    CM_X = 0x00000001,
+    CM_Y = 0x00000002,
+    CM_Z = 0x00000004,
+    CM_W = 0x00000008,
+
+    CM_SX = 0x00000010,
+    CM_SY = 0x00000020,
+    CM_SZ = 0x00000040,
+    CM_U  = 0x00000080,
+    CM_V  = 0x00000100,
+    CM_I  = 0x00000200,
+    CM_A  = 0x00000400,
+    CM_R  = 0x00000800,
+    CM_G  = 0x00001000,
+    CM_B  = 0x00002000,
+
+    CM_UI = 0x00004000,
+    CM_UR = 0x00008000,
+    CM_UG = 0x00010000,
+    CM_UB = 0x00020000,
+
+    CM_ARGB = 0x00040000,
+
+    CM_URGB = 0x00080000,
+    CM_DRGB = 0x00100000,
+    CM_SRGB = 0x00200000,
+
+    CM_SW = 0x00400000,
+
+    CM_Q = 0x00800000,
+};
+
+/* BRender:
+ * Given an component mask, maps (CM_SX,CM_SY,CM_SZ) to (CM_X,CM_Y,CM_Z)
+ */
+#define COMP_S2V(c) (((c) & ~(CM_SX | CM_SY | CM_SZ)) | (((c) & (CM_SX | CM_SY | CM_SZ)) >> 4))
+
+/* BRender:
+ * Flags that tell the renderer any special actions that need to be taken for this primitive
+ */
+enum brp_flags {
+    BR_PRIMF_SCISSOR         = 0x00000001, /* BRender: Primitive will be clipped to output buffer(s) by rasteriser				*/
+    BR_PRIMF_CONST_DUPLICATE = 0x00000002, /* BRender: Constant components will be duplicated to all vertices					*/
+    BR_PRIMF_SUBDIVIDE       = 0x00000004, /* BRender: Subdivide triangles to reduce perspective errors               			*/
+    BR_PRIMF_BLENDED         = 0x00000008, /* BRender: This primitive is blended into existing output, may need to be defered	*/
+};
+
+typedef union brp_vertex {
+    br_int_32   flags;
+    br_scalar   comp[NUM_COMPONENTS]; /* BRender: All the components of vertex	*/
+    br_float    comp_f[NUM_COMPONENTS];
+    br_fixed_ls comp_x[NUM_COMPONENTS];
+    br_int_32   comp_i[NUM_COMPONENTS];
+} brp_vertex;
+
+/** BRender:
+ ** Primitive renderer description block
+ **/
+
+/* BRender:
+ * Render a primitive - takes 1 or more vertices
+ */
+struct brp_block;
+typedef struct brp_block brp_block;
+
+#ifndef __H2INC__
+typedef void BR_ASM_CALL brp_render_fn(brp_block *block, ...);
+#else
+typedef void BR_ASM_CALL brp_render_fn(brp_block *block);
+#endif
+
+struct brp_block {
+    /* BRender:
+     * Pointer to rendering function (single)
+     */
+    brp_render_fn *render;
+
+    /* BRender:
+     * Link for chaining blocks together
+     */
+    brp_block *chain;
+
+    /* BRender:
+     * String giving a readable identification of this primitive
+     */
+    char *identifier;
+
+    /* BRender:
+     * Empty space - was used as a pointer to primitive library
+     */
+    void *_reserved0;
+
+    /* BRender:
+     * Type of primtive
+     */
+    br_token type;
+
+    br_uint_32 flags;
+
+    /* BRender:
+     * Bitmasks of what vertex info is needed for rendering
+     */
+    br_uint_32 constant_components; /* BRender: Only need to be set in v0 */
+    br_uint_32 vertex_components;   /* BRender: Must be set per-vertex	*/
+
+    /* BRender:
+     * Masks of slots that are needed as float
+     *
+     * NB: This is a bit per slot, not a bit per component,
+     *     initialise with (1<<C_X) rather than CM_X
+     */
+    br_uint_32 convert_mask_f;
+
+    /* BRender:
+     * Masks of slots that are needed as fixed
+     */
+    br_uint_32 convert_mask_x;
+
+    /* BRender:
+     * Masks of slots that are needed as integers
+     */
+    br_uint_32 convert_mask_i;
+
+    /* BRender:
+     * Mask of constant slots
+     */
+    br_uint_32 constant_mask;
+
+    /* BRender:
+     * A magic number for the subvidider
+     * The default 0
+     * +ve numbers make it more tolerant of errors
+     * -ve numbers make it less tolerant
+     *
+     * The useable range should be ~ +100 -> -100
+     */
+    br_int_32 subdivide_tolerance;
+
+    br_uint_32 _reserved_0;
+    br_uint_32 _reserved_1;
+    br_uint_32 _reserved_2;
+};
+
+/* BRender:
+ * A cut down version of the above block that is used to chain
+ * operations together in the renderer
+ */
+typedef struct brp_block_min {
+    /* BRender:
+     * Pointer to rendering function (single)
+     */
+    brp_render_fn *render;
+
+    /* BRender:
+     * Link for chaining blocks together
+     */
+    brp_block *chain;
+
+} brp_block_min;
+
+/* BRenderModern:
+ * Type-safe wrappers for calling through brp_render_fn pointers.
+ *
+ * brp_render_fn is variadic (...) to serve as a generic callback type. On x86,
+ * variadic and non-variadic ABIs are identical so calling through the variadic
+ * pointer is harmless. On ARM64 they diverge: variadic args go on the stack,
+ * but non-variadic callees expect them in registers. The result is silent
+ * argument corruption -- valid pointers arriving as garbage.
+ *
+ * These wrappers cast the pointer to the exact non-variadic type for each
+ * call site before calling. On x86 the casts compile to nothing.
+ *
+ *   brp_render1      block + 1 vertex                                         (point)
+ *   brp_render2      block + 2 vertices                                       (line)
+ *   brp_render3      block + 3 vertices                                       (triangle)
+ *   brp_render3_fp   block + 3 verts + fp_vertices + fp_edges                 (triangle + face-plane)
+ *   brp_render3_fpx  block + 3 verts + fp_vertices + fp_edges + fp_eqn + tfp  (triangle + full face-plane)
+ *   brp_render4      block + 4 vertices                                       (quad)
+ */
+#ifndef __H2INC__
+typedef void(BR_ASM_CALL *brp_render1_fn)(brp_block *, brp_vertex *);
+typedef void(BR_ASM_CALL *brp_render2_fn)(brp_block *, brp_vertex *, brp_vertex *);
+typedef void(BR_ASM_CALL *brp_render3_fn)(brp_block *, brp_vertex *, brp_vertex *, brp_vertex *);
+typedef void(BR_ASM_CALL *brp_render3_fp_fn)(brp_block *, brp_vertex *, brp_vertex *, brp_vertex *, void *, void *);
+typedef void(BR_ASM_CALL *brp_render3_fpx_fn)(brp_block *, brp_vertex *, brp_vertex *, brp_vertex *, void *, void *, void *, void *);
+typedef void(BR_ASM_CALL *brp_render4_fn)(brp_block *, brp_vertex *, brp_vertex *, brp_vertex *, brp_vertex *);
+
+static inline void brp_render1(brp_block *b, brp_vertex *v0)
+{
+    ((brp_render1_fn)b->render)(b, v0);
+}
+
+static inline void brp_render2(brp_block *b, brp_vertex *v0, brp_vertex *v1)
+{
+    ((brp_render2_fn)b->render)(b, v0, v1);
+}
+
+static inline void brp_render3(brp_block *b, brp_vertex *v0, brp_vertex *v1, brp_vertex *v2)
+{
+    ((brp_render3_fn)b->render)(b, v0, v1, v2);
+}
+
+static inline void brp_render3_fp(brp_block *b, brp_vertex *v0, brp_vertex *v1, brp_vertex *v2, void *e0, void *e1)
+{
+    ((brp_render3_fp_fn)b->render)(b, v0, v1, v2, e0, e1);
+}
+
+static inline void brp_render3_fpx(brp_block *b, brp_vertex *v0, brp_vertex *v1, brp_vertex *v2, void *e0, void *e1, void *e2, void *e3)
+{
+    ((brp_render3_fpx_fn)b->render)(b, v0, v1, v2, e0, e1, e2, e3);
+}
+
+static inline void brp_render4(brp_block *b, brp_vertex *v0, brp_vertex *v1, brp_vertex *v2, brp_vertex *v3)
+{
+    ((brp_render4_fn)b->render)(b, v0, v1, v2, v3);
+}
+
+#endif /* BRenderModern: __H2INC__ */
+
+#ifdef __cplusplus
+}
+;
+#endif
+#endif

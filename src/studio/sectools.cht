@@ -95,6 +95,9 @@ ENDCHUNK
 REP_MBMPREG(CHID(kst1, krepDefault), "studio/bmp/1par.bmp",
 	kxpregSettingsBackground, kypregSettingsBackground)
 CREATE_SCRIPT("Secondary tools, Settings -- create")
+	CreateChildThis(kidCameraTrackAlign, kidCameraTrackAlign);
+	CreateChildThis(kidManualCamera, kidManualCamera);
+	CreateChildThis(kidDepthMotionTween, kidDepthMotionTween);
 	CreateChildThis(kidSettingsCameras, kidSettingsCameras);
 	CreateChildThis(kidSceneSorter, kidSceneSorter);
 	CreateChildThis(kidCCPSceneChopFwd, kidCCPSceneChopFwd);
@@ -113,6 +116,90 @@ CHILD_SCRIPT("Reset tools", CHID1(kchidResetTools))
 		ChangeStateGob(kidBackground->idscnDown, kstDefault);
 		kidBackground->idscnDown = kidStudio;
     End;	
+ENDCHUNK
+
+//
+// Invisible early camera-track tool.  The Settings background only exists
+// while the scene tab is open, so this hit region is unavailable everywhere
+// else.
+//
+GOBCHUNK("Camera track - align to selected object", kidCameraTrackAlign, kgokkRectHit)
+	DEFAULT_POSITION(kxpCameraTrackAlign, kypCameraTrackAlign, 10)
+	ACTION(fcustNil, fcustNil, fgrfstAll, kcrsHand, CHID(kstDefault, kchidClick), cidNil, cnoNil)
+ENDCHUNK
+REP_RECT(CHID(kstDefault, krepDefault), "hidden", 0, 0, kdxpCameraTrackAlign, kdypCameraTrackAlign)
+CHILD_SCRIPT("Camera track - align to selected object", CHID(kstDefault, kchidClick))
+	EnqueueCid(cidCameraTrackAlign, khidStudio, 0, 0, 0, 0);
+ENDCHUNK
+
+//
+// Manual Camera mode.  This uses the same native Up/Down toggle artwork as
+// Depth Motion Tween and Continue Animation In Place.  The C++ handler owns
+// the authoritative state so an attempted activation inside a depth tween can
+// be refused without leaving the light lying about it.
+//
+GOBCHUNK("Manual Camera mode toggle", kidManualCamera, kgokkRectHit)
+	DEFAULT_POSITION(kxpManualCamera, kypManualCamera, 10)
+	ACTION(fcustNil, fcustNil, fgrfstClosed, kcrsHand, CHID(kstClosed, kchidClick), cidNil, kttManualCamera)
+	ACTION(fcustCmd, fcustCmd, fgrfstOpen, kcrsHand, CHID(kstOpen, kchidScript0), cidNil, kttManualCamera)
+	ACTION(fcustCmd, fcustNil, fgrfstOpen, kcrsHand, CHID(kstOpen, kchidClick), cidNil, kttManualCamera)
+ENDCHUNK
+REP_RECT(CHID(kstDefault, krepDefault), "hidden", 0, 0, 0, 0)
+REP_MBMPREG(CHID(kstClosed, krepDefault), "studio/bmp/2xy.bmp",
+	kxpregManualCamera, kypregManualCamera)
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseUpOn))
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseDnOff))
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseDnOn))
+REP_MBMPREG(CHID(kstOpen, krepDefault), "studio/bmp/2xys.bmp",
+	kxpregManualCamera, kypregManualCamera)
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseUpOn))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseDnOff))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseDnOn))
+CREATE_SCRIPT("Manual Camera -- create")
+	ChangeStateThis(kstClosed);
+	EnqueueCid(cidManualCamera, khidStudio, fFalse, 0, 0, 0);
+ENDCHUNK
+CHILD_SCRIPT("Manual Camera -- enable", CHID(kstClosed, kchidClick))
+	EnqueueCid(cidManualCamera, khidStudio, fTrue, fFalse, 0, 0);
+ENDCHUNK
+CHILD_SCRIPT("Manual Camera -- enable existing frame", CHID(kstOpen, kchidClick))
+	EnqueueCid(cidManualCamera, khidStudio, fTrue, fFalse, 0, 0);
+ENDCHUNK
+CHILD_SCRIPT("Manual Camera -- edit existing frame", CHID(kstOpen, kchidScript0))
+	EnqueueCid(cidManualCamera, khidStudio, fTrue, fTrue, 0, 0);
+ENDCHUNK
+
+//
+// Depth Motion Tween indicator/editor.  This deliberately follows the fixed
+// v11 Continue Animation In Place control: the visible native toggle GOB owns
+// the mouse itself.  Clicking never toggles the state; C++ derives the light
+// from whether the selected frame lies between the scene's first/last Z keys.
+//
+GOBCHUNK("Depth Motion Tween indicator/editor", kidDepthMotionTween, kgokkRectHit)
+	DEFAULT_POSITION(kxpDepthMotionTween, kypDepthMotionTween, 10)
+	ACTION(fcustNil, fcustNil, fgrfstClosed, kcrsHand, CHID(kstClosed, kchidClick), cidNil, kttDepthMotionTween)
+	ACTION(fcustNil, fcustNil, fgrfstOpen, kcrsHand, CHID(kstOpen, kchidClick), cidNil, kttDepthMotionTween)
+ENDCHUNK
+REP_RECT(CHID(kstDefault, krepDefault), "hidden", 0, 0, 0, 0)
+REP_MBMPREG(CHID(kstClosed, krepDefault), "studio/bmp/2xy.bmp",
+	kxpregDepthMotionTween, kypregDepthMotionTween)
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseUpOn))
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseDnOff))
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseDnOn))
+REP_MBMPREG(CHID(kstOpen, krepDefault), "studio/bmp/2xys.bmp",
+	kxpregDepthMotionTween, kypregDepthMotionTween)
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseUpOn))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseDnOff))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseDnOn))
+CREATE_SCRIPT("Depth Motion Tween -- create")
+	ChangeStateThis(kstClosed);
+	EnqueueCid(cidDepthMotionTween, khidStudio, fFalse, 0, 0, 0);
+ENDCHUNK
+CHILD_SCRIPT("Depth Motion Tween -- open editor while off", CHID(kstClosed, kchidClick))
+	EnqueueCid(cidDepthMotionTween, khidStudio, fTrue, 0, 0, 0);
+ENDCHUNK
+CHILD_SCRIPT("Depth Motion Tween -- open editor while on", CHID(kstOpen, kchidClick))
+	EnqueueCid(cidDepthMotionTween, khidStudio, fTrue, 0, 0, 0);
 ENDCHUNK
 
 //
@@ -236,6 +323,7 @@ CREATE_SCRIPT("Secondary tools, Actors -- create")
 	CreateChildThis(kidActorsTransform, kidActorsTransform);
 	CreateChildThis(kidActorsXY, kidActorsXY);
 	CreateChildThis(kidActorsGround, kidActorsGround);
+	CreateChildThis(kidActorsContinueInPlaceVisual, kidActorsContinueInPlaceVisual);
 
 	If( fBIO_FOUNDALL());
 		// create the bio page button if all bio's found.
@@ -525,7 +613,7 @@ CREATE_ANIMST("XZ", kstClosed)
 ENDCHUNK
 CHILD_SCRIPT("XZ", CHID(kstClosed, kchidClick))
 	ChangeStateThis(kstOpen);
-	PlaySoundThis(kcctgWave, kcnoStateOnWav, 0, 0x10000, 1, 0, 1);
+	PlaySoundThis(kcctgWave, kcnoStateOnWav, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 CREATE_ANIMST("XY", kstOpen)
 	EnqueueCid(cidXYAxis, khidStudio, 0, 0, 0, 0);
@@ -533,7 +621,7 @@ CREATE_ANIMST("XY", kstOpen)
 ENDCHUNK
 CHILD_SCRIPT("XY", CHID(kstOpen, kchidClick))
 	ChangeStateThis(kstClosed);
-	PlaySoundThis(kcctgWave, kcnoStateOffWav, 0, 0x10000, 1, 0, 1);
+	PlaySoundThis(kcctgWave, kcnoStateOffWav, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 
 //
@@ -579,6 +667,50 @@ CHILD_SCRIPT("Ground", CHID(kstOpen, kchidClick))
 	ChangeStateThis(kstClosed);
 ENDCHUNK
 
+//
+// Continue animation in place.  This follows the native XY/XZ toggle pattern:
+// the visible bitmap GOB itself owns the mouse hit and toggle state.
+//
+GOBCHUNK("Continue animation in place toggle", kidActorsContinueInPlaceVisual, kgokkRectHit)
+	DEFAULT_POSITION(kxpActorsContinueInPlaceVisual, kypActorsContinueInPlaceVisual, 10)
+	ACTION(fcustNil, fcustNil, fgrfstClosed, kcrsHand, CHID(kstClosed, kchidClick), cidNil, cnoNil)
+	ACTION(fcustNil, fcustNil, fgrfstOpen, kcrsHand, CHID(kstOpen, kchidClick), cidNil, cnoNil)
+ENDCHUNK
+REP_RECT(CHID(kstDefault, krepDefault), "hidden", 0, 0, 0, 0)
+REP_MBMPREG(CHID(kstClosed, krepDefault), "studio/bmp/2xy.bmp",
+	kxpregActorsContinueInPlace, kypregActorsContinueInPlace)
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseUpOn))
+ADOPT_MBMP(LAST_MBMP, CHID(kstClosed, krepMouseDnOff))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseDnOn))
+REP_MBMPREG(CHID(kstClosed, krepMouseDnOn), "studio/bmp/2xys.bmp",
+	kxpregActorsContinueInPlace, kypregActorsContinueInPlace)
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepDefault))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseUpOn))
+ADOPT_MBMP(LAST_MBMP, CHID(kstOpen, krepMouseDnOff))
+CREATE_SCRIPT("Continue animation in place -- create")
+	If(kidBackground->fContinueInPlace);
+		ChangeStateThis(kstOpen);
+	Else;
+		ChangeStateThis(kstClosed);
+	End;
+ENDCHUNK
+CREATE_ANIMST("Continue animation in place -- off", kstClosed)
+	EnqueueCid(cidContinueInPlace, khidStudio, fFalse, 0, 0, 0);
+	kidBackground->fContinueInPlace = fFalse;
+ENDCHUNK
+CHILD_SCRIPT("Continue animation in place -- turn on", CHID(kstClosed, kchidClick))
+	ChangeStateThis(kstOpen);
+	PlaySoundThis(kcctgWave, kcnoStateOnWav, 0, 0x10000, 1, 0, ksclUISound);
+ENDCHUNK
+CREATE_ANIMST("Continue animation in place -- on", kstOpen)
+	EnqueueCid(cidContinueInPlace, khidStudio, fTrue, 0, 0, 0);
+	kidBackground->fContinueInPlace = fTrue;
+ENDCHUNK
+CHILD_SCRIPT("Continue animation in place -- turn off", CHID(kstOpen, kchidClick))
+	ChangeStateThis(kstClosed);
+	PlaySoundThis(kcctgWave, kcnoStateOffWav, 0, 0x10000, 1, 0, ksclUISound);
+ENDCHUNK
+
 
 //
 // Sooner/later buttons.  These get created after the sooner/later
@@ -609,7 +741,7 @@ REP_ANIM(CHID(kstOpen, krepMouseDnOn), "Pressed")
 	//
 	lwDelay = klwSLDelayMax;
 	While();
-		PlaySoundThis(kcctgWave, kcnoSyStepFWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundThis(kcctgWave, kcnoSyStepFWav, 0, 0x10000, 1, 0, ksclUISound);
 		EnqueueCid(cidSooner, 0, 0, 0, 0, 0);
 		Cell(CHID(kstOpen, krepMouseDnOn), 0, 0, lwDelay);
 	    If(lwDelay > lwSLDelayMin);
@@ -669,7 +801,7 @@ REP_ANIM(CHID(kstOpen, krepMouseDnOn), "Pressed")
 	//
 	lwDelay = klwSLDelayMax;
 	While();
-		PlaySoundThis(kcctgWave, kcnoSyStepFWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundThis(kcctgWave, kcnoSyStepFWav, 0, 0x10000, 1, 0, ksclUISound);
 		EnqueueCid(cidLater, 0, 0, 0, 0, 0);
 		Cell(CHID(kstOpen, krepMouseDnOn), 0, 0, lwDelay);
 	    If(lwDelay > lwSLDelayMin);

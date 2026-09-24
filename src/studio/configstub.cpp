@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     configstub.cpp: Stub for configuration on non-Windows platforms
 
@@ -15,30 +15,30 @@ typedef struct StaticConfigItem_t
 {
     PCSZ pszValueName;
 
-    // String value
+    // 3DMMEx: String value
     PCSZ pszValue;
 
-    // Binary data value
+    // 3DMMEx: Binary data value
     const uint8_t *pbValue;
     int32_t cbValue;
 
-    // Integer value
+    // 3DMMEx: Integer value
     uint32_t lwValue;
 
 } StaticConfigItem;
 
 const StaticConfigItem_t _rgconfig[] = {
 
-    // Enable better quality rendering
+    // 3DMMEx: Enable better quality rendering
     {kszBetterSpeedValue, "0", pvNil, pvNil, 0},
 
-    // Play the startup sound
+    // 3DMMEx: Play the startup sound
     {kszStartupSoundValue, "1", pvNil, pvNil, 0},
 
-    // Enable stereo sound
+    // 3DMMEx: Enable stereo sound
     {kszStereoSound, "1", pvNil, pvNil, 0},
 
-    // Enable high quality sound import
+    // 3DMMEx: Enable high quality sound import
     {kszHighQualitySoundImport, "1", pvNil, pvNil},
 
 };
@@ -63,16 +63,16 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
 
     if (fSetKey || fSetDefault)
     {
-        // Setting a value does nothing. Return success to avoid errors.
+        // 3DMMEx: Setting a value does nothing. Return success to avoid errors.
         return fTrue;
     }
 
-    // Find the requested configuration item
+    // 3DMMEx: Find the requested configuration item
     for (int32_t iv = 0; iv < CvFromRgv(_rgconfig); iv++)
     {
         if (FEqualRgch(pszValueName, cchValueName, _rgconfig[iv].pszValueName, CchSz(_rgconfig[iv].pszValueName)))
         {
-            // Check the type requested
+            // 3DMMEx: Check the type requested
             if (fString)
             {
                 if (_rgconfig[iv].pszValue != pvNil)
@@ -92,7 +92,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
             }
             else
             {
-                // Integer value
+                // 3DMMEx: Integer value
                 pvSrc = &_rgconfig[iv].lwValue;
                 cbSrc = SIZEOF(_rgconfig[iv].lwValue);
             }

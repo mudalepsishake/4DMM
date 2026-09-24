@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,11 +16,11 @@ ASSERTNAME
 RTCLASS(SCEG)
 
 #ifdef DEBUG
-// these strings are for debug only error messages
+// 3DMMv1.0: these strings are for debug only error messages
 static STN _stn;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a GOB based script interpreter. We don't just keep
     the pgob in case the GOB goes away while the script is running.
 ***************************************************************************/
@@ -39,7 +39,7 @@ SCEG::SCEG(PWOKS pwoks, PRCA prca, PGOB pgob) : SCEG_PAR(prca, pwoks->Pstrg())
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a SCEG.
 ***************************************************************************/
 void SCEG::AssertValid(uint32_t grf)
@@ -49,9 +49,9 @@ void SCEG::AssertValid(uint32_t grf)
     AssertPo(_pwoks, 0);
     Assert(_prca != pvNil, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The script is being resumed, so set _pgob to nil (don't know whether
     it exists).
 ***************************************************************************/
@@ -61,7 +61,7 @@ bool SCEG::FResume(int32_t *plwReturn, bool *pfPaused)
     return SCEG_PAR::FResume(plwReturn, pfPaused);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the gob that corresponds to this script interpreter.
 ***************************************************************************/
 PGOB SCEG::_PgobThis(void)
@@ -79,7 +79,7 @@ PGOB SCEG::_PgobThis(void)
     return _pgob;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the gob that is accessible to this script interpreter and has
     the given hid.
 ***************************************************************************/
@@ -93,7 +93,7 @@ PGOB SCEG::_PgobFromHid(int32_t hid)
     return _pwoks->PgobFromHid(hid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the address of the variable table for the GOB associated with
     this script interpreter.
 ***************************************************************************/
@@ -106,7 +106,7 @@ PGL *SCEG::_PpglrtvmThis(void)
     return pgob->Ppglrtvm();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the address of the variable table for the WOKS associated with
     this script interpreter.
 ***************************************************************************/
@@ -117,7 +117,7 @@ PGL *SCEG::_PpglrtvmGlobal(void)
     return _pwoks->Ppglrtvm();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the address of the variable table for the GOB with given hid.
 ***************************************************************************/
 PGL *SCEG::_PpglrtvmRemote(int32_t lw)
@@ -129,7 +129,7 @@ PGL *SCEG::_PpglrtvmRemote(int32_t lw)
     return pgob->Ppglrtvm();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current version number of the script compiler.
 ***************************************************************************/
 int16_t SCEG::_SwCur(void)
@@ -137,7 +137,7 @@ int16_t SCEG::_SwCur(void)
     return kswCurSccg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the min version number of the script compiler. Read can read
     scripts back to this version.
 ***************************************************************************/
@@ -146,7 +146,7 @@ int16_t SCEG::_SwMin(void)
     return kswMinSccg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Execute a script command.
 ***************************************************************************/
 bool SCEG::_FExecOp(int32_t op)
@@ -161,12 +161,12 @@ bool SCEG::_FExecOp(int32_t op)
     int32_t *qrglw;
     void *pv;
 
-    hid = _hid; // for "this" operations
+    hid = _hid; // 3DMMv1.0: for "this" operations
     switch (op)
     {
     case kopDestroyGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopDestroyThis:
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)))
         {
@@ -186,7 +186,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopCreateChildGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopCreateChildThis:
         lw1 = _LwPop();
         lw2 = _LwPop();
@@ -205,7 +205,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopCreateHelpGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopCreateHelpThis:
         lw1 = _LwPop();
         pgob = pvNil;
@@ -223,11 +223,11 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopResizeGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopResizeThis:
         dxp = _LwPop();
         dyp = _LwPop();
-        // REVIEW shonk: should we handle hwnd based gob's?
+        // 3DMMv1.0: REVIEW shonk: should we handle hwnd based gob's?
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)) && kwndNil == pgob->Hwnd())
         {
             RC rc;
@@ -245,11 +245,11 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopMoveRelGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopMoveRelThis:
         dxp = _LwPop();
         dyp = _LwPop();
-        // REVIEW shonk: should we handle hwnd based gob's?
+        // 3DMMv1.0: REVIEW shonk: should we handle hwnd based gob's?
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)) && kwndNil == pgob->Hwnd())
         {
             RC rc;
@@ -266,11 +266,11 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopMoveAbsGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopMoveAbsThis:
         dxp = _LwPop();
         dyp = _LwPop();
-        // REVIEW shonk: should we handle hwnd based gob's?
+        // 3DMMv1.0: REVIEW shonk: should we handle hwnd based gob's?
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)) && kwndNil == pgob->Hwnd())
         {
             RC rc;
@@ -296,10 +296,10 @@ bool SCEG::_FExecOp(int32_t op)
     case kopRunScriptThis:
     case kopRunScriptCnoGob:
     case kopRunScriptCnoThis:
-        clw = _LwPop(); // the number of parameters
+        clw = _LwPop(); // 3DMMv1.0: the number of parameters
         if (kopRunScriptGob == op || kopRunScriptCnoGob == op)
             hid = _LwPop();
-        lw1 = _LwPop(); // the chid of the script
+        lw1 = _LwPop(); // 3DMMv1.0: the chid of the script
         if (_fError)
             break;
 
@@ -350,7 +350,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopChangeStateGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopChangeStateThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK) || !FIn(lw1, 0, kswMax))
@@ -368,7 +368,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopAnimateGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopAnimateThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
@@ -384,7 +384,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopSetPictureGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopSetPictureThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
@@ -400,7 +400,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopSetRepGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopSetRepThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
@@ -416,7 +416,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopStateGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopStateThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -434,7 +434,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopGidParGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopGidParThis:
         if (pvNil != (pgob = _PgobFromHid(hid)))
             pgob = _pwoks->PgobParGob(pgob);
@@ -562,7 +562,7 @@ bool SCEG::_FExecOp(int32_t op)
     case kopXMouseGob:
     case kopYMouseGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopXMouseThis:
     case kopYMouseThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)))
@@ -586,7 +586,7 @@ bool SCEG::_FExecOp(int32_t op)
     case kopXGob:
     case kopYGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopXThis:
     case kopYThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)))
@@ -610,7 +610,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopZGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopZThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -623,7 +623,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopSetZGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopSetZThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
@@ -640,7 +640,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopCell:
         _fPaused = fTrue;
-        // fall through
+        // 3DMMv1.0: fall through
     case kopCellNoPause:
         lw1 = _LwPop();
         dxp = _LwPop();
@@ -727,7 +727,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopPlayGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopPlayThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -739,7 +739,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopPlayingGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopPlayingThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -752,7 +752,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopStopGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopStopThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -764,7 +764,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopCurFrameGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopCurFrameThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -777,7 +777,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopCountFramesGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopCountFramesThis:
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
         {
@@ -790,7 +790,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopGotoFrameGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopGotoFrameThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
@@ -803,7 +803,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopFilterCmdsGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopFilterCmdsThis:
         lw1 = _LwPop();
         lw2 = _LwPop();
@@ -820,7 +820,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopDestroyChildrenGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopDestroyChildrenThis:
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)))
         {
@@ -834,7 +834,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopPlaySoundGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopPlaySoundThis:
         lw1 = siiNil;
         if (!_fError)
@@ -856,7 +856,7 @@ bool SCEG::_FExecOp(int32_t op)
                 {
                     _WarnSz(PszLit("No GOK for PlaySound(Gob|This) (gid = %d)"), hid);
                 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
                 if (pvNil != vpsndm && pvNil != (qrglw = _QlwGet(7)))
                 {
@@ -923,7 +923,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopPlayMouseSoundGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopPlayMouseSoundThis:
         lw1 = _LwPop();
         lw2 = _LwPop();
@@ -938,7 +938,7 @@ bool SCEG::_FExecOp(int32_t op)
     case kopWidthGob:
     case kopHeightGob:
         hid = _LwPop();
-        // fall thru
+        // 3DMMv1.0: fall thru
     case kopWidthThis:
     case kopHeightThis:
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)))
@@ -960,7 +960,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopSetNoSlipGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopSetNoSlipThis:
         lw1 = _LwPop();
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)) && pgob->FIs(kclsGOK))
@@ -1014,7 +1014,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopSetToolTipSourceGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopSetToolTipSourceThis:
         lw1 = _LwPop();
         if (!_fError && pvNil != (pgob = _PgobFromHid(hid)) && pgob->FIs(kclsGOK))
@@ -1045,7 +1045,7 @@ bool SCEG::_FExecOp(int32_t op)
 
     case kopStreamGob:
         hid = _LwPop();
-        // fall through
+        // 3DMMv1.0: fall through
     case kopStreamThis:
         lw1 = _LwPop();
         if (_fError || pvNil == (pgob = _PgobFromHid(hid)) || !pgob->FIs(kclsGOK))
@@ -1063,7 +1063,7 @@ bool SCEG::_FExecOp(int32_t op)
     return !_fError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up an alert containing a list of numbers.
 ***************************************************************************/
 void SCEG::_DoAlert(int32_t op)
@@ -1081,7 +1081,7 @@ void SCEG::_DoAlert(int32_t op)
 
 #ifdef CHUNK_STATS
     case kopPrintStat:
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
     case kopAlert:
     case kopPrint:
         fStrings = fFalse;
@@ -1089,7 +1089,7 @@ void SCEG::_DoAlert(int32_t op)
 
 #ifdef CHUNK_STATS
     case kopPrintStrStat:
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
     case kopAlertStr:
     case kopPrintStr:
         fStrings = fTrue;
@@ -1128,7 +1128,7 @@ void SCEG::_DoAlert(int32_t op)
     case kopPrintStrStat:
         CFL::DumpStn(&stn1);
         break;
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
 
     case kopAlert:
     case kopAlertStr:
@@ -1142,7 +1142,7 @@ void SCEG::_DoAlert(int32_t op)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get or set the string in an edit control.
 ***************************************************************************/
 void SCEG::_DoEditControl(int32_t hid, int32_t stid, bool fGet)
@@ -1178,7 +1178,7 @@ void SCEG::_DoEditControl(int32_t hid, int32_t stid, bool fGet)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current color table.
 ***************************************************************************/
 void SCEG::_SetColorTable(CNO cno)
@@ -1192,7 +1192,7 @@ void SCEG::_SetColorTable(CNO cno)
     ReleasePpo(&pglclr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the indicated color table and return a reference to it.
 ***************************************************************************/
 PGL SCEG::_PglclrGet(CNO cno)
@@ -1216,7 +1216,7 @@ PGL SCEG::_PglclrGet(CNO cno)
     return pglclr;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A chunky resource reader to read a color table. Wraps the color table in
     a CABO.
 ***************************************************************************/
@@ -1249,7 +1249,7 @@ bool FReadColorTable(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Launch an app with the given command line. Return true iff the launch
     was successful.
 ***************************************************************************/
@@ -1279,8 +1279,8 @@ bool SCEG::_FLaunch(int32_t stid)
     sui.cb = SIZEOF(sui);
 
     return CreateProcess(pvNil, stn.Psz(), pvNil, pvNil, fFalse, DETACHED_PROCESS, pvNil, pvNil, &sui, &pi);
-#else  //! WIN
-    RawRtn(); // REVIEW shonk: Mac: implement SCEG::_FLaunch
+#else  //! 3DMMv1.0: WIN
+    RawRtn(); // 3DMMv1.0: REVIEW shonk: Mac: implement SCEG::_FLaunch
     return fFalse;
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
 }

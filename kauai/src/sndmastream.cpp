@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -115,14 +115,14 @@ bool MiniaudioStream::FInit(PMiniaudioManager pmanager, ma_format format, ma_uin
     _pmanager = pmanager;
     _pmanager->AddRef();
 
-    // Check we have an engine
+    // 3DMMEx: Check we have an engine
     pengine = _pmanager->Pengine();
     if (pengine == pvNil)
     {
         return fFalse;
     }
 
-    // Initialise the ring buffer
+    // 3DMMEx: Initialise the ring buffer
     pdevice = _pmanager->Pengine()->pDevice;
 
     if (format == ma_format_unknown)
@@ -132,7 +132,7 @@ bool MiniaudioStream::FInit(PMiniaudioManager pmanager, ma_format format, ma_uin
     if (cchannel == 0)
         cchannel = pdevice->playback.channels;
 
-    // Default to one second of audio
+    // 3DMMEx: Default to one second of audio
     if (csample == 0)
         csample = pdevice->sampleRate;
 
@@ -143,7 +143,7 @@ bool MiniaudioStream::FInit(PMiniaudioManager pmanager, ma_format format, ma_uin
         return fFalse;
     }
 
-    // Create a sound from the ring buffer data source
+    // 3DMMEx: Create a sound from the ring buffer data source
     result = ma_sound_init_from_data_source(pengine, &_buffer, 0, pvNil, &_sound);
     AssertMaSuccess(result, "Could not create sound from ring buffer");
     if (result != MA_SUCCESS)
@@ -156,7 +156,7 @@ bool MiniaudioStream::FInit(PMiniaudioManager pmanager, ma_format format, ma_uin
 
     SetVlm(kvlmFull);
 
-    // Start playing
+    // 3DMMEx: Start playing
     AssertDo(FPlay(), "Could not start playing");
 
     return _fInit;

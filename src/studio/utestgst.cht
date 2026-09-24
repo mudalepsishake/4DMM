@@ -47,7 +47,7 @@ CHUNK (kcctgGst kcnoGstApp "Misc. App global strings")
 	ITEM "Import a sound" idsPortfOpenSoundTitle
 	ITEM "Import a texture" idsPortfOpenTextureTitle
 	ITEM "Movie Files" idsPortfMovieFilterLabel
-	ITEM "*.3mm" idsPortfMovieFilterExt
+	ITEM "*.3mm;*.vmm" idsPortfMovieFilterExt
 	ITEM "Sound Files" idsPortfSoundFilterLabel
 	ITEM "*.mid;*.3mm" idsPortfSoundMidiFilterExt
 	ITEM "*.wav;*.3mm;*.mp3" idsPortfSoundWaveFilterExt

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -24,49 +24,49 @@ ASSERTNAME
 #ifdef DEBUG
 const int32_t kclwStackMbh = 5;
 
-// memory block header
+// 3DMMv1.0: memory block header
 struct MBH
 {
-    int32_t cb;                      // size of block, including header and footer
-    PSZS pszsFile;                   // source file that allocation request is coming from
-    int32_t lwLine;                  // line in file that allocation request is coming from
-    std::thread::id tid;             // thread id
-    MBH *pmbhPrev;                   // previous allocated block (in doubly linked list)
-    MBH *pmbhNext;                   // next allocated block
-    int32_t rglwStack[kclwStackMbh]; // the EBP/A6 chain
-    int16_t cactRef;                 // for marking memory
-    int16_t swMagic;                 // magic number, to detect memory trashing
+    int32_t cb;                      // 3DMMv1.0: size of block, including header and footer
+    PSZS pszsFile;                   // 3DMMv1.0: source file that allocation request is coming from
+    int32_t lwLine;                  // 3DMMv1.0: line in file that allocation request is coming from
+    std::thread::id tid;             // 3DMMv1.0: thread id
+    MBH *pmbhPrev;                   // 3DMMv1.0: previous allocated block (in doubly linked list)
+    MBH *pmbhNext;                   // 3DMMv1.0: next allocated block
+    int32_t rglwStack[kclwStackMbh]; // 3DMMv1.0: the EBP/A6 chain
+    int16_t cactRef;                 // 3DMMv1.0: for marking memory
+    int16_t swMagic;                 // 3DMMv1.0: magic number, to detect memory trashing
 };
 
-// memory block footer
+// 3DMMv1.0: memory block footer
 struct MBF
 {
-    int16_t swMagic; // magic number, to detect memory trashing
+    int16_t swMagic; // 3DMMv1.0: magic number, to detect memory trashing
 };
 
-MBH *_pmbhFirst; // head of the doubly linked list
+MBH *_pmbhFirst; // 3DMMv1.0: head of the doubly linked list
 
 kpriv void _LinkMbh(MBH *pmbh);
 kpriv void _UnlinkMbh(MBH *pmbh, MBH *pmbhOld);
 kpriv void _AssertMbh(MBH *pmbh);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifdef MAC
 #define malloc(cb) ::operator new(cb)
 #define free(pv) delete (pv)
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
 #define malloc(cb) (void *)GlobalAlloc(GMEM_FIXED, cb)
 #define free(pv) GlobalFree((HGLOBAL)pv)
 #define _msize(pv) GlobalSize((HGLOBAL)pv)
 #define realloc(pv, cb) (void *)GlobalReAlloc((HGLOBAL)pv, cb, GMEM_MOVEABLE)
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 PFNLIB vpfnlib = pvNil;
 bool _fInLiberator = fFalse;
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do simulated failure testing.
 ***************************************************************************/
 bool DMAGL::FFail(void)
@@ -89,7 +89,7 @@ bool DMAGL::FFail(void)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update values after an allocation
 ***************************************************************************/
 void DMAGL::Allocate(int32_t cbT)
@@ -103,7 +103,7 @@ void DMAGL::Allocate(int32_t cbT)
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update values after a resize
 ***************************************************************************/
 void DMAGL::Resize(int32_t dcb)
@@ -114,7 +114,7 @@ void DMAGL::Resize(int32_t dcb)
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update values after a block is freed
 ***************************************************************************/
 void DMAGL::Free(int32_t cbT)
@@ -122,16 +122,16 @@ void DMAGL::Free(int32_t cbT)
     --cv;
     cb -= cbT;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocates a fixed block.
 ***************************************************************************/
 #ifdef DEBUG
 bool FAllocPvDebug(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr, PSZS pszsFile, int32_t lwLine, DMAGL *pdmagl)
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertVarMem(ppv);
     AssertIn(cb, 0, kcbMax);
@@ -144,7 +144,7 @@ bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr)
     }
 
 #ifdef DEBUG
-    // do simulated failure
+    // 3DMMv1.0: do simulated failure
     if (pdmagl->FFail())
         goto LFail;
 
@@ -155,7 +155,7 @@ bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr)
 
     Assert(cb + SIZEOF(MBH) + SIZEOF(MBF) > cb, 0);
     cb += SIZEOF(MBH) + SIZEOF(MBF);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     for (;;)
     {
@@ -194,7 +194,7 @@ bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr)
     else
         FillPb(*ppv, cb, kbGarbage);
 
-    // fill in the header
+    // 3DMMv1.0: fill in the header
     MBH *pmbh = (MBH *)*ppv;
     *ppv = pmbh + 1;
     pmbh->cb = cb;
@@ -204,7 +204,7 @@ bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr)
     pmbh->tid = std::this_thread::get_id();
 
 #if defined(WIN) && defined(IN_80386)
-    // follow the EBP chain....
+    // 3DMMv1.0: follow the EBP chain....
     int32_t *plw;
     int32_t ilw;
 
@@ -222,35 +222,35 @@ bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr)
             plw = (int32_t *)*plw;
         }
     }
-#endif // WIN && IN_80386
+#endif // 3DMMEx: WIN && IN_80386
 
-    // write the footer
+    // 3DMMv1.0: write the footer
     MBF mbf;
     mbf.swMagic = kswMagicMem;
     CopyPb(&mbf, PvAddBv(pmbh, cb - SIZEOF(MBF)), SIZEOF(MBF));
 
-    // link the block
+    // 3DMMv1.0: link the block
     _LinkMbh(pmbh);
 
-    // update statistics
+    // 3DMMv1.0: update statistics
     pdmagl->Allocate(cb - SIZEOF(MBF) - SIZEOF(MBH));
 
     AssertPvAlloced(*ppv, cb - SIZEOF(MBF) - SIZEOF(MBH));
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     return fTrue;
 }
 
 #ifndef MAC
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resizes the given block.  *ppv may change.  If fmemClear, clears any
     newly added space.
 ***************************************************************************/
 #ifdef DEBUG
 bool _FResizePpvDebug(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int32_t mpr, DMAGL *pdmagl)
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int32_t mpr)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertVarMem(ppv);
     AssertIn(cbNew, 0, kcbMax);
@@ -262,7 +262,7 @@ bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int3
 #ifdef DEBUG
     MBH *pmbh = (MBH *)PvSubBv(*ppv, SIZEOF(MBH));
     _AssertMbh(pmbh);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     if (cbNew > kcbMax)
     {
@@ -272,22 +272,22 @@ bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int3
 
     pvOld = *ppv;
 #ifdef DEBUG
-    // do simulated failure - we can only fail if the block is growing
+    // 3DMMv1.0: do simulated failure - we can only fail if the block is growing
     if (cbNew > cbOld && pdmagl->FFail())
         goto LFail;
 
-    // assert we don't overflow (the limit of kcbMax should ensure this)
+    // 3DMMv1.0: assert we don't overflow (the limit of kcbMax should ensure this)
     Assert(cbOld + SIZEOF(MBH) + SIZEOF(MBF) > cbOld, 0);
     Assert(cbNew + SIZEOF(MBH) + SIZEOF(MBF) > cbNew, 0);
     cbOld += SIZEOF(MBH) + SIZEOF(MBF);
     cbNew += SIZEOF(MBH) + SIZEOF(MBF);
     AssertVar(pmbh->cb == cbOld, "bad cbOld value passed to _FResizePpv", &cbOld);
 
-    // trash the old stuff
+    // 3DMMv1.0: trash the old stuff
     if (cbOld > cbNew)
         FillPb(PvAddBv(pmbh, cbNew), cbOld - cbNew, kbGarbage);
     pvOld = pmbh;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     for (;;)
     {
@@ -326,7 +326,7 @@ bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int3
 
     if ((grfmem & fmemClear) && cbOld < cbNew)
     {
-        // Clear the new stuff
+        // 3DMMv1.0: Clear the new stuff
         ClearPb(PvAddBv(pvNew, cbOld), cbNew - cbOld);
     }
 
@@ -335,11 +335,11 @@ bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int3
         ClearPb(PvAddBv(pvNew, cbOld - SIZEOF(MBF)), SIZEOF(MBF));
     else if (cbOld < cbNew)
     {
-        // fill the new stuff with garbage
+        // 3DMMv1.0: fill the new stuff with garbage
         FillPb(PvAddBv(pvNew, cbOld - SIZEOF(MBF)), cbNew - cbOld + SIZEOF(MBF), kbGarbage);
     }
 
-    // update the header
+    // 3DMMv1.0: update the header
     if (pvNew != pmbh)
     {
         _UnlinkMbh((MBH *)pvNew, pmbh);
@@ -349,28 +349,28 @@ bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int3
     *ppv = pmbh + 1;
     pmbh->cb = cbNew;
 
-    // write the footer
+    // 3DMMv1.0: write the footer
     MBF mbf;
     mbf.swMagic = kswMagicMem;
     CopyPb(&mbf, PvAddBv(pmbh, cbNew - SIZEOF(MBF)), SIZEOF(MBF));
     AssertPvAlloced(*ppv, cbNew - SIZEOF(MBF) - SIZEOF(MBH));
 
-    // update statistics
+    // 3DMMv1.0: update statistics
     pdmagl->Resize(cbNew - cbOld);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     return fTrue;
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If *ppv is not nil, frees it and sets *ppv to nil.
 ***************************************************************************/
 #ifdef DEBUG
 void FreePpvDebug(void **ppv, DMAGL *pdmagl)
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 void FreePpv(void **ppv)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertVarMem(ppv);
     if (*ppv == pvNil)
@@ -381,20 +381,20 @@ void FreePpv(void **ppv)
     _AssertMbh(pmbh);
     _UnlinkMbh(pmbh, pmbh);
 
-    // update statistics
+    // 3DMMv1.0: update statistics
     pdmagl->Free(pmbh->cb - SIZEOF(MBF) - SIZEOF(MBH));
 
-    // fill the block with garbage before freeing it
+    // 3DMMv1.0: fill the block with garbage before freeing it
     FillPb(pmbh, pmbh->cb, kbGarbage);
     *ppv = pmbh;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     free(*ppv);
     *ppv = pvNil;
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Link the Mbh into the debug-only doubly linked list.
 ***************************************************************************/
 kpriv void _LinkMbh(MBH *pmbh)
@@ -413,7 +413,7 @@ kpriv void _LinkMbh(MBH *pmbh)
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlink the MBH from the debug-only doubly linked list.  pmbhOld is the
     previous value of the linked block.  pmbhOld may not be a valid pointer
     now (when mem is resized).
@@ -424,7 +424,7 @@ kpriv void _UnlinkMbh(MBH *pmbh, MBH *pmbhOld)
     Assert(pmbhOld != pvNil, 0);
 
     vmutxMem.Enter();
-    // update prev's next pointer
+    // 3DMMv1.0: update prev's next pointer
     if (pvNil == pmbh->pmbhPrev)
     {
         Assert(_pmbhFirst == pmbhOld, "prev is wrongly nil");
@@ -437,7 +437,7 @@ kpriv void _UnlinkMbh(MBH *pmbh, MBH *pmbhOld)
         pmbh->pmbhPrev->pmbhNext = pmbh->pmbhNext;
     }
 
-    // update next's prev pointer
+    // 3DMMv1.0: update next's prev pointer
     if (pvNil != pmbh->pmbhNext)
     {
         Assert(pmbh->pmbhNext->pmbhPrev == pmbhOld, "next's prev wrong");
@@ -446,7 +446,7 @@ kpriv void _UnlinkMbh(MBH *pmbh, MBH *pmbhOld)
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate the MBH and the block that it is the head of.
 ***************************************************************************/
 void _AssertMbh(MBH *pmbh)
@@ -482,7 +482,7 @@ void _AssertMbh(MBH *pmbh)
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an allocated fixed block.  Cb is the size.
     If cb is unknown, pass cvNil.
 ***************************************************************************/
@@ -498,7 +498,7 @@ void AssertPvAlloced(void *pv, int32_t cb)
         Assert(pmbh->cb == cb + SIZEOF(MBH) + SIZEOF(MBF), "wrong cb");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Asserts on unmarked blocks.
 ***************************************************************************/
 void AssertUnmarkedMem(void)
@@ -506,7 +506,7 @@ void AssertUnmarkedMem(void)
     MBH *pmbh;
     auto tid = std::this_thread::get_id();
 
-    // enter the critical section
+    // 3DMMv1.0: enter the critical section
     vmutxMem.Enter();
 
     for (pmbh = _pmbhFirst; pmbh != pvNil; pmbh = pmbh->pmbhNext)
@@ -529,11 +529,11 @@ void AssertUnmarkedMem(void)
 #ifdef MAC
     _AssertUnmarkedHqs();
 #endif
-    // leave the critical section
+    // 3DMMv1.0: leave the critical section
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clears all marks on memory blocks.
 ***************************************************************************/
 void UnmarkAllMem(void)
@@ -541,7 +541,7 @@ void UnmarkAllMem(void)
     MBH *pmbh;
     auto tid = std::this_thread::get_id();
 
-    // enter the critical section
+    // 3DMMv1.0: enter the critical section
     vmutxMem.Enter();
 
     for (pmbh = _pmbhFirst; pmbh != pvNil; pmbh = pmbh->pmbhNext)
@@ -554,11 +554,11 @@ void UnmarkAllMem(void)
     _UnmarkAllHqs();
 #endif
 
-    // leave the critical section
+    // 3DMMv1.0: leave the critical section
     vmutxMem.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increment the ref count on an allocated pv.
 ***************************************************************************/
 void MarkPv(void *pv)
@@ -570,4 +570,4 @@ void MarkPv(void *pv)
         pmbh->cactRef++;
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

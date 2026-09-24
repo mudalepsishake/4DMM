@@ -1,0 +1,25 @@
+diff --git a/drivers/glrend/sbuffer.c b/drivers/glrend/sbuffer.c
+index 07834d6..01fae8d 100644
+--- a/drivers/glrend/sbuffer.c
++++ b/drivers/glrend/sbuffer.c
+@@ -124,8 +124,19 @@ static br_error BR_CMETHOD_DECL(br_buffer_stored_gl, update)(struct br_buffer_st
+     (void)tv;
+ 
+     /*
+-     * Find out where the pixelmap comes from
++     * Find out where the pixelmap comes from.
++     *
++     * 3D Movie Maker embeds legacy public br_pixelmap structures directly
++     * inside its TMAP objects. Those maps predate BRender's object dispatch
++     * pointer, so the compatibility view intentionally leaves dispatch NULL.
++     * They are ordinary CPU memory pixelmaps; updateMemory() can consume the
++     * public pixelmap fields directly. Do not call ObjectDevice() on a
++     * dispatchless legacy map.
+      */
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    if(pm->dispatch == NULL)
++        return updateMemory(self, (br_pixelmap *)pm);
++#endif
+     pm_device = ObjectDevice(pm);
+     if(pm_device == NULL) {
+         return updateMemory(self, (br_pixelmap *)pm);

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -98,11 +98,11 @@ ASSERTNAME
 
 RTCLASS(SCCB)
 
-// common error messages
+// 3DMMv1.0: common error messages
 PCSZ _pszOom = PszLit("Out of memory");
 PCSZ _pszSyntax = PszLit("Syntax error");
 
-// name to op lookup table for post-fix compilation
+// 3DMMv1.0: name to op lookup table for post-fix compilation
 SZOP _rgszop[] = {
     {kopAdd, PszLit("Add")},
     {kopSub, PszLit("Sub")},
@@ -166,7 +166,7 @@ SZOP _rgszop[] = {
     {opNil, pvNil},
 };
 
-// name to op look up table for in-fix compilation
+// 3DMMv1.0: name to op look up table for in-fix compilation
 AROP _rgarop[] = {
     {kopAbs, PszLit("Abs"), 1, 0, 0, fFalse},
     {kopRnd, PszLit("Rnd"), 1, 0, 0, fFalse},
@@ -211,36 +211,36 @@ enum
     kipszContinue,
 };
 
-// An opcode long can be followed by at most 255 immediate values
+// 3DMMv1.0: An opcode long can be followed by at most 255 immediate values
 #define kclwLimPush 256
 
-// operator flags - for in-fix compilation
+// 3DMMv1.0: operator flags - for in-fix compilation
 enum
 {
     fopNil = 0,
-    fopOp = 1,         // an operator
-    fopAssign = 2,     // an assignment operator
-    fopPostAssign = 4, // unary operator acts after using the value
-    fopFunction = 8,   // a function
-    fopArray = 16,     // an array reference
+    fopOp = 1,         // 3DMMv1.0: an operator
+    fopAssign = 2,     // 3DMMv1.0: an assignment operator
+    fopPostAssign = 4, // 3DMMv1.0: unary operator acts after using the value
+    fopFunction = 8,   // 3DMMv1.0: a function
+    fopArray = 16,     // 3DMMv1.0: an array reference
 };
 
-// expression tree node - for in-fix compilation
+// 3DMMv1.0: expression tree node - for in-fix compilation
 struct ETN
 {
-    int16_t tt;      // the token type
-    int16_t op;      // operator (or function) to generate
-    int16_t opl;     // operator precedence level
-    int16_t grfop;   // flags
-    int32_t lwValue; // value if a ttLong; an istn if a ttName
-    int32_t ietn1;   // indices into _pgletnTree for the operands
+    int16_t tt;      // 3DMMv1.0: the token type
+    int16_t op;      // 3DMMv1.0: operator (or function) to generate
+    int16_t opl;     // 3DMMv1.0: operator precedence level
+    int16_t grfop;   // 3DMMv1.0: flags
+    int32_t lwValue; // 3DMMv1.0: value if a ttLong; an istn if a ttName
+    int32_t ietn1;   // 3DMMv1.0: indices into _pgletnTree for the operands
     int32_t ietn2;
     int32_t ietn3;
-    int32_t cetnDeep; // depth of the etn tree to here
+    int32_t cetnDeep; // 3DMMv1.0: depth of the etn tree to here
 };
 
-// control structure types - these are the keywords that are followed
-// by a condition (which is why Else is not here).
+// 3DMMv1.0: control structure types - these are the keywords that are followed
+// 3DMMv1.0: by a condition (which is why Else is not here).
 enum
 {
     cstNil,
@@ -249,18 +249,18 @@ enum
     cstWhile,
 };
 
-// control structure descriptor
+// 3DMMv1.0: control structure descriptor
 struct CSTD
 {
     int32_t cst;
-    int32_t lwLabel1; // use depends on cst
-    int32_t lwLabel2; // use depends on cst
-    int32_t lwLabel3; // use depends on cst
-    PGL pgletnTree;   // for while loops - the expression tree
-    int32_t ietnTop;  // the top of the expression tree
+    int32_t lwLabel1; // 3DMMv1.0: use depends on cst
+    int32_t lwLabel2; // 3DMMv1.0: use depends on cst
+    int32_t lwLabel3; // 3DMMv1.0: use depends on cst
+    PGL pgletnTree;   // 3DMMv1.0: for while loops - the expression tree
+    int32_t ietnTop;  // 3DMMv1.0: the top of the expression tree
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a script compiler.
 ***************************************************************************/
 SCCB::SCCB(void)
@@ -278,7 +278,7 @@ SCCB::SCCB(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a script compiler.
 ***************************************************************************/
 SCCB::~SCCB(void)
@@ -288,7 +288,7 @@ SCCB::~SCCB(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a SCCB.
 ***************************************************************************/
 void SCCB::AssertValid(uint32_t grf)
@@ -305,7 +305,7 @@ void SCCB::AssertValid(uint32_t grf)
     AssertNilOrPo(_pmsnk, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the SCCB.
 ***************************************************************************/
 void SCCB::MarkMem(void)
@@ -334,9 +334,9 @@ void SCCB::MarkMem(void)
     MarkMemObj(_pgstReq);
     MarkMemObj(_pmsnk);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initializes the script compiler to compile the stream from the given
     lexer object.  pmsnk is a message sink for error reporting.
 ***************************************************************************/
@@ -357,8 +357,8 @@ bool SCCB::_FInit(PLEXB plexb, bool fInFix, PMSNK pmsnk)
 
     if (fInFix)
     {
-        // in-fix compilation requires an expression stack, expression parse
-        // tree and a control structure stack
+        // 3DMMv1.0: in-fix compilation requires an expression stack, expression parse
+        // 3DMMv1.0: tree and a control structure stack
         if (pvNil == (_pgletnTree = GL::PglNew(SIZEOF(ETN))) || pvNil == (_pgletnStack = GL::PglNew(SIZEOF(ETN))) ||
             pvNil == (_pglcstd = GL::PglNew(SIZEOF(CSTD))))
         {
@@ -381,25 +381,25 @@ bool SCCB::_FInit(PLEXB plexb, bool fInFix, PMSNK pmsnk)
     {
         ReleasePpo(&_pscpt);
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-    // code starts at slot 1 because the version numbers are in slot 0.
+    // 3DMMv1.0: code starts at slot 1 because the version numbers are in slot 0.
     _ilwOpLast = 1;
 
-    // compiled code must start with an operator
+    // 3DMMv1.0: compiled code must start with an operator
     _fForceOp = fTrue;
 
-    // put version info in the script
+    // 3DMMv1.0: put version info in the script
     lw = LwHighLow(_SwCur(), _SwBack());
     if (pvNil == _pscpt || !_pscpt->_pgllw->FPush(&lw))
         _ReportError(_pszOom);
 
-    _lwLastLabel = 0; // for internal labels
+    _lwLastLabel = 0; // 3DMMv1.0: for internal labels
     AssertThis(0);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Free all memory hanging off this SCCB.
 ***************************************************************************/
 void SCCB::_Free(void)
@@ -423,7 +423,7 @@ void SCCB::_Free(void)
     ReleasePpo(&_pgstNames);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile a script given a lexer object.  Compilation is terminated when
     the lexer's stream is exhausted or token ttEnd is encountered.  ttEnd
     allows scripts to be embedded in source for other tools (such as
@@ -445,7 +445,7 @@ PSCPT SCCB::PscptCompileLex(PLEXB plexb, bool fInFix, PMSNK pmsnk, int32_t ttEnd
     else
         _CompilePost();
 
-    // link all the label requests with the labels
+    // 3DMMv1.0: link all the label requests with the labels
     if (pvNil != _pgstReq)
     {
         AssertPo(_pgstReq, 0);
@@ -458,7 +458,7 @@ PSCPT SCCB::PscptCompileLex(PLEXB plexb, bool fInFix, PMSNK pmsnk, int32_t ttEnd
             _pgstReq->GetStn(istn, &stn);
             if (!_FFindLabel(&stn, &lw))
             {
-                // undefined label
+                // 3DMMv1.0: undefined label
                 _ReportError(PszLit("Undefined label"));
             }
             else if (pvNil != _pscpt)
@@ -478,7 +478,7 @@ PSCPT SCCB::PscptCompileLex(PLEXB plexb, bool fInFix, PMSNK pmsnk, int32_t ttEnd
     return pscpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile the given text file and return the executable script.
     Uses the in-fix or post-fix compiler according to fInFix.
 ***************************************************************************/
@@ -497,7 +497,7 @@ PSCPT SCCB::PscptCompileFil(PFIL pfil, bool fInFix, PMSNK pmsnk)
     return pscpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile a script from the given text file name.
 ***************************************************************************/
 PSCPT SCCB::PscptCompileFni(FNI *pfni, bool fInFix, PMSNK pmsnk)
@@ -514,7 +514,7 @@ PSCPT SCCB::PscptCompileFni(FNI *pfni, bool fInFix, PMSNK pmsnk)
     return pscpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next token.  Returns false if the token is a _ttEnd.
 ***************************************************************************/
 bool SCCB::_FGetTok(PTOK ptok)
@@ -529,7 +529,7 @@ bool SCCB::_FGetTok(PTOK ptok)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current version number of the script compiler.  This is
     a virtual method so subclasses of SCCB can provide their own
     version numbers.
@@ -540,7 +540,7 @@ int16_t SCCB::_SwCur(void)
     return kswCurSccb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the back version number of the script compiler.  Versions
     back to here can read this script.
 ***************************************************************************/
@@ -550,7 +550,7 @@ int16_t SCCB::_SwBack(void)
     return kswBackSccb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the min version number of the script compiler.  We can read
     scripts back to this version.
 ***************************************************************************/
@@ -560,7 +560,7 @@ int16_t SCCB::_SwMin(void)
     return kswMinSccb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     An error occured.  Report it to the message sink.
 ***************************************************************************/
 void SCCB::_ReportError(PCSZ psz)
@@ -578,7 +578,7 @@ void SCCB::_ReportError(PCSZ psz)
     _pmsnk->ReportLine(stn.Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The given long is immediate data to be pushed onto the execution stack.
 ***************************************************************************/
 void SCCB::_PushLw(int32_t lw)
@@ -595,7 +595,7 @@ void SCCB::_PushLw(int32_t lw)
         _ReportError(_pszOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     "Push" a string constant.  Puts the string in the string table and emits
     code to push the corresponding internal variable.
 ***************************************************************************/
@@ -622,7 +622,7 @@ void SCCB::_PushString(PSTN pstn)
     _PushVarOp(kopPushLocVar, &rtvn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an opcode to the compiled script.
 ***************************************************************************/
 void SCCB::_PushOp(int32_t op)
@@ -635,14 +635,14 @@ void SCCB::_PushOp(int32_t op)
         return;
 
     AssertPo(_pscpt, 0);
-    _EndOp(); // complete the previous opcode
+    _EndOp(); // 3DMMv1.0: complete the previous opcode
     _ilwOpLast = _pscpt->_pgllw->IvMac();
     lw = LwHighLow(0, (int16_t)op);
     if (!_pscpt->_pgllw->FPush(&lw))
         _ReportError(_pszOom);
     _fForceOp = fFalse;
 
-    // Add source line info
+    // 3DMMEx: Add source line info
     if (_pscpt->_pgstSrcLines != pvNil)
     {
         STN stnFile;
@@ -655,7 +655,7 @@ void SCCB::_PushOp(int32_t op)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close out an opcode by setting the number of immediate longs that follow.
 ***************************************************************************/
 void SCCB::_EndOp(void)
@@ -671,7 +671,7 @@ void SCCB::_EndOp(void)
     ilw = _pscpt->_pgllw->IvMac();
     if (_ilwOpLast < ilw - 1)
     {
-        // set the count of longs in the previous op
+        // 3DMMv1.0: set the count of longs in the previous op
         AssertIn(ilw - _ilwOpLast - 1, 1, kclwLimPush);
         _pscpt->_pgllw->Get(_ilwOpLast, &lw);
         lw = LwHighLow(SuHighLow(B3Lw(lw), (uint8_t)(ilw - _ilwOpLast - 1)), SuLow(lw));
@@ -679,7 +679,7 @@ void SCCB::_EndOp(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an opcode that acts on a variable.
 ***************************************************************************/
 void SCCB::_PushVarOp(int32_t op, RTVN *prtvn)
@@ -689,12 +689,12 @@ void SCCB::_PushVarOp(int32_t op, RTVN *prtvn)
     AssertVarMem(prtvn);
     int32_t lw;
 
-    _PushOp(opNil); // push a nil op, then fill it in below
+    _PushOp(opNil); // 3DMMv1.0: push a nil op, then fill it in below
     if (_fError)
         return;
 
-    // the high byte is op, the low word is part of the rtvn, the rest of the
-    // rtvn is in the next long
+    // 3DMMv1.0: the high byte is op, the low word is part of the rtvn, the rest of the
+    // 3DMMv1.0: rtvn is in the next long
     AssertPo(_pscpt, 0);
     Assert(SuHigh(prtvn->lu1) == 0, "bad rtvn");
     lw = prtvn->lu1 | (op << 24);
@@ -703,7 +703,7 @@ void SCCB::_PushVarOp(int32_t op, RTVN *prtvn)
         _ReportError(_pszOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look up the indicated label and put it's location in *plwLoc.
 ***************************************************************************/
 bool SCCB::_FFindLabel(PSTN pstn, int32_t *plwLoc)
@@ -722,7 +722,7 @@ bool SCCB::_FFindLabel(PSTN pstn, int32_t *plwLoc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the given label, giving it the current location.
 ***************************************************************************/
 void SCCB::_AddLabel(PSTN pstn)
@@ -750,14 +750,14 @@ void SCCB::_AddLabel(PSTN pstn)
     }
     Assert(B3Lw(lw) == kbLabel, 0);
 
-    // a label must address an opcode, not immediate data
+    // 3DMMv1.0: a label must address an opcode, not immediate data
     _fForceOp = fTrue;
 
     if (!_pgstLabel->FInsertStn(istn, pstn, &lw))
         _ReportError(_pszOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the label request to the request gst and put an immediate value
     of 0 in the compiled script.  When compilation is finished, we'll
     write the actual value for the label.
@@ -786,7 +786,7 @@ void SCCB::_PushLabelRequest(PSTN pstn)
         _ReportError(_pszOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add an internal label.  These are numeric to avoid conflicting with
     a user defined label.
 ***************************************************************************/
@@ -799,7 +799,7 @@ void SCCB::_AddLabelLw(int32_t lw)
     _AddLabel(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Push an internal label request.
 ***************************************************************************/
 void SCCB::_PushLabelRequestLw(int32_t lw)
@@ -811,7 +811,7 @@ void SCCB::_PushLabelRequestLw(int32_t lw)
     _PushLabelRequest(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the opcode that corresponds to the given stn.
 ***************************************************************************/
 int32_t SCCB::_OpFromStn(PSTN pstn)
@@ -822,7 +822,7 @@ int32_t SCCB::_OpFromStn(PSTN pstn)
     return _OpFromStnRgszop(pstn, _rgszop);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the pstn against the strings in the prgszop and return the
     corresponding op code.
 ***************************************************************************/
@@ -841,7 +841,7 @@ int32_t SCCB::_OpFromStnRgszop(PSTN pstn, SZOP *prgszop)
     return opNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the string corresponding to the given opcode.  This is used during
     disassembly.
 ***************************************************************************/
@@ -853,7 +853,7 @@ bool SCCB::_FGetStnFromOp(int32_t op, PSTN pstn)
     return _FGetStnFromOpRgszop(op, pstn, _rgszop);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the op against the ops in the prgszop and return the corresponding
     string.
 ***************************************************************************/
@@ -876,7 +876,7 @@ bool SCCB::_FGetStnFromOpRgszop(int32_t op, PSTN pstn, SZOP *prgszop)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile the post-fix script source in _plexb.
 ***************************************************************************/
 void SCCB::_CompilePost(void)
@@ -904,7 +904,7 @@ void SCCB::_CompilePost(void)
             break;
 
         case ttSub:
-            // handle unary minus on constants only
+            // 3DMMv1.0: handle unary minus on constants only
             if (!_FGetTok(&tok) || tok.tt != ttLong)
                 _ReportError(_pszSyntax);
             else
@@ -920,7 +920,7 @@ void SCCB::_CompilePost(void)
             break;
 
         case ttGt:
-            // pop into a variable
+            // 3DMMv1.0: pop into a variable
             if (!_FGetTok(&tok))
             {
                 _ReportError(_pszSyntax);
@@ -942,7 +942,7 @@ void SCCB::_CompilePost(void)
             goto LAcceptName;
 
         case ttLt:
-            // push a variable
+            // 3DMMv1.0: push a variable
             if (!_FGetTok(&tok))
             {
                 _ReportError(_pszSyntax);
@@ -971,7 +971,7 @@ void SCCB::_CompilePost(void)
         LAcceptName:
             if (tok.tt == ttBAnd)
             {
-                // an array access
+                // 3DMMv1.0: an array access
                 op += kopPushLocArray - kopPushLocVar;
                 if (!_FGetTok(&tok))
                 {
@@ -989,7 +989,7 @@ void SCCB::_CompilePost(void)
             break;
 
         case ttDollar:
-            // label reference
+            // 3DMMv1.0: label reference
             if (_FGetTok(&tok) && tok.tt == ttName && _OpFromStn(&tok.stn) == opNil)
             {
                 _PushLabelRequest(&tok.stn);
@@ -999,7 +999,7 @@ void SCCB::_CompilePost(void)
             break;
 
         case ttAt:
-            // label definition
+            // 3DMMv1.0: label definition
             if (_FGetTok(&tok) && tok.tt == ttName && _OpFromStn(&tok.stn) == opNil)
             {
                 _AddLabel(&tok.stn);
@@ -1010,15 +1010,15 @@ void SCCB::_CompilePost(void)
         }
     }
 
-    // complete the last opcode
+    // 3DMMv1.0: complete the last opcode
     _EndOp();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     In-fix compiler declarations and tables.
 ***************************************************************************/
 
-// operator precedence levels
+// 3DMMv1.0: operator precedence levels
 enum
 {
     oplNil = 0,
@@ -1048,7 +1048,7 @@ enum
     koplMax
 };
 
-// token-operator map entry
+// 3DMMv1.0: token-operator map entry
 struct TOME
 {
     int16_t tt;
@@ -1073,11 +1073,11 @@ struct TOME
         tt, fopOp, op, oplNil, oplNil, ttNil, oplPush                                                                  \
     }
 
-// following a non-operator
+// 3DMMv1.0: following a non-operator
 TOME _rgtomeExp[] = {
-    _TomeCore(ttOpenParen, fopOp | fopFunction, opNil, koplName, koplName, ttNil, oplNil), // function call
+    _TomeCore(ttOpenParen, fopOp | fopFunction, opNil, koplName, koplName, ttNil, oplNil), // 3DMMv1.0: function call
     _TomeCore(ttCloseParen, fopNil, opNil, koplComma, koplComma, ttOpenParen, koplGroup),
-    _TomeCore(ttOpenRef, fopOp | fopArray, opNil, koplName, koplName, ttNil, oplNil), // array reference
+    _TomeCore(ttOpenRef, fopOp | fopArray, opNil, koplName, koplName, ttNil, oplNil), // 3DMMv1.0: array reference
     _TomeCore(ttCloseRef, fopNil, opNil, koplComma, koplComma, ttOpenRef, koplArrayName),
 
     _TomeRes(ttAdd, kopAdd, koplAdd), _TomeRes(ttSub, kopSub, koplAdd), _TomeRes(ttMul, kopMul, koplMul),
@@ -1108,16 +1108,16 @@ TOME _rgtomeExp[] = {
     _TomeCore(ttDollar, fopNil, opNil, koplName, koplName, ttNil, koplNumber),
     _TomeCore(ttAt, fopNil, opNil, koplComma, koplName, ttNil, koplComma),
 
-    // end of list marker
+    // 3DMMv1.0: end of list marker
     _TomeRes(ttNil, opNil, oplNil)};
 
-// following an operator
+// 3DMMv1.0: following an operator
 TOME _rgtomeOp[] = {
     _TomeCore(ttName, fopNil, opNil, oplNil, oplNil, ttNil, koplName),
     _TomeCore(ttLong, fopNil, opNil, oplNil, oplNil, ttNil, koplNumber),
     _TomeCore(ttString, fopNil, opNil, oplNil, oplNil, ttNil, koplNumber),
-    _TomeCore(ttOpenParen, fopOp, opNil, oplNil, oplNil, ttNil, oplNil),            // grouping
-    _TomeCore(ttCloseParen, fopNil, opNil, oplNil, oplNil, ttOpenParen, koplGroup), // empty group
+    _TomeCore(ttOpenParen, fopOp, opNil, oplNil, oplNil, ttNil, oplNil),            // 3DMMv1.0: grouping
+    _TomeCore(ttCloseParen, fopNil, opNil, oplNil, oplNil, ttOpenParen, koplGroup), // 3DMMv1.0: empty group
 
     _TomePush(ttSub, kopNeg, koplPreUn), _TomePush(ttLNot, kopLNot, koplPreUn), _TomePush(ttBNot, kopBNot, koplPreUn),
     _TomeCore(ttInc, fopOp | fopAssign, kopInc, oplNil, oplNil, ttNil, koplPreUn),
@@ -1125,10 +1125,10 @@ TOME _rgtomeOp[] = {
 
     _TomePush(ttDot, opNil, koplThisName), _TomePush(ttScope, opNil, koplGlobalName),
 
-    // end of list marker
+    // 3DMMv1.0: end of list marker
     _TomeRes(ttNil, opNil, oplNil)};
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the TOME corresponding to this token and fOp.
 ***************************************************************************/
 TOME *_PtomeFromTt(int32_t tt, bool fOp)
@@ -1143,7 +1143,7 @@ TOME *_PtomeFromTt(int32_t tt, bool fOp)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resolve the ETN stack to something at the given opl.
 ***************************************************************************/
 bool SCCB::_FResolveToOpl(int32_t opl, int32_t oplMin, int32_t *pietn)
@@ -1211,7 +1211,7 @@ bool SCCB::_FResolveToOpl(int32_t opl, int32_t oplMin, int32_t *pietn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if we can simplify the expression because of constant operands and
     other optimizations, then add it to the tree.  Most of this routine
     is not necessary for non-optimized compilation.  This routine could
@@ -1231,8 +1231,8 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
 
     Assert((petn->ietn3 == ivNil || petn->ietn2 != ivNil) && (petn->ietn2 == ivNil || petn->ietn1 != ivNil), "bad etn");
 
-    // get rid of non-function call groupings - they aren't necessary in
-    // the parse tree.
+    // 3DMMv1.0: get rid of non-function call groupings - they aren't necessary in
+    // 3DMMv1.0: the parse tree.
     if (petn->op == opNil && petn->tt == ttCloseParen)
     {
         if (petn->grfop & fopFunction)
@@ -1251,13 +1251,13 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
     if (petn->ietn3 != ivNil || petn->ietn1 == ivNil)
         goto LAdd;
 
-    // one or two operands
+    // 3DMMv1.0: one or two operands
     fConst1 = _FConstEtn(petn->ietn1, &lw1);
     if (petn->ietn2 == ivNil)
     {
-        // unary operators
+        // 3DMMv1.0: unary operators
 
-        // nuke unary plus operator
+        // 3DMMv1.0: nuke unary plus operator
         if (ttAdd == petn->tt && opNil == petn->op)
         {
             *pietn = petn->ietn1;
@@ -1267,7 +1267,7 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
         if (!fConst1)
             goto LAdd;
 
-        // optimize unary operators with constant operand
+        // 3DMMv1.0: optimize unary operators with constant operand
         switch (petn->op)
         {
         default:
@@ -1287,11 +1287,11 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
         goto LSetConst;
     }
 
-    // two operands - determine if they are constants
+    // 3DMMv1.0: two operands - determine if they are constants
     fConst2 = _FConstEtn(petn->ietn2, &lw2);
     if (fConst1 && fConst2)
     {
-        // optimize binary operators with both operands constants
+        // 3DMMv1.0: optimize binary operators with both operands constants
         if (petn->op == opNil)
         {
             switch (petn->tt)
@@ -1313,8 +1313,8 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
         goto LSetConst;
     }
 
-    // try to combine operand subtrees for the binary operators that are
-    // commutative and associative
+    // 3DMMv1.0: try to combine operand subtrees for the binary operators that are
+    // 3DMMv1.0: commutative and associative
     Assert(!fConst1 || !fConst2, 0);
     switch (petn->op)
     {
@@ -1325,27 +1325,27 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
         if (!fConst2)
             break;
 
-        // the second argument is constant, but the first is not, so negate the
-        // constant and change the operator to kopAdd
+        // 3DMMv1.0: the second argument is constant, but the first is not, so negate the
+        // 3DMMv1.0: constant and change the operator to kopAdd
         _pgletnTree->Get(petn->ietn2, &etnT2);
         etnT2.lwValue = -etnT2.lwValue;
         _pgletnTree->Put(petn->ietn2, &etnT2);
         petn->op = kopAdd;
-        // fall thru
+        // 3DMMv1.0: fall thru
     case kopAdd:
     case kopMul:
     case kopBOr:
     case kopBAnd:
     case kopBXor:
     case kopLXor:
-        // get the two etn's
+        // 3DMMv1.0: get the two etn's
         fCommute = fTrue;
         _pgletnTree->Get(petn->ietn1, &etnT1);
         _pgletnTree->Get(petn->ietn2, &etnT2);
 
         if (fConst1)
         {
-            // first operand is constant, so swap them
+            // 3DMMv1.0: first operand is constant, so swap them
             Assert(!fConst2, 0);
             SwapVars(&petn->ietn1, &petn->ietn2);
             SwapVars(&fConst1, &fConst2);
@@ -1354,32 +1354,32 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
 
         if (fConst2)
         {
-            // the second is constant
-            // see if the first has the same op as petn
+            // 3DMMv1.0: the second is constant
+            // 3DMMv1.0: see if the first has the same op as petn
             if (etnT1.op != petn->op)
                 break;
 
-            // see if the first one has a constant second operand
+            // 3DMMv1.0: see if the first one has a constant second operand
             if (!_FConstEtn(etnT1.ietn2, &lw1))
                 break;
 
-            // all we have to do is modify the first one's second operand
+            // 3DMMv1.0: all we have to do is modify the first one's second operand
             AssertDo(_FCombineConstValues(petn->op, lw1, etnT2.lwValue, &lw), 0);
             *pietn = petn->ietn1;
             ietnConst = etnT1.ietn2;
             goto LSetConst;
         }
 
-        // neither operand is constant
+        // 3DMMv1.0: neither operand is constant
         Assert(!fConst1 && !fConst2, 0);
 
-        // see if the right operands of the operands are constant
+        // 3DMMv1.0: see if the right operands of the operands are constant
         fConst1 = (etnT1.op == petn->op) && _FConstEtn(etnT1.ietn2, &lw1);
         fConst2 = (etnT2.op == petn->op) && _FConstEtn(etnT2.ietn2, &lw2);
 
         if (fConst1 && fConst2)
         {
-            // both are constant
+            // 3DMMv1.0: both are constant
             AssertDo(_FCombineConstValues(petn->op, lw1, lw2, &lw), 0);
             *pietn = petn->ietn2;
             etnT1.ietn2 = etnT2.ietn1;
@@ -1401,7 +1401,7 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
 
         if (fConst1)
         {
-            // only the first is constant
+            // 3DMMv1.0: only the first is constant
             SwapVars(&etnT1.ietn2, &petn->ietn2);
             _SetDepth(&etnT1, fTrue);
             _pgletnTree->Put(petn->ietn1, &etnT1);
@@ -1410,16 +1410,16 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
 
         if (fConst2)
         {
-            // only the second is constant
+            // 3DMMv1.0: only the second is constant
             goto LPivot;
         }
 
-        // neither is constant
+        // 3DMMv1.0: neither is constant
         Assert(!fConst1 && !fConst2, 0);
         if ((etnT1.op == petn->op) == (etnT2.op == petn->op))
         {
-            // both the same as petn->op or both different, let _SetDepth
-            // do its thing
+            // 3DMMv1.0: both the same as petn->op or both different, let _SetDepth
+            // 3DMMv1.0: do its thing
             break;
         }
 
@@ -1427,23 +1427,23 @@ bool SCCB::_FAddToTree(ETN *petn, int32_t *pietn)
         {
             if (etnT2.ietn1 == ivNil)
                 break;
-            // swap them
+            // 3DMMv1.0: swap them
             SwapVars(&petn->ietn1, &petn->ietn2);
             SwapVars(&etnT1, &etnT2);
         }
 
         Assert(etnT1.op != petn->op && etnT2.op == petn->op, 0);
-        // determine if we want to pivot or swap
+        // 3DMMv1.0: determine if we want to pivot or swap
         _pgletnTree->Get(etnT2.ietn2, &etn);
         if (etn.cetnDeep > etnT1.cetnDeep)
         {
-            // swap them
+            // 3DMMv1.0: swap them
             SwapVars(&petn->ietn1, &petn->ietn2);
         }
         else
         {
         LPivot:
-            // pivot
+            // 3DMMv1.0: pivot
             Assert(etnT2.op == petn->op, 0);
             etn = *petn;
             etn.ietn2 = etnT2.ietn2;
@@ -1462,7 +1462,7 @@ LAdd:
     return _pgletnTree->FAdd(petn, pietn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the depth of the ETN from its children.  If fCommute is true and
     the first two children are non-nil, puts the deepest child first.
 ***************************************************************************/
@@ -1475,17 +1475,17 @@ void SCCB::_SetDepth(ETN *petn, bool fCommute)
 
     if (fCommute && petn->ietn1 != ivNil && petn->ietn2 != ivNil)
     {
-        // put the deeper guy on the left
+        // 3DMMv1.0: put the deeper guy on the left
         _pgletnTree->Get(petn->ietn1, &etn1);
         _pgletnTree->Get(petn->ietn2, &etn2);
         if (etn1.cetnDeep < etn2.cetnDeep ||
             etn1.cetnDeep == etn2.cetnDeep && etn1.op == petn->op && etn2.op != petn->op)
         {
-            // swap them
+            // 3DMMv1.0: swap them
             SwapVars(&petn->ietn1, &petn->ietn2);
             SwapVars(&etn1, &etn2);
         }
-        // put as much stuff on the left as we can
+        // 3DMMv1.0: put as much stuff on the left as we can
         while (etn2.op == petn->op)
         {
             etn1 = etn2;
@@ -1517,7 +1517,7 @@ void SCCB::_SetDepth(ETN *petn, bool fCommute)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return true iff the given etn is constant.  If so, set *plw to its
     value.
 ***************************************************************************/
@@ -1542,7 +1542,7 @@ bool SCCB::_FConstEtn(int32_t ietn, int32_t *plw)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Combine the constant values lw1 and lw2 using the given operator.
     Put the result in *plw.  Return false if we can't combine the values
     using op.
@@ -1617,7 +1617,7 @@ bool SCCB::_FCombineConstValues(int32_t op, int32_t lw1, int32_t lw2, int32_t *p
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Emit code for the expression tree with top at ietnTop.  If pclwArg
     is not nil, we are pushing function arguments, so the comma operator
     has to keep the values of both its operands.  Otherwise, the comma
@@ -1646,22 +1646,22 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
 
     _pgletnTree->Get(ietnTop, &etn);
 
-    // all non-nil operands should come before any nils
+    // 3DMMv1.0: all non-nil operands should come before any nils
     Assert((etn.ietn3 == ivNil || etn.ietn2 != ivNil) && (etn.ietn2 == ivNil || etn.ietn1 != ivNil), "bad etn");
 
     if (etn.grfop & fopAssign)
     {
-        // an operator that changes the value of a variable
+        // 3DMMv1.0: an operator that changes the value of a variable
         Assert(ivNil != etn.ietn1, "nil ietn1");
         Assert(ivNil == etn.ietn3, "non-nil ietn3");
 
-        // if we're doing an operation before assigning (eg, +=),
-        // push the variable first
+        // 3DMMv1.0: if we're doing an operation before assigning (eg, +=),
+        // 3DMMv1.0: push the variable first
         if (etn.op != opNil)
         {
             _EmitVarAccess(etn.ietn1, &rtvn, &opPush, &opPop, &clwStack);
             if (clwStack == 1)
-                _PushOp(kopDup); // duplicate the variable access id
+                _PushOp(kopDup); // 3DMMv1.0: duplicate the variable access id
             else if (clwStack > 0)
             {
                 _PushLw(clwStack);
@@ -1670,41 +1670,41 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
             _PushVarOp(opPush, &rtvn);
         }
 
-        // generate the second operand
+        // 3DMMv1.0: generate the second operand
         if (etn.ietn2 != ivNil)
             _EmitCode(etn.ietn2, fsccNil, pvNil);
 
-        // do the operation (if not post-inc or post-dec)
+        // 3DMMv1.0: do the operation (if not post-inc or post-dec)
         if (etn.op != opNil && !(etn.grfop & fopPostAssign))
             _PushOp(etn.op);
 
-        // duplicate the result
+        // 3DMMv1.0: duplicate the result
         if (!(grfscc & fsccWantVoid))
             _PushOp(kopDup);
 
-        // do the operation if post-inc or post-dec
+        // 3DMMv1.0: do the operation if post-inc or post-dec
         if (etn.op != opNil && (etn.grfop & fopPostAssign))
             _PushOp(etn.op);
 
-        // pop the result into the variable
+        // 3DMMv1.0: pop the result into the variable
         if (etn.op == opNil)
             _EmitVarAccess(etn.ietn1, &rtvn, pvNil, &opPop, pvNil);
         else if (clwStack == 1)
         {
-            // need to bring the variable access result to the top
+            // 3DMMv1.0: need to bring the variable access result to the top
             if (grfscc & fsccWantVoid)
                 _PushOp(kopSwap);
             else
             {
-                // top two items on the stack are the result
+                // 3DMMv1.0: top two items on the stack are the result
                 _PushLw(3);
                 _PushOp(kopRev);
             }
         }
         else if (clwStack > 0)
         {
-            // top one or two values are the result, next
-            // clwStack values are the variable access values.
+            // 3DMMv1.0: top one or two values are the result, next
+            // 3DMMv1.0: clwStack values are the variable access values.
             _PushLw(clwStack + 1 + !(grfscc & fsccWantVoid));
             _PushLw(clwStack);
             _PushOp(kopRot);
@@ -1732,72 +1732,72 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
         return;
     }
 
-    // special cases
+    // 3DMMv1.0: special cases
     switch (etn.tt)
     {
     default:
         Bug("what is this?");
         break;
     case ttName:
-        // first check for a control structure keyword
+        // 3DMMv1.0: first check for a control structure keyword
         if (_FHandleCst(ietnTop))
         {
-            // if we're not at the top of the parse tree, it's an error
+            // 3DMMv1.0: if we're not at the top of the parse tree, it's an error
             if (!(grfscc & fsccTop))
                 _ReportError(_pszSyntax);
             break;
         }
-        // fall thru
+        // 3DMMv1.0: fall thru
     case ttCloseRef:
     case ttDot:
     case ttScope:
     case ttArrow:
-        // handle pushing a variable
+        // 3DMMv1.0: handle pushing a variable
         _EmitVarAccess(ietnTop, &rtvn, &opPush, pvNil, pvNil);
         _PushVarOp(opPush, &rtvn);
         if (grfscc & fsccWantVoid)
             _PushOp(kopPop);
         break;
     case ttLong:
-        // push a constant
+        // 3DMMv1.0: push a constant
         Assert(ivNil == etn.ietn1, "non-nil ietn1");
         if (!(grfscc & fsccWantVoid))
             _PushLw(etn.lwValue);
         break;
     case ttString:
-        // "push" a constant string
+        // 3DMMv1.0: "push" a constant string
         Assert(ivNil == etn.ietn1, "non-nil ietn1");
         if (!(grfscc & fsccWantVoid))
             _PushStringIstn(etn.lwValue);
         break;
     case ttDollar:
-        // label reference
+        // 3DMMv1.0: label reference
         Assert(ivNil != etn.ietn1, "nil ietn1");
         Assert(ivNil == etn.ietn2, "non-nil ietn2");
         if (!(grfscc & fsccWantVoid))
             _PushLabelRequestIetn(etn.ietn1);
         break;
     case ttAt:
-        // label declaration
+        // 3DMMv1.0: label declaration
         Assert(ivNil != etn.ietn1, "nil ietn1");
         Assert(ivNil == etn.ietn2, "non-nil ietn2");
         Assert(grfscc & fsccTop, "fsccTop not set for label");
         _AddLabelIetn(etn.ietn1);
         break;
     case ttCloseParen:
-        // a function call or control structure
+        // 3DMMv1.0: a function call or control structure
         Assert(etn.grfop & fopFunction, 0);
         Assert(ivNil != etn.ietn1, "nil ietn1");
         Assert(ivNil == etn.ietn3, "non-nil ietn3");
 
         if ((grfscc & fsccTop) && cstNil != (cst = _CstFromName(etn.ietn1)))
         {
-            // control structure
+            // 3DMMv1.0: control structure
             _BeginCst(cst, etn.ietn2);
         }
         else
         {
-            // get the arguments and count them
+            // 3DMMv1.0: get the arguments and count them
             int32_t clwArg;
 
             if (etn.ietn2 == ivNil)
@@ -1813,10 +1813,10 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
     case ttComma:
         if (pvNil != pclwArg)
         {
-            // we're pushing function arguments
+            // 3DMMv1.0: we're pushing function arguments
             Assert(!(grfscc & fsccWantVoid), "bad comma request");
 
-            // push function arguments from right to left!
+            // 3DMMv1.0: push function arguments from right to left!
             _EmitCode(etn.ietn2, fsccNil, pclwArg);
             (*pclwArg)++;
             _EmitCode(etn.ietn1, fsccNil, pclwArg);
@@ -1828,7 +1828,7 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
         }
         break;
     case ttColon:
-        // ternary operator
+        // 3DMMv1.0: ternary operator
         Assert(ivNil != etn.ietn3, "nil ietn3");
         _PushLabelRequestLw(lw1 = ++_lwLastLabel);
         _EmitCode(etn.ietn1, fsccNil, pvNil);
@@ -1841,9 +1841,9 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
         _AddLabelLw(lw2);
         break;
     case ttLOr:
-        // logical or - handles short circuiting
+        // 3DMMv1.0: logical or - handles short circuiting
         if (!(grfscc & fsccWantVoid))
-            _PushLw(1); // assume true
+            _PushLw(1); // 3DMMv1.0: assume true
         _PushLabelRequestLw(lw1 = ++_lwLastLabel);
         _EmitCode(etn.ietn1, fsccNil, pvNil);
         _PushOp(kopGoNz);
@@ -1858,9 +1858,9 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
         _AddLabelLw(lw1);
         break;
     case ttLAnd:
-        // logical and - handles short circuiting
+        // 3DMMv1.0: logical and - handles short circuiting
         if (!(grfscc & fsccWantVoid))
-            _PushLw(0); // assume false
+            _PushLw(0); // 3DMMv1.0: assume false
         _PushLabelRequestLw(lw1 = ++_lwLastLabel);
         _EmitCode(etn.ietn1, fsccNil, pvNil);
         _PushOp(kopGoZ);
@@ -1877,7 +1877,7 @@ void SCCB::_EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the etn is for a control structure, return the cst.
 ***************************************************************************/
 int32_t SCCB::_CstFromName(int32_t ietn)
@@ -1898,7 +1898,7 @@ int32_t SCCB::_CstFromName(int32_t ietn)
     return cstNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Begin a new control structure.
 ***************************************************************************/
 void SCCB::_BeginCst(int32_t cst, int32_t ietn)
@@ -1919,17 +1919,17 @@ void SCCB::_BeginCst(int32_t cst, int32_t ietn)
         return;
 
     case cstWhile:
-        // we do jump optimized loops (putting the conditional at the end).
-        // label 1 is where Continue jumps to
+        // 3DMMv1.0: we do jump optimized loops (putting the conditional at the end).
+        // 3DMMv1.0: label 1 is where Continue jumps to
         cstd.ietnTop = ietn;
         if (ietn == ivNil)
         {
-            // no conditional expression, an "infinite" loop
+            // 3DMMv1.0: no conditional expression, an "infinite" loop
             _AddLabelLw(cstd.lwLabel1);
         }
         else
         {
-            // copy the etn tree
+            // 3DMMv1.0: copy the etn tree
             cetn = _pgletnTree->IvMac();
             if (pvNil == (cstd.pgletnTree = GL::PglNew(SIZEOF(ETN), cetn)))
             {
@@ -1939,23 +1939,23 @@ void SCCB::_BeginCst(int32_t cst, int32_t ietn)
             AssertDo(cstd.pgletnTree->FSetIvMac(cetn), 0);
             CopyPb(_pgletnTree->QvGet(0), cstd.pgletnTree->QvGet(0), LwMul(cetn, SIZEOF(ETN)));
 
-            // jump to where the condition will be
+            // 3DMMv1.0: jump to where the condition will be
             _PushLabelRequestLw(cstd.lwLabel1);
             _PushOp(kopGo);
 
-            // add the label for the top of the loop
+            // 3DMMv1.0: add the label for the top of the loop
             cstd.lwLabel2 = ++_lwLastLabel;
             _AddLabelLw(cstd.lwLabel2);
         }
         break;
 
     case cstIf:
-        // label 1 is used for where to jump if the condition fails
+        // 3DMMv1.0: label 1 is used for where to jump if the condition fails
         goto LTest;
 
     case cstElif:
-        // label 1 is used for where to jump if the condition fails
-        // label 2 is used for the end of the entire if block
+        // 3DMMv1.0: label 1 is used for where to jump if the condition fails
+        // 3DMMv1.0: label 2 is used for the end of the entire if block
         cstd.cst = cstIf;
         if (_pglcstd->FPop(&cstdPrev))
         {
@@ -1974,18 +1974,18 @@ void SCCB::_BeginCst(int32_t cst, int32_t ietn)
             cstdPrev.lwLabel1 = ++_lwLastLabel;
         }
 
-        // emit code for jumping to the end of the if block
+        // 3DMMv1.0: emit code for jumping to the end of the if block
         cstd.lwLabel2 = cstdPrev.lwLabel2;
         if (0 == cstd.lwLabel2)
             cstd.lwLabel2 = ++_lwLastLabel;
         _PushLabelRequestLw(cstd.lwLabel2);
         _PushOp(kopGo);
 
-        // add label that previous condition jumps to on failure
+        // 3DMMv1.0: add label that previous condition jumps to on failure
         _AddLabelLw(cstdPrev.lwLabel1);
 
     LTest:
-        // emit code for the expression testing
+        // 3DMMv1.0: emit code for the expression testing
         _PushLabelRequestLw(cstd.lwLabel1);
         if (ietn == ivNil)
             _ReportError(_pszSyntax);
@@ -1995,12 +1995,12 @@ void SCCB::_BeginCst(int32_t cst, int32_t ietn)
         break;
     }
 
-    // put the cstd on the stack
+    // 3DMMv1.0: put the cstd on the stack
     if (!_pglcstd->FPush(&cstd))
         _ReportError(_pszOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this name token is "End", "Break", "Continue" or "Else", deal with it
     and return true.
 ***************************************************************************/
@@ -2018,7 +2018,7 @@ bool SCCB::_FHandleCst(int32_t ietn)
     _GetStnFromIstn(istn, &stn);
     if (stn.FEqualSz(_rgpszKey[kipszElse]))
     {
-        // an Else
+        // 3DMMv1.0: an Else
         if (0 == (icstd = _pglcstd->IvMac()))
         {
             _ReportError(PszLit("unexpected Else"));
@@ -2031,16 +2031,16 @@ bool SCCB::_FHandleCst(int32_t ietn)
             return fTrue;
         }
 
-        // emit code to jump to the end of the if block
+        // 3DMMv1.0: emit code to jump to the end of the if block
         if (0 == cstd.lwLabel2)
             cstd.lwLabel2 = ++_lwLastLabel;
         _PushLabelRequestLw(cstd.lwLabel2);
         _PushOp(kopGo);
 
-        // add label that previous condition jumps to on failure
+        // 3DMMv1.0: add label that previous condition jumps to on failure
         _AddLabelLw(cstd.lwLabel1);
 
-        cstd.cst = cstNil; // so we don't accept another else
+        cstd.cst = cstNil; // 3DMMv1.0: so we don't accept another else
         cstd.lwLabel1 = cstd.lwLabel2;
         _pglcstd->Put(icstd, &cstd);
         return fTrue;
@@ -2048,18 +2048,18 @@ bool SCCB::_FHandleCst(int32_t ietn)
 
     if (stn.FEqualSz(_rgpszKey[kipszBreak]))
     {
-        // a Break - label 3 is where a Break jumps to
+        // 3DMMv1.0: a Break - label 3 is where a Break jumps to
         plwLabel = &cstd.lwLabel3;
         goto LWhileJump;
     }
 
     if (stn.FEqualSz(_rgpszKey[kipszContinue]))
     {
-        // a Continue - label 1 is where a Continue jumps to
+        // 3DMMv1.0: a Continue - label 1 is where a Continue jumps to
         plwLabel = &cstd.lwLabel1;
 
     LWhileJump:
-        // find the enclosing While
+        // 3DMMv1.0: find the enclosing While
         for (icstd = _pglcstd->IvMac();;)
         {
             if (icstd-- <= 0)
@@ -2092,7 +2092,7 @@ bool SCCB::_FHandleCst(int32_t ietn)
 
     if (stn.FEqualSz(_rgpszKey[kipszEnd]))
     {
-        // an End
+        // 3DMMv1.0: an End
         if (!_pglcstd->FPop(&cstd))
         {
             _ReportError(PszLit("unexpected End"));
@@ -2104,7 +2104,7 @@ bool SCCB::_FHandleCst(int32_t ietn)
         case cstWhile:
             if (cstd.ietnTop == ivNil)
             {
-                // an "infinite" loop - jump to the top
+                // 3DMMv1.0: an "infinite" loop - jump to the top
                 Assert(cstd.pgletnTree == pvNil, 0);
                 Assert(cstd.lwLabel2 == 0, 0);
                 _PushLabelRequestLw(cstd.lwLabel1);
@@ -2115,7 +2115,7 @@ bool SCCB::_FHandleCst(int32_t ietn)
                 AssertPo(cstd.pgletnTree, 0);
                 _AddLabelLw(cstd.lwLabel1);
 
-                // emit code for the expression testing
+                // 3DMMv1.0: emit code for the expression testing
                 _PushLabelRequestLw(cstd.lwLabel2);
                 SwapVars(&_pgletnTree, &cstd.pgletnTree);
                 _EmitCode(cstd.ietnTop, fsccNil, pvNil);
@@ -2124,7 +2124,7 @@ bool SCCB::_FHandleCst(int32_t ietn)
                 _PushOp(kopGoNz);
             }
 
-            // add the Break label if it was used
+            // 3DMMv1.0: add the Break label if it was used
             if (cstd.lwLabel3 != 0)
                 _AddLabelLw(cstd.lwLabel3);
             break;
@@ -2147,7 +2147,7 @@ bool SCCB::_FHandleCst(int32_t ietn)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Generate the code that handles remote variable access and fill
     *popPush and *popPop with the appropriate op-codes (kopPushLocVar, etc).
     Sets *pclwStack to the number of longs on the stack used to access the
@@ -2205,7 +2205,7 @@ void SCCB::_EmitVarAccess(int32_t ietn, RTVN *prtvn, int32_t *popPush, int32_t *
     _pgletnTree->Get(ietn, &etn);
     if (etn.tt == ttCloseRef)
     {
-        // an array reference
+        // 3DMMv1.0: an array reference
         Assert(etn.opl == koplArrayName, "bad array name etn");
         Assert(etn.ietn1 != ivNil && etn.ietn2 != ivNil && etn.ietn3 == ivNil, "bad array name etn 2");
         _EmitCode(etn.ietn2, fsccNil, pvNil);
@@ -2226,7 +2226,7 @@ void SCCB::_EmitVarAccess(int32_t ietn, RTVN *prtvn, int32_t *popPush, int32_t *
         *popPop = opPop;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Push the opcode for a function and verify parameters and return type.
 ***************************************************************************/
 void SCCB::_PushOpFromName(int32_t ietn, uint32_t grfscc, int32_t clwArg)
@@ -2254,11 +2254,11 @@ void SCCB::_PushOpFromName(int32_t ietn, uint32_t grfscc, int32_t clwArg)
             _PushLw((clwArg - clwFixed) / clwVar);
         _PushOp(op);
         if ((grfscc & fsccWantVoid) && !fVoid)
-            _PushOp(kopPop); // toss the return value
+            _PushOp(kopPop); // 3DMMv1.0: toss the return value
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the string in the given rgarop and get the associated parameter
     and return type information.
 ***************************************************************************/
@@ -2290,7 +2290,7 @@ bool SCCB::_FGetArop(PSTN pstn, AROP *prgarop, int32_t *pop, int32_t *pclwFixed,
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the given name is a function and give argument and return type
     information.
 ***************************************************************************/
@@ -2301,7 +2301,7 @@ bool SCCB::_FGetOpFromName(PSTN pstn, int32_t *pop, int32_t *pclwFixed, int32_t 
     return _FGetArop(pstn, _rgarop, pop, pclwFixed, pclwVar, pcactMinVar, pfVoid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the given string to _pgstNames.
 ***************************************************************************/
 void SCCB::_AddNameRef(PSTN pstn, int32_t *pistn)
@@ -2316,14 +2316,14 @@ void SCCB::_AddNameRef(PSTN pstn, int32_t *pistn)
         _ReportError(_pszOom);
         return;
     }
-    // can't sort, because then indices can change
+    // 3DMMv1.0: can't sort, because then indices can change
     if (_pgstNames->FFindStn(pstn, pistn, fgstNil))
         return;
     if (!_pgstNames->FInsertStn(*pistn, pstn))
         _ReportError(_pszOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure (assert) the given ietn is a name and get the istn for the name.
 ***************************************************************************/
 void SCCB::_GetIstnNameFromIetn(int32_t ietn, int32_t *pistn)
@@ -2341,7 +2341,7 @@ void SCCB::_GetIstnNameFromIetn(int32_t ietn, int32_t *pistn)
     *pistn = etn.lwValue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the rtvn for the given string (in _pgstNames).
 ***************************************************************************/
 void SCCB::_GetStnFromIstn(int32_t istn, PSTN pstn)
@@ -2358,7 +2358,7 @@ void SCCB::_GetStnFromIstn(int32_t istn, PSTN pstn)
     _pgstNames->GetStn(istn, pstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the rtvn for the given string (in _pgstNames).
 ***************************************************************************/
 void SCCB::_GetRtvnFromName(int32_t istn, RTVN *prtvn)
@@ -2373,7 +2373,7 @@ void SCCB::_GetRtvnFromName(int32_t istn, RTVN *prtvn)
     prtvn->SetFromStn(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the given string is a keyword.
 ***************************************************************************/
 bool SCCB::_FKeyWord(PSTN pstn)
@@ -2395,7 +2395,7 @@ bool SCCB::_FKeyWord(PSTN pstn)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Push a label request using the name in the given ietn.
 ***************************************************************************/
 void SCCB::_PushLabelRequestIetn(int32_t ietn)
@@ -2409,7 +2409,7 @@ void SCCB::_PushLabelRequestIetn(int32_t ietn)
     _PushLabelRequest(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the label here.
 ***************************************************************************/
 void SCCB::_AddLabelIetn(int32_t ietn)
@@ -2423,7 +2423,7 @@ void SCCB::_AddLabelIetn(int32_t ietn)
     _AddLabel(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     "Push" a string constant that is currently in the name string table.
 ***************************************************************************/
 void SCCB::_PushStringIstn(int32_t istn)
@@ -2435,7 +2435,7 @@ void SCCB::_PushStringIstn(int32_t istn)
     _PushString(&stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile the in-fix script source.
 ***************************************************************************/
 void SCCB::_CompileIn(void)
@@ -2450,7 +2450,7 @@ void SCCB::_CompileIn(void)
     int32_t ietn;
     bool fDone;
 
-    // push the new record
+    // 3DMMv1.0: push the new record
     ClearPb(&etn, SIZEOF(etn));
     etn.tt = ttNil;
     etn.grfop = fopOp;
@@ -2465,10 +2465,10 @@ void SCCB::_CompileIn(void)
         fDone = !_FGetTok(&tok);
         if (fDone || tok.tt == ttSemi)
         {
-            // end of a statement - emit the code
+            // 3DMMv1.0: end of a statement - emit the code
             if (_pgletnStack->IvMac() > 1)
             {
-                // non-empty statement
+                // 3DMMv1.0: non-empty statement
                 if (!_FResolveToOpl(koplComma, koplComma, &ietn))
                 {
                     Assert(_fError, "why wasn't an error reported?");
@@ -2511,7 +2511,7 @@ void SCCB::_CompileIn(void)
         if (tok.tt == ttName || tok.tt == ttString)
             _AddNameRef(&tok.stn, &etn.lwValue);
 
-        // resolve
+        // 3DMMv1.0: resolve
         if (oplNil != ptome->oplResolve)
         {
             if (!_FResolveToOpl(ptome->oplResolve, ptome->oplMinRes, &etn.ietn1))
@@ -2521,7 +2521,7 @@ void SCCB::_CompileIn(void)
             }
         }
 
-        // pop an operator
+        // 3DMMv1.0: pop an operator
         if (ttNil != ptome->ttPop)
         {
             if (!_pgletnStack->FPop(&etnT) || etnT.tt != ptome->ttPop || !(etnT.grfop & fopOp))
@@ -2539,7 +2539,7 @@ void SCCB::_CompileIn(void)
             }
         }
 
-        // push the new record
+        // 3DMMv1.0: push the new record
         if (!_pgletnStack->FPush(&etn))
         {
             _ReportError(_pszOom);
@@ -2548,7 +2548,7 @@ void SCCB::_CompileIn(void)
 
         if (tok.tt == ttAt)
         {
-            // label declaration - emit the code
+            // 3DMMv1.0: label declaration - emit the code
             if (!_FResolveToOpl(koplComma, koplComma, &ietn))
             {
                 Assert(_fError, "error not set");
@@ -2558,7 +2558,7 @@ void SCCB::_CompileIn(void)
             {
                 _ReportError(_pszSyntax);
             LNextLine:
-                // start parsing after the next semi-colon
+                // 3DMMv1.0: start parsing after the next semi-colon
                 while (_FGetTok(&tok) && tok.tt != ttSemi)
                     ;
                 _pgletnStack->FSetIvMac(1);
@@ -2570,7 +2570,7 @@ void SCCB::_CompileIn(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Disassemble the script into a message sink (MSNK) and return whether
     there was an error.
 ***************************************************************************/
@@ -2598,7 +2598,7 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
         goto LFail;
     }
 
-    // check the version
+    // 3DMMv1.0: check the version
     pgllw->Get(0, &lw);
     dver.Set(SwHigh(lw), SwLow(lw));
     if (!dver.FReadable(_SwCur(), _SwMin()))
@@ -2609,7 +2609,7 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
 
     for (ilw = 1;;)
     {
-        // write the label
+        // 3DMMv1.0: write the label
         stn.FFormatSz(PszLit("@L_%04x "), ilw);
         pmsnk->Report(stn.Psz());
         if (ilw >= ilwMac)
@@ -2623,10 +2623,10 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
             goto LFail;
         }
 
-        // write the op string
+        // 3DMMv1.0: write the op string
         if (opNil != (op = B3Lw(lw)))
         {
-            // this instruction acts on a variable
+            // 3DMMv1.0: this instruction acts on a variable
             if (clwPush == 0)
             {
                 pszError = PszLit("bad var instruction");
@@ -2643,7 +2643,7 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
                     goto LFail;
                 }
 
-                // string literal
+                // 3DMMv1.0: string literal
                 if (pvNil == pscpt->_pgstLiterals || !FIn(rtvn.lu2, 0, pscpt->_pgstLiterals->IvMac()))
                 {
                     pszError = PszLit("bad internal variable");
@@ -2707,7 +2707,7 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
         }
         else if (opNil != (op = SuLow(lw)))
         {
-            // normal opcode
+            // 3DMMv1.0: normal opcode
             if (!_FGetStnFromOp(op, &stn))
             {
                 pszError = PszLit("bad op in script");
@@ -2720,13 +2720,13 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
             pmsnk->Report(stn.Psz());
         }
 
-        // dump the stack stuff
+        // 3DMMv1.0: dump the stack stuff
         while (clwPush-- > 0)
         {
             pgllw->Get(ilw++, &lw);
             if (B3Lw(lw) == kbLabel && FIn(lw &= 0x00FFFFFF, 1, ilwMac + 1))
             {
-                // REVIEW shonk: label identification: this isn't foolproof
+                // 3DMMv1.0: REVIEW shonk: label identification: this isn't foolproof
                 stn.FFormatSz(PszLit("$L_%04x "), lw);
                 pmsnk->Report(stn.Psz());
             }
@@ -2743,7 +2743,7 @@ bool SCCB::FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the values of the RTVN from the given stn.  Only the first 8
     characters of the stn are significant.  The high word of lu1 is
     guaranteed to be zero.
@@ -2758,17 +2758,17 @@ void RTVN::SetFromStn(PSTN pstn)
     int32_t cch = pstn->Cch();
     PSZ psz = pstn->Psz();
 
-    // There are 52 letters, plus 10 digits, plus the underscore character,
-    // giving a total of 63 valid identifier characters.  We encode these
-    // from 1 to 63 and pack them into 6 bits each.  This lets us put 8
-    // characters in 6 bytes.  We pad the result with 0's.
+    // 3DMMv1.0: There are 52 letters, plus 10 digits, plus the underscore character,
+    // 3DMMv1.0: giving a total of 63 valid identifier characters.  We encode these
+    // 3DMMv1.0: from 1 to 63 and pack them into 6 bits each.  This lets us put 8
+    // 3DMMv1.0: characters in 6 bytes.  We pad the result with 0's.
 
     ClearPb(rgb, 8);
     ibDst = 0;
     cbit = 8;
     for (ib = 0; ib < 8; ib++)
     {
-        // map the character to its encoded value
+        // 3DMMv1.0: map the character to its encoded value
         if (ib >= cch)
             bT = 0;
         else
@@ -2787,7 +2787,7 @@ void RTVN::SetFromStn(PSTN pstn)
             }
         }
 
-        // pack the encoded value into its 6 bit slot
+        // 3DMMv1.0: pack the encoded value into its 6 bit slot
         AssertIn(bT, 0, 64);
         lw = (int32_t)bT << (cbit + 2);
         rgb[ibDst] = rgb[ibDst] & (-1L << cbit) | B1Lw(lw);
@@ -2797,12 +2797,12 @@ void RTVN::SetFromStn(PSTN pstn)
             cbit -= 8;
     }
 
-    // put the bytes together into the rtvn's uint32_ts.
+    // 3DMMEx: put the bytes together into the rtvn's uint32_ts.
     lu1 = LwFromBytes(0, 0, rgb[0], rgb[1]);
     lu2 = LwFromBytes(rgb[2], rgb[3], rgb[4], rgb[5]);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the variable name that an rtvn stores.
 ***************************************************************************/
 void RTVN::GetStn(PSTN pstn)
@@ -2813,7 +2813,7 @@ void RTVN::GetStn(PSTN pstn)
     uint8_t bT;
     int32_t ib;
 
-    // unpack the individual bytes
+    // 3DMMv1.0: unpack the individual bytes
     rgb[0] = (uint8_t)((lu1 & 0x0000FC00) >> 10);
     rgb[1] = (uint8_t)((lu1 & 0x000003F0) >> 4);
     rgb[2] = (uint8_t)(((lu1 & 0x0000000F) << 2) | ((lu2 & 0xC0000000) >> 30));
@@ -2823,7 +2823,7 @@ void RTVN::GetStn(PSTN pstn)
     rgb[6] = (uint8_t)((lu2 & 0x00000FC0) >> 6);
     rgb[7] = (uint8_t)(lu2 & 0x0000003F);
 
-    // convert the bytes to characters and append them to the stn
+    // 3DMMv1.0: convert the bytes to characters and append them to the stn
     pstn->SetNil();
     for (ib = 0; ib < 8; ib++)
     {

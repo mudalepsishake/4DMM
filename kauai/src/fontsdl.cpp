@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@ RTCLASS(SDLFont)
 RTCLASS(SDLFontFile)
 RTCLASS(SDLFontMemory)
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Load the font using SDL_TTF to get the font face name and style
 ***************************************************************************/
 static bool FGetTtfFontInfo(PFNI pfniFont, PSTN pstnFontName, int32_t *pgrfont)
@@ -29,7 +29,7 @@ static bool FGetTtfFontInfo(PFNI pfniFont, PSTN pstnFontName, int32_t *pgrfont)
     int grfont = 0;
     STN stnFontName, stnFontPath;
 
-    // Load the font to get font name and style info
+    // 3DMMEx: Load the font to get font name and style info
     pfniFont->GetStnPath(&stnFontPath);
 
     U8SZ u8szFontPath;
@@ -38,11 +38,11 @@ static bool FGetTtfFontInfo(PFNI pfniFont, PSTN pstnFontName, int32_t *pgrfont)
     TTF_Font *ttfFont = TTF_OpenFont(u8szFontPath, 0);
     if (ttfFont != pvNil)
     {
-        // Get the font name
+        // 3DMMEx: Get the font name
         PU8SZ pu8szFontName = (PU8SZ)TTF_FontFaceFamilyName(ttfFont);
         stnFontName.SetUtf8Sz(pu8szFontName);
 
-        // Get the font style
+        // 3DMMEx: Get the font style
         int style = TTF_GetFontStyle(ttfFont);
         if (FPure(style & TTF_STYLE_BOLD))
             grfont |= fontBold;
@@ -100,7 +100,7 @@ NTL::~NTL(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of the font list.
 ***************************************************************************/
 void NTL::AssertValid(uint32_t grf)
@@ -109,7 +109,7 @@ void NTL::AssertValid(uint32_t grf)
     AssertPo(_pgst, 0);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory for the font table.
 ***************************************************************************/
 void NTL::MarkMem(void)
@@ -135,7 +135,7 @@ void NTL::MarkMem(void)
     }
 }
 
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 bool NTL::FAddFontFile(PFNI pfniFontFile, PSTN pstnFontName, int32_t *ponn)
 {
@@ -150,9 +150,6 @@ bool NTL::FAddFontFile(PFNI pfniFontFile, PSTN pstnFontName, int32_t *ponn)
     int onn;
     PGL pglsdlfont = pvNil;
 
-    if (pfniFontFile->TExists() != tYes)
-        return fFalse;
-
     fRet = FGetTtfFontInfo(pfniFontFile, &stnFontName, &grfont);
     if (!fRet)
     {
@@ -164,7 +161,7 @@ bool NTL::FAddFontFile(PFNI pfniFontFile, PSTN pstnFontName, int32_t *ponn)
         stnFontName = *pstnFontName;
     }
 
-    // Get the list of SDL fonts for this font name
+    // 3DMMEx: Get the list of SDL fonts for this font name
     if (_pgst->FFindStn(&stnFontName, &onn, fgstUserSorted))
     {
         _pgst->GetExtra(onn, &pglsdlfont);
@@ -180,7 +177,7 @@ bool NTL::FAddFontFile(PFNI pfniFontFile, PSTN pstnFontName, int32_t *ponn)
         }
     }
 
-    // Add this font
+    // 3DMMEx: Add this font
     PSDLFont psdlf;
     AssertDo(psdlf = SDLFontFile::PSDLFontFileNew(pfniFontFile, grfont), "Could not allocate SDL font");
     if (psdlf != pvNil)
@@ -212,7 +209,7 @@ bool NTL::FAddAllFontsInDir(PFNI pfniFontDir)
     FNE fneFontFiles;
     FNI fniFontFile;
 
-    // Find all font files in the font directory
+    // 3DMMEx: Find all font files in the font directory
     if (!fneFontFiles.FInit(pfniFontDir, rgftgFont, CvFromRgv(rgftgFont), ffneNil))
     {
         Bug("Could not initialise font directory enumerator");
@@ -227,7 +224,7 @@ bool NTL::FAddAllFontsInDir(PFNI pfniFontDir)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Initialize the font table.
 ***************************************************************************/
 bool NTL::FInit(void)
@@ -235,7 +232,7 @@ bool NTL::FInit(void)
     bool fRet = fFalse;
     int ttfret;
 
-    // Initialize SDL TTF
+    // 3DMMEx: Initialize SDL TTF
     ttfret = TTF_Init();
     if (ttfret != 0)
     {
@@ -245,11 +242,11 @@ bool NTL::FInit(void)
 
     fInitTtf = fTrue;
 
-    // Allocate GST to store font face names
+    // 3DMMEx: Allocate GST to store font face names
     if (pvNil == (_pgst = GST::PgstNew(sizeof(PGL))))
         goto LFail;
 
-    // Load fonts
+    // 3DMMEx: Load fonts
     if (!_FLoadFontTable())
         goto LFail;
 
@@ -279,12 +276,12 @@ bool NTL::FAddFontName(PCSZ pcszFontName, int32_t *ponn, PGL *pglsdlfont)
     STN stnFontName = pcszFontName;
     int32_t onn;
 
-    // Create list to map a font face to SDL fonts
+    // 3DMMEx: Create list to map a font face to SDL fonts
     if (pvNil == (pgl = GL::PglNew(sizeof(PSDLFont), 0)))
         goto LFail;
 
-    // Check if the font name already exists
-    // This also gets the position to insert the font name
+    // 3DMMEx: Check if the font name already exists
+    // 3DMMEx: This also gets the position to insert the font name
     if (_pgst->FFindStn(&stnFontName, &onn, fgstUserSorted))
         goto LFail;
 
@@ -292,10 +289,10 @@ bool NTL::FAddFontName(PCSZ pcszFontName, int32_t *ponn, PGL *pglsdlfont)
     Assert(fRet, "Could not add font to list");
     if (fRet)
     {
-        // List is now owned by the GST
+        // 3DMMEx: List is now owned by the GST
         pgl->AddRef();
 
-        // Return a reference to the caller
+        // 3DMMEx: Return a reference to the caller
         pgl->AddRef();
         *pglsdlfont = pgl;
         *ponn = onn;
@@ -306,7 +303,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return true iff the font is a fixed pitch font.
 ***************************************************************************/
 bool NTL::FFixedPitch(int32_t onn)
@@ -326,7 +323,7 @@ TTF_Font *NTL::TtfFontFromDsf(DSF *pdsf)
     if (pdsf == pvNil)
         return pvNil;
 
-    // Find the list of SDL fonts for this font face number
+    // 3DMMEx: Find the list of SDL fonts for this font face number
     _pgst->GetExtra(pdsf->onn, &pglsdlfont);
     if (pglsdlfont == pvNil || pglsdlfont->IvMac() == 0)
         return pvNil;
@@ -341,9 +338,9 @@ TTF_Font *NTL::TtfFontFromDsf(DSF *pdsf)
         return (*ppsdlfont)->PttfFont(pdsf->dyp);
     }
 
-    // Go through the font list twice to find the best match
-    // First, try for an exact match of font style flags
-    // If not found, try matching the font styles with what the font can do
+    // 3DMMEx: Go through the font list twice to find the best match
+    // 3DMMEx: First, try for an exact match of font style flags
+    // 3DMMEx: If not found, try matching the font styles with what the font can do
     grfontWanted = pdsf->grfont;
     for (int32_t cact = 0; cact < 2; cact++)
     {
@@ -395,11 +392,11 @@ TTF_Font *NTL::TtfFontFromDsf(DSF *pdsf)
 
 TTF_Font *SDLFont::PttfFont(int32_t dyp)
 {
-    // Check if we already failed to load the font
+    // 3DMMEx: Check if we already failed to load the font
     if (_fLoadFailed)
         return pvNil;
 
-    // Check if we have already loaded a font of this size
+    // 3DMMEx: Check if we have already loaded a font of this size
     if (_pglinstance != pvNil)
     {
         for (int32_t iinstance = 0; iinstance < _pglinstance->IvMac(); iinstance++)
@@ -413,7 +410,7 @@ TTF_Font *SDLFont::PttfFont(int32_t dyp)
         }
     }
 
-    // Allocate the font instance list if we haven't already
+    // 3DMMEx: Allocate the font instance list if we haven't already
     if (_pglinstance == pvNil)
     {
         _pglinstance = GL::PglNew(sizeof(SDLFont::Instance), 1);
@@ -424,7 +421,7 @@ TTF_Font *SDLFont::PttfFont(int32_t dyp)
         }
     }
 
-    // Load the font
+    // 3DMMEx: Load the font
     _fLoadFailed = fTrue;
     SDL_RWops *rwops = GetFontRWops();
     TTF_Font *pttffont = pvNil;
@@ -436,7 +433,7 @@ TTF_Font *SDLFont::PttfFont(int32_t dyp)
         {
             _fLoadFailed = fFalse;
 
-            // Add the font to the font list
+            // 3DMMEx: Add the font to the font list
             SDLFont::Instance instance;
             instance.dyp = dyp;
             instance.pttffont = pttffont;
@@ -448,7 +445,7 @@ TTF_Font *SDLFont::PttfFont(int32_t dyp)
                 pttffont = pvNil;
             }
 
-            // rwops is freed when the TTF font is closed
+            // 3DMMEx: rwops is freed when the TTF font is closed
             rwops = pvNil;
         }
         else
@@ -469,7 +466,7 @@ TTF_Font *SDLFont::PttfFont(int32_t dyp)
 
 SDLFont::~SDLFont()
 {
-    // Free font instances
+    // 3DMMEx: Free font instances
     if (_pglinstance != pvNil)
     {
         for (int32_t iinstance = 0; iinstance < _pglinstance->IvMac(); iinstance++)
@@ -498,7 +495,7 @@ void SDLFont::MarkMem(void)
     }
 }
 
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 PSDLFontFile SDLFontFile::PSDLFontFileNew(PFNI pfniFont, int32_t grffont)
 {

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -9,7 +9,7 @@
     Chunky file compiler and decompiler class implementations.
 
 ***************************************************************************/
-#include "kidframe.h" //because we need scrcomg
+#include "kidframe.h" // 3DMMv1.0: because we need scrcomg
 ASSERTNAME
 
 RTCLASS(CHCM)
@@ -18,54 +18,54 @@ RTCLASS(CHDC)
 
 PCSZ _mpertpsz[] = {
     PszLit("no error"),
-    PszLit("Internal allocation error"),                      // ertOom
-    PszLit("Can't open the given file"),                      // ertOpenFile
-    PszLit("Can't read the given metafile"),                  // ertReadMeta
-    PszLit("Number not in range for BYTE"),                   // ertRangeByte
-    PszLit("Number not in range for SHORT"),                  // ertRangeShort
-    PszLit("Invalid data before atomic chunk"),               // ertBufData
-    PszLit("Open parenthesis '(' expected"),                  // ertParenOpen
-    PszLit("Unexpected end of file"),                         // ertEof
-    PszLit("String expected"),                                // ertNeedString
-    PszLit("Numeric value expected"),                         // ertNeedNumber
-    PszLit("Unexpected Token"),                               // ertBadToken
-    PszLit("Close parenthesis ')' expected"),                 // ertParenClose
-    PszLit("Invalid CHUNK declaration"),                      // ertChunkHead
-    PszLit("Duplicate CHUNK declaration"),                    // ertDupChunk
-    PszLit("Invalid CHILD declaration"),                      // ertBodyChildHead
-    PszLit("Child chunk doesn't exist"),                      // ertChildMissing
-    PszLit("A cycle would be created by this adoption"),      // ertCycle
-    PszLit("Invalid PARENT declaration"),                     // ertBodyParentHead
-    PszLit("Parent chunk doesn't exist"),                     // ertParentMissing
-    PszLit("Alignment parameter out of range"),               // ertBodyAlignRange
-    PszLit("File name expected"),                             // ertBodyFile
-    PszLit("ENDCHUNK expected"),                              // ertNeedEndChunk
-    PszLit("Invalid GL or AL declaration"),                   // ertListHead
-    PszLit("Invalid size for list entries"),                  // ertListEntrySize
-    PszLit("Variable undefined"),                             // ertVarUndefined
-    PszLit("Too much data for item"),                         // ertItemOverflow
-    PszLit("Can't have a free item in a general collection"), // ertBadFree
-    PszLit("Syntax error"),                                   // ertSyntax
-    PszLit("Invalid GG or AG declaration"),                   // ertGroupHead
-    PszLit("Invalid size for fixed group data"),              // ertGroupEntrySize
-    PszLit("Invalid GST or AST declaration"),                 // ertGstHead
-    PszLit("Invalid size for extra string table data"),       // ertGstEntrySize
-    PszLit("Script compilation failed"),                      // ertScript
-    PszLit("Invalid ADOPT declaration"),                      // ertAdoptHead
-    PszLit("CHUNK declaration expected"),                     // ertNeedChunk
-    PszLit("Invalid BITMAP declaration"),                     // ertBodyBitmapHead
-    PszLit("Can't read the given bitmap file"),               // ertReadBitmap
-    PszLit("Disassembling the script failed"),                // ertBadScript
-    PszLit("Can't read the given cursor file"),               // ertReadCursor
-    PszLit("Can't read given file as a packed file"),         // ertPackedFile
-    PszLit("Can't read the given midi file"),                 // ertReadMidi
-    PszLit("Bad pack format"),                                // ertBadPackFmt
-    PszLit("Illegal LONER primitive in SUBFILE"),             // ertLonerInSub
-    PszLit("Unterminated SUBFILE"),                           // ertNoEndSubFile
-    PszLit("Metafiles not supported"),                        // ertMetafileNotSupported
+    PszLit("Internal allocation error"),                      // 3DMMv1.0: ertOom
+    PszLit("Can't open the given file"),                      // 3DMMv1.0: ertOpenFile
+    PszLit("Can't read the given metafile"),                  // 3DMMv1.0: ertReadMeta
+    PszLit("Number not in range for BYTE"),                   // 3DMMv1.0: ertRangeByte
+    PszLit("Number not in range for SHORT"),                  // 3DMMv1.0: ertRangeShort
+    PszLit("Invalid data before atomic chunk"),               // 3DMMv1.0: ertBufData
+    PszLit("Open parenthesis '(' expected"),                  // 3DMMv1.0: ertParenOpen
+    PszLit("Unexpected end of file"),                         // 3DMMv1.0: ertEof
+    PszLit("String expected"),                                // 3DMMv1.0: ertNeedString
+    PszLit("Numeric value expected"),                         // 3DMMv1.0: ertNeedNumber
+    PszLit("Unexpected Token"),                               // 3DMMv1.0: ertBadToken
+    PszLit("Close parenthesis ')' expected"),                 // 3DMMv1.0: ertParenClose
+    PszLit("Invalid CHUNK declaration"),                      // 3DMMv1.0: ertChunkHead
+    PszLit("Duplicate CHUNK declaration"),                    // 3DMMv1.0: ertDupChunk
+    PszLit("Invalid CHILD declaration"),                      // 3DMMv1.0: ertBodyChildHead
+    PszLit("Child chunk doesn't exist"),                      // 3DMMv1.0: ertChildMissing
+    PszLit("A cycle would be created by this adoption"),      // 3DMMv1.0: ertCycle
+    PszLit("Invalid PARENT declaration"),                     // 3DMMv1.0: ertBodyParentHead
+    PszLit("Parent chunk doesn't exist"),                     // 3DMMv1.0: ertParentMissing
+    PszLit("Alignment parameter out of range"),               // 3DMMv1.0: ertBodyAlignRange
+    PszLit("File name expected"),                             // 3DMMv1.0: ertBodyFile
+    PszLit("ENDCHUNK expected"),                              // 3DMMv1.0: ertNeedEndChunk
+    PszLit("Invalid GL or AL declaration"),                   // 3DMMv1.0: ertListHead
+    PszLit("Invalid size for list entries"),                  // 3DMMv1.0: ertListEntrySize
+    PszLit("Variable undefined"),                             // 3DMMv1.0: ertVarUndefined
+    PszLit("Too much data for item"),                         // 3DMMv1.0: ertItemOverflow
+    PszLit("Can't have a free item in a general collection"), // 3DMMv1.0: ertBadFree
+    PszLit("Syntax error"),                                   // 3DMMv1.0: ertSyntax
+    PszLit("Invalid GG or AG declaration"),                   // 3DMMv1.0: ertGroupHead
+    PszLit("Invalid size for fixed group data"),              // 3DMMv1.0: ertGroupEntrySize
+    PszLit("Invalid GST or AST declaration"),                 // 3DMMv1.0: ertGstHead
+    PszLit("Invalid size for extra string table data"),       // 3DMMv1.0: ertGstEntrySize
+    PszLit("Script compilation failed"),                      // 3DMMv1.0: ertScript
+    PszLit("Invalid ADOPT declaration"),                      // 3DMMv1.0: ertAdoptHead
+    PszLit("CHUNK declaration expected"),                     // 3DMMv1.0: ertNeedChunk
+    PszLit("Invalid BITMAP declaration"),                     // 3DMMv1.0: ertBodyBitmapHead
+    PszLit("Can't read the given bitmap file"),               // 3DMMv1.0: ertReadBitmap
+    PszLit("Disassembling the script failed"),                // 3DMMv1.0: ertBadScript
+    PszLit("Can't read the given cursor file"),               // 3DMMv1.0: ertReadCursor
+    PszLit("Can't read given file as a packed file"),         // 3DMMv1.0: ertPackedFile
+    PszLit("Can't read the given midi file"),                 // 3DMMv1.0: ertReadMidi
+    PszLit("Bad pack format"),                                // 3DMMv1.0: ertBadPackFmt
+    PszLit("Illegal LONER primitive in SUBFILE"),             // 3DMMv1.0: ertLonerInSub
+    PszLit("Unterminated SUBFILE"),                           // 3DMMv1.0: ertNoEndSubFile
+    PszLit("Metafiles not supported"),                        // 3DMMEx: ertMetafileNotSupported
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the CHCM class.
 ***************************************************************************/
 CHCM::CHCM(void)
@@ -80,7 +80,7 @@ CHCM::CHCM(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the CHCM class.
 ***************************************************************************/
 CHCM::~CHCM(void)
@@ -103,7 +103,7 @@ CHCM::~CHCM(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that the CHCM is a valid object.
 ***************************************************************************/
 void CHCM::AssertValid(uint32_t grf)
@@ -116,7 +116,7 @@ void CHCM::AssertValid(uint32_t grf)
     AssertNilOrPo(_pmsnkError, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CHCM object.
 ***************************************************************************/
 void CHCM::MarkMem(void)
@@ -131,9 +131,9 @@ void CHCM::MarkMem(void)
     MarkMemObj(_pglckiLoner);
     MarkPv(_pszSearchPath);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Registers an error, prints error message with filename and line number.
     pszMessage may be nil.
 ***************************************************************************/
@@ -176,7 +176,7 @@ void CHCM::_Error(int32_t ert, const PCSZ pszMessage)
     _pmsnkError->ReportLine(stn.Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Checks that lw could be accepted under the current numerical mode.
 ***************************************************************************/
 void CHCM::_GetRgbFromLw(int32_t lw, uint8_t *prgb)
@@ -209,7 +209,7 @@ void CHCM::_GetRgbFromLw(int32_t lw, uint8_t *prgb)
         ReversePb(prgb, _cbNum);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Checks if data is already in the buffer (and issues an error) for a
     non-buffer command such as metafile import.
 ***************************************************************************/
@@ -220,15 +220,15 @@ void CHCM::_ErrorOnData(PCSZ pszPreceed)
 
     if (_bsf.IbMac() > 0)
     {
-        // already data
+        // 3DMMv1.0: already data
         _Error(ertBufData, pszPreceed);
 
-        // clear buffer
+        // 3DMMv1.0: clear buffer
         _bsf.FReplace(pvNil, 0, 0, _bsf.IbMac());
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a token, automatically handling mode change commands and negatives.
     Return true iff *ptok is valid, not whether an error occurred.
 ***************************************************************************/
@@ -300,7 +300,7 @@ bool CHCM::_FGetCleanTok(TOK *ptok, bool fEofOk)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Skip tokens until we encounter the given token type.
 ***************************************************************************/
 void CHCM::_SkipPastTok(int32_t tt)
@@ -312,7 +312,7 @@ void CHCM::_SkipPastTok(int32_t tt)
         ;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a parenthesized header from the source file.
 ***************************************************************************/
 bool CHCM::_FParseParenHeader(PHP *prgphp, int32_t cphpMax, int32_t *pcphp)
@@ -349,10 +349,10 @@ bool CHCM::_FParseParenHeader(PHP *prgphp, int32_t cphpMax, int32_t *pcphp)
 
         if (ttCloseParen == tok.tt)
         {
-            // close paren = end of header
+            // 3DMMv1.0: close paren = end of header
             *pcphp = iphp;
 
-            // empty remaining strings
+            // 3DMMv1.0: empty remaining strings
             for (; iphp < cphpMax; iphp++)
             {
                 AssertNilOrPo(prgphp[iphp].pstn, 0);
@@ -364,7 +364,7 @@ bool CHCM::_FParseParenHeader(PHP *prgphp, int32_t cphpMax, int32_t *pcphp)
 
         if (ttLong == tok.tt)
         {
-            // numerical value
+            // 3DMMv1.0: numerical value
             if (prgphp[iphp].pstn == pvNil)
                 prgphp[iphp].lw = tok.lw;
             else
@@ -375,7 +375,7 @@ bool CHCM::_FParseParenHeader(PHP *prgphp, int32_t cphpMax, int32_t *pcphp)
         }
         else if (ttString == tok.tt)
         {
-            // string
+            // 3DMMv1.0: string
             if (prgphp[iphp].pstn != pvNil)
                 *prgphp[iphp].pstn = tok.stn;
             else
@@ -386,12 +386,12 @@ bool CHCM::_FParseParenHeader(PHP *prgphp, int32_t cphpMax, int32_t *pcphp)
         }
         else
         {
-            // invalid token in header
+            // 3DMMv1.0: invalid token in header
             _Error(ertBadToken);
         }
     }
 
-    // get closing paren
+    // 3DMMv1.0: get closing paren
     if (!_pchlx->FGetTok(&tok))
     {
         TrashVar(pcphp);
@@ -410,7 +410,7 @@ bool CHCM::_FParseParenHeader(PHP *prgphp, int32_t cphpMax, int32_t *pcphp)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a chunk header from the source file.
 ***************************************************************************/
 void CHCM::_ParseChunkHeader(CTG *pctg, CNO *pcno)
@@ -434,10 +434,10 @@ void CHCM::_ParseChunkHeader(CTG *pctg, CNO *pcno)
     *pctg = rgphp[0].lw;
     *pcno = rgphp[1].lw;
 
-    // write empty chunk
+    // 3DMMv1.0: write empty chunk
     if (_pcfl->FFind(*pctg, *pcno))
     {
-        // duplicate chunk!
+        // 3DMMv1.0: duplicate chunk!
         _Error(ertDupChunk);
     LFail:
         _SkipPastTok(ttEndChunk);
@@ -446,7 +446,7 @@ void CHCM::_ParseChunkHeader(CTG *pctg, CNO *pcno)
         return;
     }
 
-    // create the chunk and set its name
+    // 3DMMv1.0: create the chunk and set its name
     if (!_pcfl->FPutPv(pvNil, 0, *pctg, *pcno) ||
         stnChunkName.Cch() > 0 && !FError() && !_pcfl->FSetName(*pctg, *pcno, &stnChunkName))
     {
@@ -454,7 +454,7 @@ void CHCM::_ParseChunkHeader(CTG *pctg, CNO *pcno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append a string to the chunk data stream.
 ***************************************************************************/
 void CHCM::_AppendString(PSTN pstnValue)
@@ -470,7 +470,7 @@ void CHCM::_AppendString(PSTN pstnValue)
     {
     default:
         Bug("Invalid string mode");
-        // fall through
+        // 3DMMv1.0: fall through
     case smStn:
         cb = pstnValue->CbData();
         pstnValue->GetData(rgb);
@@ -494,7 +494,7 @@ void CHCM::_AppendString(PSTN pstnValue)
         _Error(ertOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stores a numerical value in the chunk data stream.
 ***************************************************************************/
 void CHCM::_AppendNumber(int32_t lwValue)
@@ -507,7 +507,7 @@ void CHCM::_AppendNumber(int32_t lwValue)
         _Error(ertOom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a child statement from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyChild(CTG ctg, CNO cno)
@@ -530,28 +530,28 @@ void CHCM::_ParseBodyChild(CTG ctg, CNO cno)
     cnoChild = rgphp[1].lw;
     chid = rgphp[2].lw;
 
-    // check if chunk exists
+    // 3DMMv1.0: check if chunk exists
     if (!_pcfl->FFind(ctgChild, cnoChild))
     {
         _Error(ertChildMissing);
         return;
     }
 
-    // check if cycle would be created
+    // 3DMMv1.0: check if cycle would be created
     if (_pcfl->TIsDescendent(ctgChild, cnoChild, ctg, cno) != tNo)
     {
         _Error(ertCycle);
         return;
     }
 
-    // do the adoption
+    // 3DMMv1.0: do the adoption
     if (!FError() && !_pcfl->FAdoptChild(ctg, cno, ctgChild, cnoChild, chid, fTrue))
     {
         _Error(ertOom);
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a parent statement from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyParent(CTG ctg, CNO cno)
@@ -574,28 +574,28 @@ void CHCM::_ParseBodyParent(CTG ctg, CNO cno)
     cnoParent = rgphp[1].lw;
     chid = rgphp[2].lw;
 
-    // check if chunk exists
+    // 3DMMv1.0: check if chunk exists
     if (!_pcfl->FFind(ctgParent, cnoParent))
     {
         _Error(ertParentMissing);
         return;
     }
 
-    // check if cycle would be created
+    // 3DMMv1.0: check if cycle would be created
     if (_pcfl->TIsDescendent(ctg, cno, ctgParent, cnoParent) != tNo)
     {
         _Error(ertCycle);
         return;
     }
 
-    // do the adoption
+    // 3DMMv1.0: do the adoption
     if (!FError() && !_pcfl->FAdoptChild(ctgParent, cnoParent, ctg, cno, chid, fTrue))
     {
         _Error(ertOom);
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse an align statement from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyAlign(void)
@@ -623,7 +623,7 @@ void CHCM::_ParseBodyAlign(void)
 
     if (!FError())
     {
-        // actually do the padding
+        // 3DMMv1.0: actually do the padding
         uint8_t rgb[100];
         int32_t cb;
         int32_t ibMac = _bsf.IbMac();
@@ -643,7 +643,7 @@ void CHCM::_ParseBodyAlign(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a file statement from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyFile(void)
@@ -673,7 +673,7 @@ void CHCM::_ParseBodyFile(void)
     ReleasePpo(&floSrc.pfil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start a write operation. If fPack is true, allocate a temporary block.
     Otherwise, get the block on the CFL. The caller should write its data
     into the pblck, then call _FEndWrite to complete the operation.
@@ -693,7 +693,7 @@ bool CHCM::_FPrepWrite(bool fPack, int32_t cb, CTG ctg, CNO cno, PBLCK pblck)
     return _pcfl->FPut(cb, ctg, cno, pblck);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Balances a call to _FPrepWrite.
 ***************************************************************************/
 bool CHCM::_FEndWrite(bool fPack, CTG ctg, CNO cno, PBLCK pblck)
@@ -703,7 +703,7 @@ bool CHCM::_FEndWrite(bool fPack, CTG ctg, CNO cno, PBLCK pblck)
 
     if (fPack)
     {
-        // we don't fail if we can't compress it
+        // 3DMMv1.0: we don't fail if we can't compress it
         pblck->FPackData();
         return _pcfl->FPutBlck(pblck, ctg, cno);
     }
@@ -712,7 +712,7 @@ bool CHCM::_FEndWrite(bool fPack, CTG ctg, CNO cno, PBLCK pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a metafile import command from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyMeta(bool fPack, CTG ctg, CNO cno)
@@ -730,7 +730,7 @@ void CHCM::_ParseBodyMeta(bool fPack, CTG ctg, CNO cno)
         return;
     }
 
-    // Metafile support has been disabled as it is not required for 3DMM
+    // 3DMMEx: Metafile support has been disabled as it is not required for 3DMM
 #ifdef CHCM_METAFILE_SUPPORT
 
     if (pvNil == (ppic = PIC::PpicReadNative(&fni)))
@@ -749,9 +749,9 @@ void CHCM::_ParseBodyMeta(bool fPack, CTG ctg, CNO cno)
     }
     ReleasePpo(&ppic);
 
-#else  // !CHCM_METAFILE_SUPPORT
+#else  // 3DMMEx: !CHCM_METAFILE_SUPPORT
     _Error(ertMetafileNotSupported);
-#endif // CHCM_METAFILE_SUPPORT
+#endif // 3DMMEx: CHCM_METAFILE_SUPPORT
 
     if (_FGetCleanTok(&tok) && ttEndChunk != tok.tt)
     {
@@ -760,7 +760,7 @@ void CHCM::_ParseBodyMeta(bool fPack, CTG ctg, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a bitmap import command from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyBitmap(bool fPack, bool fMask, CTG ctg, CNO cno)
@@ -813,7 +813,7 @@ void CHCM::_ParseBodyBitmap(bool fPack, bool fMask, CTG ctg, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a palette import command from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyPalette(bool fPack, CTG ctg, CNO cno)
@@ -854,7 +854,7 @@ void CHCM::_ParseBodyPalette(bool fPack, CTG ctg, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a midi import command from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyMidi(bool fPack, CTG ctg, CNO cno)
@@ -895,12 +895,12 @@ void CHCM::_ParseBodyMidi(bool fPack, CTG ctg, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a cursor import command from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyCursor(bool fPack, CTG ctg, CNO cno)
 {
-    // These are for parsing a Windows cursor file
+    // 3DMMv1.0: These are for parsing a Windows cursor file
     struct CURDIR
     {
         uint8_t dxp;
@@ -1010,14 +1010,14 @@ void CHCM::_ParseBodyCursor(bool fPack, CTG ctg, CNO cno)
             goto LFail;
         }
 
-        // The bits are stored in upside down DIB order!
+        // 3DMMv1.0: The bits are stored in upside down DIB order!
         ReversePb(pcurh + 1, pcurdir->cb - SIZEOF(CURH));
         SwapBytesRglw(pcurh + 1, (pcurdir->cb - SIZEOF(CURH)) / SIZEOF(int32_t));
 
         if (pcurdir->dxp == 16)
         {
-            // need to consolidate the bits, because they are stored 4 bytes per
-            // row (2 bytes wasted) instead of 2 bytes per row.
+            // 3DMMv1.0: need to consolidate the bits, because they are stored 4 bytes per
+            // 3DMMv1.0: row (2 bytes wasted) instead of 2 bytes per row.
             int32_t csw = 32;
             int16_t *pswSrc, *pswDst;
 
@@ -1038,7 +1038,7 @@ void CHCM::_ParseBodyCursor(bool fPack, CTG ctg, CNO cno)
     }
 
 LFail:
-    // success comes through here also
+    // 3DMMv1.0: success comes through here also
     ReleasePpo(&floSrc.pfil);
     if (hqNil != hq)
     {
@@ -1063,7 +1063,7 @@ LFail:
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a data section from the source file.  ptok should be pre-loaded
     with the first token and when _FParseData returns it contains the next
     token to be processed.  Returns false iff no tokens were consumed.
@@ -1154,14 +1154,14 @@ bool CHCM::_FParseData(PTOK ptok)
                 _ParseBodyFile();
                 break;
             case ttBo:
-                // insert the current byte order
+                // 3DMMv1.0: insert the current byte order
                 cbNum = _cbNum;
                 _cbNum = SIZEOF(int16_t);
                 _AppendNumber(kboCur);
                 _cbNum = cbNum;
                 break;
             case ttOsk:
-                // insert the current osk
+                // 3DMMv1.0: insert the current osk
                 cbNum = _cbNum;
                 _cbNum = SIZEOF(int16_t);
                 _AppendNumber(_osk);
@@ -1182,7 +1182,7 @@ bool CHCM::_FParseData(PTOK ptok)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a list structure from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyList(bool fPack, bool fAl, CTG ctg, CNO cno)
@@ -1198,7 +1198,7 @@ void CHCM::_ParseBodyList(bool fPack, bool fAl, CTG ctg, CNO cno)
     PGLB pglb = pvNil;
     PGL pglivFree = pvNil;
 
-    // get size of entry data
+    // 3DMMv1.0: get size of entry data
     ClearPb(rgphp, SIZEOF(rgphp));
     if (!_FParseParenHeader(rgphp, 1, &cphp) || cphp < 1)
     {
@@ -1223,13 +1223,13 @@ void CHCM::_ParseBodyList(bool fPack, bool fAl, CTG ctg, CNO cno)
     }
     pglb->SetMinGrow(20);
 
-    // prefetch a token
+    // 3DMMv1.0: prefetch a token
     if (!_FGetCleanTok(&tok))
         goto LFail;
 
     for (;;)
     {
-        // empty the BSF
+        // 3DMMv1.0: empty the BSF
         _bsf.FReplace(pvNil, 0, 0, _bsf.IbMac());
 
         if (ttFree == tok.tt)
@@ -1301,7 +1301,7 @@ void CHCM::_ParseBodyList(bool fPack, bool fAl, CTG ctg, CNO cno)
         }
     }
 
-    // write list to disk
+    // 3DMMv1.0: write list to disk
     if (!_FPrepWrite(fPack, pglb->CbOnFile(), ctg, cno, &blck) || !pglb->FWrite(&blck, _bo, _osk) ||
         !_FEndWrite(fPack, ctg, cno, &blck))
     {
@@ -1313,7 +1313,7 @@ LFail:
     ReleasePpo(&pglivFree);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a group structure from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
@@ -1330,7 +1330,7 @@ void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
     PGGB pggb = pvNil;
     PGL pglivFree = pvNil;
 
-    // get size of fixed data
+    // 3DMMv1.0: get size of fixed data
     ClearPb(rgphp, SIZEOF(rgphp));
     if (!_FParseParenHeader(rgphp, 1, &cphp) || cphp < 1)
     {
@@ -1355,13 +1355,13 @@ void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
     }
     pggb->SetMinGrow(10, 100);
 
-    // prefetch a token
+    // 3DMMv1.0: prefetch a token
     if (!_FGetCleanTok(&tok))
         goto LFail;
 
     for (;;)
     {
-        // empty the BSF
+        // 3DMMv1.0: empty the BSF
         _bsf.FReplace(pvNil, 0, 0, _bsf.IbMac());
 
         fFree = (ttFree == tok.tt);
@@ -1385,7 +1385,7 @@ void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
             break;
         else
         {
-            // get the fixed part
+            // 3DMMv1.0: get the fixed part
             if (!_FGetCleanTok(&tok))
                 goto LFail;
             _FParseData(&tok);
@@ -1400,7 +1400,7 @@ void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
         AssertIn(cb, 0, cbFixed + 1);
         if (!FError())
         {
-            // add the item
+            // 3DMMv1.0: add the item
             if (!pggb->FAdd(pvNil, &iv))
                 _Error(ertOom);
             else
@@ -1415,7 +1415,7 @@ void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
             }
         }
 
-        // check for a variable part
+        // 3DMMv1.0: check for a variable part
         if (fFree || ttVar != tok.tt)
             continue;
 
@@ -1458,7 +1458,7 @@ void CHCM::_ParseBodyGroup(bool fPack, bool fAg, CTG ctg, CNO cno)
         }
     }
 
-    // write list to disk
+    // 3DMMv1.0: write list to disk
     if (!_FPrepWrite(fPack, pggb->CbOnFile(), ctg, cno, &blck) || !pggb->FWrite(&blck, _bo, _osk) ||
         !_FEndWrite(fPack, ctg, cno, &blck))
     {
@@ -1470,7 +1470,7 @@ LFail:
     ReleasePpo(&pglivFree);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a string table from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyStringTable(bool fPack, bool fAst, CTG ctg, CNO cno)
@@ -1488,7 +1488,7 @@ void CHCM::_ParseBodyStringTable(bool fPack, bool fAst, CTG ctg, CNO cno)
     PGL pglivFree = pvNil;
     void *pvExtra = pvNil;
 
-    // get size of attached data
+    // 3DMMv1.0: get size of attached data
     ClearPb(rgphp, SIZEOF(rgphp));
     if (!_FParseParenHeader(rgphp, 1, &cphp) || cphp < 1)
     {
@@ -1513,7 +1513,7 @@ void CHCM::_ParseBodyStringTable(bool fPack, bool fAst, CTG ctg, CNO cno)
     }
     pgstb->SetMinGrow(10, 100);
 
-    // prefetch a token
+    // 3DMMv1.0: prefetch a token
     if (!_FGetCleanTok(&tok))
         goto LFail;
 
@@ -1560,7 +1560,7 @@ void CHCM::_ParseBodyStringTable(bool fPack, bool fAst, CTG ctg, CNO cno)
         if (cbExtra <= 0 || fFree)
             continue;
 
-        // empty the BSF and get the extra data
+        // 3DMMv1.0: empty the BSF and get the extra data
         _bsf.FReplace(pvNil, 0, 0, _bsf.IbMac());
         _FParseData(&tok);
 
@@ -1573,7 +1573,7 @@ void CHCM::_ParseBodyStringTable(bool fPack, bool fAst, CTG ctg, CNO cno)
         AssertIn(cb, 0, cbExtra + 1);
         if (!FError())
         {
-            // add the item
+            // 3DMMv1.0: add the item
             Assert(iv == pgstb->IvMac() - 1, "what?");
             if (cb > 0)
                 _bsf.FetchRgb(0, cb, pvExtra);
@@ -1603,7 +1603,7 @@ void CHCM::_ParseBodyStringTable(bool fPack, bool fAst, CTG ctg, CNO cno)
         }
     }
 
-    // write list to disk
+    // 3DMMv1.0: write list to disk
     if (!_FPrepWrite(fPack, pgstb->CbOnFile(), ctg, cno, &blck) || !pgstb->FWrite(&blck, _bo, _osk) ||
         !_FEndWrite(fPack, ctg, cno, &blck))
     {
@@ -1616,7 +1616,7 @@ LFail:
     FreePpv(&pvExtra);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a script from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyScript(bool fPack, bool fInfix, CTG ctg, CNO cno)
@@ -1637,7 +1637,7 @@ void CHCM::_ParseBodyScript(bool fPack, bool fInfix, CTG ctg, CNO cno)
     ReleasePpo(&pscpt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a script from the source file.
 ***************************************************************************/
 void CHCM::_ParseBodyPackedFile(bool *pfPacked)
@@ -1677,7 +1677,7 @@ void CHCM::_ParseBodyPackedFile(bool *pfPacked)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start a sub file.
 ***************************************************************************/
 void CHCM::_StartSubFile(bool fPack, CTG ctg, CNO cno)
@@ -1705,7 +1705,7 @@ void CHCM::_StartSubFile(bool fPack, CTG ctg, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     End a sub file.
 ***************************************************************************/
 void CHCM::_EndSubFile(void)
@@ -1730,7 +1730,7 @@ void CHCM::_EndSubFile(void)
         PFIL pfilDst = pvNil;
         bool fRet = fFalse;
 
-        // get the size of the data
+        // 3DMMv1.0: get the size of the data
         cbTot = 0;
         for (icki = 0; _pcfl->FGetCki(icki, &cki); icki++)
         {
@@ -1741,7 +1741,7 @@ void CHCM::_EndSubFile(void)
             cbTot += cbT;
         }
 
-        // setup pfilDst and fpDst for writing the chunk trees
+        // 3DMMv1.0: setup pfilDst and fpDst for writing the chunk trees
         if (csfc.fPack)
         {
             pfilDst = FIL::PfilCreateTemp();
@@ -1751,7 +1751,7 @@ void CHCM::_EndSubFile(void)
         {
             FLO floDst;
 
-            // resize the chunk
+            // 3DMMv1.0: resize the chunk
             if (!csfc.pcfl->FPut(cbTot, csfc.ctg, csfc.cno))
                 goto LFail;
             csfc.pcfl->FFindFlo(csfc.ctg, csfc.cno, &floDst);
@@ -1761,7 +1761,7 @@ void CHCM::_EndSubFile(void)
             fpDst = floDst.fp;
         }
 
-        // write the data to (pfilDst, fpDst)
+        // 3DMMv1.0: write the data to (pfilDst, fpDst)
         for (icki = 0; _pcfl->FGetCki(icki, &cki); icki++)
         {
             if (_pcfl->CckiRef(cki.ctg, cki.cno) > 0)
@@ -1777,7 +1777,7 @@ void CHCM::_EndSubFile(void)
         {
             BLCK blck(pfilDst, 0, fpDst);
 
-            // pack the data and put it in the chunk.
+            // 3DMMv1.0: pack the data and put it in the chunk.
             blck.FPackData();
             if (!csfc.pcfl->FPutBlck(&blck, csfc.ctg, csfc.cno))
                 goto LFail;
@@ -1797,7 +1797,7 @@ void CHCM::_EndSubFile(void)
     _pcfl = csfc.pcfl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse a PACKFMT command, which is used to specify the packing format
     to use.
 ***************************************************************************/
@@ -1808,7 +1808,7 @@ void CHCM::_ParsePackFmt(void)
     int32_t cphp;
     int32_t cfmt;
 
-    // get the format
+    // 3DMMv1.0: get the format
     ClearPb(rgphp, SIZEOF(rgphp));
     if (!_FParseParenHeader(rgphp, 1, &cphp) || cphp < 1)
     {
@@ -1823,7 +1823,7 @@ void CHCM::_ParsePackFmt(void)
         vpcodmUtil->SetCfmtDefault(cfmt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse the chunk body from the source file.
 ***************************************************************************/
 void CHCM::_ParseChunkBody(CTG ctg, CNO cno)
@@ -1835,7 +1835,7 @@ void CHCM::_ParseChunkBody(CTG ctg, CNO cno)
     bool fFetch;
     bool fPack, fPrePacked;
 
-    // empty the BSF
+    // 3DMMv1.0: empty the BSF
     _bsf.FReplace(pvNil, 0, 0, _bsf.IbMac());
 
     fFetch = fTrue;
@@ -1855,7 +1855,7 @@ void CHCM::_ParseChunkBody(CTG ctg, CNO cno)
                 _SkipPastTok(ttEndChunk);
                 return;
             }
-            // don't fetch next token
+            // 3DMMv1.0: don't fetch next token
             fFetch = fFalse;
             break;
         case ttChild:
@@ -1891,12 +1891,12 @@ void CHCM::_ParseChunkBody(CTG ctg, CNO cno)
             _ParsePackFmt();
             break;
 
-            // We're done after all the cases below
+            // 3DMMv1.0: We're done after all the cases below
         case ttPackedFile:
             fPack = fFalse;
             _ErrorOnData(PszLit("Packed File"));
             _ParseBodyPackedFile(&fPrePacked);
-            // fall thru
+            // 3DMMv1.0: fall thru
         case ttEndChunk:
             if (!FError())
             {
@@ -1959,7 +1959,7 @@ void CHCM::_ParseChunkBody(CTG ctg, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Parse an adopt parenthesized header from the source file.
 ***************************************************************************/
 void CHCM::_ParseAdopt(void)
@@ -1984,21 +1984,21 @@ void CHCM::_ParseAdopt(void)
     cnoChild = rgphp[3].lw;
     chid = rgphp[4].lw;
 
-    // check if parent exists
+    // 3DMMv1.0: check if parent exists
     if (!_pcfl->FFind(ctgParent, cnoParent))
     {
         _Error(ertParentMissing);
         return;
     }
 
-    // check if child exists
+    // 3DMMv1.0: check if child exists
     if (!_pcfl->FFind(ctgChild, cnoChild))
     {
         _Error(ertChildMissing);
         return;
     }
 
-    // check if cycle would be created
+    // 3DMMv1.0: check if cycle would be created
     if (_pcfl->TIsDescendent(ctgChild, cnoChild, ctgParent, cnoParent) != tNo)
         _Error(ertCycle);
     else if (!FError() && !_pcfl->FAdoptChild(ctgParent, cnoParent, ctgChild, cnoChild, chid, fTrue))
@@ -2007,7 +2007,7 @@ void CHCM::_ParseAdopt(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile the given file.
 ***************************************************************************/
 PCFL CHCM::PcflCompile(PFNI pfniSrc, PFNI pfniDst, PMSNK pmsnk)
@@ -2038,7 +2038,7 @@ PCFL CHCM::PcflCompile(PFNI pfniSrc, PFNI pfniDst, PMSNK pmsnk)
     return PcflCompile(&bsfSrc, &stnFile, pfniDst, pmsnk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile the given BSF, using initial file name given by pstnFile.
 ***************************************************************************/
 PCFL CHCM::PcflCompile(PBSF pbsfSrc, PSTN pstnFile, PFNI pfniDst, PMSNK pmsnk)
@@ -2085,7 +2085,7 @@ PCFL CHCM::PcflCompile(PBSF pbsfSrc, PSTN pstnFile, PFNI pfniDst, PMSNK pmsnk)
             break;
 
         case ttEndChunk:
-            // ending a sub file
+            // 3DMMv1.0: ending a sub file
             _EndSubFile();
             fReportBadTok = fTrue;
             break;
@@ -2116,10 +2116,10 @@ PCFL CHCM::PcflCompile(PBSF pbsfSrc, PSTN pstnFile, PFNI pfniDst, PMSNK pmsnk)
         }
     }
 
-    // empty the BSF
+    // 3DMMv1.0: empty the BSF
     _bsf.FReplace(pvNil, 0, 0, _bsf.IbMac());
 
-    // make sure we're not in any subfiles
+    // 3DMMv1.0: make sure we're not in any subfiles
     if (pvNil != _pglcsfc && _pglcsfc->IvMac() > 0)
     {
         CSFC csfc;
@@ -2161,7 +2161,7 @@ PCFL CHCM::PcflCompile(PBSF pbsfSrc, PSTN pstnFile, PFNI pfniDst, PMSNK pmsnk)
     return pcfl;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set search path for locating subfiles.
 ***************************************************************************/
 bool CHCM::FSetSearchPath(PCSZ pszSearchPath)
@@ -2169,7 +2169,7 @@ bool CHCM::FSetSearchPath(PCSZ pszSearchPath)
     int32_t cchSearchPath;
     int32_t cbSearchPath;
 
-    // Free existing search path if set
+    // 3DMMEx: Free existing search path if set
     if (_pszSearchPath != pvNil)
     {
         FreePpv((void **)&_pszSearchPath);
@@ -2177,7 +2177,7 @@ bool CHCM::FSetSearchPath(PCSZ pszSearchPath)
 
     if (pszSearchPath == pvNil)
     {
-        // No search path given
+        // 3DMMEx: No search path given
         return fTrue;
     }
 
@@ -2189,7 +2189,7 @@ bool CHCM::FSetSearchPath(PCSZ pszSearchPath)
         return fFalse;
     }
 
-    // Allocate buffer to hold search path
+    // 3DMMEx: Allocate buffer to hold search path
     if (!FAllocPv((void **)&_pszSearchPath, cbSearchPath, fmemClear, mprNormal))
     {
         Bug("Could not allocate search path");
@@ -2201,7 +2201,7 @@ bool CHCM::FSetSearchPath(PCSZ pszSearchPath)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Keyword-tokentype mappings
 ***************************************************************************/
 static KEYTT _rgkeytt[] = {
@@ -2224,7 +2224,7 @@ static KEYTT _rgkeytt[] = {
 
 #define kckeytt (SIZEOF(_rgkeytt) / SIZEOF(_rgkeytt[0]))
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the chunky compiler lexer.
 ***************************************************************************/
 CHLX::CHLX(PBSF pbsf, PSTN pstnFile, PCSZ pszSearchPath) : CHLX_PAR(pbsf, pstnFile)
@@ -2234,7 +2234,7 @@ CHLX::CHLX(PBSF pbsf, PSTN pstnFile, PCSZ pszSearchPath) : CHLX_PAR(pbsf, pstnFi
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the chunky compiler lexer.
 ***************************************************************************/
 CHLX::~CHLX(void)
@@ -2242,7 +2242,7 @@ CHLX::~CHLX(void)
     ReleasePpo(&_pgstVariables);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reads in the next token.  Resolves certain names to keyword tokens.
 ***************************************************************************/
 bool CHLX::FGetTok(PTOK ptok)
@@ -2260,7 +2260,7 @@ bool CHLX::FGetTok(PTOK ptok)
         if (ttName != ptok->tt)
             return fTrue;
 
-        // check for a keyword
+        // 3DMMv1.0: check for a keyword
         for (ikeytt = 0; ikeytt < kckeytt; ikeytt++)
         {
             if (ptok->stn.FEqualSz(_rgkeytt[ikeytt].pszKeyword))
@@ -2270,10 +2270,10 @@ bool CHLX::FGetTok(PTOK ptok)
             }
         }
 
-        // if the token isn't SET, check for a variable
+        // 3DMMv1.0: if the token isn't SET, check for a variable
         if (!ptok->stn.FEqualSz(PszLit("SET")))
         {
-            // check for a variable
+            // 3DMMv1.0: check for a variable
             if (pvNil != _pgstVariables && _pgstVariables->FFindStn(&ptok->stn, &istn, fgstSorted))
             {
                 ptok->tt = ttLong;
@@ -2282,7 +2282,7 @@ bool CHLX::FGetTok(PTOK ptok)
             break;
         }
 
-        // handle a SET
+        // 3DMMv1.0: handle a SET
         if (!_FDoSet(ptok))
         {
             ptok->tt = ttError;
@@ -2293,7 +2293,7 @@ bool CHLX::FGetTok(PTOK ptok)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reads in the next token.  Skips semicolons and commas.
 ***************************************************************************/
 bool CHLX::FGetTokSkipSemi(PTOK ptok)
@@ -2301,7 +2301,7 @@ bool CHLX::FGetTokSkipSemi(PTOK ptok)
     AssertThis(0);
     AssertVarMem(ptok);
 
-    // skip comma and semicolon separators
+    // 3DMMv1.0: skip comma and semicolon separators
     while (FGetTok(ptok))
     {
         if (ttComma != ptok->tt && ttSemi != ptok->tt)
@@ -2311,7 +2311,7 @@ bool CHLX::FGetTokSkipSemi(PTOK ptok)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reads a path and builds an FNI.
 ***************************************************************************/
 bool CHLX::FGetPath(FNI *pfni)
@@ -2353,13 +2353,13 @@ bool CHLX::FGetPath(FNI *pfni)
     {
         return pfni->FBuildFromPath(&stn);
     }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
     return pfni->FBuild(0, 0, &stn, kftgText);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a set command.
 ***************************************************************************/
 bool CHLX::_FDoSet(PTOK ptok)
@@ -2465,7 +2465,7 @@ bool CHLX::_FDoSet(PTOK ptok)
             lw ^= ptok->lw;
             break;
         case ttAShr:
-            // do logical shift
+            // 3DMMv1.0: do logical shift
             lw = (uint32_t)lw >> ptok->lw;
             break;
         case ttAShl:
@@ -2484,7 +2484,7 @@ bool CHLX::_FDoSet(PTOK ptok)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that the CHLX is a valid object.
 ***************************************************************************/
 void CHLX::AssertValid(uint32_t grf)
@@ -2493,7 +2493,7 @@ void CHLX::AssertValid(uint32_t grf)
     AssertNilOrPo(_pgstVariables, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CHLX object.
 ***************************************************************************/
 void CHLX::MarkMem(void)
@@ -2505,7 +2505,7 @@ void CHLX::MarkMem(void)
 }
 #endif
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the CHDC class. This is the chunky decompiler.
 ***************************************************************************/
 CHDC::CHDC(void)
@@ -2515,7 +2515,7 @@ CHDC::CHDC(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the CHDC class.
 ***************************************************************************/
 CHDC::~CHDC(void)
@@ -2524,7 +2524,7 @@ CHDC::~CHDC(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CHDC.
 ***************************************************************************/
 void CHDC::AssertValid(uint32_t grf)
@@ -2535,7 +2535,7 @@ void CHDC::AssertValid(uint32_t grf)
     AssertPo(&_chse, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the CHDC.
 ***************************************************************************/
 void CHDC::MarkMem(void)
@@ -2545,9 +2545,9 @@ void CHDC::MarkMem(void)
     MarkMemObj(&_bsf);
     MarkMemObj(&_chse);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decompile a chunky file.
 ***************************************************************************/
 bool CHDC::FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError)
@@ -2573,17 +2573,17 @@ bool CHDC::FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError)
     {
         STN stnName;
 
-        // don't dump these, because they're embedded in the script
+        // 3DMMv1.0: don't dump these, because they're embedded in the script
         if (cki.ctg == kctgScriptStrs)
             continue;
 
         _pcfl->FGetName(cki.ctg, cki.cno, &stnName);
         _chse.DumpHeader(cki.ctg, cki.cno, &stnName);
 
-        // look for special CTGs
+        // 3DMMv1.0: look for special CTGs
         ctg = cki.ctg;
 
-        // handle 4 character ctg's
+        // 3DMMv1.0: handle 4 character ctg's
         switch (ctg)
         {
         case kctgScript:
@@ -2593,7 +2593,7 @@ bool CHDC::FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError)
             break;
         }
 
-        // handle 3 character ctg's
+        // 3DMMv1.0: handle 3 character ctg's
         ctg = ctg & 0xFFFFFF00L | 0x00000020L;
         switch (ctg)
         {
@@ -2605,7 +2605,7 @@ bool CHDC::FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError)
             break;
         }
 
-        // handle 2 character ctg's
+        // 3DMMv1.0: handle 2 character ctg's
         ctg = ctg & 0xFFFF0000L | 0x00002020L;
         switch (ctg)
         {
@@ -2630,7 +2630,7 @@ bool CHDC::FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError)
         _chse.DumpSz(PszLit(""));
     }
 
-    // now output parent-child relationships
+    // 3DMMv1.0: now output parent-child relationships
     for (icki = 0; _pcfl->FGetCki(icki++, &cki, &ckid);)
     {
         for (ikid = 0; ikid < ckid;)
@@ -2647,7 +2647,7 @@ bool CHDC::FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError)
     return !FError();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Disassemble the script and dump it.
 ***************************************************************************/
 bool CHDC::_FDumpScript(CKI *pcki)
@@ -2677,7 +2677,7 @@ bool CHDC::_FDumpScript(CKI *pcki)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Try to read the chunk as a list and dump it out.  If the chunk isn't
     a list, return false so it can be dumped in hex.
 ***************************************************************************/
@@ -2729,7 +2729,7 @@ bool CHDC::_FDumpList(PBLCK pblck, bool fAl)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Try to read the chunk as a group and dump it out.  If the chunk isn't
     a group, return false so it can be dumped in hex.
 ***************************************************************************/
@@ -2781,7 +2781,7 @@ bool CHDC::_FDumpGroup(PBLCK pblck, bool fAg)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Try to read the chunk as a string table and dump it out.  If the chunk
     isn't a string table, return false so it can be dumped in hex.
 ***************************************************************************/
@@ -2834,7 +2834,7 @@ bool CHDC::_FDumpStringTable(PBLCK pblck, bool fAst)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write out the PACKFMT and PACK commands
 ***************************************************************************/
 void CHDC::_WritePack(int32_t cfmt)

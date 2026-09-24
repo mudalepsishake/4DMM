@@ -1,4 +1,4 @@
-/**
+/** 3DMMEx:
  * Kauai codec decompression tests
  **/
 #include <gtest/gtest.h>

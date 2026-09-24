@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,17 +16,17 @@
 #ifndef SCRCOM_H
 #define SCRCOM_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Opcodes for scripts - these are the opcodes that can actually exist in
     script.  They don't necessarily map directly to the compiler's notion of
     an operator.
 ***************************************************************************/
-// if you change this enum, bump the version numbers below
+// 3DMMv1.0: if you change this enum, bump the version numbers below
 enum
 {
     opNil,
 
-    // ops that act on variables come first
+    // 3DMMv1.0: ops that act on variables come first
     kopPushLocVar,
     kopPopLocVar,
     kopPushThisVar,
@@ -49,106 +49,106 @@ enum
 
     kopLimVarSccb = kopLimArray,
 
-    // ops that just act on the stack - no variables
-    //  for the comments below, a is the top value on the execution stack
-    //  b is the next to top value on the stack, and c is next on the stack
-    kopAdd = 0x100, // addition: b + a
-    kopSub,         // subtraction: b - a
-    kopMul,         // multiplication: b * a
-    kopDiv,         // integer division: b / a
-    kopMod,         // mod: b % a
-    kopNeg,         // unary negation: -a
-    kopInc,         // unary increment: a + 1
-    kopDec,         // unary decrement: a - 1
-    kopShr,         // shift right: b >> a
-    kopShl,         // shift left: b << a
-    kopBOr,         // bitwise or: b | a
-    kopBAnd,        // bitwise and: b & a
-    kopBXor,        // bitwise exclusive or: b ^ a
-    kopBNot,        // unary bitwise not: ~a
-    kopLXor,        // logical exclusive or: (b != 0) != (a != 0)
-    kopLNot,        // unary logical not: !a
-    kopEq,          // equality: b == a
-    kopNe,          // not equal: b != a
-    kopGt,          // greater than: b > a
-    kopLt,          // less than: b < a
-    kopGe,          // greater or equal: b >= a
-    kopLe,          // less or equal: b <= a
+    // 3DMMv1.0: ops that just act on the stack - no variables
+    // 3DMMv1.0:  for the comments below, a is the top value on the execution stack
+    // 3DMMv1.0:  b is the next to top value on the stack, and c is next on the stack
+    kopAdd = 0x100, // 3DMMv1.0: addition: b + a
+    kopSub,         // 3DMMv1.0: subtraction: b - a
+    kopMul,         // 3DMMv1.0: multiplication: b * a
+    kopDiv,         // 3DMMv1.0: integer division: b / a
+    kopMod,         // 3DMMv1.0: mod: b % a
+    kopNeg,         // 3DMMv1.0: unary negation: -a
+    kopInc,         // 3DMMv1.0: unary increment: a + 1
+    kopDec,         // 3DMMv1.0: unary decrement: a - 1
+    kopShr,         // 3DMMv1.0: shift right: b >> a
+    kopShl,         // 3DMMv1.0: shift left: b << a
+    kopBOr,         // 3DMMv1.0: bitwise or: b | a
+    kopBAnd,        // 3DMMv1.0: bitwise and: b & a
+    kopBXor,        // 3DMMv1.0: bitwise exclusive or: b ^ a
+    kopBNot,        // 3DMMv1.0: unary bitwise not: ~a
+    kopLXor,        // 3DMMv1.0: logical exclusive or: (b != 0) != (a != 0)
+    kopLNot,        // 3DMMv1.0: unary logical not: !a
+    kopEq,          // 3DMMv1.0: equality: b == a
+    kopNe,          // 3DMMv1.0: not equal: b != a
+    kopGt,          // 3DMMv1.0: greater than: b > a
+    kopLt,          // 3DMMv1.0: less than: b < a
+    kopGe,          // 3DMMv1.0: greater or equal: b >= a
+    kopLe,          // 3DMMv1.0: less or equal: b <= a
 
-    kopAbs,         // unary absolute value: LwAbs(a)
-    kopRnd,         // a random number between 0 and a - 1 (inclusive)
-    kopMulDiv,      // a * b / c without loss of precision
-    kopDup,         // duplicates the top value
-    kopPop,         // discards the top value
-    kopSwap,        // swaps the top two values
-    kopRot,         // rotates b values by a (c is placed a slots deeper in the stack)
-    kopRev,         // reverses the next a slots on the stack
-    kopDupList,     // duplicates the next a slots on the stack
-    kopPopList,     // pops the next a slots on the stack
-    kopRndList,     // picks one of the next a stack values at random
-    kopSelect,      // picks the b'th entry among the next a stack values
-    kopGoEq,        // if (b == a) jumps to label c
-    kopGoNe,        // if (b != a) jumps to label c
-    kopGoGt,        // if (b > a) jumps to label c
-    kopGoLt,        // if (b < a) jumps to label c
-    kopGoGe,        // if (b >= a) jumps to label c
-    kopGoLe,        // if (b <= a) jumps to label c
-    kopGoZ,         // if (a == 0) jumps to label b
-    kopGoNz,        // if (a != 0) jumps to label b
-    kopGo,          // jumps to label a
-    kopExit,        // terminates the script
-    kopReturn,      // terminates the script with return value a
-    kopSetReturn,   // sets the return value to a
-    kopShuffle,     // shuffles the numbers 0,1,..,a-1 for calls to NextCard
-    kopShuffleList, // shuffles the top a values for calls to NextCard
-    kopNextCard,    // returns the next value from the shuffled values
-                    // when all values have been used, the values are reshuffled
-    kopMatch,       // a is a count of pairs, b is the key, c is the default value
-                    // if b matches the first of any of the a pairs, the second
-                    // value of the pair is pushed. if not, c is pushed.
-    kopPause,       // pause the script (can be resumed later from C code)
-    kopCopyStr,     // copy a string within the registry
-    kopMoveStr,     // move a string within the registry
-    kopNukeStr,     // delete a string from the registry
-    kopMergeStrs,   // merge a string table into the registry
-    kopScaleTime,   // scale the application clock
-    kopNumToStr,    // convert a number to a decimal string
-    kopStrToNum,    // convert a string to a number
-    kopConcatStrs,  // concatenate two strings
-    kopLenStr,      // return the number of characters in the string
-    kopCopySubStr,  // copy a piece of the string
+    kopAbs,         // 3DMMv1.0: unary absolute value: LwAbs(a)
+    kopRnd,         // 3DMMv1.0: a random number between 0 and a - 1 (inclusive)
+    kopMulDiv,      // 3DMMv1.0: a * b / c without loss of precision
+    kopDup,         // 3DMMv1.0: duplicates the top value
+    kopPop,         // 3DMMv1.0: discards the top value
+    kopSwap,        // 3DMMv1.0: swaps the top two values
+    kopRot,         // 3DMMv1.0: rotates b values by a (c is placed a slots deeper in the stack)
+    kopRev,         // 3DMMv1.0: reverses the next a slots on the stack
+    kopDupList,     // 3DMMv1.0: duplicates the next a slots on the stack
+    kopPopList,     // 3DMMv1.0: pops the next a slots on the stack
+    kopRndList,     // 3DMMv1.0: picks one of the next a stack values at random
+    kopSelect,      // 3DMMv1.0: picks the b'th entry among the next a stack values
+    kopGoEq,        // 3DMMv1.0: if (b == a) jumps to label c
+    kopGoNe,        // 3DMMv1.0: if (b != a) jumps to label c
+    kopGoGt,        // 3DMMv1.0: if (b > a) jumps to label c
+    kopGoLt,        // 3DMMv1.0: if (b < a) jumps to label c
+    kopGoGe,        // 3DMMv1.0: if (b >= a) jumps to label c
+    kopGoLe,        // 3DMMv1.0: if (b <= a) jumps to label c
+    kopGoZ,         // 3DMMv1.0: if (a == 0) jumps to label b
+    kopGoNz,        // 3DMMv1.0: if (a != 0) jumps to label b
+    kopGo,          // 3DMMv1.0: jumps to label a
+    kopExit,        // 3DMMv1.0: terminates the script
+    kopReturn,      // 3DMMv1.0: terminates the script with return value a
+    kopSetReturn,   // 3DMMv1.0: sets the return value to a
+    kopShuffle,     // 3DMMv1.0: shuffles the numbers 0,1,..,a-1 for calls to NextCard
+    kopShuffleList, // 3DMMv1.0: shuffles the top a values for calls to NextCard
+    kopNextCard,    // 3DMMv1.0: returns the next value from the shuffled values
+                    // 3DMMv1.0: when all values have been used, the values are reshuffled
+    kopMatch,       // 3DMMv1.0: a is a count of pairs, b is the key, c is the default value
+                    // 3DMMv1.0: if b matches the first of any of the a pairs, the second
+                    // 3DMMv1.0: value of the pair is pushed. if not, c is pushed.
+    kopPause,       // 3DMMv1.0: pause the script (can be resumed later from C code)
+    kopCopyStr,     // 3DMMv1.0: copy a string within the registry
+    kopMoveStr,     // 3DMMv1.0: move a string within the registry
+    kopNukeStr,     // 3DMMv1.0: delete a string from the registry
+    kopMergeStrs,   // 3DMMv1.0: merge a string table into the registry
+    kopScaleTime,   // 3DMMv1.0: scale the application clock
+    kopNumToStr,    // 3DMMv1.0: convert a number to a decimal string
+    kopStrToNum,    // 3DMMv1.0: convert a string to a number
+    kopConcatStrs,  // 3DMMv1.0: concatenate two strings
+    kopLenStr,      // 3DMMv1.0: return the number of characters in the string
+    kopCopySubStr,  // 3DMMv1.0: copy a piece of the string
 
     kopLimSccb
 };
 
-// structure to map a string to an opcode (post-fix)
+// 3DMMv1.0: structure to map a string to an opcode (post-fix)
 struct SZOP
 {
     int32_t op;
     PCSZ psz;
 };
 
-// structure to map a string to an opcode and argument information (in-fix)
+// 3DMMv1.0: structure to map a string to an opcode and argument information (in-fix)
 struct AROP
 {
     int32_t op;
     PCSZ psz;
-    int32_t clwFixed;   // number of fixed arguments
-    int32_t clwVar;     // number of arguments per variable group
-    int32_t cactMinVar; // minimum number of variable groups
-    bool fVoid;         // return a value?
+    int32_t clwFixed;   // 3DMMv1.0: number of fixed arguments
+    int32_t clwVar;     // 3DMMv1.0: number of arguments per variable group
+    int32_t cactMinVar; // 3DMMv1.0: minimum number of variable groups
+    bool fVoid;         // 3DMMv1.0: return a value?
 };
 
-// script version numbers
-// if you bump these, also bump the numbers in scrcomg.h
-const int16_t kswCurSccb = 0xA;  // this version
-const int16_t kswBackSccb = 0xA; // we can be read back to this version
-const int16_t kswMinSccb = 0xA;  // we can read back to this version
+// 3DMMv1.0: script version numbers
+// 3DMMv1.0: if you bump these, also bump the numbers in scrcomg.h
+const int16_t kswCurSccb = 0xA;  // 3DMMv1.0: this version
+const int16_t kswBackSccb = 0xA; // 3DMMv1.0: we can be read back to this version
+const int16_t kswMinSccb = 0xA;  // 3DMMv1.0: we can read back to this version
 
-// high byte of a label value
+// 3DMMv1.0: high byte of a label value
 const uint8_t kbLabel = 0xCC;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Run-time variable name.  The first 8 characters of the name are
     significant.  These 8 characters are packed into lu2 and the low
     2 bytes of lu1, so clients can store the info in 6 bytes. The high
@@ -163,7 +163,7 @@ struct RTVN
     void GetStn(PSTN pstn);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The script compiler base class.
 ***************************************************************************/
 typedef class SCCB *PSCCB;
@@ -183,27 +183,27 @@ class SCCB : public SCCB_PAR
         fsccTop = 2
     };
 
-    PLEXB _plexb;         // the lexer
-    PSCPT _pscpt;         // the script we're building
-    PGL _pgletnTree;      // expression tree (in-fix only)
-    PGL _pgletnStack;     // token stack for building expression tree (in-fix only)
-    PGL _pglcstd;         // control structure stack (in-fix only)
-    PGST _pgstNames;      // encountered names (in-fix only)
-    PGST _pgstLabel;      // encountered labels, sorted, extra long is label value
-    PGST _pgstReq;        // label references, extra long is address of reference
-    int32_t _ilwOpLast;   // address of the last opcode
-    int32_t _lwLastLabel; // for internal temporary labels
-    bool _fError : 1;     // whether an error has occured during compiling
-    bool _fForceOp : 1;   // when pushing a constant, make sure the last long
-                          // is an opcode (because a label references this loc)
-    bool _fHitEnd : 1;    // we've exhausted our input stream
-    int32_t _ttEnd;       // stop compiling when we see this
-    PMSNK _pmsnk;         // the message sink - for error reporting when compiling
+    PLEXB _plexb;         // 3DMMv1.0: the lexer
+    PSCPT _pscpt;         // 3DMMv1.0: the script we're building
+    PGL _pgletnTree;      // 3DMMv1.0: expression tree (in-fix only)
+    PGL _pgletnStack;     // 3DMMv1.0: token stack for building expression tree (in-fix only)
+    PGL _pglcstd;         // 3DMMv1.0: control structure stack (in-fix only)
+    PGST _pgstNames;      // 3DMMv1.0: encountered names (in-fix only)
+    PGST _pgstLabel;      // 3DMMv1.0: encountered labels, sorted, extra long is label value
+    PGST _pgstReq;        // 3DMMv1.0: label references, extra long is address of reference
+    int32_t _ilwOpLast;   // 3DMMv1.0: address of the last opcode
+    int32_t _lwLastLabel; // 3DMMv1.0: for internal temporary labels
+    bool _fError : 1;     // 3DMMv1.0: whether an error has occured during compiling
+    bool _fForceOp : 1;   // 3DMMv1.0: when pushing a constant, make sure the last long
+                          // 3DMMv1.0: is an opcode (because a label references this loc)
+    bool _fHitEnd : 1;    // 3DMMv1.0: we've exhausted our input stream
+    int32_t _ttEnd;       // 3DMMv1.0: stop compiling when we see this
+    PMSNK _pmsnk;         // 3DMMv1.0: the message sink - for error reporting when compiling
 
     bool _FInit(PLEXB plexb, bool fInFix, PMSNK pmsnk);
     void _Free(void);
 
-    // general compilation methods
+    // 3DMMv1.0: general compilation methods
     void _PushLw(int32_t lw);
     void _PushString(PSTN pstn);
     void _PushOp(int32_t op);
@@ -222,14 +222,14 @@ class SCCB : public SCCB_PAR
 
     virtual bool _FGetTok(PTOK ptok);
 
-    // post-fix compiler routines
+    // 3DMMv1.0: post-fix compiler routines
     virtual void _CompilePost(void);
     int32_t _OpFromStnRgszop(PSTN pstn, SZOP *prgszop);
     virtual int32_t _OpFromStn(PSTN pstn);
     bool _FGetStnFromOpRgszop(int32_t op, PSTN pstn, SZOP *prgszop);
     virtual bool _FGetStnFromOp(int32_t op, PSTN pstn);
 
-    // in-fix compiler routines
+    // 3DMMv1.0: in-fix compiler routines
     virtual void _CompileIn(void);
     bool _FResolveToOpl(int32_t opl, int32_t oplMin, int32_t *pietn);
     void _EmitCode(int32_t ietnTop, uint32_t grfscc, int32_t *pclwArg);
@@ -265,4 +265,4 @@ class SCCB : public SCCB_PAR
     virtual bool FDisassemble(PSCPT pscpt, PMSNK pmsnk, PMSNK pmsnkError = pvNil);
 };
 
-#endif //! SCRCOM_H
+#endif //! 3DMMv1.0: SCRCOM_H

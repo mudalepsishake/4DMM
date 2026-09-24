@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -11,7 +11,7 @@ ASSERTNAME
 
 PGOB GOB::_pgobScreen;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create the screen gob.  If fgobEnsureHwnd is set, ensures that the
     screen gob has an OS window associated with it.
 ***************************************************************************/
@@ -39,7 +39,7 @@ bool GOB::FInitScreen(uint32_t grfgob, int32_t ginDef)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Make the GOB a wrapper for the given system window.
 ***************************************************************************/
 bool GOB::FAttachHwnd(KWND hwnd)
@@ -47,7 +47,7 @@ bool GOB::FAttachHwnd(KWND hwnd)
     if (_hwnd != kwndNil)
     {
         ReleasePpo(&_pgpt);
-        // don't destroy the hwnd - the caller must do that
+        // 3DMMEx: don't destroy the hwnd - the caller must do that
         _hwnd = kwndNil;
     }
     if (hwnd != kwndNil)
@@ -61,13 +61,13 @@ bool GOB::FAttachHwnd(KWND hwnd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Find the GOB associated with the given hwnd (if there is one).
 ***************************************************************************/
 PGOB GOB::PgobFromHwnd(KWND hwnd)
 {
-    // NOTE: we used to use SetProp and GetProp for this, but profiling
-    // indicated that GetProp is very slow.
+    // 3DMMEx: NOTE: we used to use SetProp and GetProp for this, but profiling
+    // 3DMMEx: indicated that GetProp is very slow.
     Assert(hwnd != hNil, "nil hwnd");
     GTE gte;
     uint32_t grfgte;
@@ -82,7 +82,7 @@ PGOB GOB::PgobFromHwnd(KWND hwnd)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return the active MDI window.
 ***************************************************************************/
 KWND GOB::HwndMdiActive(void)
@@ -91,7 +91,7 @@ KWND GOB::HwndMdiActive(void)
     return kwndNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Creates a new MDI window and returns it.  This is normally then
     attached to a gob.
 ***************************************************************************/
@@ -103,7 +103,7 @@ KWND GOB::_HwndNewMdi(PSTN pstnTitle)
     return kwndNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destroy an hwnd.
 ***************************************************************************/
 void GOB::_DestroyHwnd(KWND hwnd)
@@ -117,7 +117,7 @@ void GOB::_DestroyHwnd(KWND hwnd)
     SDL_DestroyWindow((SDL_Window *)hwnd);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Gets the current mouse location in this gob's coordinates (if ppt is
     not nil) and determines if the mouse button is down (if pfDown is
     not nil).
@@ -151,7 +151,7 @@ void GOB::GetPtMouse(PT *ppt, bool *pfDown)
         *pfDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Makes sure the GOB is clean (no update is pending).
 ***************************************************************************/
 void GOB::Clean(void)
@@ -160,7 +160,7 @@ void GOB::Clean(void)
     RawRtn();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the window name.
 ***************************************************************************/
 void GOB::SetHwndName(PSTN pstn)
@@ -172,7 +172,7 @@ void GOB::SetHwndName(PSTN pstn)
     }
     if (pvNil != vpmubCur)
     {
-        // Window chooser not used in 3DMM
+        // 3DMMEx: Window chooser not used in 3DMM
         RawRtn();
     }
 
@@ -181,7 +181,7 @@ void GOB::SetHwndName(PSTN pstn)
     SDL_SetWindowTitle((SDL_Window *)_hwnd, u8szTitle);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     If this is one of our MDI windows, make it the active MDI window.
 ***************************************************************************/
 void GOB::MakeHwndActive(KWND hwnd)
@@ -189,7 +189,7 @@ void GOB::MakeHwndActive(KWND hwnd)
     RawRtn();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new MDI window and attach it to the gob.
 ***************************************************************************/
 bool GOB::FCreateAndAttachMdi(PSTN pstnTitle)
@@ -197,7 +197,7 @@ bool GOB::FCreateAndAttachMdi(PSTN pstnTitle)
     AssertThis(0);
     AssertPo(pstnTitle, 0);
 
-    // SDL does not support MDI
+    // 3DMMEx: SDL does not support MDI
     RawRtn();
     return fFalse;
 }

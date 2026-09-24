@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1992,1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: vecfns.h 1.11 1995/06/30 16:09:04 sam Exp $
@@ -16,11 +16,11 @@ extern "C"
 {
 #endif
 
-/**
+/** 3DMMv1.0:
  ** 2D VECTORS
  **/
 
-/*
+/* 3DMMv1.0:
  * v1=v2
  */
 #define BrVector2Copy(v1, v2)                                                                                          \
@@ -30,7 +30,7 @@ extern "C"
         (v1)->v[1] = (v2)->v[1];                                                                                       \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=(s1,s2)
  */
 #define BrVector2Set(v1, s1, s2)                                                                                       \
@@ -54,7 +54,7 @@ extern "C"
         (v1)->v[1] = BrFloatToScalar(f2);                                                                              \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=-v2
  */
 #define BrVector2Negate(v1, v2)                                                                                        \
@@ -64,7 +64,7 @@ extern "C"
         (v1)->v[1] = -(v2)->v[1];                                                                                      \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2+v3
  */
 #define BrVector2Add(v1, v2, v3)                                                                                       \
@@ -74,7 +74,7 @@ extern "C"
         (v1)->v[1] = (v2)->v[1] + (v3)->v[1];                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1+=v2
  */
 #define BrVector2Accumulate(v1, v2)                                                                                    \
@@ -84,7 +84,7 @@ extern "C"
         (v1)->v[1] += (v2)->v[1];                                                                                      \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1+=v2*scalar
  */
 #define BrVector2AccumulateScale(v1, v2, s)                                                                            \
@@ -94,7 +94,7 @@ extern "C"
         (v1)->v[1] += BR_MUL((v2)->v[1], (s));                                                                         \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2-v3
  */
 #define BrVector2Sub(v1, v2, v3)                                                                                       \
@@ -104,7 +104,7 @@ extern "C"
         (v1)->v[1] = (v2)->v[1] - (v3)->v[1];                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2*scalar
  */
 #define BrVector2Scale(v1, v2, s)                                                                                      \
@@ -114,7 +114,7 @@ extern "C"
         (v1)->v[1] = BR_MUL((v2)->v[1], (s));                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2/scalar
  */
 #define BrVector2InvScale(v1, v2, s)                                                                                   \
@@ -124,26 +124,26 @@ extern "C"
         (v1)->v[1] = BR_DIV((v2)->v[1], (s));                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  *  = v1.v2
  */
 #define BrVector2Dot(v1, v2) BR_MAC2((v1)->v[0], (v2)->v[0], (v1)->v[1], (v2)->v[1])
 
-/*
+/* 3DMMv1.0:
  *  = |v1|
  */
 #define BrVector2Length(v1) BR_LENGTH2((v1)->v[0], (v1)->v[1])
 
-/*
+/* 3DMMv1.0:
  *  = |v1| * |v1|
  */
 #define BrVector2LengthSquared(v1) BR_SQR2((v1)->v[0], (v1)->v[1])
 
-/**
+/** 3DMMv1.0:
  ** 3D VECTORS
  **/
 
-/*
+/* 3DMMv1.0:
  * v1=v2
  */
 #define BrVector3Copy(v1, v2)                                                                                          \
@@ -154,7 +154,7 @@ extern "C"
         (v1)->v[2] = (v2)->v[2];                                                                                       \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=(s1,s2,s3)
  */
 #define BrVector3Set(v1, s1, s2, s3)                                                                                   \
@@ -173,7 +173,7 @@ extern "C"
         (v1)->v[2] = BrIntToScalar(i3);                                                                                \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=-v2
  */
 #define BrVector3Negate(v1, v2)                                                                                        \
@@ -184,7 +184,7 @@ extern "C"
         (v1)->v[2] = -(v2)->v[2];                                                                                      \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2+v3
  */
 #define BrVector3Add(v1, v2, v3)                                                                                       \
@@ -195,7 +195,7 @@ extern "C"
         (v1)->v[2] = (v2)->v[2] + (v3)->v[2];                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1+=v2
  */
 #define BrVector3Accumulate(v1, v2)                                                                                    \
@@ -206,7 +206,7 @@ extern "C"
         (v1)->v[2] += (v2)->v[2];                                                                                      \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1+=v2*scalar
  */
 #define BrVector3AccumulateScale(v1, v2, s)                                                                            \
@@ -217,7 +217,7 @@ extern "C"
         (v1)->v[2] += BR_MUL((v2)->v[2], (s));                                                                         \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2-v3
  */
 #define BrVector3Sub(v1, v2, v3)                                                                                       \
@@ -228,7 +228,7 @@ extern "C"
         (v1)->v[2] = (v2)->v[2] - (v3)->v[2];                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2*scalar
  */
 #define BrVector3Scale(v1, v2, s)                                                                                      \
@@ -239,7 +239,7 @@ extern "C"
         (v1)->v[2] = BR_MUL((v2)->v[2], (s));                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1=v2/scalar
  */
 #define BrVector3InvScale(v1, v2, s)                                                                                   \
@@ -250,12 +250,12 @@ extern "C"
         (v1)->v[2] = BR_DIV((v2)->v[2], (s));                                                                          \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  *  = v1.v2
  */
 #define BrVector3Dot(v1, v2) BR_MAC3((v1)->v[0], (v2)->v[0], (v1)->v[1], (v2)->v[1], (v1)->v[2], (v2)->v[2])
 
-/*
+/* 3DMMv1.0:
  * v1 = v2 x v3
  */
 #define BrVector3Cross(v1, v2, v3)                                                                                     \
@@ -266,17 +266,17 @@ extern "C"
         (v1)->v[2] = BR_MUL((v2)->v[0], (v3)->v[1]) - BR_MUL((v2)->v[1], (v3)->v[0]);                                  \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  *  = |v1|
  */
 #define BrVector3Length(v1) BR_LENGTH3((v1)->v[0], (v1)->v[1], (v1)->v[2])
 
-/*
+/* 3DMMv1.0:
  * = |v1| * |v1|
  */
 #define BrVector3LengthSquared(v1) BR_SQR3((v1)->v[0], (v1)->v[1], (v1)->v[2])
 
-/*
+/* 3DMMv1.0:
  * v1 = v2/|v2|
  */
 #define BrVector3Normalise(v1, v2)                                                                                     \
@@ -299,7 +299,7 @@ extern "C"
         }                                                                                                              \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1 = v2/|v2|
  */
 #define BrVector3NormaliseQuick(v1, v2)                                                                                \
@@ -310,7 +310,7 @@ extern "C"
         BrVector3Scale(v1, v2, _scale);                                                                                \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1 = v2/|v2| (low precision)
  */
 #define BrVector3NormaliseLP(v1, v2)                                                                                   \
@@ -321,16 +321,16 @@ extern "C"
         BrVector3Scale(v1, v2, _scale);                                                                                \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * 4D Vectors
  */
-/*
+/* 3DMMv1.0:
  *  = v1.v2
  */
 #define BrVector4Dot(v1, v2)                                                                                           \
     BR_MAC4((v1)->v[0], (v2)->v[0], (v1)->v[1], (v2)->v[1], (v1)->v[2], (v2)->v[2], (v1)->v[3], (v2)->v[3])
 
-/*
+/* 3DMMv1.0:
  * v1=v2
  */
 #define BrVector4Copy(v1, v2)                                                                                          \
@@ -342,7 +342,7 @@ extern "C"
         (v1)->v[3] = (v2)->v[3];                                                                                       \
     } while (0)
 
-/*
+/* 3DMMv1.0:
  * v1 = v2/|v2|
  */
 #define BrVector2Normalise(v1, v2)                                                                                     \

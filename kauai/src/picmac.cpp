@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -13,7 +13,7 @@
 #include "frame.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a picture.
 ***************************************************************************/
 PIC::PIC(void)
@@ -22,7 +22,7 @@ PIC::PIC(void)
     _rc.Zero();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a picture.
 ***************************************************************************/
 PIC::~PIC(void)
@@ -32,7 +32,7 @@ PIC::~PIC(void)
         KillPicture(_hpic);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a picture from a chunky file.  This routine only reads or converts
     OS specific representations with the given chid value.
 ***************************************************************************/
@@ -49,11 +49,11 @@ PPIC PIC::PpicFetch(PCFL pcfl, CTG ctg, CNO cno, CHID chid)
         return PpicRead(&blck);
     }
 
-    // REVIEW shonk: convert another type to a Mac Pict...
+    // 3DMMv1.0: REVIEW shonk: convert another type to a Mac Pict...
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a picture from a chunky file.  This routine only reads a system
     specific pict (Mac PICT or Windows MetaFile) and its header.
 ***************************************************************************/
@@ -88,7 +88,7 @@ PPIC PIC::PpicRead(PBLCK pblck)
     return ppic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the total size on file.
 ***************************************************************************/
 int32_t PIC::CbOnFile(void)
@@ -97,7 +97,7 @@ int32_t PIC::CbOnFile(void)
     return GetHandleSize((HN)_hpic) + size(PICH);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the meta file (and its header) to the given BLCK.
 ***************************************************************************/
 bool PIC::FWrite(PBLCK pblck)
@@ -121,7 +121,7 @@ bool PIC::FWrite(PBLCK pblck)
     return fT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read the file as a native picture (PICT file on Mac).
 ***************************************************************************/
 PPIC PIC::PpicReadNative(FNI *pfni)

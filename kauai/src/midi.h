@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -17,20 +17,20 @@
 
 typedef class MIDS *PMIDS;
 
-// midi event
+// 3DMMv1.0: midi event
 struct MIDEV
 {
-    uint32_t ts;     // time stamp of this event
-    int32_t cb;      // number of bytes to send (in rgbSend)
-    int32_t lwTempo; // the current tempo - at a tempo change, cb will be 0
+    uint32_t ts;     // 3DMMv1.0: time stamp of this event
+    int32_t cb;      // 3DMMv1.0: number of bytes to send (in rgbSend)
+    int32_t lwTempo; // 3DMMv1.0: the current tempo - at a tempo change, cb will be 0
     union {
-        uint8_t rgbSend[4]; // bytes to send if pvLong is nil
-        int32_t lwSend;     // for convenience
+        uint8_t rgbSend[4]; // 3DMMv1.0: bytes to send if pvLong is nil
+        int32_t lwSend;     // 3DMMv1.0: for convenience
     };
 };
 typedef MIDEV *PMIDEV;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Midi stream parser. Knows how to parse standard MIDI streams.
 ***************************************************************************/
 typedef class MSTP *PMSTP;
@@ -63,7 +63,7 @@ class MSTP : public MSTP_PAR
     bool FGetEvent(PMIDEV pmidev, bool fAdvance = fTrue);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Midi Stream object - this is like a MTrk chunk in a standard MIDI file,
     with timing in milliseconds.
 ***************************************************************************/
@@ -94,4 +94,4 @@ class MIDS : public MIDS_PAR
     virtual int32_t CbOnFile(void) override;
 };
 
-#endif //! MIDI_H
+#endif //! 3DMMv1.0: MIDI_H

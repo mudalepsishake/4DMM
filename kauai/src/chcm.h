@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,64 +17,64 @@
 #ifndef CHCM_H
 #define CHCM_H
 
-// token types
+// 3DMMv1.0: token types
 enum
 {
-    ttChunk = ttLimBase, // chunk definition
-    ttChild,             // child descriptor
-    ttParent,            // parent descriptor
-    ttAlign,             // align command
-    ttFile,              // file import command
-    ttMeta,              // metafile import command
-    ttBitmap,            // bitmap import command
-    ttFree,              // for AL, AG, AST - item is free
-    ttItem,              // for GL, etc - start of data for new item
-    ttVar,               // for GG and AG - variable sized data
-    ttGl,                // GL command
-    ttAl,                // AL command
-    ttGg,                // GG command
-    ttAg,                // AG command
-    ttGst,               // GST command
-    ttAst,               // AST command
-    ttScript,            // infix script
-    ttScriptP,           // postfix script
-    ttModeStn,           // change mode to store strings as stn's
-    ttModeStz,           // change mode to store strings as stz's
-    ttModeSz,            // change mode to store strings as sz's
-    ttModeSt,            // change mode to store strings as st's
-    ttModeByte,          // change mode to accept a byte
-    ttModeShort,         // change mode to accept a short
-    ttModeLong,          // change mode to accept a long
-    ttEndChunk,          // end of chunk
-    ttAdopt,             // adopt command
-    ttMacBo,             // use Mac byte order and OSK
-    ttWinBo,             // use Win byte order and OSK
-    ttMacOsk,            // use Mac byte order and OSK
-    ttWinOsk,            // use Win byte order and OSK
-    ttBo,                // insert the current byte order
-    ttOsk,               // insert the current OSK
-    ttMask,              // MASK command
-    ttLoner,             // LONER command
-    ttCursor,            // CURSOR command
-    ttPalette,           // PALETTE command
-    ttPrePacked,         // mark the change as packed
-    ttPack,              // pack the data
-    ttPackedFile,        // packed file import command
-    ttMidi,              // midi file import command
-    ttPackFmt,           // format to pack in
-    ttSubFile,           // start an embedded chunk forest
+    ttChunk = ttLimBase, // 3DMMv1.0: chunk definition
+    ttChild,             // 3DMMv1.0: child descriptor
+    ttParent,            // 3DMMv1.0: parent descriptor
+    ttAlign,             // 3DMMv1.0: align command
+    ttFile,              // 3DMMv1.0: file import command
+    ttMeta,              // 3DMMv1.0: metafile import command
+    ttBitmap,            // 3DMMv1.0: bitmap import command
+    ttFree,              // 3DMMv1.0: for AL, AG, AST - item is free
+    ttItem,              // 3DMMv1.0: for GL, etc - start of data for new item
+    ttVar,               // 3DMMv1.0: for GG and AG - variable sized data
+    ttGl,                // 3DMMv1.0: GL command
+    ttAl,                // 3DMMv1.0: AL command
+    ttGg,                // 3DMMv1.0: GG command
+    ttAg,                // 3DMMv1.0: AG command
+    ttGst,               // 3DMMv1.0: GST command
+    ttAst,               // 3DMMv1.0: AST command
+    ttScript,            // 3DMMv1.0: infix script
+    ttScriptP,           // 3DMMv1.0: postfix script
+    ttModeStn,           // 3DMMv1.0: change mode to store strings as stn's
+    ttModeStz,           // 3DMMv1.0: change mode to store strings as stz's
+    ttModeSz,            // 3DMMv1.0: change mode to store strings as sz's
+    ttModeSt,            // 3DMMv1.0: change mode to store strings as st's
+    ttModeByte,          // 3DMMv1.0: change mode to accept a byte
+    ttModeShort,         // 3DMMv1.0: change mode to accept a short
+    ttModeLong,          // 3DMMv1.0: change mode to accept a long
+    ttEndChunk,          // 3DMMv1.0: end of chunk
+    ttAdopt,             // 3DMMv1.0: adopt command
+    ttMacBo,             // 3DMMv1.0: use Mac byte order and OSK
+    ttWinBo,             // 3DMMv1.0: use Win byte order and OSK
+    ttMacOsk,            // 3DMMv1.0: use Mac byte order and OSK
+    ttWinOsk,            // 3DMMv1.0: use Win byte order and OSK
+    ttBo,                // 3DMMv1.0: insert the current byte order
+    ttOsk,               // 3DMMv1.0: insert the current OSK
+    ttMask,              // 3DMMv1.0: MASK command
+    ttLoner,             // 3DMMv1.0: LONER command
+    ttCursor,            // 3DMMv1.0: CURSOR command
+    ttPalette,           // 3DMMv1.0: PALETTE command
+    ttPrePacked,         // 3DMMv1.0: mark the change as packed
+    ttPack,              // 3DMMv1.0: pack the data
+    ttPackedFile,        // 3DMMv1.0: packed file import command
+    ttMidi,              // 3DMMv1.0: midi file import command
+    ttPackFmt,           // 3DMMv1.0: format to pack in
+    ttSubFile,           // 3DMMv1.0: start an embedded chunk forest
 
     ttLimChlx
 };
 
-// lookup table for keywords
+// 3DMMv1.0: lookup table for keywords
 struct KEYTT
 {
     const PCSZ pszKeyword;
     int32_t tt;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky Compiler lexer class.
 ***************************************************************************/
 typedef class CHLX *PCHLX;
@@ -97,14 +97,14 @@ class CHLX : public CHLX_PAR
     CHLX(PBSF pbsf, PSTN pstnFile, PCSZ pszSearchPath);
     ~CHLX(void);
 
-    // override the LEXB FGetTok to resolve variables, hande SET
-    // and recognize our additional key words
+    // 3DMMv1.0: override the LEXB FGetTok to resolve variables, hande SET
+    // 3DMMv1.0: and recognize our additional key words
     virtual bool FGetTok(PTOK ptok) override;
-    virtual bool FGetTokSkipSemi(PTOK ptok); // also skip ';' & ','
-    virtual bool FGetPath(FNI *pfni);        // read a path
+    virtual bool FGetTokSkipSemi(PTOK ptok); // 3DMMv1.0: also skip ';' & ','
+    virtual bool FGetPath(FNI *pfni);        // 3DMMv1.0: read a path
 };
 
-// error types
+// 3DMMv1.0: error types
 enum
 {
     ertNil = 0,
@@ -156,7 +156,7 @@ enum
     ertLim
 };
 
-// string modes
+// 3DMMv1.0: string modes
 enum
 {
     smStn,
@@ -168,7 +168,7 @@ enum
 #define kcbMinAlign 2
 #define kcbMaxAlign 1024
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Base chunky compiler class
 ***************************************************************************/
 typedef class CHCM *PCHCM;
@@ -182,7 +182,7 @@ class CHCM : public CHCM_PAR
     NOCOPY(CHCM)
 
   protected:
-    // Chunk sub file context
+    // 3DMMv1.0: Chunk sub file context
     struct CSFC
     {
         PCFL pcfl;
@@ -191,23 +191,23 @@ class CHCM : public CHCM_PAR
         bool fPack;
     };
 
-    PGL _pglcsfc; // the stack of CSFCs for sub files
+    PGL _pglcsfc; // 3DMMv1.0: the stack of CSFCs for sub files
 
-    PCFL _pcfl;       // current sub file
-    PGL _pglckiLoner; // the chunks that must be loners
+    PCFL _pcfl;       // 3DMMv1.0: current sub file
+    PGL _pglckiLoner; // 3DMMv1.0: the chunks that must be loners
 
-    BSF _bsf;       // temporary buffer for the chunk data
-    PCHLX _pchlx;   // lexer for compiling
-    int32_t _sm;    // current string mode
-    int32_t _cbNum; // current numerical size (1, 2, or 4)
-    int16_t _bo;    // current byte order and osk
+    BSF _bsf;       // 3DMMv1.0: temporary buffer for the chunk data
+    PCHLX _pchlx;   // 3DMMv1.0: lexer for compiling
+    int32_t _sm;    // 3DMMv1.0: current string mode
+    int32_t _cbNum; // 3DMMv1.0: current numerical size (1, 2, or 4)
+    int16_t _bo;    // 3DMMv1.0: current byte order and osk
     int16_t _osk;
-    PMSNK _pmsnkError;  // error message sink
-    int32_t _cactError; // how many errors we've encountered
-    PSZ _pszSearchPath; // Search path for locating subfiles
+    PMSNK _pmsnkError;  // 3DMMv1.0: error message sink
+    int32_t _cactError; // 3DMMv1.0: how many errors we've encountered
+    PSZ _pszSearchPath; // 3DMMEx: Search path for locating subfiles
 
   protected:
-    struct PHP // parenthesized header parameter
+    struct PHP // 3DMMv1.0: parenthesized header parameter
     {
         int32_t lw;
         PSTN pstn;
@@ -263,7 +263,7 @@ class CHCM : public CHCM_PAR
     bool FSetSearchPath(PCSZ pszSearchPath);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky decompiler class.
 ***************************************************************************/
 typedef class CHDC *PCHDC;
@@ -277,12 +277,12 @@ class CHDC : public CHDC_PAR
     NOCOPY(CHDC)
 
   protected:
-    int32_t _ert; // error type
-    PCFL _pcfl;   // the chunky file to read from
-    BSF _bsf;     // temporary buffer for the chunk data
-    int16_t _bo;  // current byte order and osk
+    int32_t _ert; // 3DMMv1.0: error type
+    PCFL _pcfl;   // 3DMMv1.0: the chunky file to read from
+    BSF _bsf;     // 3DMMv1.0: temporary buffer for the chunk data
+    int16_t _bo;  // 3DMMv1.0: current byte order and osk
     int16_t _osk;
-    CHSE _chse; // chunky source emitter
+    CHSE _chse; // 3DMMv1.0: chunky source emitter
 
   protected:
     bool _FDumpScript(CKI *pcki);
@@ -303,4 +303,4 @@ class CHDC : public CHDC_PAR
     bool FDecompile(PCFL pcflSrc, PMSNK pmsnk, PMSNK pmsnkError);
 };
 
-#endif // CHCM_H
+#endif // 3DMMv1.0: CHCM_H

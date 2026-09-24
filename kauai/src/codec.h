@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -15,7 +15,7 @@
 #ifndef CODEC_H
 #define CODEC_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Codec object.
 ***************************************************************************/
 typedef class CODC *PCODC;
@@ -26,16 +26,16 @@ class CODC : public CODC_PAR
     RTCLASS_DEC
 
   public:
-    // return whether this codec can handle the given format.
+    // 3DMMv1.0: return whether this codec can handle the given format.
     virtual bool FCanDo(bool fEncode, int32_t cfmt) = 0;
 
-    // Decompression should be extremely fast. Compression may be
-    // (painfully) slow.
+    // 3DMMv1.0: Decompression should be extremely fast. Compression may be
+    // 3DMMv1.0: (painfully) slow.
     virtual bool FConvert(bool fEncode, int32_t cfmt, void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst,
                           int32_t *pcbDst) = 0;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Codec manager.
 ***************************************************************************/
 typedef class CODM *PCODM;
@@ -68,14 +68,14 @@ class CODM : public CODM_PAR
     virtual bool FRegisterCodec(PCODC pcodc);
     virtual bool FCanDo(int32_t cfmt, bool fEncode);
 
-    // Gets the type of compression used on the block (assuming it is
-    // compressed).
+    // 3DMMv1.0: Gets the type of compression used on the block (assuming it is
+    // 3DMMv1.0: compressed).
     virtual bool FGetCfmtFromBlck(PBLCK pblck, int32_t *pcfmt);
 
-    // FDecompress allows pvDst to be nil (in which case *pcbDst is filled
-    // in with the buffer size required).
-    // FCompress also allows pvDst to be nil, but the value returned in
-    // *pcbDst will just be cbSrc - 1.
+    // 3DMMv1.0: FDecompress allows pvDst to be nil (in which case *pcbDst is filled
+    // 3DMMv1.0: in with the buffer size required).
+    // 3DMMv1.0: FCompress also allows pvDst to be nil, but the value returned in
+    // 3DMMv1.0: *pcbDst will just be cbSrc - 1.
     bool FDecompressPhq(HQ *phq)
     {
         return _FCodePhq(cfmtNil, phq);
@@ -95,7 +95,7 @@ class CODM : public CODM_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The standard Kauai Codec object.
 ***************************************************************************/
 typedef class KCDC *PKCDC;
@@ -120,4 +120,4 @@ class KCDC : public KCDC_PAR
                           int32_t *pcbDst) override;
 };
 
-#endif //! CODEC_H
+#endif //! 3DMMv1.0: CODEC_H

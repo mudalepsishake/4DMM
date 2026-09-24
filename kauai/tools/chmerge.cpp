@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -13,7 +13,7 @@
 #include "util.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main routine.  Returns non-zero iff there's an error.
 ***************************************************************************/
 int __cdecl main(int cpszs, char *prgpszs[])
@@ -31,9 +31,9 @@ int __cdecl main(int cpszs, char *prgpszs[])
 #ifdef UNICODE
     fprintf(stderr,
             "\nMicrosoft (R) Chunky File Merge Utility (Unicode; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
     fprintf(stderr, "\nMicrosoft (R) Chunky File Merge Utility (Ansi; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
     fprintf(stderr, "Copyright (C) Microsoft Corp 1995. All rights reserved.\n\n");
 
     for (prgpszs++; --cpszs > 0; prgpszs++)
@@ -41,7 +41,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
         chs = (*prgpszs)[0];
         if (chs == '/' || chs == '-')
         {
-            // -r means final chunks should be layed out in subgraph pre-order
+            // 3DMMv1.0: -r means final chunks should be layed out in subgraph pre-order
             switch ((*prgpszs)[1])
             {
             case 'r':
@@ -63,7 +63,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
         }
         else if (pvNil == pcflMerge)
         {
-            // this is the first file name
+            // 3DMMv1.0: this is the first file name
             stn.SetSzs(*prgpszs);
             if (!fniSrc.FBuildFromPath(&stn))
             {
@@ -79,7 +79,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
         }
         else
         {
-            // open the file to merge into pcflMerge
+            // 3DMMv1.0: open the file to merge into pcflMerge
             stn.SetSzs(*prgpszs);
             if (!fniT.FBuildFromPath(&stn))
             {
@@ -92,7 +92,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
                 continue;
             }
 
-            // merge fniSrc into pcflMerge
+            // 3DMMv1.0: merge fniSrc into pcflMerge
             if (pvNil == (pcflSrc = CFL::PcflOpen(&fniSrc, fcflNil)))
             {
                 fprintf(stderr, "Error: Couldn't open %s\n\n", *prgpszs);
@@ -153,7 +153,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
     }
     else
     {
-        // do a save as of the file that we merged into.
+        // 3DMMv1.0: do a save as of the file that we merged into.
         if (!pcflMerge->FSave('CHMR', &fniSrc))
             goto LFail;
     }
@@ -162,7 +162,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
     return 0;
 
 LUsage:
-    // print usage
+    // 3DMMv1.0: print usage
     fprintf(stderr, "%s", "Usage:  chmerge [-r] <srcFile0> [<srcFile1> ...] <dstFile>\n\n");
 
 LFail:
@@ -174,7 +174,7 @@ LFail:
 #ifdef DEBUG
 bool _fEnableWarnings = fTrue;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Warning proc called by Warn() macro
 ***************************************************************************/
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
@@ -190,7 +190,7 @@ void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returning true breaks into the debugger.
 ***************************************************************************/
 bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int32_t cb)
@@ -231,4 +231,4 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int3
 
     return fFalse;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

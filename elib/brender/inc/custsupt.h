@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: custsupt.h 1.2 1995/02/22 21:37:05 sam Exp $
@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-/*
+/* BRender:
  * Outcode bits
  */
 #define OUTCODE_LEFT 0x00000001
@@ -41,7 +41,7 @@ extern "C"
 
 #define OUTCODES_NOT 0x0FFF0000
 
-    /*
+    /* BRender:
      * Values for on screen test
      */
     enum

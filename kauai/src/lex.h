@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,80 +18,80 @@
 
 enum
 {
-    fctNil = 0,   // invalid character
-    fctLow = 1,   // lowercase letter
-    fctUpp = 2,   // uppercase letter
-    fctOct = 4,   // octal
-    fctDec = 8,   // digit
-    fctHex = 16,  // hex digit
-    fctSpc = 32,  // space character
-    fctOp1 = 64,  // first character of a multi-character operator
-    fctOp2 = 128, // last character of a multi-character operator
-    fctOpr = 256, // lone character operator
-    fctQuo = 512, // quote character
+    fctNil = 0,   // 3DMMv1.0: invalid character
+    fctLow = 1,   // 3DMMv1.0: lowercase letter
+    fctUpp = 2,   // 3DMMv1.0: uppercase letter
+    fctOct = 4,   // 3DMMv1.0: octal
+    fctDec = 8,   // 3DMMv1.0: digit
+    fctHex = 16,  // 3DMMv1.0: hex digit
+    fctSpc = 32,  // 3DMMv1.0: space character
+    fctOp1 = 64,  // 3DMMv1.0: first character of a multi-character operator
+    fctOp2 = 128, // 3DMMv1.0: last character of a multi-character operator
+    fctOpr = 256, // 3DMMv1.0: lone character operator
+    fctQuo = 512, // 3DMMv1.0: quote character
 };
 #define kgrfctDigit (fctOct | fctDec | fctHex)
 
 enum
 {
     ttNil,
-    ttError,  // bad token
-    ttLong,   // numeric constant
-    ttName,   // identifier
-    ttString, // string constant
+    ttError,  // 3DMMv1.0: bad token
+    ttLong,   // 3DMMv1.0: numeric constant
+    ttName,   // 3DMMv1.0: identifier
+    ttString, // 3DMMv1.0: string constant
 
-    ttAdd,        // +
-    ttSub,        // -
-    ttMul,        // *
-    ttDiv,        // /
-    ttMod,        // %
-    ttInc,        // ++
-    ttDec,        // --
-    ttBOr,        // |
-    ttBAnd,       // &
-    ttBXor,       // ^
-    ttBNot,       // ~
-    ttShr,        // >>
-    ttShl,        // <<
-    ttLOr,        // ||
-    ttLAnd,       // &&
-    ttLXor,       // ^^
-    ttEq,         // ==
-    ttNe,         // !=
-    ttGt,         // >
-    ttGe,         // >=
-    ttLt,         // <
-    ttLe,         // <=
-    ttLNot,       // !
-    ttAssign,     // =
-    ttAAdd,       // +=
-    ttASub,       // -=
-    ttAMul,       // *=
-    ttADiv,       // /=
-    ttAMod,       // %=
-    ttABOr,       // |=
-    ttABAnd,      // &=
-    ttABXor,      // ^=
-    ttAShr,       // >>=
-    ttAShl,       // <<=
-    ttArrow,      // ->
-    ttDot,        // .
-    ttQuery,      // ?
-    ttColon,      // :
-    ttComma,      // ,
-    ttSemi,       // ;
-    ttOpenRef,    // [
-    ttCloseRef,   // ]
-    ttOpenParen,  // (
-    ttCloseParen, // )
-    ttOpenBrace,  // {
-    ttCloseBrace, // }
-    ttPound,      // #
-    ttDollar,     // $
-    ttAt,         // @
-    ttAccent,     // `
-    ttBackSlash,  // backslash character (\)
-    ttScope,      // ::
+    ttAdd,        // 3DMMv1.0: +
+    ttSub,        // 3DMMv1.0: -
+    ttMul,        // 3DMMv1.0: *
+    ttDiv,        // 3DMMv1.0: /
+    ttMod,        // 3DMMv1.0: %
+    ttInc,        // 3DMMv1.0: ++
+    ttDec,        // 3DMMv1.0: --
+    ttBOr,        // 3DMMv1.0: |
+    ttBAnd,       // 3DMMv1.0: &
+    ttBXor,       // 3DMMv1.0: ^
+    ttBNot,       // 3DMMv1.0: ~
+    ttShr,        // 3DMMv1.0: >>
+    ttShl,        // 3DMMv1.0: <<
+    ttLOr,        // 3DMMv1.0: ||
+    ttLAnd,       // 3DMMv1.0: &&
+    ttLXor,       // 3DMMv1.0: ^^
+    ttEq,         // 3DMMv1.0: ==
+    ttNe,         // 3DMMv1.0: !=
+    ttGt,         // 3DMMv1.0: >
+    ttGe,         // 3DMMv1.0: >=
+    ttLt,         // 3DMMv1.0: <
+    ttLe,         // 3DMMv1.0: <=
+    ttLNot,       // 3DMMv1.0: !
+    ttAssign,     // 3DMMv1.0: =
+    ttAAdd,       // 3DMMv1.0: +=
+    ttASub,       // 3DMMv1.0: -=
+    ttAMul,       // 3DMMv1.0: *=
+    ttADiv,       // 3DMMv1.0: /=
+    ttAMod,       // 3DMMv1.0: %=
+    ttABOr,       // 3DMMv1.0: |=
+    ttABAnd,      // 3DMMv1.0: &=
+    ttABXor,      // 3DMMv1.0: ^=
+    ttAShr,       // 3DMMv1.0: >>=
+    ttAShl,       // 3DMMv1.0: <<=
+    ttArrow,      // 3DMMv1.0: ->
+    ttDot,        // 3DMMv1.0: .
+    ttQuery,      // 3DMMv1.0: ?
+    ttColon,      // 3DMMv1.0: :
+    ttComma,      // 3DMMv1.0: ,
+    ttSemi,       // 3DMMv1.0: ;
+    ttOpenRef,    // 3DMMv1.0: [
+    ttCloseRef,   // 3DMMv1.0: ]
+    ttOpenParen,  // 3DMMv1.0: (
+    ttCloseParen, // 3DMMv1.0: )
+    ttOpenBrace,  // 3DMMv1.0: {
+    ttCloseBrace, // 3DMMv1.0: }
+    ttPound,      // 3DMMv1.0: #
+    ttDollar,     // 3DMMv1.0: $
+    ttAt,         // 3DMMv1.0: @
+    ttAccent,     // 3DMMv1.0: `
+    ttBackSlash,  // 3DMMv1.0: backslash character (\)
+    ttScope,      // 3DMMv1.0: ::
 
     ttLimBase
 };
@@ -104,7 +104,7 @@ struct TOK
 };
 typedef TOK *PTOK;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Base lexer.
 ***************************************************************************/
 #define kcchLexbBuf 512
@@ -121,11 +121,11 @@ class LEXB : public LEXB_PAR
   protected:
     static uint16_t _mpchgrfct[];
 
-    PFIL _pfil; // exactly one of _pfil, _pbsf should be non-nil
+    PFIL _pfil; // 3DMMv1.0: exactly one of _pfil, _pbsf should be non-nil
     PBSF _pbsf;
     STN _stnFile;
-    int32_t _lwLine;  // which line
-    int32_t _ichLine; // which character on the line
+    int32_t _lwLine;  // 3DMMv1.0: which line
+    int32_t _ichLine; // 3DMMv1.0: which character on the line
 
     FP _fpCur;
     FP _fpMac;
@@ -175,4 +175,4 @@ class LEXB : public LEXB_PAR
     }
 };
 
-#endif //! LEX_H
+#endif //! 3DMMv1.0: LEX_H

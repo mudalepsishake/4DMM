@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,22 +16,22 @@
 #ifndef GFX_H
 #define GFX_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Text and fonts.
 ****************************************/
-// DeScription of a Font.
+// 3DMMv1.0: DeScription of a Font.
 struct DSF
 {
-    int32_t onn;     // Font number.
-    uint32_t grfont; // Font style.
-    int32_t dyp;     // Font height in points.
-    int32_t tah;     // Horizontal Text Alignment
-    int32_t tav;     // Vertical Text Alignment
+    int32_t onn;     // 3DMMv1.0: Font number.
+    uint32_t grfont; // 3DMMv1.0: Font style.
+    int32_t dyp;     // 3DMMv1.0: Font height in points.
+    int32_t tah;     // 3DMMv1.0: Horizontal Text Alignment
+    int32_t tav;     // 3DMMv1.0: Vertical Text Alignment
 
     ASSERT
 };
 
-// fONT Styles - note that these match the Mac values
+// 3DMMv1.0: fONT Styles - note that these match the Mac values
 enum
 {
     fontNil = 0,
@@ -41,7 +41,7 @@ enum
     fontBoxed = 8,
 };
 
-// Horizontal Text Alignment.
+// 3DMMv1.0: Horizontal Text Alignment.
 enum
 {
     tahLeft,
@@ -50,7 +50,7 @@ enum
     tahLim
 };
 
-// Vertical Text Alignment
+// 3DMMv1.0: Vertical Text Alignment
 enum
 {
     tavTop,
@@ -60,14 +60,14 @@ enum
     tavLim
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Font List
 ****************************************/
 const int32_t onnNil = -1;
 
 #ifdef KAUAI_WIN32
 int CALLBACK _FEnumFont(const LOGFONT *plgf, const TEXTMETRIC *ptxm, UINT luType, LPARAM luParam);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #define NTL_PAR BASE
 #define kclsNTL KLCONST3('N', 'T', 'L')
@@ -81,7 +81,7 @@ class NTL : public NTL_PAR
   private:
 #ifdef KAUAI_WIN32
     friend int CALLBACK _FEnumFont(const LOGFONT *plgf, const TEXTMETRIC *ptxm, UINT luType, LPARAM luParam);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
     PGST _pgst;
     int32_t _onnSystem;
 
@@ -89,7 +89,7 @@ class NTL : public NTL_PAR
 
     bool fInitTtf = fFalse;
 
-    /**
+    /** 3DMMEx:
      * @brief Add a font face to the SDL font list
      *
      * @param pcszFontName Font face name
@@ -98,14 +98,14 @@ class NTL : public NTL_PAR
      */
     bool FAddFontName(PCSZ pcszFontName, int32_t *ponn, PGL *pglsdlfont);
 
-    /**
+    /** 3DMMEx:
      * @brief Find all TrueType font files in a directory and add them to the font list
      *
      * @param pfniFontDir Font directory
      **/
     bool FAddAllFontsInDir(PFNI pfniFontDir);
 
-    /**
+    /** 3DMMEx:
      * @brief Add a single TrueType font file
      * @param pfniFontFile  Path to font file
      * @param pstnFontName  Set font name (default: name from font file)
@@ -113,13 +113,13 @@ class NTL : public NTL_PAR
      **/
     bool FAddFontFile(PFNI pfniFontFile, PSTN pstnFontName = pvNil, int32_t *ponn = pvNil);
 
-    /**
+    /** 3DMMEx:
      * @brief Add all of the available fonts to the font list.
      * This function should also set the default font number, _onnSystem.
      **/
     bool _FLoadFontTable();
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
   public:
     NTL(void);
@@ -127,10 +127,10 @@ class NTL : public NTL_PAR
 
 #ifdef KAUAI_WIN32
     HFONT HfntCreate(DSF *pdsf);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 #ifdef MAC
     int16_t FtcFromOnn(int32_t onn);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
     bool FInit(void);
     int32_t OnnSystem(void)
@@ -145,27 +145,27 @@ class NTL : public NTL_PAR
 
 #ifdef KAUAI_SDL
 
-    // Get a TTF font from a font description
+    // 3DMMEx: Get a TTF font from a font description
     TTF_Font *TtfFontFromDsf(DSF *pdsf);
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
 #ifdef DEBUG
     bool FValidOnn(int32_t onn);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 };
 extern NTL vntl;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Color and pattern
 ****************************************/
 #ifdef WIN
 typedef COLORREF SCR;
 #elif defined(MAC)
 typedef RGBColor SCR;
-#endif //! MAC
+#endif //! 3DMMv1.0: MAC
 
-// NOTE: this matches the Windows RGBQUAD structure
+// 3DMMv1.0: NOTE: this matches the Windows RGBQUAD structure
 struct CLR
 {
     uint8_t bBlue;
@@ -181,7 +181,7 @@ enum
     facrRgb = 1,
     facrIndex = 2,
 };
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 enum
 {
@@ -194,7 +194,7 @@ enum
 const uint32_t kluAcrInvert = 0xFF000000L;
 const uint32_t kluAcrClear = 0xFFFFFFFFL;
 
-// Abstract ColoR
+// 3DMMv1.0: Abstract ColoR
 class ACR
 {
     friend class GPT;
@@ -205,15 +205,15 @@ class ACR
 
 #ifdef WIN
     SCR _Scr(void);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
     void _SetFore(void);
     void _SetBack(void);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
 #ifdef KAUAI_SDL
     SDL_Color _SDLColor(void);
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
   public:
     ACR(void)
@@ -285,7 +285,7 @@ extern ACR kacrCyan;
 extern ACR kacrMagenta;
 extern ACR kacrClear;
 extern ACR kacrInvert;
-#else  //! SYMC
+#else  //! 3DMMv1.0: SYMC
 const ACR kacrBlack(0, 0, 0);
 const ACR kacrDkGray(0x3F, 0x3F, 0x3F);
 const ACR kacrGray(0x7F, 0x7F, 0x7F);
@@ -299,9 +299,9 @@ const ACR kacrCyan(0, kbMax, kbMax);
 const ACR kacrMagenta(kbMax, 0, kbMax);
 const ACR kacrClear(fTrue, fTrue);
 const ACR kacrInvert(fFalse, fFalse);
-#endif //! SYMC
+#endif //! 3DMMv1.0: SYMC
 
-// abstract pattern
+// 3DMMv1.0: abstract pattern
 struct APT
 {
     uint8_t rgb[8];
@@ -344,23 +344,23 @@ extern APT vaptGray;
 extern APT vaptLtGray;
 extern APT vaptDkGray;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Polygon structure - designed to be
     compatible with the Mac's
     Polygon.
 ****************************************/
-struct OLY // pOLYgon
+struct OLY // 3DMMv1.0: pOLYgon
 {
 #ifdef MAC
-    int16_t cb; // size of the whole thing
-    RCS rcs;    // bounding rectangle
+    int16_t cb; // 3DMMv1.0: size of the whole thing
+    RCS rcs;    // 3DMMv1.0: bounding rectangle
     PTS rgpts[1];
 
     int32_t Cpts(void)
     {
         return (cb - offset(OLY, rgpts[0])) / size(PTS);
     }
-#else  //! MAC
+#else  //! 3DMMv1.0: MAC
     int32_t cpts;
     PTS rgpts[1];
 
@@ -368,13 +368,13 @@ struct OLY // pOLYgon
     {
         return cpts;
     }
-#endif //! MAC
+#endif //! 3DMMv1.0: MAC
 
     ASSERT
 };
 const int32_t kcbOlyBase = SIZEOF(OLY) - SIZEOF(PTS);
 
-/****************************************
+/** 3DMMv1.0: **************************************
     High level polygon - a GL of PT's.
 ****************************************/
 enum
@@ -392,7 +392,7 @@ class OGN : public OGN_PAR
     RTCLASS_DEC
 
   private:
-    struct AEI // Add Edge Info.
+    struct AEI // 3DMMv1.0: Add Edge Info.
     {
         PT *prgpt;
         int32_t cpt;
@@ -420,13 +420,13 @@ class OGN : public OGN_PAR
     POGN PognTraceOgn(POGN pogn, uint32_t grfogn);
     POGN PognTraceRgpt(PT *prgpt, int32_t cpt, uint32_t grfogn);
 
-    // static methods
+    // 3DMMv1.0: static methods
     static POGN PognNew(int32_t cvInit = 0);
 };
 
 int32_t IptFindLeftmost(PT *prgpt, int32_t cpt, int32_t dxp, int32_t dyp);
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Graphics drawing data - a parameter
     to drawing apis in the GPT class
 ****************************************/
@@ -439,19 +439,19 @@ enum
     fgddAutoClose = 4,
 };
 
-// graphics drawing data
+// 3DMMv1.0: graphics drawing data
 struct GDD
 {
-    uint32_t grfgdd; // what to do
-    APT apt;         // pattern to use
-    ACR acrFore;     // foreground color (used for solid fills also)
-    ACR acrBack;     // background color
-    int32_t dxpPen;  // pen width (used if framing)
-    int32_t dypPen;  // pen height
-    RCS *prcsClip;   // clipping (may be pvNil)
+    uint32_t grfgdd; // 3DMMv1.0: what to do
+    APT apt;         // 3DMMv1.0: pattern to use
+    ACR acrFore;     // 3DMMv1.0: foreground color (used for solid fills also)
+    ACR acrBack;     // 3DMMv1.0: background color
+    int32_t dxpPen;  // 3DMMv1.0: pen width (used if framing)
+    int32_t dypPen;  // 3DMMv1.0: pen height
+    RCS *prcsClip;   // 3DMMv1.0: clipping (may be pvNil)
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Graphics environment
 ****************************************/
 #define GNV_PAR BASE
@@ -463,23 +463,23 @@ class GNV : public GNV_PAR
     MARKMEM
 
   private:
-    PGPT _pgpt; // the port
+    PGPT _pgpt; // 3DMMv1.0: the port
 
-    // coordinate mapping
+    // 3DMMv1.0: coordinate mapping
     RC _rcSrc;
     RC _rcDst;
 
-    // current pen location and clipping
+    // 3DMMv1.0: current pen location and clipping
     int32_t _xp;
     int32_t _yp;
     RCS _rcsClip;
-    RC _rcVis; // always clipped to - this is in Dst coordinates
+    RC _rcVis; // 3DMMv1.0: always clipped to - this is in Dst coordinates
 
-    // Current font
+    // 3DMMv1.0: Current font
     DSF _dsf;
 
-    // contains the current pen size and prcsClip
-    // this is passed to the GPT
+    // 3DMMv1.0: contains the current pen size and prcsClip
+    // 3DMMv1.0: this is passed to the GPT
     GDD _gdd;
 
     void _Init(PGPT pgpt);
@@ -488,7 +488,7 @@ class GNV : public GNV_PAR
     HQ _HqolyCreate(POGN pogn, uint32_t grfogn);
     HQ _HqolyFrame(POGN pogn, uint32_t grfogn);
 
-    // transition related methods
+    // 3DMMv1.0: transition related methods
     bool _FInitPaletteTrans(PGL pglclr, PGL *ppglclrOld, PGL *ppglclrTrans, int32_t cbitPixel = 0);
     void _PaletteTrans(PGL pglclrOld, PGL pglclrNew, int32_t lwNum, int32_t lwDen, PGL pglclrTrans,
                        CLR *pclrSub = pvNil);
@@ -508,13 +508,13 @@ class GNV : public GNV_PAR
 #ifdef MAC
     void Set(void);
     void Restore(void);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef KAUAI_WIN32
-    // this gross API is for AVI playback
+    // 3DMMv1.0: this gross API is for AVI playback
     void DrawDib(HDRAWDIB hdd, BITMAPINFOHEADER *pbi, RC *prc);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 #ifdef KAUAI_SDL
-    // this gross API is for AVI playback
+    // 3DMMv1.0: this gross API is for AVI playback
     void DrawSurface(SDL_Surface *surface, RC *prc);
 #endif
 
@@ -570,7 +570,7 @@ class GNV : public GNV_PAR
     void ScrollRc(RC *prc, int32_t dxp, int32_t dyp, RC *prc1 = pvNil, RC *prc2 = pvNil);
     static void GetBadRcForScroll(RC *prc, int32_t dxp, int32_t dyp, RC *prc1, RC *prc2);
 
-    // for mapping
+    // 3DMMv1.0: for mapping
     void GetRcSrc(RC *prc);
     void SetRcSrc(RC *prc);
     void GetRcDst(RC *prc);
@@ -578,11 +578,11 @@ class GNV : public GNV_PAR
     void SetRcVis(RC *prc);
     void IntersectRcVis(RC *prc);
 
-    // set clipping
+    // 3DMMv1.0: set clipping
     void ClipRc(RC *prc);
     void ClipToSrc(void);
 
-    // Text & font.
+    // 3DMMv1.0: Text & font.
     void SetFont(int32_t onn, uint32_t grfont, int32_t dypFont, int32_t tah = tahLeft, int32_t tav = tavTop);
     void SetOnn(int32_t onn);
     void SetFontStyle(uint32_t grfont);
@@ -596,13 +596,13 @@ class GNV : public GNV_PAR
     void GetRcFromRgch(RC *prc, const achar *prgch, int32_t cch, int32_t xp = 0, int32_t yp = 0);
     void GetRcFromStn(RC *prc, PSTN pstn, int32_t xp = 0, int32_t yp = 0);
 
-    // bitmaps and pictures
+    // 3DMMv1.0: bitmaps and pictures
     void CopyPixels(PGNV pgnvSrc, RC *prcSrc, RC *prcDst);
     void DrawPic(PPIC ppic, RC *prc);
     void DrawMbmp(PMBMP pmbmp, int32_t xp, int32_t yp);
     void DrawMbmp(PMBMP pmbmp, RC *prc);
 
-    // transitions
+    // 3DMMv1.0: transitions
     void Wipe(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, uint32_t dts, PGL pglclr = pvNil);
     void Slide(int32_t gfd, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, uint32_t dts, PGL pglclr = pvNil);
     void Dissolve(int32_t crcWidth, int32_t crcHeight, ACR acrFill, PGNV pgnvSrc, RC *prcSrc, RC *prcDst, uint32_t dts,
@@ -612,16 +612,16 @@ class GNV : public GNV_PAR
               PGL pglclr = pvNil);
 };
 
-// palette setting options
+// 3DMMv1.0: palette setting options
 enum
 {
     fpalNil = 0,
-    fpalIdentity = 1, // make this an identity palette
-    fpalInitAnim = 2, // make the palette animatable
-    fpalAnimate = 4,  // animate the current palette with these colors
+    fpalIdentity = 1, // 3DMMv1.0: make this an identity palette
+    fpalInitAnim = 2, // 3DMMv1.0: make the palette animatable
+    fpalAnimate = 4,  // 3DMMv1.0: animate the current palette with these colors
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Graphics port
 ****************************************/
 #define GPT_PAR BASE
@@ -635,7 +635,7 @@ class GPT : public GPT_PAR
   private:
     PREGN _pregnClip;
     RC _rcClip;
-    PT _ptBase; // coordinates assigned to top-left of the GPT
+    PT _ptBase; // 3DMMv1.0: coordinates assigned to top-left of the GPT
 
 #ifdef KAUAI_WIN32
 #ifdef DEBUG
@@ -647,20 +647,20 @@ class GPT : public GPT_PAR
     static int32_t _cclrPal;
     static int32_t _cactPalCur;
     static int32_t _cactFlush;
-    static bool _fPalettized; // whether the screen is palettized
+    static bool _fPalettized; // 3DMMv1.0: whether the screen is palettized
 
     HDC _hdc;
     KWND _hwnd;
-    HBMP _hbmp;           // nil if not an offscreen port
-    uint8_t *_prgbPixels; // nil if not a dib section port
+    HBMP _hbmp;           // 3DMMv1.0: nil if not an offscreen port
+    uint8_t *_prgbPixels; // 3DMMv1.0: nil if not a dib section port
     int32_t _cbitPixel;
     int32_t _cbRow;
-    RC _rcOff;         // bounding rectangle for a metafile or dib port
-    int32_t _cactPal;  // which palette this port has selected
-    int32_t _cactDraw; // last draw - for knowing when to call GdiFlush
+    RC _rcOff;         // 3DMMv1.0: bounding rectangle for a metafile or dib port
+    int32_t _cactPal;  // 3DMMv1.0: which palette this port has selected
+    int32_t _cactDraw; // 3DMMv1.0: last draw - for knowing when to call GdiFlush
 
-    // selected brush and its related info
-    enum // brush kind
+    // 3DMMv1.0: selected brush and its related info
+    enum // 3DMMv1.0: brush kind
     {
         bkNil,
         bkApt,
@@ -669,17 +669,17 @@ class GPT : public GPT_PAR
     };
     HBRUSH _hbr;
     int32_t _bk;
-    APT _apt;   // for bkApt
-    ACR _acr;   // for bkAcr
-    int _wType; // for bkStock (stock brush)
+    APT _apt;   // 3DMMv1.0: for bkApt
+    ACR _acr;   // 3DMMv1.0: for bkAcr
+    int _wType; // 3DMMv1.0: for bkStock (stock brush)
 
     HFONT _hfnt;
     DSF _dsf;
 
-    bool _fNewClip : 1; // _pregnClip has changed
+    bool _fNewClip : 1; // 3DMMv1.0: _pregnClip has changed
     bool _fMetaFile : 1;
-    bool _fMapIndices : 1; // SelectPalette failed, map indices to RGBs
-    bool _fOwnPalette : 1; // this offscreen has its own palette
+    bool _fMapIndices : 1; // 3DMMv1.0: SelectPalette failed, map indices to RGBs
+    bool _fOwnPalette : 1; // 3DMMv1.0: this offscreen has its own palette
 
     void _SetClip(RCS *prcsClip);
     void _EnsurePalette(void);
@@ -696,29 +696,29 @@ class GPT : public GPT_PAR
     SCR _Scr(ACR acr);
 
     bool _FInit(HDC hdc);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #ifdef MAC
     static HCLT _hcltDef;
     static bool _fForcePalOnSys;
     static HCLT _HcltUse(int32_t cbitPixel);
 
-    // WARNING: the PPRT's below may be GWorldPtr's instead of GrafPtr's
-    // Only use SetGWorld or GetGWorld on these.  Don't assume they
-    // point to GrafPort's.
-    PPRT _pprt; // may be a GWorldPtr
+    // 3DMMv1.0: WARNING: the PPRT's below may be GWorldPtr's instead of GrafPtr's
+    // 3DMMv1.0: Only use SetGWorld or GetGWorld on these.  Don't assume they
+    // 3DMMv1.0: point to GrafPort's.
+    PPRT _pprt; // 3DMMv1.0: may be a GWorldPtr
     HGD _hgd;
-    PPRT _pprtSav; // may be a GWorldPtr
+    PPRT _pprtSav; // 3DMMv1.0: may be a GWorldPtr
     HGD _hgdSav;
-    int16_t _cactLock;  // lock count for pixels (if offscreen)
-    int16_t _cbitPixel; // depth of bitmap (if offscreen)
+    int16_t _cactLock;  // 3DMMv1.0: lock count for pixels (if offscreen)
+    int16_t _cbitPixel; // 3DMMv1.0: depth of bitmap (if offscreen)
     bool _fSet : 1;
     bool _fOffscreen : 1;
     bool _fNoClip : 1;
-    bool _fNewClip : 1; //_pregnClip is new
+    bool _fNewClip : 1; // 3DMMv1.0: _pregnClip is new
 
-    // for picture based GPT's
-    RC _rcOff; // also valid for offscreen GPTs
+    // 3DMMv1.0: for picture based GPT's
+    RC _rcOff; // 3DMMv1.0: also valid for offscreen GPTs
     HPIC _hpic;
 
     HPIX _Hpix(void);
@@ -730,38 +730,38 @@ class GPT : public GPT_PAR
     void _FramePoly(HQ *phqoly);
     void _DrawLine(PTS *prgpts);
     void _GetRcsFromRgch(RCS *prcs, achar *prgch, int16_t cch, PTS *ppts, DSF *pdsf);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
 #ifdef KAUAI_SDL
 
-    bool _fNewClip : 1;   //_pregnClip is new
-    bool _fOffscreen : 1; // is offscreen
+    bool _fNewClip : 1;   // 3DMMv1.0: _pregnClip is new
+    bool _fOffscreen : 1; // 3DMMEx: is offscreen
 
-    // Offscreen GPT bounding rectangle
+    // 3DMMEx: Offscreen GPT bounding rectangle
     RC _rcOff;
 
-    // Window to render to
+    // 3DMMEx: Window to render to
     SDL_Window *_wnd = pvNil;
-    // Renderer to use when rendering
+    // 3DMMEx: Renderer to use when rendering
     SDL_Renderer *_renderer = pvNil;
-    // Surface to render to
+    // 3DMMEx: Surface to render to
     SDL_Surface *_surface = pvNil;
-    // Texture used for rendering the image
+    // 3DMMEx: Texture used for rendering the image
     SDL_Texture *_texture = pvNil;
-    // Palette for offscreen GPTs
+    // 3DMMEx: Palette for offscreen GPTs
     SDL_Palette *_palOff = pvNil;
 
-    // Set to True if the surface has changed / the texture needs to be updated
+    // 3DMMEx: Set to True if the surface has changed / the texture needs to be updated
     bool _fSurfaceDirty = fTrue;
 
-    // Configure an SDL font with the options in a given DSF
+    // 3DMMEx: Configure an SDL font with the options in a given DSF
     void _SetTextProps(TTF_Font *ttfFont, DSF *pdsf);
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
-    int32_t _cactLock = 0; // lock count
+    int32_t _cactLock = 0; // 3DMMv1.0: lock count
 
-    // low level draw routine
+    // 3DMMv1.0: low level draw routine
     typedef void (GPT::*PFNDRW)(void *);
     void _Fill(void *pv, GDD *pgdd, PFNDRW pfn);
 
@@ -777,9 +777,9 @@ class GPT : public GPT_PAR
 
     static int32_t CclrSetPalette(KWND hwnd, bool fInval);
 
-    // this gross API is for AVI playback
+    // 3DMMv1.0: this gross API is for AVI playback
     void DrawDib(HDRAWDIB hdd, BITMAPINFOHEADER *pbi, RCS *prcs, GDD *pgdd);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 #ifdef KAUAI_SDL
 
 #ifdef WIN
@@ -789,21 +789,21 @@ class GPT : public GPT_PAR
 
     static PGPT PgptNew(SDL_Window *wnd, int32_t cbitPixel, bool fOffscreen, int32_t dxp, int32_t dyp);
 
-    // Repaint window
+    // 3DMMEx: Repaint window
     void Flip();
 
-    // Called when the surface is changed
+    // 3DMMEx: Called when the surface is changed
     void InvalidateTexture(void);
-    // Copy contents of surface to texture
+    // 3DMMEx: Copy contents of surface to texture
     void UpdateTexture(void);
-    // Rebuild texture e.g. due to a change in window size
+    // 3DMMEx: Rebuild texture e.g. due to a change in window size
     void RebuildTexture(void);
-    // Save contents of this GPT to a bitmap for debugging
+    // 3DMMEx: Save contents of this GPT to a bitmap for debugging
     void DumpBitmap(STN *stnBmp);
 
-    // this gross API is for AVI playback
+    // 3DMMv1.0: this gross API is for AVI playback
     void DrawSurface(SDL_Surface *surface, RCS *prcs, GDD *pgdd);
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 #ifdef MAC
     static PGPT PgptNew(PPRT pprt, HGD hgd = hNil);
 
@@ -813,10 +813,10 @@ class GPT : public GPT_PAR
 
     void Set(RCS *prcsClip);
     void Restore(void);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef DEBUG
     static void MarkStaticMem(void);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     static void SetActiveColors(PGL pglclr, uint32_t grfpal);
     static PGL PglclrGetPalette(void);
@@ -854,7 +854,7 @@ class GPT : public GPT_PAR
 
 #ifdef WIN
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Regions
 ****************************************/
 bool FCreateRgn(HRGN *phrgn, RC *prc);
@@ -869,22 +869,22 @@ bool FEqualRgn(HRGN hrgn1, HRGN hrgn2);
 
 #endif
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Misc.
 ****************************************/
 bool FInitGfx(void);
 
-// stretch by a factor of 2 in each dimension.
+// 3DMMv1.0: stretch by a factor of 2 in each dimension.
 void DoubleStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSrc, uint8_t *prgbDst, int32_t cbRowDst,
                    int32_t dypDst, int32_t xpDst, int32_t ypDst, RC *prcClip, PREGN pregnClip);
 
-// stretch by a factor of 2 in vertical direction only.
+// 3DMMv1.0: stretch by a factor of 2 in vertical direction only.
 void DoubleVertStretch(uint8_t *prgbSrc, int32_t cbRowSrc, int32_t dypSrc, RC *prcSrc, uint8_t *prgbDst,
                        int32_t cbRowDst, int32_t dypDst, int32_t xpDst, int32_t ypDst, RC *prcClip, PREGN pregnClip);
 
-// Number of times that the palette has changed (via a call to CclrSetPalette
-// or SetActiveColors). This can be used by other modules to detect a palette
-// change.
+// 3DMMv1.0: Number of times that the palette has changed (via a call to CclrSetPalette
+// 3DMMv1.0: or SetActiveColors). This can be used by other modules to detect a palette
+// 3DMMv1.0: change.
 extern int32_t vcactRealize;
 
-#endif //! GFX_H
+#endif //! 3DMMv1.0: GFX_H

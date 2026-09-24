@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,7 +18,7 @@ RTCLASS(REGSC)
 
 int32_t const kcdxpBlock = 100;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Region builder class.  For building the _pglxp of a region and getting
     its bounding rectangle and _dxp value.
 ***************************************************************************/
@@ -53,7 +53,7 @@ class REGBL : public REGBL_PAR
     void EndRow(void);
     void AddXp(int32_t xp)
     {
-        // can only be called while building a row.
+        // 3DMMv1.0: can only be called while building a row.
         AssertThis(0);
         Assert(_idypCur != ivNil, "calling AddXp outside a row");
         Assert(_ixpCur < _pglxp->IvMac(), "overflow in AddXp");
@@ -73,7 +73,7 @@ class REGBL : public REGBL_PAR
     PGL PglxpFree(RC *prc, int32_t *pdxp);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize a region builder.
 ***************************************************************************/
 bool REGBL::FInit(RC *prcRef, PGL pglxp)
@@ -107,7 +107,7 @@ bool REGBL::FInit(RC *prcRef, PGL pglxp)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Begin a row.
 ***************************************************************************/
 bool REGBL::FStartRow(int32_t dyp, int32_t cxpMax)
@@ -142,7 +142,7 @@ bool REGBL::FStartRow(int32_t dyp, int32_t cxpMax)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     End a row in the region builder.
 ***************************************************************************/
 void REGBL::EndRow(void)
@@ -157,17 +157,17 @@ void REGBL::EndRow(void)
     if ((czp = _ixpCur - _idypCur) > 2)
         _rc.ypBottom = _ypCur;
 
-    // see if this row matches the last one
+    // 3DMMv1.0: see if this row matches the last one
     if (ivNil != _idypPrev && czp == _idypCur - _idypPrev &&
         FEqualRgb(&qrgxp[_idypPrev + 1], &qrgxp[_idypCur + 1], (czp - 1) * SIZEOF(int32_t)))
     {
-        // this row matches the previous row
+        // 3DMMv1.0: this row matches the previous row
         qrgxp[_idypPrev] += qrgxp[_idypCur];
         _ixpCur = _idypCur;
     }
     else if (0 == _idypCur && _ixpCur == 2)
     {
-        // at the top and still empty
+        // 3DMMv1.0: at the top and still empty
         _rc.ypTop = _rc.ypBottom = _ypCur;
         _ixpCur = 0;
     }
@@ -177,7 +177,7 @@ void REGBL::EndRow(void)
     _idypCur = ivNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clean up and return all the relevant information.
 ***************************************************************************/
 PGL REGBL::PglxpFree(RC *prc, int32_t *pdxp)
@@ -187,17 +187,17 @@ PGL REGBL::PglxpFree(RC *prc, int32_t *pdxp)
     AssertVarMem(pdxp);
     PGL pglxp;
 
-    // see if the last row is empty
+    // 3DMMv1.0: see if the last row is empty
     if (_ypCur > _rc.ypBottom)
     {
-        // last row is empty
+        // 3DMMv1.0: last row is empty
         _ixpCur = _idypPrev;
     }
 
     *pdxp = 0;
     if (0 == _ixpCur)
     {
-        // empty
+        // 3DMMv1.0: empty
         Assert(_rc.FEmpty(), 0);
         ReleasePpo(&_pglxp);
         _rc.Zero();
@@ -207,7 +207,7 @@ PGL REGBL::PglxpFree(RC *prc, int32_t *pdxp)
         Assert(!_rc.FEmpty(), 0);
         if (_ixpCur <= 4)
         {
-            // rectangular
+            // 3DMMv1.0: rectangular
             ReleasePpo(&_pglxp);
         }
         else
@@ -225,7 +225,7 @@ PGL REGBL::PglxpFree(RC *prc, int32_t *pdxp)
     return pglxp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the region scanner class.
 ***************************************************************************/
 REGSC::REGSC(void)
@@ -233,7 +233,7 @@ REGSC::REGSC(void)
     _pglxpSrc = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the region scanner class.
 ***************************************************************************/
 REGSC::~REGSC(void)
@@ -241,7 +241,7 @@ REGSC::~REGSC(void)
     Free();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Release our hold on any memory.
 ***************************************************************************/
 void REGSC::Free(void)
@@ -253,7 +253,7 @@ void REGSC::Free(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initializes a region scanner.  The scanner implicitly intersects the
     region with *prcRel and returns xp values relative to prcRel->xpLeft.
 ***************************************************************************/
@@ -264,7 +264,7 @@ void REGSC::Init(PREGN pregn, RC *prcRel)
     _InitCore(pregn->_pglxp, &rc, prcRel);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initializes a region scanner with the given rectangle.
 ***************************************************************************/
 void REGSC::InitRc(RC *prc, RC *prcRel)
@@ -272,7 +272,7 @@ void REGSC::InitRc(RC *prc, RC *prcRel)
     _InitCore(pvNil, prc, prcRel);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initializes a region scanner.  The scanner implicitly intersects the
     region with *prcRel and returns xp values relative to prcRel->xpLeft.
 ***************************************************************************/
@@ -303,14 +303,14 @@ void REGSC::_InitCore(PGL pglxp, RC *prc, RC *prcRel)
     _dyp = rc.ypTop - prcRel->ypTop;
     _dypTot = prcRel->Dyp();
 
-    // initialize to an empty row
+    // 3DMMv1.0: initialize to an empty row
     _pxpLimRow = (_pxpMinRow = _pxpLimCur) - 1;
     _xpMinRow = klwMax;
 
     ScanNext(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scan the next horizontal strip of the region.
 ***************************************************************************/
 void REGSC::_ScanNextCore(void)
@@ -320,19 +320,19 @@ void REGSC::_ScanNextCore(void)
     Assert(_dyp <= 0, "why is _ScanNextCore being called?");
     if (_dypTot <= 0)
     {
-        // ran out of region!
+        // 3DMMv1.0: ran out of region!
         goto LEndRegion;
     }
 
     for (;;)
     {
-        // do the next scan
+        // 3DMMv1.0: do the next scan
         if (_pxpLimCur >= _pxpLimSrc)
         {
-            // ran out of region!
+            // 3DMMv1.0: ran out of region!
         LEndRegion:
-            // use kswMax, not klwMax, so clients can add this to
-            // another yp value without fear of overflow
+            // 3DMMv1.0: use kswMax, not klwMax, so clients can add this to
+            // 3DMMv1.0: another yp value without fear of overflow
             _dyp = kswMax;
             _pxpLimRow = (_pxpMinRow = _pxpLimCur = _pxpLimSrc) - 1;
             _xpMinRow = klwMax;
@@ -341,7 +341,7 @@ void REGSC::_ScanNextCore(void)
         if ((_dyp += *_pxpLimCur++) > 0)
             break;
 
-        // find the start of the next row
+        // 3DMMv1.0: find the start of the next row
         while (*_pxpLimCur != klwMax)
         {
             _pxpLimCur += 2;
@@ -350,8 +350,8 @@ void REGSC::_ScanNextCore(void)
         _pxpLimCur++;
     }
 
-    //_pxpLimCur now points to the beginning of the correct row
-    // find the first xp value in our range
+    // 3DMMv1.0: _pxpLimCur now points to the beginning of the correct row
+    // 3DMMv1.0: find the first xp value in our range
     if (*_pxpLimCur < -_dxp)
     {
         do
@@ -360,7 +360,7 @@ void REGSC::_ScanNextCore(void)
             Assert(_pxpLimCur < _pxpLimSrc && _pxpLimCur[-1] != klwMax, "bad region 2");
         } while (*_pxpLimCur < -_dxp);
 
-        // see if we went too far
+        // 3DMMv1.0: see if we went too far
         if (_pxpLimCur[-1] > -_dxp)
         {
             _xpMinRow = 0;
@@ -373,18 +373,18 @@ void REGSC::_ScanNextCore(void)
     _pxpMinRow = _pxpLimCur;
     if (_xpMinRow == klwMax)
     {
-        // empty row
+        // 3DMMv1.0: empty row
         _pxpLimRow = _pxpLimCur - 1;
         return;
     }
 
     if ((_xpMinRow += _dxp) >= _xpRight)
     {
-        // empty row, but we need to find the start of the next row
+        // 3DMMv1.0: empty row, but we need to find the start of the next row
         AssertIn(_xpMinRow, 0, kcbMax);
         Assert(*_pxpLimCur != klwMax, "bad region 3");
 
-        // find the start of the next row
+        // 3DMMv1.0: find the start of the next row
         _pxpLimCur++;
         while (*_pxpLimCur != klwMax)
         {
@@ -417,7 +417,7 @@ LFindLim:
     Assert((_pxpLimRow - _pxpMinRow) & 1, "logic error above");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new region and set it to a rectangle.
 ***************************************************************************/
 PREGN REGN::PregnNew(RC *prc)
@@ -432,7 +432,7 @@ PREGN REGN::PregnNew(RC *prc)
     return pregn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a region.
 ***************************************************************************/
 REGN::~REGN(void)
@@ -440,10 +440,10 @@ REGN::~REGN(void)
     ReleasePpo(&_pglxp);
 #ifdef KAUAI_WIN32
     FreePhrgn(&_hrgn);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the region rectangular.
 ***************************************************************************/
 void REGN::SetRc(RC *prc)
@@ -458,12 +458,12 @@ void REGN::SetRc(RC *prc)
     ReleasePpo(&_pglxp);
 #ifdef KAUAI_WIN32
     FreePhrgn(&_hrgn);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
     _dxp = 0;
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Offset the region.
 ***************************************************************************/
 void REGN::Offset(int32_t xp, int32_t yp)
@@ -473,7 +473,7 @@ void REGN::Offset(int32_t xp, int32_t yp)
     _dptRgn.Offset(xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the region is empty and if prc is not nil, fill in *prc
     with the region's bounding rectangle.
 ***************************************************************************/
@@ -487,7 +487,7 @@ bool REGN::FEmpty(RC *prc)
     return _rc.FEmpty();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the region is rectangular and if prc is not nil, fill in
     *prc with the region's bounding rectangle.
 ***************************************************************************/
@@ -499,7 +499,7 @@ bool REGN::FIsRc(RC *prc)
     return _pglxp == pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scale the x values of the region by the given amount.
 ***************************************************************************/
 void REGN::Scale(int32_t lwNumX, int32_t lwDenX, int32_t lwNumY, int32_t lwDenY)
@@ -562,22 +562,22 @@ void REGN::Scale(int32_t lwNumX, int32_t lwDenX, int32_t lwNumY, int32_t lwDenY)
         {
             if (xp1 >= xp2)
             {
-                // empty run - ignore both values
+                // 3DMMv1.0: empty run - ignore both values
                 if (regsc.XpFetch() == klwMax)
                     break;
                 xp1 = ratXp.LwScale(regsc.XpCur());
             }
             else
             {
-                // write xp1 and advance
+                // 3DMMv1.0: write xp1 and advance
                 regbl.AddXp(xp1);
                 xp1 = xp2;
             }
 
-            // fetch a new xp2
+            // 3DMMv1.0: fetch a new xp2
             if (regsc.XpFetch() == klwMax)
             {
-                // write the last off
+                // 3DMMv1.0: write the last off
                 regbl.AddXp(xp1);
                 break;
             }
@@ -595,16 +595,16 @@ void REGN::Scale(int32_t lwNumX, int32_t lwDenX, int32_t lwNumY, int32_t lwDenY)
     ReleasePpo(&_pglxp);
 #ifdef KAUAI_WIN32
     FreePhrgn(&_hrgn);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
-    // force the region scanner to let go of the pglxp before the
-    // region builder tries to resize it.
+    // 3DMMv1.0: force the region scanner to let go of the pglxp before the
+    // 3DMMv1.0: region builder tries to resize it.
     regsc.Free();
 
     _pglxp = regbl.PglxpFree(&_rc, &_dxp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Union the two regions and leave the result in this one.  If pregn2 is
     nil, this region is used for pregn2.
 ***************************************************************************/
@@ -627,7 +627,7 @@ bool REGN::FUnion(PREGN pregn1, PREGN pregn2)
     rc.Union(&pregn1->_rc, &pregn2->_rc);
     if (pvNil == pregn1->_pglxp && rc == pregn1->_rc || pvNil == pregn2->_pglxp && rc == pregn2->_rc)
     {
-        // union is a rectangle
+        // 3DMMv1.0: union is a rectangle
         SetRc(&rc);
         return fTrue;
     }
@@ -637,7 +637,7 @@ bool REGN::FUnion(PREGN pregn1, PREGN pregn2)
     return _FUnionCore(&rc, &regsc1, &regsc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Union the given rectangle and region and leave the result in this region.
     If pregn is nil, this region is used for pregn.
 ***************************************************************************/
@@ -660,13 +660,13 @@ bool REGN::FUnionRc(RC *prc, PREGN pregn)
     rc.Union(prc, &pregn->_rc);
     if (rc == *prc)
     {
-        // *prc totally contains the region
+        // 3DMMv1.0: *prc totally contains the region
         SetRc(&rc);
         return fTrue;
     }
 
-    // if this one is rectangular and already contains *prc, then
-    // we're done
+    // 3DMMv1.0: if this one is rectangular and already contains *prc, then
+    // 3DMMv1.0: we're done
     if (this == pregn && pvNil == _pglxp && rc == _rc)
         return fTrue;
 
@@ -675,7 +675,7 @@ bool REGN::FUnionRc(RC *prc, PREGN pregn)
     return _FUnionCore(&rc, &regsc1, &regsc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Core union routine.
 ***************************************************************************/
 bool REGN::_FUnionCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
@@ -701,7 +701,7 @@ bool REGN::_FUnionCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
             Assert(FPure(pregsc1->FOn()) == FPure(pregsc2->FOn()), "region scanners have different on/off states");
             if (pregsc1->XpCur() > pregsc2->XpCur())
             {
-                // swap them
+                // 3DMMv1.0: swap them
                 pvSwap = pregsc1;
                 pregsc1 = pregsc2;
                 pregsc2 = (PREGSC)pvSwap;
@@ -711,10 +711,10 @@ bool REGN::_FUnionCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
 
             if (pregsc1->FOn())
             {
-                // both on
+                // 3DMMv1.0: both on
                 regbl.AddXp(pregsc1->XpCur());
                 pregsc1->XpFetch();
-                // 1 off, 2 on
+                // 3DMMv1.0: 1 off, 2 on
                 if (pregsc1->XpCur() < pregsc2->XpCur())
                 {
                     regbl.AddXp(pregsc1->XpCur());
@@ -725,9 +725,9 @@ bool REGN::_FUnionCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
             }
             else
             {
-                // both off
+                // 3DMMv1.0: both off
                 pregsc1->XpFetch();
-                // 1 on, 2 off
+                // 3DMMv1.0: 1 on, 2 off
                 if (pregsc1->XpCur() <= pregsc2->XpCur())
                 {
                     pregsc1->XpFetch();
@@ -740,7 +740,7 @@ bool REGN::_FUnionCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
         Assert(pregsc1->FOn(), "bad regions");
         Assert(pregsc2->XpCur() == klwMax, 0);
 
-        // copy the remainder of this row from pregsc1
+        // 3DMMv1.0: copy the remainder of this row from pregsc1
         while (pregsc1->XpCur() < klwMax)
         {
             regbl.AddXp(pregsc1->XpCur());
@@ -759,14 +759,14 @@ bool REGN::_FUnionCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
     ReleasePpo(&_pglxp);
 #ifdef KAUAI_WIN32
     FreePhrgn(&_hrgn);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
     _pglxp = regbl.PglxpFree(&_rc, &_dxp);
     AssertThis(0);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Intersect the two regions and leave the result in this one.  If pregn2
     is nil, this region is used for pregn2.
 ***************************************************************************/
@@ -784,18 +784,18 @@ bool REGN::FIntersect(PREGN pregn1, PREGN pregn2)
 
     if (!rc.FIntersect(&pregn1->_rc, &pregn2->_rc))
     {
-        // result is empty
+        // 3DMMv1.0: result is empty
         SetRc(&rc);
         return fTrue;
     }
 
-    // if pregn1 is rectangular and contains this one, then
-    // we're done
+    // 3DMMv1.0: if pregn1 is rectangular and contains this one, then
+    // 3DMMv1.0: we're done
     if (this == pregn2 && pvNil == pregn1->_pglxp && rc == _rc)
         return fTrue;
     if (pvNil == pregn1->_pglxp && pvNil == pregn2->_pglxp)
     {
-        // both rectangles, so the intersection is a rectangle
+        // 3DMMv1.0: both rectangles, so the intersection is a rectangle
         SetRc(&rc);
         return fTrue;
     }
@@ -805,7 +805,7 @@ bool REGN::FIntersect(PREGN pregn1, PREGN pregn2)
     return _FIntersectCore(&rc, &regsc1, &regsc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Intersect the given rectangle and region and leave the result in this
     region.  If pregn is nil, this region is used for pregn.
 ***************************************************************************/
@@ -823,17 +823,17 @@ bool REGN::FIntersectRc(RC *prc, PREGN pregn)
 
     if (!rc.FIntersect(prc, &pregn->_rc))
     {
-        // result is empty
+        // 3DMMv1.0: result is empty
         SetRc(&rc);
         return fTrue;
     }
 
-    // if *prc contains this region, then we're done
+    // 3DMMv1.0: if *prc contains this region, then we're done
     if (this == pregn && rc == _rc)
         return fTrue;
     if (pvNil == pregn->_pglxp)
     {
-        // both rectangles, so the intersection is a rectangle
+        // 3DMMv1.0: both rectangles, so the intersection is a rectangle
         SetRc(&rc);
         return fTrue;
     }
@@ -843,7 +843,7 @@ bool REGN::FIntersectRc(RC *prc, PREGN pregn)
     return _FIntersectCore(&rc, &regsc1, &regsc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Core intersect routine.
 ***************************************************************************/
 bool REGN::_FIntersectCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
@@ -869,19 +869,19 @@ bool REGN::_FIntersectCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
             Assert(FPure(pregsc1->FOn()) == FPure(pregsc2->FOn()), "region scanners have different on/off states");
             if (pregsc1->XpCur() > pregsc2->XpCur())
             {
-                // swap them
+                // 3DMMv1.0: swap them
                 pvSwap = pregsc1;
                 pregsc1 = pregsc2;
                 pregsc2 = (PREGSC)pvSwap;
             }
 
-            // NOTE: this is pretty much the adjoint of what's in _FUnionCore - ie,
-            // swap the sense of FOn
+            // 3DMMv1.0: NOTE: this is pretty much the adjoint of what's in _FUnionCore - ie,
+            // 3DMMv1.0: swap the sense of FOn
             if (pregsc1->FOn())
             {
-                // both on
+                // 3DMMv1.0: both on
                 pregsc1->XpFetch();
-                // 1 off, 2 on
+                // 3DMMv1.0: 1 off, 2 on
                 if (pregsc1->XpCur() <= pregsc2->XpCur())
                 {
                     pregsc1->XpFetch();
@@ -892,10 +892,10 @@ bool REGN::_FIntersectCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
             }
             else
             {
-                // both off
+                // 3DMMv1.0: both off
                 regbl.AddXp(pregsc1->XpCur());
                 pregsc1->XpFetch();
-                // 1 on, 2 off
+                // 3DMMv1.0: 1 on, 2 off
                 if (pregsc1->XpCur() < pregsc2->XpCur())
                 {
                     regbl.AddXp(pregsc1->XpCur());
@@ -917,14 +917,14 @@ bool REGN::_FIntersectCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
     ReleasePpo(&_pglxp);
 #ifdef KAUAI_WIN32
     FreePhrgn(&_hrgn);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
     _pglxp = regbl.PglxpFree(&_rc, &_dxp);
     AssertThis(0);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compute regn2 minus regn1 and put the result in this region.  If
     pregn2 is nil, this region is used.
 ***************************************************************************/
@@ -939,7 +939,7 @@ bool REGN::FDiff(PREGN pregn1, PREGN pregn2)
 
     if (pvNil == pregn2)
     {
-        // use this region as the first operand
+        // 3DMMv1.0: use this region as the first operand
         if (!rc.FIntersect(&_rc, &pregn1->_rc))
             return fTrue;
         pregn2 = this;
@@ -958,7 +958,7 @@ bool REGN::FDiff(PREGN pregn1, PREGN pregn2)
     return _FDiffCore(&rc, &regsc2, &regsc1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compute regn minus the given rectangle and put the result in this region.
     If pregn is nil, this region is used.
 ***************************************************************************/
@@ -980,7 +980,7 @@ bool REGN::FDiffRc(RC *prc, PREGN pregn)
 
     if (pregn->_rc.FEmpty() || prc->FContains(&pregn->_rc))
     {
-        // the rectangle contains the entire region or the region is empty
+        // 3DMMv1.0: the rectangle contains the entire region or the region is empty
         rc.Zero();
         SetRc(&rc);
         return fTrue;
@@ -992,7 +992,7 @@ bool REGN::FDiffRc(RC *prc, PREGN pregn)
     return _FDiffCore(&rc, &regsc2, &regsc1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compute *prc minus the given region and put the result in this region.
     If pregn is nil, this region is used.
 ***************************************************************************/
@@ -1016,7 +1016,7 @@ bool REGN::FDiffFromRc(RC *prc, PREGN pregn)
 
     if (pvNil == pregn->_pglxp && pregn->_rc.FContains(prc))
     {
-        // the region is rectangle and contains *prc, so the diff is empty
+        // 3DMMv1.0: the region is rectangle and contains *prc, so the diff is empty
         rc.Zero();
         SetRc(&rc);
         return fTrue;
@@ -1027,7 +1027,7 @@ bool REGN::FDiffFromRc(RC *prc, PREGN pregn)
     return _FDiffCore(prc, &regsc1, &regsc2);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Core diff routine.  Compute pregsc1 minus pregsc2.
 ***************************************************************************/
 bool REGN::_FDiffCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
@@ -1057,10 +1057,10 @@ bool REGN::_FDiffCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
                 while (xp2 <= xp1)
                     xp2 = pregsc2->XpFetch();
 
-                // xp1 < xp2
+                // 3DMMv1.0: xp1 < xp2
                 if (pregsc2->FOn())
                 {
-                    // both on
+                    // 3DMMv1.0: both on
                     regbl.AddXp(xp1);
                 }
                 xp1 = pregsc1->XpFetch();
@@ -1069,20 +1069,20 @@ bool REGN::_FDiffCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
             Assert(!pregsc1->FOn(), "why are we here?");
             if (!pregsc2->FOn())
             {
-                // both off
+                // 3DMMv1.0: both off
                 if (xp1 <= xp2)
                 {
                     xp1 = pregsc1->XpFetch();
                     continue;
                 }
 
-                // xp2 < xp1
+                // 3DMMv1.0: xp2 < xp1
                 regbl.AddXp(xp2);
                 xp2 = pregsc2->XpFetch();
             }
 
             Assert(!pregsc1->FOn() && pregsc2->FOn(), "we shouldn't be here");
-            // 1 off, 2 on
+            // 3DMMv1.0: 1 off, 2 on
             if (xp2 < xp1)
             {
                 regbl.AddXp(xp2);
@@ -1107,7 +1107,7 @@ bool REGN::_FDiffCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
     ReleasePpo(&_pglxp);
 #ifdef KAUAI_WIN32
     FreePhrgn(&_hrgn);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
     _pglxp = regbl.PglxpFree(&_rc, &_dxp);
     AssertThis(0);
@@ -1115,7 +1115,7 @@ bool REGN::_FDiffCore(RC *prc, PREGSC pregsc1, PREGSC pregsc2)
 }
 
 #ifdef KAUAI_WIN32
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a system region that is equivalent to the given region.
 ***************************************************************************/
 HRGN REGN::HrgnCreate(void)
@@ -1168,7 +1168,7 @@ HRGN REGN::HrgnCreate(void)
     hrgn = ExtCreateRegion(pvNil, SIZEOF(RGNDATAHEADER) + LwMul(crc, SIZEOF(RECT)), (RGNDATA *)prd);
     FreePpv((void **)&prd);
     return hrgn;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
     HRGN hrgn;
 
@@ -1278,13 +1278,13 @@ HRGN REGN::HrgnCreate(void)
     Assert(psw == PvAddBv(*hrgn, cb), "wrong size!");
     HUnlock((HN)hrgn);
     return hrgn;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 }
 
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #ifdef KAUAI_WIN32
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If we don't have a cached HRGN equivalent of this region, create one.
     In either case return it.
 ***************************************************************************/
@@ -1304,10 +1304,10 @@ HRGN REGN::HrgnEnsure(void)
     _hrgn = HrgnCreate();
     return _hrgn;
 }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a REGN.
 ***************************************************************************/
 void REGN::AssertValid(uint32_t grf)
@@ -1316,10 +1316,10 @@ void REGN::AssertValid(uint32_t grf)
     AssertNilOrPo(_pglxp, 0);
     Assert(_dxp <= 0, "bad _dxp");
     Assert(_dxp == 0 || _pglxp != pvNil, "_dxp should be zero");
-    // REVIEW shonk: REGN::AssertValid: fill this in
+    // 3DMMv1.0: REVIEW shonk: REGN::AssertValid: fill this in
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the REGN.
 ***************************************************************************/
 void REGN::MarkMem(void)
@@ -1328,4 +1328,4 @@ void REGN::MarkMem(void)
     REGN_PAR::MarkMem();
     MarkMemObj(_pglxp);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

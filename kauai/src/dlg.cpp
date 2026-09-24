@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(DLG)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a dialog object.
 ***************************************************************************/
 DLG::DLG(int32_t rid) : GG(SIZEOF(DIT))
@@ -23,7 +23,7 @@ DLG::DLG(int32_t rid) : GG(SIZEOF(DIT))
     _rid = rid;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DLG.  Does NewObj then calls _FInit.
 ***************************************************************************/
 PDLG DLG::PdlgNew(int32_t rid, PFNDLG pfn, void *pv)
@@ -42,7 +42,7 @@ PDLG DLG::PdlgNew(int32_t rid, PFNDLG pfn, void *pv)
     return pdlg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the values for [iditMin, iditLim) from the actual dialog and put
     them in the GGDIT.
 ***************************************************************************/
@@ -89,7 +89,7 @@ bool DLG::FGetValues(int32_t iditMin, int32_t iditLim)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the values for [iditMin, iditLim) from the GGDIT into the actual
     dialog.
 ***************************************************************************/
@@ -162,7 +162,7 @@ void DLG::SetValues(int32_t iditMin, int32_t iditLim)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the item number from a system item number.
 ***************************************************************************/
 int32_t DLG::IditFromSit(int32_t sit)
@@ -179,7 +179,7 @@ int32_t DLG::IditFromSit(int32_t sit)
     return ivNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Calls the PFNDLG (if not nil) to notify of a change.  PFNDLG should
     return true if the dialog should be dismissed.  The PFNDLG is free
     to change *pidit.  If a nil PFNDLG was specified (in PdlgNew),
@@ -201,7 +201,7 @@ bool DLG::_FDitChange(int32_t *pidit)
     return (*_pfn)(this, pidit, _pv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the stn (for an edit item).
 ***************************************************************************/
 void DLG::GetStn(int32_t idit, PSTN pstn)
@@ -215,7 +215,7 @@ void DLG::GetStn(int32_t idit, PSTN pstn)
     DIT dit;
     GetDit(idit, &dit);
     Assert(ditkEditText == dit.ditk || dit.ditk == ditkCombo, "not a text item or combo");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     cb = Cb(idit);
     if (cb <= 0)
@@ -227,7 +227,7 @@ void DLG::GetStn(int32_t idit, PSTN pstn)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the stn into the DLG.
 ***************************************************************************/
 bool DLG::FPutStn(int32_t idit, PSTN pstn)
@@ -276,7 +276,7 @@ bool DLG::FPutStn(int32_t idit, PSTN pstn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the value of a radio group.
 ***************************************************************************/
 int32_t DLG::LwGetRadio(int32_t idit)
@@ -289,13 +289,13 @@ int32_t DLG::LwGetRadio(int32_t idit)
     DIT dit;
     GetDit(idit, &dit);
     Assert(ditkRadioGroup == dit.ditk, "not a radio group");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     GetRgb(idit, 0, SIZEOF(int32_t), &lw);
     return lw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the value of the radio group.
 ***************************************************************************/
 void DLG::PutRadio(int32_t idit, int32_t lw)
@@ -308,12 +308,12 @@ void DLG::PutRadio(int32_t idit, int32_t lw)
     GetDit(idit, &dit);
     Assert(ditkRadioGroup == dit.ditk, "not a radio group");
     AssertIn(lw, 0, dit.sitLim - dit.sitMin);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     PutRgb(idit, 0, SIZEOF(int32_t), &lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the value of a check box.
 ***************************************************************************/
 bool DLG::FGetCheck(int32_t idit)
@@ -326,13 +326,13 @@ bool DLG::FGetCheck(int32_t idit)
     DIT dit;
     GetDit(idit, &dit);
     Assert(ditkCheckBox == dit.ditk, "not a check box");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     GetRgb(idit, 0, SIZEOF(int32_t), &lw);
     return lw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the value of a check box item.
 ***************************************************************************/
 void DLG::PutCheck(int32_t idit, bool fOn)
@@ -345,13 +345,13 @@ void DLG::PutCheck(int32_t idit, bool fOn)
     DIT dit;
     GetDit(idit, &dit);
     Assert(ditkCheckBox == dit.ditk, "not a check box");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     lw = FPure(fOn);
     PutRgb(idit, 0, SIZEOF(int32_t), &lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the indicated edit item from the dialog and convert it to a long.
     If the string is empty, sets *plw to zero and sets *pfEmpty (if pfEmpty
     is not nil) and returns false.  If the string doesn't parse as a number,
@@ -382,7 +382,7 @@ bool DLG::FGetLwFromEdit(int32_t idit, int32_t *plw, bool *pfEmpty)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the long into the indicated edit item (in decimal).
 ***************************************************************************/
 bool DLG::FPutLwInEdit(int32_t idit, int32_t lw)
@@ -394,7 +394,7 @@ bool DLG::FPutLwInEdit(int32_t idit, int32_t lw)
     return FPutStn(idit, &stn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the string to the given list item.
 ***************************************************************************/
 bool DLG::FAddToList(int32_t idit, PSTN pstn)
@@ -406,7 +406,7 @@ bool DLG::FAddToList(int32_t idit, PSTN pstn)
     DIT dit;
     GetDit(idit, &dit);
     Assert(ditkCombo == dit.ditk, "not a combo");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     cbTot = Cb(idit);
     if (cbTot == 0)
@@ -428,7 +428,7 @@ bool DLG::FAddToList(int32_t idit, PSTN pstn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Empty the list of options for the list item.
 ***************************************************************************/
 void DLG::ClearList(int32_t idit)
@@ -442,7 +442,7 @@ void DLG::ClearList(int32_t idit)
     DIT dit;
     GetDit(idit, &dit);
     Assert(ditkCombo == dit.ditk, "not a combo");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     cbOld = Cb(idit);
     if (cbOld <= 0)

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -19,11 +19,11 @@ RTCLASS(SCPT)
 RTCLASS(STRG)
 
 #ifdef DEBUG
-// these strings are for debug only error messages
+// 3DMMv1.0: these strings are for debug only error messages
 static STN _stn;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the script interpreter.
 ***************************************************************************/
 SCEB::SCEB(PRCA prca, PSTRG pstrg)
@@ -46,7 +46,7 @@ SCEB::SCEB(PRCA prca, PSTRG pstrg)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the script interpreter.
 ***************************************************************************/
 SCEB::~SCEB(void)
@@ -56,14 +56,14 @@ SCEB::~SCEB(void)
     ReleasePpo(&_pstrg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Free our claim to all this stuff.
 ***************************************************************************/
 void SCEB::Free(void)
 {
     AssertThis(0);
 
-    // nuke literal strings left in the global string table
+    // 3DMMv1.0: nuke literal strings left in the global string table
     if (pvNil != _pscpt && pvNil != _pstrg && pvNil != _pscpt->_pgstLiterals && pvNil != _pglrtvm)
     {
         RTVN rtvn;
@@ -84,7 +84,7 @@ void SCEB::Free(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a SCEB.
 ***************************************************************************/
 void SCEB::AssertValid(uint32_t grfsceb)
@@ -105,7 +105,7 @@ void SCEB::AssertValid(uint32_t grfsceb)
     AssertNilOrPo(_prca, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the SCEB.
 ***************************************************************************/
 void SCEB::MarkMem(void)
@@ -117,9 +117,9 @@ void SCEB::MarkMem(void)
     MarkMemObj(_pglrtvm);
     MarkMemObj(_prca);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Run the given script.  (prglw, clw) is the list of parameters for the
     script.
 ***************************************************************************/
@@ -129,7 +129,7 @@ bool SCEB::FRunScript(PSCPT pscpt, int32_t *prglw, int32_t clw, int32_t *plwRetu
     return FAttachScript(pscpt, prglw, clw) && FResume(plwReturn, pfPaused);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Attach a script to this SCEB and pause the script.
 ***************************************************************************/
 bool SCEB::FAttachScript(PSCPT pscpt, int32_t *prglw, int32_t clw)
@@ -174,28 +174,28 @@ bool SCEB::FAttachScript(PSCPT pscpt, int32_t *prglw, int32_t clw)
         }
 
         stnTrace.FAppendCh(ChLit('\n'));
-        // FUTURE: Add script logging for non-Windows platforms if needed
+        // 3DMMEx: FUTURE: Add script logging for non-Windows platforms if needed
 #ifdef WIN
         OutputDebugString(stnTrace.Psz());
-#endif // WIN
+#endif // 3DMMEx: WIN
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     Free();
     _lwReturn = 0;
     _fError = fFalse;
 
-    // create the stack GL
+    // 3DMMv1.0: create the stack GL
     if (pvNil == (_pgllwStack = GL::PglNew(SIZEOF(int32_t), 10)))
         goto LFail;
     _pgllwStack->SetMinGrow(10);
 
-    // stake our claim on the code GL.
+    // 3DMMv1.0: stake our claim on the code GL.
     _pscpt = pscpt;
     _pscpt->AddRef();
 
-    // check the version
-    // get and check the version number
+    // 3DMMv1.0: check the version
+    // 3DMMv1.0: get and check the version number
     if ((_ilwMac = _pscpt->_pgllw->IvMac()) < 1)
     {
         Bug("No version info on script");
@@ -209,7 +209,7 @@ bool SCEB::FAttachScript(PSCPT pscpt, int32_t *prglw, int32_t clw)
         goto LFail;
     }
 
-    // add the parameters and literal strings
+    // 3DMMv1.0: add the parameters and literal strings
     if (clw > 0)
         _AddParameters(prglw, clw);
     if (pvNil != _pscpt->_pgstLiterals && !_fError)
@@ -222,14 +222,14 @@ bool SCEB::FAttachScript(PSCPT pscpt, int32_t *prglw, int32_t clw)
         return fFalse;
     }
 
-    // set the pc and claim we're paused
+    // 3DMMv1.0: set the pc and claim we're paused
     _ilwCur = 1;
     _fPaused = fTrue;
     AssertThis(fscebRunnable);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resume a paused script.
 ***************************************************************************/
 bool SCEB::FResume(int32_t *plwReturn, bool *pfPaused)
@@ -264,7 +264,7 @@ bool SCEB::FResume(int32_t *plwReturn, bool *pfPaused)
         ilw = _ilwCur;
         if (opNil != (op = B3Lw(lw)))
         {
-            // this instruction acts on a variable
+            // 3DMMv1.0: this instruction acts on a variable
             if (clwPush == 0)
             {
                 Bug("bad var instruction");
@@ -279,12 +279,12 @@ bool SCEB::FResume(int32_t *plwReturn, bool *pfPaused)
         }
         else if (opNil != (op = SuLow(lw)))
         {
-            // normal opcode
+            // 3DMMv1.0: normal opcode
             if (!_FExecOp(op))
                 goto LFail;
         }
 
-        // push the stack stuff (if we didn't do a jump)
+        // 3DMMv1.0: push the stack stuff (if we didn't do a jump)
         if (clwPush > 0 && ilw == _ilwCur)
         {
             ilw = _pgllwStack->IvMac();
@@ -312,7 +312,7 @@ bool SCEB::FResume(int32_t *plwReturn, bool *pfPaused)
     return !_fError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the parameters in the local variable list.
 ***************************************************************************/
 void SCEB::_AddParameters(int32_t *prglw, int32_t clw)
@@ -324,7 +324,7 @@ void SCEB::_AddParameters(int32_t *prglw, int32_t clw)
     int32_t ilw;
     RTVN rtvn;
 
-    // put the parameters in the local variable gl
+    // 3DMMv1.0: put the parameters in the local variable gl
     stn = PszLit("_cparm");
     rtvn.SetFromStn(&stn);
     _AssignVar(&_pglrtvm, &rtvn, clw);
@@ -337,7 +337,7 @@ void SCEB::_AddParameters(int32_t *prglw, int32_t clw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the literal strings into the registry.  And assign the string id's
     to the internal string variables.
 ***************************************************************************/
@@ -373,7 +373,7 @@ void SCEB::_AddStrings(PGST pgst)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current version number of the script compiler.
 ***************************************************************************/
 int16_t SCEB::_SwCur(void)
@@ -382,7 +382,7 @@ int16_t SCEB::_SwCur(void)
     return kswCurSccb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the min version number of the script compiler.  Read can read
     scripts back to this version.
 ***************************************************************************/
@@ -392,7 +392,7 @@ int16_t SCEB::_SwMin(void)
     return kswMinSccb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Execute an instruction that has a variable as an argument.
 ***************************************************************************/
 bool SCEB::_FExecVarOp(int32_t op, RTVN *prtvn)
@@ -403,7 +403,7 @@ bool SCEB::_FExecVarOp(int32_t op, RTVN *prtvn)
 
     if (FIn(op, kopMinArray, kopLimArray))
     {
-        // an array access, munge the rtvn
+        // 3DMMv1.0: an array access, munge the rtvn
         lw = _LwPop();
         if (_fError)
             return fFalse;
@@ -448,7 +448,7 @@ bool SCEB::_FExecVarOp(int32_t op, RTVN *prtvn)
     return !_fError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Execute an instruction.
 ***************************************************************************/
 bool SCEB::_FExecOp(int32_t op)
@@ -457,11 +457,11 @@ bool SCEB::_FExecOp(int32_t op)
     double dou;
     int32_t lw1, lw2, lw3;
 
-    // OP's that don't have any arguments
+    // 3DMMv1.0: OP's that don't have any arguments
     switch (op)
     {
     case kopExit:
-        // jump to the end
+        // 3DMMv1.0: jump to the end
         _ilwCur = _ilwMac;
         return fTrue;
     case kopNextCard:
@@ -472,7 +472,7 @@ bool SCEB::_FExecOp(int32_t op)
         return fTrue;
     }
 
-    // OP's that have at least one argument
+    // 3DMMv1.0: OP's that have at least one argument
     lw1 = _LwPop();
     switch (op)
     {
@@ -621,33 +621,33 @@ bool SCEB::_FExecOp(int32_t op)
         goto LGoNz;
     case kopGoZ:
         lw1 = !lw1;
-        // fall through
+        // 3DMMv1.0: fall through
     case kopGoNz:
     LGoNz:
         lw2 = _LwPop();
-        // labels should have their high byte equal to kbLabel
+        // 3DMMv1.0: labels should have their high byte equal to kbLabel
         if (B3Lw(lw2) != kbLabel || (lw2 &= 0x00FFFFFF) > _ilwMac)
             _Error(fTrue);
         else if (lw1 != 0)
         {
-            // perform the goto
+            // 3DMMv1.0: perform the goto
             _ilwCur = lw2;
         }
         break;
     case kopGo:
-        // labels should have their high byte equal to kbLabel
+        // 3DMMv1.0: labels should have their high byte equal to kbLabel
         if (B3Lw(lw1) != kbLabel || (lw1 &= 0x00FFFFFF) > _ilwMac)
             _Error(fTrue);
         else
         {
-            // perform the goto
+            // 3DMMv1.0: perform the goto
             _ilwCur = lw1;
         }
         break;
     case kopReturn:
-        // jump to the end
+        // 3DMMv1.0: jump to the end
         _ilwCur = _ilwMac;
-        // fall through
+        // 3DMMv1.0: fall through
     case kopSetReturn:
         _lwReturn = lw1;
         break;
@@ -725,7 +725,7 @@ bool SCEB::_FExecOp(int32_t op)
     return !_fError;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pop a long off the stack.
 ***************************************************************************/
 int32_t SCEB::_LwPop(void)
@@ -735,7 +735,7 @@ int32_t SCEB::_LwPop(void)
     if (_fError)
         return 0;
 
-    // this is faster than just doing FPop
+    // 3DMMv1.0: this is faster than just doing FPop
     if ((ilw = _pgllwStack->IvMac()) == 0)
     {
         _Error(fTrue);
@@ -746,7 +746,7 @@ int32_t SCEB::_LwPop(void)
     return lw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a pointer to the element that is clw elements down from the top.
 ***************************************************************************/
 int32_t *SCEB::_QlwGet(int32_t clw)
@@ -764,7 +764,7 @@ int32_t *SCEB::_QlwGet(int32_t clw)
     return (int32_t *)_pgllwStack->QvGet(ilwMac - clw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Register an error.
 ***************************************************************************/
 void SCEB::_Error(bool fAssert)
@@ -779,7 +779,7 @@ void SCEB::_Error(bool fAssert)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Emits a warning with the given format string and optional parameters.
 ***************************************************************************/
 void SCEB::_WarnSz(PCSZ psz, ...)
@@ -798,9 +798,9 @@ void SCEB::_WarnSz(PCSZ psz, ...)
     stn2.GetSzs(szs);
     Warn(szs);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rotate clwTot entries on the stack left by clwShift positions.
 ***************************************************************************/
 void SCEB::_Rotate(int32_t clwTot, int32_t clwShift)
@@ -825,7 +825,7 @@ void SCEB::_Rotate(int32_t clwTot, int32_t clwShift)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reverse clw entries on the stack.
 ***************************************************************************/
 void SCEB::_Reverse(int32_t clw)
@@ -849,7 +849,7 @@ void SCEB::_Reverse(int32_t clw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate clw entries on the stack.
 ***************************************************************************/
 void SCEB::_DupList(int32_t clw)
@@ -860,7 +860,7 @@ void SCEB::_DupList(int32_t clw)
     if (clw == 0)
         return;
 
-    //_QlwGet checks for bad values of clw
+    // 3DMMv1.0: _QlwGet checks for bad values of clw
     if (_QlwGet(clw) == pvNil)
         return;
 
@@ -874,7 +874,7 @@ void SCEB::_DupList(int32_t clw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Removes clw entries from the stack.
 ***************************************************************************/
 void SCEB::_PopList(int32_t clw)
@@ -892,7 +892,7 @@ void SCEB::_PopList(int32_t clw)
         AssertDo(_pgllwStack->FSetIvMac(ilwMac - clw), "why fail?");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Select the ilw'th entry from the top clw entries.  ilw is indexed from
     the top entry in and is zero based.
 ***************************************************************************/
@@ -913,7 +913,7 @@ void SCEB::_Select(int32_t clw, int32_t ilw)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The top value is the key, the next is the default return, then come
     clw pairs of test values and return values.  If the key matches a
     test value, push the correspongind return value.  Otherwise, push
@@ -930,7 +930,7 @@ void SCEB::_Match(int32_t clw)
     if (pvNil == (qrglw = _QlwGet(2 * clw)))
         return;
 
-    // start at high memory (top of the stack).
+    // 3DMMv1.0: start at high memory (top of the stack).
     for (ilwTest = 2 * clw - 1; ilwTest > 0; ilwTest -= 2)
     {
         if (qrglw[ilwTest] == lwKey)
@@ -943,7 +943,7 @@ void SCEB::_Match(int32_t clw)
     _PopList(2 * clw - 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Generates a random entry from a list of numbers on the stack.
 ***************************************************************************/
 void SCEB::_RndList(int32_t clw)
@@ -956,7 +956,7 @@ void SCEB::_RndList(int32_t clw)
         _Select(clw, vrndUtil.LwNext(clw));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the string from stidSrc to stidDst.
 ***************************************************************************/
 void SCEB::_CopySubStr(int32_t stidSrc, int32_t ichMin, int32_t cch, int32_t stidDst)
@@ -986,7 +986,7 @@ void SCEB::_CopySubStr(int32_t stidSrc, int32_t ichMin, int32_t cch, int32_t sti
         _Push(stidDst);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Concatenate two strings and put the result in a third. Push the id
     of the destination.
 ***************************************************************************/
@@ -1021,7 +1021,7 @@ void SCEB::_ConcatStrs(int32_t stidSrc1, int32_t stidSrc2, int32_t stidDst)
         _Push(stidDst);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Push the length of the given string.
 ***************************************************************************/
 void SCEB::_LenStr(int32_t stid)
@@ -1040,7 +1040,7 @@ void SCEB::_LenStr(int32_t stid)
     _Push(stn.Cch());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     CRF reader function to read a string registry string table.
 ***************************************************************************/
 bool _FReadStringReg(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -1091,7 +1091,7 @@ bool _FReadStringReg(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Merge a string table into the string registry.
 ***************************************************************************/
 void SCEB::_MergeStrings(CNO cno, RSC rsc)
@@ -1141,13 +1141,13 @@ void SCEB::_MergeStrings(CNO cno, RSC rsc)
 #ifdef DEBUG
     if (fFail)
         _WarnSz(PszLit("Merging string table failed"));
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     pcabo->SetCrep(crepTossFirst);
     ReleasePpo(&pcabo);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Convert a number to a string and add the string to the registry.
 ***************************************************************************/
 void SCEB::_NumToStr(int32_t lw, int32_t stid)
@@ -1170,7 +1170,7 @@ void SCEB::_NumToStr(int32_t lw, int32_t stid)
     _Push(stid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Convert a string to a number and push the result. If the string is
     empty, push lwEmpty; if there is an error, push lwError.
 ***************************************************************************/
@@ -1194,7 +1194,7 @@ void SCEB::_StrToNum(int32_t stid, int32_t lwEmpty, int32_t lwError)
     _Push(lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Push the value of a variable onto the runtime stack.
 ***************************************************************************/
 void SCEB::_PushVar(PGL pglrtvm, RTVN *prtvn)
@@ -1212,14 +1212,14 @@ void SCEB::_PushVar(PGL pglrtvm, RTVN *prtvn)
 #ifdef DEBUG
         prtvn->GetStn(&_stn);
         _WarnSz(PszLit("Pushing uninitialized script variable: %s"), &_stn);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
         _Push(0);
     }
     else
         _Push(lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pop the top value off the runtime stack into a variable.
 ***************************************************************************/
 void SCEB::_AssignVar(PGL *ppglrtvm, RTVN *prtvn, int32_t lw)
@@ -1241,7 +1241,7 @@ void SCEB::_AssignVar(PGL *ppglrtvm, RTVN *prtvn, int32_t lw)
         _Error(fFalse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the variable map for "this" object.
 ***************************************************************************/
 PGL SCEB::_PglrtvmThis(void)
@@ -1252,7 +1252,7 @@ PGL SCEB::_PglrtvmThis(void)
     return *ppgl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the adress of the variable map master pointer for "this" object
     (so we can create the variable map if need be).
 ***************************************************************************/
@@ -1261,7 +1261,7 @@ PGL *SCEB::_PpglrtvmThis(void)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the variable map for "global" variables.
 ***************************************************************************/
 PGL SCEB::_PglrtvmGlobal(void)
@@ -1272,7 +1272,7 @@ PGL SCEB::_PglrtvmGlobal(void)
     return *ppgl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the adress of the variable map master pointer for "global" variables
     (so we can create the variable map if need be).
 ***************************************************************************/
@@ -1281,7 +1281,7 @@ PGL *SCEB::_PpglrtvmGlobal(void)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the variable map for a remote object.
 ***************************************************************************/
 PGL SCEB::_PglrtvmRemote(int32_t lw)
@@ -1292,7 +1292,7 @@ PGL SCEB::_PglrtvmRemote(int32_t lw)
     return *ppgl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the adress of the variable map master pointer for a remote object
     (so we can create the variable map if need be).
 ***************************************************************************/
@@ -1301,7 +1301,7 @@ PGL *SCEB::_PpglrtvmRemote(int32_t lw)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a RTVM in the pglrtvm.  Assumes the pglrtvm is sorted by rtvn.
     If the RTVN is not in the GL, sets *pirtvm to where it would be if
     it were.
@@ -1330,7 +1330,7 @@ bool FFindRtvm(PGL pglrtvm, RTVN *prtvn, int32_t *plw, int32_t *pirtvm)
             irtvmLim = irtvm;
         else
         {
-            // we found it
+            // 3DMMv1.0: we found it
             if (pvNil != plw)
                 *plw = qrtvm->lwValue;
             if (pvNil != pirtvm)
@@ -1344,7 +1344,7 @@ bool FFindRtvm(PGL pglrtvm, RTVN *prtvn, int32_t *plw, int32_t *pirtvm)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the given value into a runtime variable.
 ***************************************************************************/
 bool FAssignRtvm(PGL *ppglrtvm, RTVN *prtvn, int32_t lw)
@@ -1373,7 +1373,7 @@ bool FAssignRtvm(PGL *ppglrtvm, RTVN *prtvn, int32_t lw)
     return (*ppglrtvm)->FInsert(irtvm, &rtvm);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A chunky resource reader to read a script.
 ***************************************************************************/
 bool SCPT::FReadScript(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -1390,7 +1390,7 @@ bool SCPT::FReadScript(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, 
     return pvNil != *ppbaco;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read a script.
 ***************************************************************************/
 PSCPT SCPT::PscptRead(PCFL pcfl, CTG ctg, CNO cno)
@@ -1420,7 +1420,7 @@ PSCPT SCPT::PscptRead(PCFL pcfl, CTG ctg, CNO cno)
     }
 
 #ifdef DEBUG
-    // Load source line information if available
+    // 3DMMEx: Load source line information if available
     if (pcfl->FGetKidChidCtg(ctg, cno, 0, kctgScriptSourceLines, &kid))
     {
         if (!pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck) || pvNil == (pgstSrcLines = GST::PgstRead(&blck)))
@@ -1428,7 +1428,7 @@ PSCPT SCPT::PscptRead(PCFL pcfl, CTG ctg, CNO cno)
             goto LFail;
         }
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     if (pvNil == (pscpt = NewObj SCPT))
     {
@@ -1441,7 +1441,7 @@ PSCPT SCPT::PscptRead(PCFL pcfl, CTG ctg, CNO cno)
 
 #ifdef DEBUG
     {
-        // Store source information in the script object
+        // 3DMMEx: Store source information in the script object
         FLO flo;
         AssertDo(blck.FGetFlo(&flo), "Cannot get file location for script chunk");
         flo.pfil->GetFni(&pscpt->_fniSrc);
@@ -1451,7 +1451,7 @@ PSCPT SCPT::PscptRead(PCFL pcfl, CTG ctg, CNO cno)
             pscpt->_stnSrcChunk = PszLit("");
         }
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     if (kboOther == bo)
         SwapBytesRglw(pgllw->QvGet(0), pgllw->IvMac());
@@ -1461,7 +1461,7 @@ PSCPT SCPT::PscptRead(PCFL pcfl, CTG ctg, CNO cno)
     return pscpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a script.
 ***************************************************************************/
 SCPT::~SCPT(void)
@@ -1472,7 +1472,7 @@ SCPT::~SCPT(void)
     ReleasePpo(&_pgstSrcLines);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the script to the given chunky file.
 ***************************************************************************/
 bool SCPT::FSaveToChunk(PCFL pcfl, CTG ctg, CNO cno, bool fPack)
@@ -1483,7 +1483,7 @@ bool SCPT::FSaveToChunk(PCFL pcfl, CTG ctg, CNO cno, bool fPack)
     CNO cnoT, cnoStrs;
     int32_t cb;
 
-    // write the script chunk
+    // 3DMMv1.0: write the script chunk
     cb = _pgllw->CbOnFile();
     if (!blck.FSetTemp(cb) || !_pgllw->FWrite(&blck))
         return fFalse;
@@ -1492,19 +1492,19 @@ bool SCPT::FSaveToChunk(PCFL pcfl, CTG ctg, CNO cno, bool fPack)
 
     if (!pcfl->FFind(ctg, cno))
     {
-        // chunk doesn't exist, just write it
+        // 3DMMv1.0: chunk doesn't exist, just write it
         if (!pcfl->FPutBlck(&blck, ctg, cnoT = cno))
             return fFalse;
     }
     else
     {
-        // chunk already exists - add a new temporary one
+        // 3DMMv1.0: chunk already exists - add a new temporary one
         if (!pcfl->FAddBlck(&blck, ctg, &cnoT))
             return fFalse;
     }
 
-    // write the string table if there is one.  The cno for this is allocated
-    // via FAdd.
+    // 3DMMv1.0: write the string table if there is one.  The cno for this is allocated
+    // 3DMMv1.0: via FAdd.
     if (pvNil != _pgstLiterals)
     {
         cb = _pgstLiterals->CbOnFile();
@@ -1526,7 +1526,7 @@ bool SCPT::FSaveToChunk(PCFL pcfl, CTG ctg, CNO cno, bool fPack)
 
 #ifdef DEBUG
 
-    // Add source line information for debugging
+    // 3DMMEx: Add source line information for debugging
     if (pvNil != _pgstSrcLines)
     {
         cb = _pgstSrcLines->CbOnFile();
@@ -1552,9 +1552,9 @@ bool SCPT::FSaveToChunk(PCFL pcfl, CTG ctg, CNO cno, bool fPack)
         }
     }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-    // swap the data and children of the temporary chunk and the destination
+    // 3DMMv1.0: swap the data and children of the temporary chunk and the destination
     if (cno != cnoT)
     {
         pcfl->SwapData(ctg, cno, ctg, cnoT);
@@ -1565,7 +1565,7 @@ bool SCPT::FSaveToChunk(PCFL pcfl, CTG ctg, CNO cno, bool fPack)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get source line information for a given position in a script
 ***************************************************************************/
 bool SCPT::FGetSourceLine(int32_t ilw, PSTN pstnSourceLine)
@@ -1580,7 +1580,7 @@ bool SCPT::FGetSourceLine(int32_t ilw, PSTN pstnSourceLine)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a SCPT.
 ***************************************************************************/
 void SCPT::AssertValid(uint32_t grf)
@@ -1591,7 +1591,7 @@ void SCPT::AssertValid(uint32_t grf)
     AssertNilOrPo(_pgstSrcLines, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the SCPT.
 ***************************************************************************/
 void SCPT::MarkMem(void)
@@ -1602,9 +1602,9 @@ void SCPT::MarkMem(void)
     MarkMemObj(_pgstLiterals);
     MarkMemObj(_pgstSrcLines);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the runtime string registry.
 ***************************************************************************/
 STRG::STRG(void)
@@ -1613,7 +1613,7 @@ STRG::STRG(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the runtime string registry.
 ***************************************************************************/
 STRG::~STRG(void)
@@ -1623,7 +1623,7 @@ STRG::~STRG(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a STRG.
 ***************************************************************************/
 void STRG::AssertValid(uint32_t grf)
@@ -1632,7 +1632,7 @@ void STRG::AssertValid(uint32_t grf)
     AssertNilOrPo(_pgst, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the STRG.
 ***************************************************************************/
 void STRG::MarkMem(void)
@@ -1641,9 +1641,9 @@ void STRG::MarkMem(void)
     STRG_PAR::MarkMem();
     MarkMemObj(_pgst);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the string in the registry with the given string id.
 ***************************************************************************/
 bool STRG::FPut(int32_t stid, PSTN pstn)
@@ -1661,7 +1661,7 @@ bool STRG::FPut(int32_t stid, PSTN pstn)
     return _pgst->FInsertStn(istn, pstn, &stid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the string with the given string id.  If the string isn't in the
     registry, sets pstn to an empty string and returns false.
 ***************************************************************************/
@@ -1681,7 +1681,7 @@ bool STRG::FGet(int32_t stid, PSTN pstn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a string to the registry, assigning it an unused id.  The assigned
     id's are not repeated in the near future.  All assigned id's have their
     high bit set.
@@ -1704,7 +1704,7 @@ bool STRG::FAdd(int32_t *pstid, PSTN pstn)
     return FPut(_stidLast, pstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete a string from the registry.
 ***************************************************************************/
 void STRG::Delete(int32_t stid)
@@ -1716,7 +1716,7 @@ void STRG::Delete(int32_t stid)
         _pgst->Delete(istn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change the id of a string from stidSrc to stidDst.  If stidDst already
     exists, it is replaced.  Returns false if the source string doesn't
     exist.  Can't fail if the source does exist.
@@ -1744,7 +1744,7 @@ bool STRG::FMove(int32_t stidSrc, int32_t stidDst)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a binary search for the string id.  Returns true iff the string is
     in the registry.  In either case, sets *pistn with where the string
     should go.
@@ -1781,7 +1781,7 @@ bool STRG::_FFind(int32_t stid, int32_t *pistn)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the GST exists.
 ***************************************************************************/
 bool STRG::_FEnsureGst(void)

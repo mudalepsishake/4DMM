@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: brhton.h 1.7 1995/05/25 13:37:25 sam Exp $
@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Mac is in network order already - little endian
      *
      * XXX SANE format
@@ -41,7 +41,7 @@ extern "C"
 #define BR_ENDIAN_LITTLE 0
 #endif
 
-/*
+/* BRender:
  * PC is little-endian
  */
 #if defined(__GNUC__) || defined(__WATCOMC__) || defined(__ZTC__) || defined(__PROTONC__) || defined(__HIGHC__) ||     \

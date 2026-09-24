@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/*************************************************************************
+/** 3DMMv1.0: ***********************************************************************
 
     tagman.h: Tag Manager class (TAGM)
 
@@ -40,11 +40,11 @@
 #ifndef TAGM_H
 #define TAGM_H
 
-const int32_t ksidInvalid = -1; // negative SIDs imply an invalid TAG
+const int32_t ksidInvalid = -1; // 3DMMv1.0: negative SIDs imply an invalid TAG
 const int32_t sidNil = 0;
-const int32_t ksidUseCrf = 0; // chunk is in ptag->pcrf
+const int32_t ksidUseCrf = 0; // 3DMMv1.0: chunk is in ptag->pcrf
 
-/* On-disk representation of TAG */
+/* 3DMMEx: On-disk representation of TAG */
 typedef struct TAGF *PTAGF;
 struct TAGF
 {
@@ -59,38 +59,38 @@ typedef struct TAG *PTAG;
 struct TAG
 {
 #ifdef DEBUG
-    // I can't use the MARKMEM macro because that makes MarkMem() virtual,
-    // which changes size(TAG), which I don't want to do.
+    // 3DMMv1.0: I can't use the MARKMEM macro because that makes MarkMem() virtual,
+    // 3DMMv1.0: which changes size(TAG), which I don't want to do.
     void MarkMem(void);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-    int32_t sid;   // Source ID (or ksidUseCrf)
-    int32_t _pcrf; // was: pcrf
-    CTG ctg;       // CTG of chunk
-    CNO cno;       // CNO of chunk
-    PCRF pcrf;     // File to look in for this chunk if sid is ksidUseCrf
+    int32_t sid;   // 3DMMv1.0: Source ID (or ksidUseCrf)
+    int32_t _pcrf; // 3DMMEx: was: pcrf
+    CTG ctg;       // 3DMMv1.0: CTG of chunk
+    CNO cno;       // 3DMMv1.0: CNO of chunk
+    PCRF pcrf;     // 3DMMv1.0: File to look in for this chunk if sid is ksidUseCrf
 };
 const BOM kbomTag = 0xFF000000;
 
-// Functions for serializing and deserializing tags
+// 3DMMEx: Functions for serializing and deserializing tags
 void DeserializeTagfToTag(PTAGF ptagf, PTAG ptag);
 void SerializeTagToTagf(PTAG ptag, PTAGF ptagf);
 
-// FNINSCD is a client-supplied callback function to alert the user to
-// insert the given CD.  The name of the source is passed to the callback.
-// The function should return fTrue if the user wants to retry searching
-// for the chunk, or fFalse to cancel.
+// 3DMMv1.0: FNINSCD is a client-supplied callback function to alert the user to
+// 3DMMv1.0: insert the given CD.  The name of the source is passed to the callback.
+// 3DMMv1.0: The function should return fTrue if the user wants to retry searching
+// 3DMMv1.0: for the chunk, or fFalse to cancel.
 typedef bool FNINSCD(PSTN pstnSourceTitle);
 typedef FNINSCD *PFNINSCD;
 
 enum
 {
     ftagmNil = 0x0000,
-    ftagmFile = 0x0001,   // for ClearCache: clear HD cache
-    ftagmMemory = 0x0002, // for ClearCache: clear CRF RAM cache
+    ftagmFile = 0x0001,   // 3DMMv1.0: for ClearCache: clear HD cache
+    ftagmMemory = 0x0002, // 3DMMv1.0: for ClearCache: clear CRF RAM cache
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Tag Manager class
 ****************************************/
 typedef class TAGM *PTAGM;
@@ -103,11 +103,11 @@ class TAGM : public TAGM_PAR
     ASSERT
 
   protected:
-    FNI _fniHDRoot;     // Root HD directory to search for content
-    int32_t _cbCache;   // Size of RAM Cache on files in CRM for each source
-    PGL _pglsfs;        // GL of source file structs
-    PGST _pgstSource;   // String table of source descriptions
-    PFNINSCD _pfninscd; // Function to call when source is not found
+    FNI _fniHDRoot;     // 3DMMv1.0: Root HD directory to search for content
+    int32_t _cbCache;   // 3DMMv1.0: Size of RAM Cache on files in CRM for each source
+    PGL _pglsfs;        // 3DMMv1.0: GL of source file structs
+    PGST _pgstSource;   // 3DMMv1.0: String table of source descriptions
+    PFNINSCD _pfninscd; // 3DMMv1.0: Function to call when source is not found
 
   protected:
     TAGM(void)
@@ -134,28 +134,34 @@ class TAGM : public TAGM_PAR
     static PTAGM PtagmNew(PFNI pfniHDRoot, PFNINSCD pfninscd, int32_t cbCache);
     ~TAGM(void);
 
-    // GstSource stuff:
+    // 3DMMv1.0: GstSource stuff:
     PGST PgstSource(void);
     bool FMergeGstSource(PGST pgst, int16_t bo, int16_t osk);
     bool FAddStnSource(PSTN pstnMerged, int32_t sid);
-    bool FGetSid(PSTN pstn, int32_t *psid); // pstn can be short or long
+    bool FSetStnSource(PSTN pstnMerged, int32_t sid);
+    bool FRemoveStnSource(int32_t sid);
+    bool FGetSid(PSTN pstn, int32_t *psid); // 3DMMv1.0: pstn can be short or long
 
     bool FFindFile(int32_t sid, PSTN pstn, PFNI pfni, bool fAskForCD);
     void SplitString(PSTN pstnMerged, PSTN pstnLong, PSTN pstnShort);
 
     bool FBuildChildTag(PTAG ptagPar, CHID chid, CTG ctgChild, PTAG ptagChild);
+    // 4DMM Actor Studio needs to make a writable document-local copy of a
+    // stock TMPL before adding user actions.  Return the already-managed CFL
+    // that actually owns a tag; ownership stays with TAGM/CRM.
+    PCFL PcflFindTag4DMM(PTAG ptag);
     bool FCacheTagToHD(PTAG ptag, bool fCacheChildChunks = fTrue);
     PBACO PbacoFetch(PTAG ptag, PFNRPO pfnrpo, bool fUseCD = fFalse);
     void ClearCache(int32_t sid = sidNil,
-                    uint32_t grftagm = ftagmFile | ftagmMemory); // sidNil clears all caches
+                    uint32_t grftagm = ftagmFile | ftagmMemory); // 3DMMv1.0: sidNil clears all caches
 
-    // For ksidUseCrf tags:
+    // 3DMMv1.0: For ksidUseCrf tags:
     static bool FOpenTag(PTAG ptag, PCRF pcrfDest, PCFL pcflSrc = pvNil);
     static bool FSaveTag(PTAG ptag, PCRF pcrf, bool fRedirect);
-    static void DupTag(PTAG ptag); // call this when you're copying a tag
+    static void DupTag(PTAG ptag); // 3DMMv1.0: call this when you're copying a tag
     static void CloseTag(PTAG ptag);
 
     static uint32_t FcmpCompareTags(PTAG ptag1, PTAG ptag2);
 };
 
-#endif // TAGM_H
+#endif // 3DMMv1.0: TAGM_H

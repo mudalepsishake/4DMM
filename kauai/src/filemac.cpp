@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -14,7 +14,7 @@
 #include <script.h>
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open or create the file.  If the file is already open, sets the
     permissions according to grffil.  Note that the ffilDenyRead and
     ffilDenyWrite do not work as in Windows.  Effectively, this routine
@@ -31,13 +31,13 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
     if (_el != elNil)
         goto LFail;
 
-    // we just care about the permissions
+    // 3DMMv1.0: we just care about the permissions
     if (grffil & ffilWriteEnable)
         grffil = ffilWriteEnable | ffilDenyRead | ffilDenyWrite;
     else
         grffil = ffilDenyWrite;
 
-    // create the file if we need to
+    // 3DMMv1.0: create the file if we need to
     if (fCreate)
     {
         Assert(!_fOpen, "Creating an open file");
@@ -55,7 +55,7 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
     }
     else if (_fOpen && (~_grffil & grffil) == 0)
     {
-        // permissions are already set high enough
+        // 3DMMv1.0: permissions are already set high enough
         return fTrue;
     }
 
@@ -75,7 +75,7 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close the file.
 ***************************************************************************/
 void FIL::_Close(void)
@@ -96,7 +96,7 @@ void FIL::_Close(void)
     _el = elNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Flush the file (and its volume?).
 ***************************************************************************/
 void FIL::Flush(void)
@@ -105,7 +105,7 @@ void FIL::Flush(void)
     FlushVol(pvNil, _fni._fss.vRefNum);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Seek to the given fp.
 ***************************************************************************/
 void FIL::_SetFpPos(FP fp)
@@ -118,7 +118,7 @@ void FIL::_SetFpPos(FP fp)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the length of the file.
 ***************************************************************************/
 bool FIL::FSetFpMac(FP fp)
@@ -139,7 +139,7 @@ bool FIL::FSetFpMac(FP fp)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of the file.
 ***************************************************************************/
 FP FIL::FpMac(void)
@@ -155,7 +155,7 @@ FP FIL::FpMac(void)
     return _el < kelSeek ? fp : 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a block from the file.
 ***************************************************************************/
 bool FIL::FReadRgb(void *pv, int32_t cb, FP fp)
@@ -181,7 +181,7 @@ bool FIL::FReadRgb(void *pv, int32_t cb, FP fp)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a block to the file.
 ***************************************************************************/
 bool FIL::FWriteRgb(void *pv, int32_t cb, FP fp)
@@ -206,7 +206,7 @@ bool FIL::FWriteRgb(void *pv, int32_t cb, FP fp)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap the names of the two files.  They should be in the same directory.
 ***************************************************************************/
 bool FIL::FSwapNames(PFIL pfil)
@@ -220,14 +220,14 @@ bool FIL::FSwapNames(PFIL pfil)
         return fFalse;
     Assert(_fni.FSameDir(&pfil->_fni), "trying to change directories with FSwapNames");
 
-    // swap the data
+    // 3DMMv1.0: swap the data
     if (FSpExchangeFiles(&_fni._fss, &pfil->_fni._fss) != noErr)
     {
         PushErc(ercFileSwapNames);
         return fFalse;
     }
 
-    // swap the fni's
+    // 3DMMv1.0: swap the fni's
     fni = _fni;
     _fni = pfil->_fni;
     pfil->_fni = fni;
@@ -237,7 +237,7 @@ bool FIL::FSwapNames(PFIL pfil)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rename the file.
 ***************************************************************************/
 bool FIL::FRename(FNI *pfni)

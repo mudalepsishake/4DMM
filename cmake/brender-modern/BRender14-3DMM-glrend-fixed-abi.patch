@@ -1,0 +1,174 @@
+diff --git a/drivers/glrend/devpixmp.c b/drivers/glrend/devpixmp.c
+index be15eda..b6457b8 100644
+--- a/drivers/glrend/devpixmp.c
++++ b/drivers/glrend/devpixmp.c
+@@ -523,6 +523,99 @@ static br_error BR_CMETHOD(br_device_pixelmap_gl, rectangleStretchCopyTo)(br_dev
+     if(DevicePixelmapGLRectangleClip(&drect, d, (const br_pixelmap *)self) == BR_CLIP_REJECT)
+         return BRE_OK;
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * 3DMM presents its decoded background as a full-size RGB888 memory
++     * pixelmap.  The generic glrend memory->device path turns that memory
++     * pixelmap into a temporary texture and draws it with the rectangle
++     * shader.  In the legacy fixed-ABI integration that operation reports
++     * success while the destination FBO remains black.
++     *
++     * For this exact compatibility case, upload directly into the colour
++     * texture attached to the offscreen FBO.  This keeps normal BRender
++     * pixelmap copies unchanged and gives 3DMM a deliberately narrow bridge.
++     */
++    if(self->msaa_samples == 0 && self->asBack.glTex != 0 &&
++       self->pm_type == src->type && src->type == BR_PMT_RGB_888 &&
++       srect.x == 0 && srect.y == 0 && srect.w == src->width && srect.h == src->height &&
++       drect.x == 0 && drect.y == 0 && drect.w == self->pm_width && drect.h == self->pm_height &&
++       src->width == self->pm_width && src->height == self->pm_height &&
++       src->pixels != NULL && src->base_x == 0 && src->base_y == 0 && src->row_bytes > 0 &&
++       (src->flags & (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)) == (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)) {
++        const br_pixelmap_gl_fmt *direct_fmt = DeviceGLGetFormatDetails(src->type);
++        const br_size_t row_bytes = (br_size_t)src->width * (br_size_t)(direct_fmt != NULL ? direct_fmt->bytes : 0);
++        const br_size_t image_bytes = row_bytes * (br_size_t)src->height;
++        br_uint_8 *flipped = NULL;
++        GLint old_unpack_alignment = 4;
++        GLint old_unpack_row_length = 0;
++        GLint old_texture = 0;
++        GLenum gl_error = GL_NO_ERROR;
++
++        if(direct_fmt != NULL && direct_fmt->bytes != 0 &&
++           row_bytes <= (br_size_t)src->row_bytes && src->height != 0 &&
++           image_bytes / (br_size_t)src->height == row_bytes) {
++            flipped = BrMemAllocate(image_bytes, BR_MEMORY_SCRATCH);
++            if(flipped != NULL) {
++                const br_uint_8 *src_base = (const br_uint_8 *)src->pixels;
++                for(br_uint_16 y = 0; y < src->height; ++y) {
++                    memcpy(flipped + (br_size_t)y * row_bytes,
++                           src_base + (br_size_t)(src->height - y - 1) * (br_size_t)src->row_bytes,
++                           row_bytes);
++                }
++
++                gl->GetIntegerv(GL_UNPACK_ALIGNMENT, &old_unpack_alignment);
++                gl->GetIntegerv(GL_UNPACK_ROW_LENGTH, &old_unpack_row_length);
++                gl->GetIntegerv(GL_TEXTURE_BINDING_2D, &old_texture);
++                while(gl->GetError() != GL_NO_ERROR)
++                    ;
++                gl->PixelStorei(GL_UNPACK_ALIGNMENT, 1);
++                gl->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
++                gl->BindTexture(GL_TEXTURE_2D, self->asBack.glTex);
++                gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, self->pm_width, self->pm_height,
++                                  direct_fmt->format, direct_fmt->type, flipped);
++                gl_error = gl->GetError();
++                gl->BindTexture(GL_TEXTURE_2D, (GLuint)old_texture);
++                gl->PixelStorei(GL_UNPACK_ROW_LENGTH, old_unpack_row_length);
++                gl->PixelStorei(GL_UNPACK_ALIGNMENT, old_unpack_alignment);
++                BrMemFree(flipped);
++
++                if(gl_error == GL_NO_ERROR) {
++                    static br_uint_32 direct_ok_count;
++                    if(direct_ok_count < 64) {
++                        BrWarning("3DMM glrend direct background upload OK dst=%p tex=%u fbo=%u src=%p wh=%ux%u row=%d",
++                                  (void *)self, (unsigned)self->asBack.glTex, (unsigned)self->asBack.glFbo,
++                                  (void *)src, (unsigned)src->width, (unsigned)src->height, (int)src->row_bytes);
++                        ++direct_ok_count;
++                    }
++                    return BRE_OK;
++                }
++
++                BrWarning("3DMM glrend direct background upload GL error=0x%04X dst=%p tex=%u fbo=%u",
++                          (unsigned)gl_error, (void *)self, (unsigned)self->asBack.glTex, (unsigned)self->asBack.glFbo);
++                return BRE_FAIL;
++            }
++        }
++
++        BrWarning("3DMM glrend direct background upload setup failed dst=%p src=%p fmt=%p wh=%ux%u row=%d",
++                  (void *)self, (void *)src, (void *)direct_fmt, (unsigned)src->width, (unsigned)src->height, (int)src->row_bytes);
++        return BRE_FAIL;
++    }
++
++    if(src->type == BR_PMT_RGB_888) {
++        static br_uint_32 direct_bypass_count;
++        if(direct_bypass_count < 64) {
++            BrWarning("3DMM glrend direct RGB888 upload bypassed dst=%p use=%u msaa=%d tex=%u dst_type=%u src=%p src_type=%u src_wh=%ux%u dst_wh=%ux%u srect=%d,%d,%d,%d drect=%d,%d,%d,%d base=%d,%d row=%d flags=0x%08X",
++                      (void *)self, (unsigned)self->use_type, (int)self->msaa_samples, (unsigned)self->asBack.glTex,
++                      (unsigned)self->pm_type, (void *)src, (unsigned)src->type,
++                      (unsigned)src->width, (unsigned)src->height, (unsigned)self->pm_width, (unsigned)self->pm_height,
++                      (int)srect.x, (int)srect.y, (int)srect.w, (int)srect.h,
++                      (int)drect.x, (int)drect.y, (int)drect.w, (int)drect.h,
++                      (int)src->base_x, (int)src->base_y, (int)src->row_bytes, (unsigned)src->flags);
++            ++direct_bypass_count;
++        }
++    }
++#endif
++
+     if(stored != NULL && ObjectDevice(stored) == self->device) {
+         tex = BufferStoredGLGetTexture(stored);
+         fmt = stored->fmt;
+diff --git a/drivers/glrend/gstored.c b/drivers/glrend/gstored.c
+index f8a53dd..f8fed21 100644
+--- a/drivers/glrend/gstored.c
++++ b/drivers/glrend/gstored.c
+@@ -362,10 +362,24 @@ static br_uint_16 calculate_bucket(const br_order_table *ot, const state_stack *
+     /*
+      * Case 5 - >4 buckets
+      */
++#if BRENDER_LEGACY_3DMM_MODEL_ABI && BASED_FIXED
++    /*
++     * glrend was originally written for the modern floating-point scalar ABI.
++     * In 3DMM compatibility builds br_scalar is 16.16 fixed, so multiplying
++     * BR_SCALAR(size) by BR_SCALAR(ratio) with plain C multiplication
++     * overflows instead of performing a fixed-point multiply.  Keep the
++     * upstream partition semantics, but do the percentage calculation in
++     * ordinary floating point because the result is an integer bucket count.
++     */
++    count_forced = (br_uint_16)ceilf((float)ot->size * 0.05f);
++    count_trans  = (br_uint_16)((float)(ot->size - (count_forced << 1)) - ceilf((float)ot->size * 0.10f));
++    count_opaque = ot->size - count_trans - (count_forced << 1);
++#else
+     ot_size      = BR_SCALAR(ot->size);
+     count_forced = (br_uint_16)ceilf(ot_size * ratio_force_frontback);
+     count_trans  = (br_uint_16)((float)(ot->size - (count_forced << 1)) - ceilf(ot_size * ratio_transparent));
+     count_opaque = ot->size - count_trans - (count_forced << 1);
++#endif
+ 
+     ASSERT(count_forced + count_opaque + count_trans + count_forced == ot->size);
+ 
+@@ -393,6 +407,24 @@ static br_uint_16 calculate_bucket(const br_order_table *ot, const state_stack *
+             break;
+     }
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI && BASED_FIXED
++    {
++        static br_uint_32 diag_count;
++        if(diag_count < 128) {
++            BrWarning("3DMM glrend bucket partition ot=%p size=%u mode=%d forced=%u trans_region=%u opaque_region=%u base=%u count=%u",
++                      (void *)ot, (unsigned)ot->size, render_mode, (unsigned)count_forced, (unsigned)count_trans,
++                      (unsigned)count_opaque, (unsigned)base, (unsigned)count);
++            ++diag_count;
++        }
++    }
++
++    if(count == 0) {
++        BrWarning("3DMM glrend bucket partition produced zero-width region; using base bucket ot=%p size=%u mode=%d base=%u",
++                  (void *)ot, (unsigned)ot->size, render_mode, (unsigned)base);
++        return base < ot->size ? base : (br_uint_16)(ot->size - 1);
++    }
++#endif
++
+     return base + BrZsPrimitiveBucketSelect(&tmp_depth, BR_PRIMITIVE_POINT, ot->min_z, ot->max_z, count, ot->type);
+ }
+ 
+@@ -409,6 +441,15 @@ static br_boolean want_defer(const state_hidden *hidden)
+ 
+     UASSERT(hidden->divert == BRT_BLENDED);
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    if(hidden->order_table != NULL && (hidden->order_table->size == 0 || hidden->order_table->table == NULL)) {
++        BrWarning("3DMM glrend refusing invalid deferred order table ot=%p size=%u table=%p heap=%p",
++                  (void *)hidden->order_table, (unsigned)hidden->order_table->size,
++                  (void *)hidden->order_table->table, (void *)hidden->heap);
++        return BR_FALSE;
++    }
++#endif
++
+     return hidden->order_table != NULL && hidden->heap != NULL;
+ }
+ 

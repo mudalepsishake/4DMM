@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Chunky editor text document management
 
@@ -9,14 +9,14 @@
 #include "ched.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a chunky text doc.
 ***************************************************************************/
 CHTXD::CHTXD(PDOCB pdocb, uint32_t grfdoc) : CHTXD_PAR(pdocb, grfdoc)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new chunky text doc.
 ***************************************************************************/
 PCHTXD CHTXD::PchtxdNew(PFNI pfni, PBSF pbsf, short osk, PDOCB pdocb, uint32_t grfdoc)
@@ -35,7 +35,7 @@ PCHTXD CHTXD::PchtxdNew(PFNI pfni, PBSF pbsf, short osk, PDOCB pdocb, uint32_t g
     return pchtxd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new document display gob for the chunky text doc.
 ***************************************************************************/
 PDDG CHTXD::PddgNew(PGCB pgcb)
@@ -49,7 +49,7 @@ ON_CID_GEN(cidCompileScript, &CHTDD::FCmdCompileScript, pvNil)
 ON_CID_GEN(cidAssembleScript, &CHTDD::FCmdCompileScript, pvNil)
 END_CMD_MAP_NIL()
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor.
 ***************************************************************************/
 CHTDD::CHTDD(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32_t dypFont, int32_t cchTab)
@@ -58,7 +58,7 @@ CHTDD::CHTDD(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32_t dypFo
     _fMark = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new one.
 ***************************************************************************/
 PCHTDD CHTDD::PchtddNew(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32_t dypFont, int32_t cchTab)
@@ -81,7 +81,7 @@ PCHTDD CHTDD::PchtddNew(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, in
     return pchtdd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile this text file into a chunky file and open it.
 ***************************************************************************/
 bool CHTDD::FCmdCompileChunky(PCMD pcmd)
@@ -101,9 +101,9 @@ bool CHTDD::FCmdCompileChunky(PCMD pcmd)
     if (pvNil == pcfl)
     {
         vpappb->TGiveAlertSz(PszLit("Compiling chunky file failed"), bkOk, cokExclamation);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
 
-        // if the error file isn't empty, open it
+        // 3DMMv1.0: if the error file isn't empty, open it
         OpenSinkDoc(&msfil);
         return fTrue;
     }
@@ -113,7 +113,7 @@ bool CHTDD::FCmdCompileChunky(PCMD pcmd)
     if (pvNil == pdoc)
     {
         vpappb->TGiveAlertSz(PszLit("Can't open new chunky file"), bkOk, cokExclamation);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         return fTrue;
     }
     pdoc->PdmdNew();
@@ -121,7 +121,7 @@ bool CHTDD::FCmdCompileChunky(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compile this text file into a script and put it in a chunky file and
     open it.
 ***************************************************************************/
@@ -141,14 +141,14 @@ bool CHTDD::FCmdCompileScript(PCMD pcmd)
     if (pvNil == pscpt)
     {
         vpappb->TGiveAlertSz(PszLit("Compiling script failed"), bkOk, cokExclamation);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
 
-        // if the error file isn't empty, open it
+        // 3DMMv1.0: if the error file isn't empty, open it
         OpenSinkDoc(&msfil);
         return fTrue;
     }
 
-    // add the chunk and write the data
+    // 3DMMv1.0: add the chunk and write the data
     if (pvNil == (pdoc = DOC::PdocNew(pvNil)))
         goto LFail;
 
@@ -158,7 +158,7 @@ bool CHTDD::FCmdCompileScript(PCMD pcmd)
         vpappb->TGiveAlertSz(PszLit("Can't create new chunky file"), bkOk, cokExclamation);
         ReleasePpo(&pscpt);
         ReleasePpo(&pdoc);
-        pcmd->cid = cidNil; // don't record
+        pcmd->cid = cidNil; // 3DMMv1.0: don't record
         return fTrue;
     }
     ReleasePpo(&pscpt);
@@ -168,7 +168,7 @@ bool CHTDD::FCmdCompileScript(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open the file based message sink file as a chunky text document.
 ***************************************************************************/
 void OpenSinkDoc(PMSFIL pmsfil)

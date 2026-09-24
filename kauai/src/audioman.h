@@ -1,27 +1,27 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	Contains AudioMan Pubic Interfaces and Types
+// 3DMMv1.0:	Contains AudioMan Pubic Interfaces and Types
 //
-//	Copyright (c) Microsoft Corporation	1995
+// 3DMMv1.0:	Copyright (c) Microsoft Corporation	1995
 //
-//	4/27/95 *****
+// 3DMMv1.0:	4/27/95 *****
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifndef _AUDIOMANPUBLICINTEFACES_
 #define _AUDIOMANPUBLICINTEFACES_
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Class ID's
+// 3DMMv1.0: Class ID's
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define _CLSID_AMMixer 94C7E510 - 9573 - 11CE-B61B - 00AA006EBBE5
 DEFINE_GUID(CLSID_AMMixer, 0x94C7E510L, 0x9573, 0x11CE, 0xB6, 0x1B, 0x00, 0xAA, 0x00, 0x6E, 0xBB, 0xE5);
@@ -80,11 +80,11 @@ DEFINE_GUID(CLSID_AMStereoFilter, 0x94C7E525L, 0x9573, 0x11CE, 0xB6, 0x1B, 0x00,
 #define _CLSID_AMBiasFilter 94C7E526 - 9573 - 11CE-B61B - 00AA006EBBE5
 DEFINE_GUID(CLSID_AMBiasFilter, 0x94C7E526L, 0x9573, 0x11CE, 0xB6, 0x1B, 0x00, 0xAA, 0x00, 0x6E, 0xBB, 0xE5);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Interface Definitions
+// 3DMMv1.0: Interface Definitions
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define _IID_IAMMixer A0434E40 - 9573 - 11CE-B61B - 00AA006EBBE5
 DEFINE_GUID(IID_IAMMixer, 0xA0434E40L, 0x9573, 0x11CE, 0xB6, 0x1B, 0x00, 0xAA, 0x00, 0x6E, 0xBB, 0xE5);
@@ -155,11 +155,11 @@ DEFINE_GUID(IID_IAMStereoFilter, 0xA0434E57L, 0x9573, 0x11CE, 0xB6, 0x1B, 0x00, 
 #define _IID_IAMBiasFilter A0434E58 - 9573 - 11CE-B61B - 00AA006EBBE5
 DEFINE_GUID(IID_IAMBiasFilter, 0xA0434E58L, 0x9573, 0x11CE, 0xB6, 0x1B, 0x00, 0xAA, 0x00, 0x6E, 0xBB, 0xE5);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Interface Typedefs
+// 3DMMv1.0: Interface Typedefs
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef interface IAMMixer IAMMixer;
 typedef IAMMixer FAR *LPMIXER;
@@ -238,20 +238,20 @@ typedef IStream FAR *LPSTREAM;
 typedef IUnknown FAR *LPUNKNOWN;
 #endif
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	Audio HRESULT Return Codes
+// 3DMMv1.0:	Audio HRESULT Return Codes
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Success Codes
+// 3DMMv1.0: Success Codes
 
 #define AM_S_FIRST (OLE_S_FIRST + 5000)
 
 #define S_ENDOFSOUND (AM_S_FIRST + 1)
 #define S_SOUNDIDLE (AM_S_FIRST + 2)
 
-// Error Codes
+// 3DMMv1.0: Error Codes
 
 #define AM_E_FIRST (OLE_E_FIRST + 5000)
 
@@ -297,15 +297,15 @@ typedef IUnknown FAR *LPUNKNOWN;
 #define E_BADTIMERPERIOD (AM_E_FIRST + 40)
 #define E_NOTIMER (AM_E_FIRST + 41)
 
-// Mixer Error Codes
+// 3DMMv1.0: Mixer Error Codes
 
 #define E_ALREADYINITED (OLE_E_FIRST + 8)
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// AudioMan common defines
+// 3DMMv1.0: AudioMan common defines
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 enum RAND_FREQUENCY
 {
@@ -344,11 +344,11 @@ enum WODM_CUSTOM
     WODM_GETGAIN = 101,
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// AudioMan Type definitions
+// 3DMMv1.0: AudioMan Type definitions
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct SMPTE
 {
@@ -412,24 +412,24 @@ typedef struct RequestParam
     DWORD dwFinishPos;
     LPNOTIFYSINK lpNotifySink;
     DWORD fdwNotifyMask;
-    //	REFIID 					riid;
+    // 3DMMv1.0:	REFIID 					riid;
 } REQUESTPARAM, FAR *LPREQUESTPARAM;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// AudioMan Interface Definitions
+// 3DMMv1.0: AudioMan Interface Definitions
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DECLARE_INTERFACE_(IAMMixer, IUnknown)
 {
-    //---  IUnknown methods---
+    // 3DMMv1.0: ---  IUnknown methods---
 
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID FAR * ppvObj) PURE;
     STDMETHOD_(ULONG, AddRef)(THIS) PURE;
     STDMETHOD_(ULONG, Release)(THIS) PURE;
 
-    //--- IAMMixer methods---
+    // 3DMMv1.0: --- IAMMixer methods---
 
     STDMETHOD(TestConfig)
     (THIS_ LPWAVEOUT pWaveOut, LPMIXERCONFIG pMixerConfig, LPADVMIXCONFIG pAdvMixConfig, BOOL fRecommend) PURE;
@@ -490,13 +490,13 @@ DECLARE_INTERFACE_(IAMMixer, IUnknown)
 
 DECLARE_INTERFACE_(IAMChannel, IUnknown)
 {
-    //---  IUnknown methods---
+    // 3DMMv1.0: ---  IUnknown methods---
 
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID FAR * ppvObj) PURE;
     STDMETHOD_(ULONG, AddRef)(THIS) PURE;
     STDMETHOD_(ULONG, Release)(THIS) PURE;
 
-    //---  IAMChannel methods---
+    // 3DMMv1.0: ---  IAMChannel methods---
 
     STDMETHOD(RegisterNotify)(THIS_ LPNOTIFYSINK pNotifySink, DWORD fdwNotifyFlags) PURE;
 
@@ -541,13 +541,13 @@ DECLARE_INTERFACE_(IAMChannel, IUnknown)
 
 DECLARE_INTERFACE_(IAMWaveOut, IUnknown)
 {
-    //---  IUnknown methods---
+    // 3DMMv1.0: ---  IUnknown methods---
 
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID FAR * ppvObj) PURE;
     STDMETHOD_(ULONG, AddRef)(THIS) PURE;
     STDMETHOD_(ULONG, Release)(THIS) PURE;
 
-    //---  IAMWaveOut methods---
+    // 3DMMv1.0: ---  IAMWaveOut methods---
 
     STDMETHOD_(UINT, GetNumDevs)(THIS) PURE;
 
@@ -595,12 +595,12 @@ DECLARE_INTERFACE_(IAMWaveOut, IUnknown)
 
 DECLARE_INTERFACE_(IAMSound, IUnknown)
 {
-    //---  IUnknown methods---
+    // 3DMMv1.0: ---  IUnknown methods---
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID FAR * ppvObj) PURE;
     STDMETHOD_(ULONG, AddRef)(THIS) PURE;
     STDMETHOD_(ULONG, Release)(THIS) PURE;
 
-    //---  IAMSound methods---
+    // 3DMMv1.0: ---  IAMSound methods---
 
     STDMETHOD(GetFormat)(THIS_ LPWAVEFORMATEX pFormat, DWORD cbSize) PURE;
 
@@ -618,12 +618,12 @@ DECLARE_INTERFACE_(IAMSound, IUnknown)
 
 DECLARE_INTERFACE_(IAMNotifySink, IUnknown)
 {
-    //---  IUnknown methods---
+    // 3DMMv1.0: ---  IUnknown methods---
     STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID FAR * ppvObj) PURE;
     STDMETHOD_(ULONG, AddRef)(THIS) PURE;
     STDMETHOD_(ULONG, Release)(THIS) PURE;
 
-    //---  IAMNotifySink methods---
+    // 3DMMv1.0: ---  IAMNotifySink methods---
 
     STDMETHOD_(void, OnStart)(THIS_ LPSOUND pSound, DWORD dwPosition) PURE;
 
@@ -636,7 +636,7 @@ DECLARE_INTERFACE_(IAMNotifySink, IUnknown)
 
 DECLARE_INTERFACE_(IAMWavFileSrc, IUnknown)
 {
-    //---  IAMWavFileSrc methods---
+    // 3DMMv1.0: ---  IAMWavFileSrc methods---
 
     STDMETHOD(InitFromStream)(THIS_ IStream * pStream, BOOL fSpooled) PURE;
 
@@ -647,7 +647,7 @@ DECLARE_INTERFACE_(IAMWavFileSrc, IUnknown)
 
 DECLARE_INTERFACE_(IAMScheduleFilter, IUnknown)
 {
-    //---  IAMScheduleFilter methods---
+    // 3DMMv1.0: ---  IAMScheduleFilter methods---
 
     STDMETHOD(Init)(THIS_ LPSCHEDULERCONFIG pSchedulerConfig) PURE;
 
@@ -673,7 +673,7 @@ DECLARE_INTERFACE_(IAMScheduleFilter, IUnknown)
 
 DECLARE_INTERFACE_(IAMRandomizeFilter, IUnknown)
 {
-    //---  IAMRandomizeFilter methods---
+    // 3DMMv1.0: ---  IAMRandomizeFilter methods---
 
     STDMETHOD(Init)(THIS_ LPRANDOMIZECONFIG pRandomizeConfig) PURE;
 
@@ -762,19 +762,19 @@ DECLARE_INTERFACE_(IAMDistortFilter, IUnknown)
     STDMETHOD(Init)(THIS_ LPSOUND pSoundSrc, float flDBThreshold) PURE;
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-// Prototypes
+// 3DMMv1.0: Prototypes
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 HRESULT AM_CreateInstance(REFCLSID rclsid, IUnknown *pUnkOuter, REFIID riid, void **ppvObject);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//	AudioMan Helper Functions
+// 3DMMv1.0:	AudioMan Helper Functions
 //
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 STDAPI AllocSoundFromStream(LPSOUND FAR *ppSound, LPSTREAM pStream, BOOL fSpooled, LPCACHECONFIG lpCacheConfig);
 STDAPI AllocSoundFromFile(LPSOUND FAR *ppSound, char FAR *szFileName, DWORD dwOffset, BOOL fSpooled,
@@ -810,4 +810,4 @@ STDAPI SoundToFileAsWave(LPSOUND pSound, char FAR *pAbsFilePath);
 
 STDAPI_(int) DetectLeaks(BOOL fDebugOut, BOOL fMessageBox);
 
-#endif //_AUDIOMANPUBLICINTEFACES_
+#endif // 3DMMv1.0: _AUDIOMANPUBLICINTEFACES_

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
  *
  *  STDIOCRS.H
  *
@@ -25,7 +25,7 @@
 #ifndef STDIOCRS_H
 #define STDIOCRS_H
 
-// Note, shared cursors have ids reserved from 0 through 100.
+// 3DMMv1.0: Note, shared cursors have ids reserved from 0 through 100.
 #define kcrsCompose 101
 #define kcrsSquashStretch 102
 #define kcrsResize 103
@@ -70,4 +70,4 @@
 #define kcrsTboxFontStyle 142
 #define kcrsSceneChopBack 143
 
-#endif // !STDIOCRS_H
+#endif // 3DMMv1.0: !STDIOCRS_H

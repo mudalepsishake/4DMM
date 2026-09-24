@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -14,13 +14,13 @@
 #include "util.h"
 ASSERTNAME
 
-// min size of initial piece on file
+// 3DMMv1.0: min size of initial piece on file
 const int32_t kcbMinFloFile = 2048;
 
 RTCLASS(BSM)
 RTCLASS(BSF)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for an in-memory byte stream.
 ***************************************************************************/
 BSM::BSM(void)
@@ -31,7 +31,7 @@ BSM::BSM(void)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for an in-memory byte stream.
 ***************************************************************************/
 BSM::~BSM(void)
@@ -41,7 +41,7 @@ BSM::~BSM(void)
     FreePhq(&_hqrgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the amount to grow by.
 ***************************************************************************/
 void BSM::SetMinGrow(int32_t cb)
@@ -52,7 +52,7 @@ void BSM::SetMinGrow(int32_t cb)
     _cbMinGrow = cb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure there is at least cb bytes of space.  If fShrink is true,
     the amount of memory allocated by the BSM may decrease.
 ***************************************************************************/
@@ -63,7 +63,7 @@ bool BSM::FEnsureSpace(int32_t cb, bool fShrink)
     return _FEnsureSize(_ibMac + cb, fShrink);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return a locked pointer into the byte stream.  The stream is stored
     contiguously.
 ***************************************************************************/
@@ -77,7 +77,7 @@ void *BSM::PvLock(int32_t ib)
     return PvAddBv(PvLockHq(_hqrgb), ib);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlock the stream.
 ***************************************************************************/
 void BSM::Unlock(void)
@@ -88,7 +88,7 @@ void BSM::Unlock(void)
         UnlockHq(_hqrgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch some bytes from the stream.
 ***************************************************************************/
 void BSM::FetchRgb(int32_t ib, int32_t cb, void *prgb)
@@ -102,7 +102,7 @@ void BSM::FetchRgb(int32_t ib, int32_t cb, void *prgb)
         CopyPb(PvAddBv(QvFromHq(_hqrgb), ib), prgb, cb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the range [ib,ib + cbDel) with cbIns bytes from prgb.  If cbIns
     is zero, prgb may be nil.
 ***************************************************************************/
@@ -128,7 +128,7 @@ bool BSM::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the byte stream to a file.
 ***************************************************************************/
 bool BSM::FWriteRgb(PFLO pflo, int32_t ib)
@@ -140,7 +140,7 @@ bool BSM::FWriteRgb(PFLO pflo, int32_t ib)
     return FWriteRgb(&blck, ib);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the byte stream to a block.
 ***************************************************************************/
 bool BSM::FWriteRgb(PBLCK pblck, int32_t ib)
@@ -162,7 +162,7 @@ bool BSM::FWriteRgb(PBLCK pblck, int32_t ib)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the hq is at least cbMin bytes.  If fShrink is true, make the
     hq exactly cbMin bytes long.
 ***************************************************************************/
@@ -193,7 +193,7 @@ bool BSM::_FEnsureSize(int32_t cbMin, bool fShrink)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a byte stream (BSF).
 ***************************************************************************/
 void BSM::AssertValid(uint32_t grf)
@@ -210,7 +210,7 @@ void BSM::AssertValid(uint32_t grf)
         AssertHq(_hqrgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the BSM.
 ***************************************************************************/
 void BSM::MarkMem(void)
@@ -219,9 +219,9 @@ void BSM::MarkMem(void)
     BSM_PAR::MarkMem();
     MarkHq(_hqrgb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a stream.
 ***************************************************************************/
 BSF::BSF(void)
@@ -231,7 +231,7 @@ BSF::BSF(void)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a stream.
 ***************************************************************************/
 BSF::~BSF(void)
@@ -242,7 +242,7 @@ BSF::~BSF(void)
 
     if (0 < _ibMac)
     {
-        // release all our reference counts
+        // 3DMMv1.0: release all our reference counts
         for (iflo = _pggflo->IvMac(); iflo-- > 0;)
         {
             _pggflo->GetFixed(iflo, &flo);
@@ -253,7 +253,7 @@ BSF::~BSF(void)
     ReleasePpo(&_pggflo);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the flo that contains the given ib and assign *pib the postion
     of the first byte in the flo and *pcb the size of the flo.
 ***************************************************************************/
@@ -288,7 +288,7 @@ int32_t BSF::_IfloFind(int32_t ib, int32_t *pib, int32_t *pcb)
     return iflo;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure ib is on a piece boundary.
 ***************************************************************************/
 bool BSF::_FEnsureSplit(int32_t ib, int32_t *piflo)
@@ -303,8 +303,8 @@ bool BSF::_FEnsureSplit(int32_t ib, int32_t *piflo)
     {
         if (pvNil == (_pggflo = GG::PggNew(SIZEOF(FLO))))
             return fFalse;
-        // REVIEW shonk: what values should we use for SetMinGrow?
-        //_pggflo->SetMinGrow(2, 100);
+        // 3DMMv1.0: REVIEW shonk: what values should we use for SetMinGrow?
+        // 3DMMv1.0: _pggflo->SetMinGrow(2, 100);
     }
 
     iflo = _IfloFind(ib, &ibMin, &cbT);
@@ -346,7 +346,7 @@ bool BSF::_FEnsureSplit(int32_t ib, int32_t *piflo)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enumerate over all pieces spanning ibMin to ibLim and attempt to merge
     any adjacent ones.
 ***************************************************************************/
@@ -368,7 +368,7 @@ void BSF::_AttemptMerge(int32_t ibMin, int32_t ibLim)
         _pggflo->GetFixed(iflo + 1, &floT);
         if (flo.pfil != floT.pfil || pvNil != flo.pfil && flo.fp + flo.cb != floT.fp)
         {
-            // cant merge them, try the next
+            // 3DMMv1.0: cant merge them, try the next
             iflo++;
             ib += flo.cb;
             continue;
@@ -378,7 +378,7 @@ void BSF::_AttemptMerge(int32_t ibMin, int32_t ibLim)
             _pggflo->Merge(iflo + 1, iflo);
         else
         {
-            // merge the two file based flo's
+            // 3DMMv1.0: merge the two file based flo's
             _pggflo->Delete(iflo + 1);
             ReleasePpo(&floT.pfil);
             AssertPo(flo.pfil, 0);
@@ -388,7 +388,7 @@ void BSF::_AttemptMerge(int32_t ibMin, int32_t ibLim)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace a range in this bsf with the range in the given bsf.  This
     does the complete insertion, then the deletion.
 ***************************************************************************/
@@ -408,26 +408,26 @@ bool BSF::FReplaceBsf(PBSF pbsfSrc, int32_t ibSrc, int32_t cbSrc, int32_t ibDst,
     uint8_t *pb;
     bool fRet;
 
-    // REVIEW shonk: if we're only inserting a non-file piece of pbsfSrc, should
-    // we optimize and redirect this to FReplace?
+    // 3DMMv1.0: REVIEW shonk: if we're only inserting a non-file piece of pbsfSrc, should
+    // 3DMMv1.0: we optimize and redirect this to FReplace?
 
     if (cbSrc == 0 && cbDel == 0)
         return fTrue;
 
-    // make sure the piece table exists and is split at ibDst
+    // 3DMMv1.0: make sure the piece table exists and is split at ibDst
     if (!_FEnsureSplit(ibDst, &ifloDst))
         return fFalse;
 
-    // cbIns is the number of bytes already inserted (for cleanup)
+    // 3DMMv1.0: cbIns is the number of bytes already inserted (for cleanup)
     cbIns = 0;
 
-    // get the flo's to insert
+    // 3DMMv1.0: get the flo's to insert
     ifloMinSrc = pbsfSrc->_IfloFind(ibSrc, &ibMinSrc, &cbMinFlo);
     ifloLimSrc = pbsfSrc->_IfloFind(ibSrc + cbSrc, &ibLimSrc, &cbLimFlo);
 
     if (ifloMinSrc < ifloLimSrc)
     {
-        // first insert the whole pieces
+        // 3DMMv1.0: first insert the whole pieces
         if (ibSrc > ibMinSrc)
         {
             ifloMinWhole = ifloMinSrc + 1;
@@ -447,7 +447,7 @@ bool BSF::FReplaceBsf(PBSF pbsfSrc, int32_t ibSrc, int32_t cbSrc, int32_t ibDst,
             cbIns = ibLimSrc - ibMinWhole;
             _ibMac += cbIns;
 
-            // adjust the usage counts on the file pieces
+            // 3DMMv1.0: adjust the usage counts on the file pieces
             for (iflo = ifloDst + ifloLimSrc - ifloMinWhole; iflo-- > ifloDst;)
             {
                 _pggflo->GetFixed(iflo, &flo);
@@ -456,21 +456,21 @@ bool BSF::FReplaceBsf(PBSF pbsfSrc, int32_t ibSrc, int32_t cbSrc, int32_t ibDst,
             }
         }
 
-        // insert the front piece
+        // 3DMMv1.0: insert the front piece
         if (ifloMinSrc < ifloMinWhole)
         {
             cbT = cbMinFlo - ibSrc + ibMinSrc;
             pbsfSrc->_pggflo->GetFixed(ifloMinSrc, &flo);
             if (pvNil == flo.pfil)
             {
-                // a memory piece
+                // 3DMMv1.0: a memory piece
                 pb = (uint8_t *)pbsfSrc->_pggflo->PvLock(ifloMinSrc);
                 fRet = FReplace(pb + ibSrc - ibMinSrc, cbT, ibDst, 0);
                 pbsfSrc->_pggflo->Unlock();
             }
             else
             {
-                // a file piece
+                // 3DMMv1.0: a file piece
                 flo.fp += ibSrc - ibMinSrc;
                 flo.cb = cbT;
                 fRet = FReplaceFlo(&flo, fFalse, ibDst, 0);
@@ -483,7 +483,7 @@ bool BSF::FReplaceBsf(PBSF pbsfSrc, int32_t ibSrc, int32_t cbSrc, int32_t ibDst,
             _AttemptMerge(ibDst, ibDst);
     }
 
-    // insert the back piece
+    // 3DMMv1.0: insert the back piece
     Assert(ibLimSrc <= ibSrc + cbSrc, 0);
     if (ibLimSrc < ibSrc + cbSrc || cbDel > 0)
     {
@@ -497,14 +497,14 @@ bool BSF::FReplaceBsf(PBSF pbsfSrc, int32_t ibSrc, int32_t cbSrc, int32_t ibDst,
             pbsfSrc->_pggflo->GetFixed(ifloLimSrc, &flo);
             if (pvNil == flo.pfil)
             {
-                // a memory piece
+                // 3DMMv1.0: a memory piece
                 pb = (uint8_t *)pbsfSrc->_pggflo->PvLock(ifloLimSrc);
                 fRet = FReplace(pb + ib - ibLimSrc, cbT, ibDst + cbIns, cbDel);
                 pbsfSrc->_pggflo->Unlock();
             }
             else
             {
-                // a file piece
+                // 3DMMv1.0: a file piece
                 flo.fp += ib - ibLimSrc;
                 flo.cb = cbT;
                 fRet = FReplaceFlo(&flo, fFalse, ibDst + cbIns, cbDel);
@@ -529,7 +529,7 @@ bool BSF::FReplaceBsf(PBSF pbsfSrc, int32_t ibSrc, int32_t cbSrc, int32_t ibDst,
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the range [ib, ib + cbDel) with cbIns bytes from prgb.
 ***************************************************************************/
 bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
@@ -546,17 +546,17 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
     if (cbDel == 0 && cbIns == 0)
         return fTrue;
 
-    // make sure the _pggflo exists
+    // 3DMMv1.0: make sure the _pggflo exists
     if (!_FEnsureSplit(0))
         return fFalse;
 
-    // get the flo of interest and the ibMin of the flo
+    // 3DMMv1.0: get the flo of interest and the ibMin of the flo
     iflo = _IfloFind(ib, &ibT);
 
-    // from here on, ibT is the offset into the current flo (iflo)
+    // 3DMMv1.0: from here on, ibT is the offset into the current flo (iflo)
     ibT = ib - ibT;
 
-    // if ib is in a file flo, split it
+    // 3DMMv1.0: if ib is in a file flo, split it
     if (ibT > 0)
     {
         _pggflo->GetFixed(iflo, &flo);
@@ -577,12 +577,12 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
 
     if (ibT > 0 && cbDel > 0)
     {
-        // we need to start deleting in the middle of a piece
+        // 3DMMv1.0: we need to start deleting in the middle of a piece
         _pggflo->GetFixed(iflo, &flo);
         Assert(pvNil == flo.pfil, "why wasn't this flo split?");
         if (ibT + cbDel < flo.cb)
         {
-            // deleting just part of this piece and no others
+            // 3DMMv1.0: deleting just part of this piece and no others
             _pggflo->DeleteRgb(iflo, ibT, cbDel);
             flo.cb -= cbDel;
             _pggflo->PutFixed(iflo, &flo);
@@ -591,7 +591,7 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
         }
         else
         {
-            // deleting to the end of this piece
+            // 3DMMv1.0: deleting to the end of this piece
             cbT = flo.cb - ibT;
             _pggflo->DeleteRgb(iflo, ibT, cbT);
             flo.cb = ibT;
@@ -606,11 +606,11 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
     Assert(ibT == 0 || cbDel == 0, "wrong ib");
     while (cbDel > 0 && iflo < _pggflo->IvMac())
     {
-        // deleting from the beginning of the flo
+        // 3DMMv1.0: deleting from the beginning of the flo
         _pggflo->GetFixed(iflo, &flo);
         if (cbDel < flo.cb)
         {
-            // just remove the first part
+            // 3DMMv1.0: just remove the first part
             if (pvNil != flo.pfil)
                 flo.fp += cbDel;
             else
@@ -622,7 +622,7 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
         }
         else
         {
-            // delete the whole flo
+            // 3DMMv1.0: delete the whole flo
             ReleasePpo(&flo.pfil);
             _pggflo->Delete(iflo);
             cbDel -= flo.cb;
@@ -630,7 +630,7 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
         }
     }
 
-    // now insert the new stuff
+    // 3DMMv1.0: now insert the new stuff
     if (cbIns > 0)
     {
         if (iflo < _pggflo->IvMac())
@@ -642,7 +642,7 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
         Assert(ibT == 0, "wrong ib 2");
         if (iflo > 0)
         {
-            // see if the previous flow is a memory one
+            // 3DMMv1.0: see if the previous flow is a memory one
             _pggflo->GetFixed(iflo - 1, &flo);
             if (pvNil == flo.pfil)
             {
@@ -656,7 +656,7 @@ bool BSF::FReplace(const void *prgb, int32_t cbIns, int32_t ib, int32_t cbDel)
                 goto LTryMerge;
             }
         }
-        // create a new memory flo
+        // 3DMMv1.0: create a new memory flo
         flo.pfil = pvNil;
         flo.cb = cbIns;
         flo.fp = 0;
@@ -670,7 +670,7 @@ LTryMerge:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the range [ib, ib + cbDel) with the flo.
 ***************************************************************************/
 bool BSF::FReplaceFlo(PFLO pflo, bool fCopy, int32_t ib, int32_t cbDel)
@@ -688,7 +688,7 @@ bool BSF::FReplaceFlo(PFLO pflo, bool fCopy, int32_t ib, int32_t cbDel)
 
     if (pflo->cb < kcbMinFloFile)
     {
-        // use a memory piece
+        // 3DMMv1.0: use a memory piece
         HQ hq;
 
         if (!pflo->FReadHq(&hq))
@@ -699,7 +699,7 @@ bool BSF::FReplaceFlo(PFLO pflo, bool fCopy, int32_t ib, int32_t cbDel)
         return fRet;
     }
 
-    // insert a file flo
+    // 3DMMv1.0: insert a file flo
     if (fCopy)
     {
         if (pvNil == (flo.pfil = FIL::PfilCreateTemp()))
@@ -728,8 +728,8 @@ bool BSF::FReplaceFlo(PFLO pflo, bool fCopy, int32_t ib, int32_t cbDel)
     _ibMac += pflo->cb;
     if (cbDel > 0)
     {
-        // this shouldn't fail because we've already ensured a split
-        // at ib + pflo->cb
+        // 3DMMv1.0: this shouldn't fail because we've already ensured a split
+        // 3DMMv1.0: at ib + pflo->cb
         AssertDo(FReplace(pvNil, 0, ib + pflo->cb, cbDel), 0);
     }
     _AttemptMerge(ib, ib + pflo->cb);
@@ -737,7 +737,7 @@ bool BSF::FReplaceFlo(PFLO pflo, bool fCopy, int32_t ib, int32_t cbDel)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch cb bytes from position ib into prgb.
 ***************************************************************************/
 void BSF::FetchRgb(int32_t ib, int32_t cb, void *prgb)
@@ -756,18 +756,18 @@ void BSF::FetchRgb(int32_t ib, int32_t cb, void *prgb)
         _pggflo->GetFixed(iflo, &flo);
         Assert(flo.cb > ib, "_IfloFind messed up");
 
-        // get min(cb, flo.cb - ib) bytes from position ib
-        // then set ib to 0 and update cb
+        // 3DMMv1.0: get min(cb, flo.cb - ib) bytes from position ib
+        // 3DMMv1.0: then set ib to 0 and update cb
         cbT = LwMin(cb, flo.cb - ib);
         if (pvNil == flo.pfil)
         {
-            // the data is in the GG
+            // 3DMMv1.0: the data is in the GG
             Assert(_pggflo->Cb(iflo) == flo.cb, "group element wrong size");
             _pggflo->GetRgb(iflo, ib, cbT, prgb);
         }
         else
         {
-            // the data is on file
+            // 3DMMv1.0: the data is on file
             if (!flo.FReadRgb(prgb, cbT, ib))
             {
                 Warn("read failed in fetch");
@@ -780,7 +780,7 @@ void BSF::FetchRgb(int32_t ib, int32_t cb, void *prgb)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a portion of a BSF to the given flo.
 ***************************************************************************/
 bool BSF::FWriteRgb(PFLO pflo, int32_t ib)
@@ -792,7 +792,7 @@ bool BSF::FWriteRgb(PFLO pflo, int32_t ib)
     return FWriteRgb(&blck, ib);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a portion of a BSF to the given block.
 ***************************************************************************/
 bool BSF::FWriteRgb(PBLCK pblck, int32_t ib)
@@ -826,20 +826,20 @@ bool BSF::FWriteRgb(PBLCK pblck, int32_t ib)
         _pggflo->GetFixed(iflo, &flo);
         Assert(flo.cb > ib, "_IfloFind messed up");
 
-        // write min(cbWrite, flo.cb - ib) bytes from position ib
-        // then set ib to 0 and update cbWrite
+        // 3DMMv1.0: write min(cbWrite, flo.cb - ib) bytes from position ib
+        // 3DMMv1.0: then set ib to 0 and update cbWrite
         cb = LwMin(cbWrite, flo.cb - ib);
         AssertDo(pblck->FMoveLim(cb), 0);
         Assert(pblck->Cb() == cb, 0);
         if (pvNil == flo.pfil)
         {
-            // the data is in the GG
+            // 3DMMv1.0: the data is in the GG
             Assert(_pggflo->Cb(iflo) == flo.cb, "group element wrong size");
             fRet = pblck->FWrite(PvAddBv(_pggflo->QvGet(iflo), ib));
         }
         else
         {
-            // the data is on file
+            // 3DMMv1.0: the data is on file
             BLCK blck(flo.pfil, flo.fp + ib, cb);
             fRet = blck.FWriteToBlck(pblck);
         }
@@ -857,7 +857,7 @@ bool BSF::FWriteRgb(PBLCK pblck, int32_t ib)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the stream out to a temp file and redirect the stream to just
     refernce the temp file.  This makes the stream's memory footprint
     minimal.
@@ -891,7 +891,7 @@ LShrinkGg:
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a byte stream (BSF).
 ***************************************************************************/
 void BSF::AssertValid(uint32_t grfobj)
@@ -928,7 +928,7 @@ void BSF::AssertValid(uint32_t grfobj)
     AssertVar(cb == _ibMac, "bad _ibMac", &_ibMac);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the BSF.
 ***************************************************************************/
 void BSF::MarkMem(void)
@@ -937,4 +937,4 @@ void BSF::MarkMem(void)
     BSF_PAR::MarkMem();
     MarkMemObj(_pggflo);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

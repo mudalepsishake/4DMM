@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     esl.h: Easel classes
 
@@ -22,13 +22,13 @@
 #ifndef ESL_H
 #define ESL_H
 
-// Function to build a GCB to construct a child under a parent
+// 3DMMv1.0: Function to build a GCB to construct a child under a parent
 bool FBuildGcb(PGCB pgcb, int32_t kidParent, int32_t kidChild);
 
-// Function to set a GOK to a different state
+// 3DMMv1.0: Function to set a GOK to a different state
 void SetGokState(int32_t kid, int32_t st);
 
-/*****************************
+/** 3DMMv1.0: ***************************
     The generic easel class
 *****************************/
 typedef class ESL *PESL;
@@ -55,11 +55,11 @@ class ESL : public ESL_PAR
     static PESL PeslNew(PRCA prca, int32_t kidParent, int32_t hidEasel);
     ~ESL(void);
 
-    bool FCmdDismiss(PCMD pcmd); // Handles both OK and Cancel
+    bool FCmdDismiss(PCMD pcmd); // 3DMMv1.0: Handles both OK and Cancel
 };
 
-typedef class ESLT *PESLT; // SNE needs this
-/****************************************
+typedef class ESLT *PESLT; // 3DMMv1.0: SNE needs this
+/** 3DMMv1.0: **************************************
     Spletter Name Editor class.  It's
     derived from EDSL, which is a Kauai
     single-line edit control
@@ -74,7 +74,7 @@ class SNE : public SNE_PAR
     MARKMEM
 
   protected:
-    PESLT _peslt; // easel to notify when text changes
+    PESLT _peslt; // 3DMMv1.0: easel to notify when text changes
 
   protected:
     SNE(PEDPAR pedpar) : EDSL(pedpar)
@@ -86,7 +86,7 @@ class SNE : public SNE_PAR
     virtual bool FReplace(const achar *prgch, int32_t cchIns, int32_t ich1, int32_t ich2, int32_t gin) override;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     The text easel class
 ****************************************/
 typedef class ESLT *PESLT;
@@ -100,11 +100,11 @@ class ESLT : public ESLT_PAR
     CMD_MAP_DEC(ESLT)
 
   protected:
-    PMVIE _pmvie; // Movie that this TDT is in
-    PACTR _pactr; // Actor of this TDT, or pvNil for new TDT
-    PAPE _pape;   // Actor Preview Entity
-    PSNE _psne;   // Spletter Name Editor
-    PRCA _prca;   // Resource source for cursors
+    PMVIE _pmvie; // 3DMMv1.0: Movie that this TDT is in
+    PACTR _pactr; // 3DMMv1.0: Actor of this TDT, or pvNil for new TDT
+    PAPE _pape;   // 3DMMv1.0: Actor Preview Entity
+    PSNE _psne;   // 3DMMv1.0: Spletter Name Editor
+    PRCA _prca;   // 3DMMv1.0: Resource source for cursors
     PSFL _psflMtrl;
     PBCL _pbclMtrl;
     PSFL _psflTdf;
@@ -129,11 +129,12 @@ class ESLT : public ESLT_PAR
     bool FCmdSetFont(PCMD pcmd);
     bool FCmdSetShape(PCMD pcmd);
     bool FCmdSetColor(PCMD pcmd);
+    bool FCmdPickColor(PCMD pcmd);
 
     bool FTextChanged(PSTN pstn);
 };
 
-/********************************************
+/** 3DMMv1.0: ******************************************
     The actor easel (costume changer) class
 ********************************************/
 typedef class ESLA *PESLA;
@@ -147,10 +148,10 @@ class ESLA : public ESLA_PAR
     CMD_MAP_DEC(ESLA)
 
   protected:
-    PMVIE _pmvie; // Movie that this actor is in
-    PACTR _pactr; // The actor that is being edited
-    PAPE _pape;   // Actor Preview Entity
-    PEDSL _pedsl; // Single-line edit control (for actor's name)
+    PMVIE _pmvie; // 3DMMv1.0: Movie that this actor is in
+    PACTR _pactr; // 3DMMv1.0: The actor that is being edited
+    PAPE _pape;   // 3DMMv1.0: Actor Preview Entity
+    PEDSL _pedsl; // 3DMMv1.0: Single-line edit control (for actor's name)
 
   protected:
     ESLA(PGCB pgcb) : ESL(pgcb)
@@ -165,9 +166,10 @@ class ESLA : public ESLA_PAR
 
     bool FCmdRotate(PCMD pcmd);
     bool FCmdTool(PCMD pcmd);
+    bool FCmdPickColor(PCMD pcmd);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Listener sound class
 ****************************************/
 typedef class LSND *PLSND;
@@ -180,16 +182,16 @@ class LSND : public LSND_PAR
     MARKMEM
 
   protected:
-    PGL _pgltag;         // PGL in case of chained sounds
-    int32_t _vlm;        // Initial volume
-    int32_t _vlmNew;     // User can redefine with slider
-    bool _fLoop;         // Looping sound
-    int32_t _objID;      // Owner's object ID
-    int32_t _sty;        // Sound type
-    int32_t _kidVol;     // Kid of volume slider
-    int32_t _kidIcon;    // Kid of sound-type icon
-    int32_t _kidEditBox; // Kid of sound-name box
-    bool _fMatcher;      // Whether this is a motion-matched sound
+    PGL _pgltag;         // 3DMMv1.0: PGL in case of chained sounds
+    int32_t _vlm;        // 3DMMv1.0: Initial volume
+    int32_t _vlmNew;     // 3DMMv1.0: User can redefine with slider
+    bool _fLoop;         // 3DMMv1.0: Looping sound
+    int32_t _objID;      // 3DMMv1.0: Owner's object ID
+    int32_t _sty;        // 3DMMv1.0: Sound type
+    int32_t _kidVol;     // 3DMMv1.0: Kid of volume slider
+    int32_t _kidIcon;    // 3DMMv1.0: Kid of sound-type icon
+    int32_t _kidEditBox; // 3DMMv1.0: Kid of sound-name box
+    bool _fMatcher;      // 3DMMv1.0: Whether this is a motion-matched sound
 
   public:
     LSND(void)
@@ -209,7 +211,7 @@ class LSND : public LSND_PAR
     bool FChanged(int32_t *pvlmNew, bool *pfNuked);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     The listener easel class
 ****************************************/
 typedef class ESLL *PESLL;
@@ -223,9 +225,9 @@ class ESLL : public ESLL_PAR
     CMD_MAP_DEC(ESLL)
 
   protected:
-    PMVIE _pmvie; // Movie that these sounds are in
-    PSCEN _pscen; // Scene that these sounds are in
-    PACTR _pactr; // Actor that sounds are attached to (or pvNil)
+    PMVIE _pmvie; // 3DMMv1.0: Movie that these sounds are in
+    PSCEN _pscen; // 3DMMv1.0: Scene that these sounds are in
+    PACTR _pactr; // 3DMMv1.0: Actor that sounds are attached to (or pvNil)
     LSND _lsndSpeech;
     LSND _lsndSfx;
     LSND _lsndMidi;
@@ -248,7 +250,7 @@ class ESLL : public ESLL_PAR
     bool FCmdPlay(PCMD pcmd);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     The sound recording easel class
 ****************************************/
 typedef class ESLR *PESLR;
@@ -262,14 +264,14 @@ class ESLR : public ESLR_PAR
     CMD_MAP_DEC(ESLR)
 
   protected:
-    PMVIE _pmvie;         // The movie to insert sound into
-    bool _fSpeech;        // Recording Speech or SFX?
-    PEDSL _pedsl;         // Single-line edit control for sound name
-    PSREC _psrec;         // Sound recording object
-    CLOK _clok;           // Clock to limit sound length
-    bool _fRecording;     // Are we recording right now?
-    bool _fPlaying;       // Are we playing back the recording?
-    uint32_t _tsStartRec; // Time at which we started recording
+    PMVIE _pmvie;         // 3DMMv1.0: The movie to insert sound into
+    bool _fSpeech;        // 3DMMv1.0: Recording Speech or SFX?
+    PEDSL _pedsl;         // 3DMMv1.0: Single-line edit control for sound name
+    PSREC _psrec;         // 3DMMv1.0: Sound recording object
+    CLOK _clok;           // 3DMMv1.0: Clock to limit sound length
+    bool _fRecording;     // 3DMMv1.0: Are we recording right now?
+    bool _fPlaying;       // 3DMMv1.0: Are we playing back the recording?
+    uint32_t _tsStartRec; // 3DMMv1.0: Time at which we started recording
 
   protected:
     ESLR(PGCB pgcb) : ESL(pgcb), _clok(HidUnique())
@@ -288,4 +290,4 @@ class ESLR : public ESLR_PAR
     bool FCmdUpdateMeter(PCMD pcmd);
 };
 
-#endif // ESL_H
+#endif // 3DMMEx: ESL_H

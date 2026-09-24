@@ -1,9 +1,9 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by ched.rc
+// 3DMMv1.0: {{NO_DEPENDENCIES}}
+// 3DMMv1.0: Microsoft Visual C++ generated include file.
+// 3DMMv1.0: Used by ched.rc
 //
 #define dlidChunkInfo 200
 #define dlidAdoptChunk 201
@@ -57,7 +57,7 @@
 #define cidRunScriptCache 40059
 #define cidReopen 40060
 
-// Next default values for new objects
+// 3DMMv1.0: Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

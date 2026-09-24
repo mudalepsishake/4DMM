@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: zbproto.h 1.8 1995/02/22 21:37:28 sam Exp $
@@ -19,7 +19,7 @@ extern "C"
 #define BR_BOUNDS_MAX_X 2
 #define BR_BOUNDS_MAX_Y 3
 
-    /*
+    /* 3DMMv1.0:
      * Callback function invoked when an actor is
      * rendered
      */
@@ -37,13 +37,13 @@ extern "C"
     void BR_PUBLIC_ENTRY BrZbSceneRenderAdd(br_actor *tree);
     void BR_PUBLIC_ENTRY BrZbSceneRenderEnd(void);
 
-    /*
+    /* 3DMMv1.0:
      * Wrapper that inokes above therr calls in order
      */
     void BR_PUBLIC_ENTRY BrZbSceneRender(br_actor *world, br_actor *camera, br_pixelmap *colour_buffer,
                                          br_pixelmap *depth_buffer);
 
-    /*
+    /* 3DMMv1.0:
      * Used within custom model callbacks to render other models
      */
     void BR_PUBLIC_ENTRY BrZbModelRender(br_actor *actor, br_model *model, br_material *material, br_uint_8 style,

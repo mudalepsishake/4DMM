@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -23,7 +23,7 @@ typedef class CRF *PCRF;
 typedef CNO RSC;
 const RSC rscNil = 0L;
 
-// chunky resource entry priority
+// 3DMMv1.0: chunky resource entry priority
 enum
 {
     crepToss,
@@ -31,7 +31,7 @@ enum
     crepNormal,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Base cacheable object.  All cacheable objects must be based on BACO.
 ***************************************************************************/
 typedef class BACO *PBACO;
@@ -44,8 +44,8 @@ class BACO : public BACO_PAR
     MARKMEM
 
   private:
-    // These fields are owned by the CRF
-    PCRF _pcrf; // The BACO has a ref count on this iff !_fAttached
+    // 3DMMv1.0: These fields are owned by the CRF
+    PCRF _pcrf; // 3DMMv1.0: The BACO has a ref count on this iff !_fAttached
     CTG _ctg;
     CNO _cno;
     int32_t _crep : 16;
@@ -80,20 +80,20 @@ class BACO : public BACO_PAR
         return _crep;
     }
 
-    // Many objects know how big they are, and how to write themselves to a
-    // chunky file.  Here are some useful prototypes so that the users of those
-    // objects don't need to know what the actual class is.
+    // 3DMMv1.0: Many objects know how big they are, and how to write themselves to a
+    // 3DMMv1.0: chunky file.  Here are some useful prototypes so that the users of those
+    // 3DMMv1.0: objects don't need to know what the actual class is.
     virtual bool FWrite(PBLCK pblck);
     virtual bool FWriteFlo(PFLO pflo);
     virtual int32_t CbOnFile(void);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky resource cache - this is a pure virtual class that supports
     the crf and crm classes.
 ***************************************************************************/
-// Object reader function - must handle ppo == pvNil, in which case, the
-// *pcb should be set to an estimate of the size when read.
+// 3DMMv1.0: Object reader function - must handle ppo == pvNil, in which case, the
+// 3DMMv1.0: *pcb should be set to an estimate of the size when read.
 typedef bool FNRPO(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
 typedef FNRPO *PFNRPO;
 
@@ -112,7 +112,7 @@ class RCA : public RCA_PAR
     virtual PCRF PcrfFindChunk(CTG ctg, CNO cno, RSC rsc = rscNil) = 0;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky resource file.
 ***************************************************************************/
 #define CRF_PAR RCA
@@ -126,14 +126,14 @@ class CRF : public CRF_PAR
   protected:
     struct CRE
     {
-        PFNRPO pfnrpo;       // object reader
-        int32_t cactRelease; // the last time this object was released
-        BACO *pbaco;         // the object
-        int32_t cb;          // size of data
+        PFNRPO pfnrpo;       // 3DMMv1.0: object reader
+        int32_t cactRelease; // 3DMMv1.0: the last time this object was released
+        BACO *pbaco;         // 3DMMv1.0: the object
+        int32_t cb;          // 3DMMv1.0: size of data
     };
 
     PCFL _pcfl;
-    PGL _pglcre; // sorted by (cki, pfnrpo)
+    PGL _pglcre; // 3DMMv1.0: sorted by (cki, pfnrpo)
     int32_t _cbMax;
     int32_t _cbCur;
     int32_t _cactRelease;
@@ -164,12 +164,12 @@ class CRF : public CRF_PAR
         return _pcfl;
     }
 
-    // These APIs are intended for BACO use only
+    // 3DMMv1.0: These APIs are intended for BACO use only
     void BacoDetached(PBACO pbaco);
     void BacoReleased(PBACO pbaco);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky resource manager - a list of CRFs.
 ***************************************************************************/
 typedef class CRM *PCRM;
@@ -207,7 +207,7 @@ class CRM : public CRM_PAR
     PCRF PcrfGet(int32_t icrf);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     An object (BACO) wrapper around a generic HQ.
 ***************************************************************************/
 #define GHQ_PAR BACO
@@ -231,11 +231,11 @@ class GHQ : public GHQ_PAR
         FreePhq(&hq);
     }
 
-    // An object reader for a GHQ.
+    // 3DMMv1.0: An object reader for a GHQ.
     static bool FReadGhq(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A BACO wrapper around a generic object.
 ***************************************************************************/
 #define CABO_PAR BACO
@@ -260,4 +260,4 @@ class CABO : public CABO_PAR
     }
 };
 
-#endif //! CHRES_H
+#endif //! 3DMMv1.0: CHRES_H

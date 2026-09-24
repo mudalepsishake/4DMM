@@ -1,14 +1,14 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 //
-//  movie.cpp
+// 3DMMv1.0:  movie.cpp
 //
-//  Author: Sean Selitrennikoff
+// 3DMMv1.0:  Author: Sean Selitrennikoff
 //
-//  Date: August, 1994
+// 3DMMv1.0:  Date: August, 1994
 //
-//  This file contains all functionality for movie manipulation.
+// 3DMMv1.0:  This file contains all functionality for movie manipulation.
 //
 #include "soc.h"
 ASSERTNAME
@@ -16,7 +16,7 @@ ASSERTNAME
 //
 //
 //
-// BEGIN MSCB STUFF
+// 3DMMv1.0: BEGIN MSCB STUFF
 //
 //
 //
@@ -28,7 +28,7 @@ ON_CID_ME(cidDoScroll, MSCB::FCmdScroll, pvNil)
 ON_CID_ME(cidEndScroll, MSCB::FCmdScroll, pvNil)
 END_CMD_MAP_NIL()
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Constructor for movie scroll bars.  This function
  * is private, use PmscbNew() for public construction.
@@ -39,7 +39,7 @@ MSCB::MSCB(PMVIE pmvie, PGCB pgcb) : GOB(pgcb)
     _pmvie = pmvie;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for movie scroll bars.
  *
@@ -64,14 +64,14 @@ PMSCB MSCB::PmscbNew(PMVIE pmvie, PGCB pgcb)
         return pvNil;
 
     //
-    // Frame slider
+    // 3DMMv1.0: Frame slider
     //
     rc.Set(0, 32, 200, 48);
     gcb.Set(mscbhidFrame, pmscb, fgobNil, kginDefault, &rc);
     SCB::PscbNew(&gcb, fscbHorz, 0, 0, 0);
 
     //
-    // Scene slider
+    // 3DMMv1.0: Scene slider
     //
     rc.Set(250, 32, 450, 48);
     gcb.Set(mscbhidScene, pmscb, fgobNil, kginDefault, &rc);
@@ -81,7 +81,7 @@ PMSCB MSCB::PmscbNew(PMVIE pmvie, PGCB pgcb)
     return (pmscb);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Processes scroll commands from the framework
  *
@@ -99,7 +99,7 @@ bool MSCB::FCmdScroll(PCMD pcmd)
     PSCB pscb;
 
     //
-    // Verify that the command is for this object
+    // 3DMMv1.0: Verify that the command is for this object
     //
     hid = pcmd->rglw[0];
 
@@ -109,7 +109,7 @@ bool MSCB::FCmdScroll(PCMD pcmd)
     }
 
     //
-    // Get the scroll bar.
+    // 3DMMv1.0: Get the scroll bar.
     //
     pscb = (PSCB)PgobFromHidScr(hid);
 
@@ -117,7 +117,7 @@ bool MSCB::FCmdScroll(PCMD pcmd)
         return fTrue;
 
     //
-    // Process the command
+    // 3DMMv1.0: Process the command
     //
     switch (pcmd->cid)
     {
@@ -143,18 +143,18 @@ bool MSCB::FCmdScroll(PCMD pcmd)
     }
 
     //
-    // pin the new value to the max and min
+    // 3DMMv1.0: pin the new value to the max and min
     //
     val = LwMin(pscb->ValMax(), LwMax(pscb->ValMin(), val));
 
     //
-    // Any changes?
+    // 3DMMv1.0: Any changes?
     //
     if (val != pscb->Val() && !_pmvie->FPlaying())
     {
 
         //
-        // Process new value
+        // 3DMMv1.0: Process new value
         //
         pscb->SetVal(val);
 
@@ -162,14 +162,14 @@ bool MSCB::FCmdScroll(PCMD pcmd)
         {
             if (!_pmvie->Pscen()->FGotoFrm(val))
             {
-                // REVIEW seanse: what to do?
+                // 3DMMv1.0: REVIEW seanse: what to do?
             }
         }
-        else // scene change
+        else // 3DMMv1.0: scene change
         {
             if (!_pmvie->FSwitchScen(val))
             {
-                // REVIEW seanse: what to do?
+                // 3DMMv1.0: REVIEW seanse: what to do?
             }
         }
 
@@ -180,7 +180,7 @@ bool MSCB::FCmdScroll(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Draw the scroll bars.
  *
@@ -263,7 +263,7 @@ void MSCB::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Update the scroll bars
  *
@@ -279,7 +279,7 @@ void MSCB::Update()
     InvalRc(pvNil, kginMark);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Change to movie for these scroll bars
  *
@@ -297,7 +297,7 @@ void MSCB::SetMvie(PMVIE pmvie)
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the MSCB
  *
  * Parameters:
@@ -328,7 +328,7 @@ void MSCB::MarkMem(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  * Assert the validity of the MSCB
  *
  * Parameters:

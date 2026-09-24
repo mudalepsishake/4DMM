@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: qhton.h 1.2 1995/02/22 21:37:20 sam Exp $
@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-/*
+/* 3DMMv1.0:
  * Mac is in network order already
  *
  * XXX SANE format
@@ -37,7 +37,7 @@ extern "C"
 
 #endif
 
-/*
+/* 3DMMv1.0:
  * PC is big-endian
  */
 #if defined(__GNUC__) || defined(__WATCOMC__) || defined(__ZTC__)

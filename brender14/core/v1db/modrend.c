@@ -1,0 +1,327 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: modrend.c 1.2 1998/07/14 13:38:44 johng Exp $
+ * $Locker: $
+ *
+ * Model rendering
+ */
+#include "v1db.h"
+#include "shortcut.h"
+#include "formats.h"
+
+static void renderAll(br_model *model, br_material *material, br_token type, int on_screen)
+{
+    if(model->stored) {
+        if(on_screen == BRT_ACCEPT)
+            GeometryStoredRenderOnScreen(model->stored, v1db.renderer, type);
+        else
+            GeometryStoredRender(model->stored, v1db.renderer, type);
+
+    } else if(model->prepared) {
+        if(on_screen == BRT_ACCEPT)
+            GeometryV1ModelRenderOnScreen(v1db.format_model, v1db.renderer, model->prepared, material->stored, type);
+        else
+            GeometryV1ModelRender(v1db.format_model, v1db.renderer, model->prepared, material->stored, type);
+    }
+}
+
+/* BRender:
+ * Render model faces
+ */
+static void renderFaces(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+    renderAll(model, material, BRT_TRIANGLE, on_screen);
+}
+
+/* BRender:
+ * Render model edges
+ */
+static void renderEdges(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+    renderAll(model, material, BRT_LINE, on_screen);
+}
+
+/* BRender:
+ * Render model points
+ */
+static void renderPoints(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+    renderAll(model, material, BRT_POINT, on_screen);
+}
+
+/* BRender:
+ * Render function for BR_RSTYLE_NONE
+ */
+static void nullRender(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+}
+
+/* BRender:
+ * A pre-preocessed static cuboid model that we can fill in with
+ * appropriate vertex values to represent a bounding box
+ *
+ * Another way to do this is to use a cube model, and prepend a scale+xform
+ * that matches it to the bounds - this has the disadvantage of making
+ * the lighting do funny things unless BR_LIGHT_VIEW is used. I would prefer
+ * that the user only has to do this when they themselves have created
+ * a funny transform.
+ */
+
+/* BRender:
+ * 8 Vertices
+ */
+
+// BRenderModern: clang-format off
+static br_vector3 bounds_position[] = {
+    BR_VECTOR3(-1,-1,-1),
+    BR_VECTOR3(-1,-1, 1),
+    BR_VECTOR3(-1, 1,-1),
+    BR_VECTOR3(-1, 1, 1),
+    BR_VECTOR3( 1,-1,-1),
+    BR_VECTOR3( 1,-1, 1),
+    BR_VECTOR3( 1, 1,-1),
+    BR_VECTOR3( 1, 1, 1),
+};
+
+static br_vector2 bounds_map[] = {
+    BR_VECTOR2(0,0),
+    BR_VECTOR2(0,0),
+    BR_VECTOR2(0,1),
+    BR_VECTOR2(0,1),
+    BR_VECTOR2(1,0),
+    BR_VECTOR2(1,0),
+    BR_VECTOR2(1,1),
+    BR_VECTOR2(1,1),
+};
+
+static br_vector3 bounds_normal[] = {
+    BR_VECTOR3(-0.666,-0.333,-0.666),
+    BR_VECTOR3(-0.333,-0.666, 0.666),
+    BR_VECTOR3(-0.408, 0.816,-0.408),
+    BR_VECTOR3(-0.816, 0.408, 0.408),
+    BR_VECTOR3( 0.408,-0.816,-0.408),
+    BR_VECTOR3( 0.816,-0.408, 0.408),
+    BR_VECTOR3( 0.666, 0.333,-0.666),
+    BR_VECTOR3( 0.333, 0.666, 0.666),
+};
+
+/* BRender:
+ * 12 Faces
+ */
+static br_vector3_u16 bounds_vertex_numbers[] = {
+    {5, 6, 7},
+    {5, 4, 6},
+    {7, 6, 2},
+    {7, 2, 3},
+    {1, 5, 7},
+    {1, 7, 3},
+    {3, 0, 1},
+    {3, 2, 0},
+    {1, 0, 4},
+    {1, 4, 5},
+    {0, 6, 4},
+    {0, 2, 6},
+};
+
+static br_vector3_u16 bounds_edges[]={
+    { 0,13,14},
+    { 3, 4, 0},
+    {13, 6, 0},
+    { 0, 5,16},
+    {11,14, 0},
+    { 0,16,12},
+    { 0, 8,12},
+    { 5, 1, 0},
+    { 8, 9, 0},
+    { 0, 3,11},
+    { 0, 4, 9},
+    { 1, 6, 0}
+};
+
+static br_vector4 bounds_plane_equation[] = {
+    BR_VECTOR4( 1, 0, 0,1),
+    BR_VECTOR4( 1, 0, 0,1),
+    BR_VECTOR4( 0, 1, 0,1),
+    BR_VECTOR4( 0, 1, 0,1),
+    BR_VECTOR4( 0, 0, 1,1),
+    BR_VECTOR4( 0, 0, 1,1),
+    BR_VECTOR4(-1, 0, 0,1),
+    BR_VECTOR4(-1, 0, 0,1),
+    BR_VECTOR4( 0,-1, 0,1),
+    BR_VECTOR4( 0,-1, 0,1),
+    BR_VECTOR4( 0, 0,-1,1),
+    BR_VECTOR4( 0, 0,-1,1)
+};
+// BRenderModern: clang-format on
+
+static br_colour bounds_colours[12];
+
+/* BRender:
+ * 1 Group
+ */
+// BRenderModern: clang-format off
+static struct v11group bounds_face_groups[] = {
+    {
+        .stored         = NULL,
+        .vertex_numbers = bounds_vertex_numbers,
+        .edges          = bounds_edges,
+        .eqn            = bounds_plane_equation,
+        .face_colours   = bounds_colours,
+        .face_user      = NULL,
+        .face_flags     = 0,
+        .position       = bounds_position,
+        .map            = bounds_map,
+        .normal         = bounds_normal,
+        .vertex_colours = bounds_colours,
+        .vertex_user    = NULL,
+        .nfaces         = 12,
+        .nvertices      =  8,
+        .nedges         = 18,
+    },
+};
+// BRenderModern: clang-format on
+
+static struct v11model bounds_prepared = {
+    .size    = 0,
+    .flags   = 0,
+    .ngroups = 1,
+    .pivot   = BR_VECTOR3(0, 0, 0),
+    .groups  = bounds_face_groups,
+};
+
+static struct br_model bounds_model = {
+    ._reserved    = 0,
+    .identifier   = "Bounds",
+    .vertices     = NULL,
+    .faces        = NULL,
+    .nvertices    = 0,
+    .nfaces       = 0,
+    .pivot        = BR_VECTOR3(0, 0, 0),
+    .flags        = 0,
+    .custom       = NULL,
+    .user         = NULL,
+    .crease_angle = 0,
+    .radius       = 0,
+    .bounds       = {0},
+    .prepared     = &bounds_prepared,
+    .stored       = NULL,
+};
+
+/* BRender:
+ * Fills in above cuboid mesh that represents the given bounding box
+ */
+static br_boolean boundsMatch(const br_bounds *a, const br_bounds *b)
+{
+    for(int i = 0; i < 3; ++i) {
+        if(a->min.v[i] != b->min.v[i] || a->max.v[i] != b->max.v[i])
+            return BR_FALSE;
+    }
+    return BR_TRUE;
+}
+
+static struct br_model *makeMeshFromBounds(br_bounds *b)
+{
+    int i;
+
+#if BRENDER_LEGACY_3DMM_MODEL_ABI
+    /*
+     * glrend is stored-geometry-only. If a previous synthetic bounds mesh was
+     * uploaded and the requested bounds changed, discard that GL object before
+     * rewriting the shared prepared vertex array.
+     */
+    if(bounds_model.stored != NULL && !boundsMatch(&bounds_model.bounds, b)) {
+        ObjectFree(bounds_model.stored);
+        bounds_model.stored = NULL;
+    }
+#endif
+
+    /* BRender:
+     * Fill in vertices
+     */
+    BrVector3Set(&bounds_position[0], b->min.v[X], b->min.v[Y], b->min.v[Z]);
+    BrVector3Set(&bounds_position[1], b->min.v[X], b->min.v[Y], b->max.v[Z]);
+    BrVector3Set(&bounds_position[2], b->min.v[X], b->max.v[Y], b->min.v[Z]);
+    BrVector3Set(&bounds_position[3], b->min.v[X], b->max.v[Y], b->max.v[Z]);
+    BrVector3Set(&bounds_position[4], b->max.v[X], b->min.v[Y], b->min.v[Z]);
+    BrVector3Set(&bounds_position[5], b->max.v[X], b->min.v[Y], b->max.v[Z]);
+    BrVector3Set(&bounds_position[6], b->max.v[X], b->max.v[Y], b->min.v[Z]);
+    BrVector3Set(&bounds_position[7], b->max.v[X], b->max.v[Y], b->max.v[Z]);
+
+    /* BRender:
+     * Fill in plane equations of faces
+     */
+    for(i = 0; i < 3; i++) {
+        bounds_plane_equation[i * 2].v[3] = bounds_plane_equation[1 + i * 2].v[3] = b->max.v[i];
+        bounds_plane_equation[6 + i * 2].v[3] = bounds_plane_equation[7 + i * 2].v[3] = -b->min.v[i];
+    }
+
+    /* BRender:
+     * Fill in bounds
+     */
+    bounds_model.bounds = *b;
+
+    return &bounds_model;
+}
+
+/* BRender:
+ * Render bounding box points
+ */
+static void boundingBoxRenderPoints(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+    renderAll(makeMeshFromBounds(&model->bounds), material, BRT_POINT, on_screen);
+}
+
+/* BRender:
+ * Render bounding box edges
+ */
+static void boundingBoxRenderEdges(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+    br_model *box = makeMeshFromBounds(&model->bounds);
+
+#if BRENDER_LEGACY_3DMM_MODEL_ABI
+    /*
+     * The historical software renderer could draw the static prepared bounds
+     * model through GeometryV1ModelRender(). glrend intentionally implements
+     * stored geometry only, so the old BR_RSTYLE_BOUNDING_EDGES path silently
+     * had nothing it could submit. Lazily upload the tiny synthetic cuboid and
+     * let the normal stored renderer draw its prepared unique edges.
+     */
+    if(box->stored == NULL && v1db.renderer != NULL && v1db.format_model != NULL) {
+        struct br_geometry_stored *sg = NULL;
+        br_token_value tv[] = {
+            {.t = BRT_CAN_SHARE_B, {.b = BR_TRUE}},
+            {.t = BR_NULL_TOKEN},
+        };
+
+        if(GeometryV1ModelStoredNew(v1db.format_model, v1db.renderer, &sg, box->prepared, BRT_TRIANGLE, tv) == BRE_OK)
+            box->stored = sg;
+        else
+            BrWarning("3DMM glrend could not create stored bounding-edge model");
+    }
+#endif
+
+    renderAll(box, material, BRT_LINE, on_screen);
+}
+
+/* BRender:
+ * Render bounding box faces
+ */
+static void boundingBoxRenderFaces(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+{
+    renderAll(makeMeshFromBounds(&model->bounds), material, BRT_TRIANGLE, on_screen);
+}
+
+/* BRender:
+ * Table of rendering functions indexed by style
+ */
+br_render_style_call_fn *const RenderStyleCalls[] = {
+    [BR_RSTYLE_DEFAULT]         = renderFaces,
+    [BR_RSTYLE_NONE]            = nullRender,
+    [BR_RSTYLE_POINTS]          = renderPoints,
+    [BR_RSTYLE_EDGES]           = renderEdges,
+    [BR_RSTYLE_FACES]           = renderFaces,
+    [BR_RSTYLE_BOUNDING_POINTS] = boundingBoxRenderPoints,
+    [BR_RSTYLE_BOUNDING_EDGES]  = boundingBoxRenderEdges,
+    [BR_RSTYLE_BOUNDING_FACES]  = boundingBoxRenderFaces,
+};

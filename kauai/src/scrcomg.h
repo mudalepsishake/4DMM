@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef SCRCOMG_H
 #define SCRCOMG_H
 
-// if you change this enum, bump the version numbers below
+// 3DMMv1.0: if you change this enum, bump the version numbers below
 enum
 {
     kopCreateChildGob = 0x1000,
@@ -142,11 +142,11 @@ enum
     kopLimSccg
 };
 
-const int16_t kswCurSccg = 0x101D;  // this version
-const int16_t kswBackSccg = 0x101D; // we can be read back to this version
-const int16_t kswMinSccg = 0x1015;  // we can read back to this version
+const int16_t kswCurSccg = 0x101D;  // 3DMMv1.0: this version
+const int16_t kswBackSccg = 0x101D; // 3DMMv1.0: we can be read back to this version
+const int16_t kswMinSccg = 0x1015;  // 3DMMv1.0: we can read back to this version
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Gob based script compiler
 ****************************************/
 typedef class SCCG *PSCCG;
@@ -167,4 +167,4 @@ class SCCG : public SCCG_PAR
     virtual bool _FGetStnFromOp(int32_t op, PSTN pstn) override;
 };
 
-#endif //! SCRCOMG_H
+#endif //! 3DMMv1.0: SCRCOMG_H

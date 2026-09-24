@@ -1,0 +1,48 @@
+diff --git a/drivers/glrend/devpixmp.c b/drivers/glrend/devpixmp.c
+index 35fd827..3522f3e 100644
+--- a/drivers/glrend/devpixmp.c
++++ b/drivers/glrend/devpixmp.c
+@@ -743,21 +743,22 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_dev
+     /*
+      * glReadPixels advances output rows according to GL_PACK_* state, not the
+      * destination pixelmap's pm_row_bytes. Modern BRender memory pixelmaps
+-     * align RGB888 rows to whole pixels (for example 782px => 2352 bytes),
+-     * while OpenGL's default 4-byte pack alignment produces 2348 bytes for
+-     * the same 782 RGB pixels. Writing with the latter stride and then walking
+-     * the buffer with the former shears every subsequent row diagonally.
++     * can pad RGB888 rows to whole-pixel boundaries (for example 782px =>
++     * 2352 bytes even though the visible RGB payload is only 2346 bytes).
+      *
+-     * If the destination has a positive whole-pixel stride, teach OpenGL the
+-     * exact BRender row length and force byte alignment. Otherwise read into a
+-     * tight temporary buffer and copy rows through DevicePixelmapMemAddress(),
+-     * which also handles inverted/negative-stride memory pixelmaps correctly.
++     * v163 tried to express that padded stride through GL_PACK_ROW_LENGTH.
++     * On the 3DMM WGL path that works for naturally tight widths but padded
++     * rows can come back untouched/black. Avoid making GL own BRender's row
++     * layout at all: only read directly when the destination row is already
++     * exactly the visible payload width. Any padded, inverted, or otherwise
++     * non-tight destination is read into a tight temporary buffer, then copied
++     * row-by-row through DevicePixelmapMemAddress(). That makes the memory
++     * pixelmap's stride a BRender concern instead of an OpenGL pack-state one.
+      */
+     if(dest->pm_row_bytes > 0 &&
+-       (dest->pm_row_bytes % (br_int_32)bytes_per_pixel) == 0) {
+-        pack_row_pixels = dest->pm_row_bytes / (br_int_32)bytes_per_pixel;
+-        if(pack_row_pixels >= srect.w)
+-            direct_readback = BR_TRUE;
++       (br_size_t)dest->pm_row_bytes == bytes_per_subrow) {
++        pack_row_pixels = srect.w;
++        direct_readback = BR_TRUE;
+     }
+ 
+     gl->GetIntegerv(GL_PACK_ALIGNMENT, &old_pack_alignment);
+@@ -801,7 +802,7 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_dev
+                       (int)dest->pm_row_bytes, (unsigned)bytes_per_pixel,
+                       (int)srect.x, (int)srect.y, (int)srect.w, (int)srect.h,
+                       (int)dpoint.x, (int)dpoint.y, (int)pack_row_pixels,
+-                      direct_readback ? "direct-stride" : "tight-temp");
++                      direct_readback ? "direct-tight" : "tight-temp");
+             ++readback_stride_diag_count;
+         }
+     }

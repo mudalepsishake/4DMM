@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: transfrm.h 1.11 1995/02/22 21:37:24 sam Exp $
@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Type of actor position
      */
     enum
@@ -33,23 +33,23 @@ extern "C"
     typedef struct br_transform
     {
 
-        /*
+        /* BRender:
          * Type of position
          */
         br_uint_16 type;
 
-        /*
+        /* BRender:
          * Union of the various means of describing a transform -
          * these are explicity arrranged so that any exlicit transform
          * will always be available as br_transform.t.translate
          */
         union {
-            /*
+            /* BRender:
              * Affine 3x4 matrix
              */
             br_matrix34 mat;
 
-            /*
+            /* BRender:
              * Euler angles and translation
              */
             struct
@@ -59,7 +59,7 @@ extern "C"
                 br_vector3 t;
             } euler;
 
-            /*
+            /* BRender:
              * Unit quaternion and translation
              */
             struct
@@ -69,7 +69,7 @@ extern "C"
                 br_vector3 t;
             } quat;
 
-            /*
+            /* BRender:
              * Lookat vector, up vector and translation
              */
             struct
@@ -80,7 +80,7 @@ extern "C"
                 br_vector3 t;
             } look_up;
 
-            /*
+            /* BRender:
              * Just a translation
              */
             struct

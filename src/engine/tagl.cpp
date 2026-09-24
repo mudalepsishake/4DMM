@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tagl.cpp: Tag list class
 
@@ -17,7 +17,7 @@ ASSERTNAME
 
 RTCLASS(TAGL)
 
-/****************************************
+/** 3DMMEx: **************************************
     TAGFL, or "tag-flag" struct, stores
     the tag that you want to cache and
     whether to cache its children
@@ -29,7 +29,7 @@ struct TAGFL
     bool fCacheChildren;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     CC, or "chid-ctg" struct, for
     children of a tag.  An array of
     these is the variable part of the
@@ -41,7 +41,7 @@ struct CC
     CTG ctg;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new TAGL
 ***************************************************************************/
 PTAGL TAGL::PtaglNew(void)
@@ -60,7 +60,7 @@ PTAGL TAGL::PtaglNew(void)
     return ptagl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the TAGL
 ***************************************************************************/
 bool TAGL::_FInit(void)
@@ -73,7 +73,7 @@ bool TAGL::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clean up and delete this tag list
 ***************************************************************************/
 TAGL::~TAGL(void)
@@ -82,7 +82,7 @@ TAGL::~TAGL(void)
     ReleasePpo(&_pggtagf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the count of tags in the TAGL
 ***************************************************************************/
 int32_t TAGL::Ctag(void)
@@ -92,7 +92,7 @@ int32_t TAGL::Ctag(void)
     return _pggtagf->IvMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the itag'th tag from the TAGL
 ***************************************************************************/
 void TAGL::GetTag(int32_t itag, PTAG ptag)
@@ -107,7 +107,7 @@ void TAGL::GetTag(int32_t itag, PTAG ptag)
     *ptag = tagf.tag;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find ptag in the TAGL.  If the tag is found, the function returns
     fTrue and *pitag is the location of the tag in the GG.  If the tag
     is not found, the function returns fFalse and *pitag is the location
@@ -132,7 +132,7 @@ bool TAGL::_FFindTag(PTAG ptag, int32_t *pitag)
         return fFalse;
     }
 
-    // Do a binary search.  The TAGFs are sorted by (sid, ctg, cno).
+    // 3DMMv1.0: Do a binary search.  The TAGFs are sorted by (sid, ctg, cno).
     for (itagfMin = 0, itagfLim = _pggtagf->IvMac(); itagfMin < itagfLim;)
     {
         itagf = (itagfMin + itagfLim) / 2;
@@ -156,12 +156,12 @@ bool TAGL::_FFindTag(PTAG ptag, int32_t *pitag)
         }
     }
 
-    // Tag not found
+    // 3DMMv1.0: Tag not found
     *pitag = itagfMin;
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert the given tag into the TAGL, if it isn't already in there.
 ***************************************************************************/
 bool TAGL::FInsertTag(PTAG ptag, bool fCacheChildren)
@@ -174,26 +174,26 @@ bool TAGL::FInsertTag(PTAG ptag, bool fCacheChildren)
 
     if (!_FFindTag(ptag, &itag))
     {
-        // Build and insert TAGF into fixed part of GG
+        // 3DMMv1.0: Build and insert TAGF into fixed part of GG
         tagf.tag = *ptag;
         tagf.fCacheChildren = fCacheChildren;
         if (!_pggtagf->FInsert(itag, 0, pvNil, &tagf))
             return fFalse;
         return fTrue;
     }
-    // Tag is already in GG, see if fCacheChildren needs to be updated
+    // 3DMMv1.0: Tag is already in GG, see if fCacheChildren needs to be updated
     _pggtagf->GetFixed(itag, &tagf);
     if (!tagf.fCacheChildren && fCacheChildren)
     {
-        // FIXME(bruxisma): The compiler has correctly identified that this
-        // should be an assignment.
+        // 3DMMEx: FIXME(bruxisma): The compiler has correctly identified that this
+        // 3DMMEx: should be an assignment.
         tagf.fCacheChildren == fTrue;
         _pggtagf->PutFixed(itag, &tagf);
     }
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a TAG child into the TAGL
 ***************************************************************************/
 bool TAGL::FInsertChild(PTAG ptag, CHID chid, CTG ctg)
@@ -204,7 +204,7 @@ bool TAGL::FInsertChild(PTAG ptag, CHID chid, CTG ctg)
     int32_t itagf;
     CC ccNew;
     CC *prgcc;
-    int32_t ccc; // count of CCs
+    int32_t ccc; // 3DMMv1.0: count of CCs
     int32_t icc;
 
     if (!_FFindTag(ptag, &itagf))
@@ -217,7 +217,7 @@ bool TAGL::FInsertChild(PTAG ptag, CHID chid, CTG ctg)
     _pggtagf->GetFixed(itagf, &tagf);
     if (tagf.tag.ctg != ptag->ctg || tagf.tag.cno != ptag->cno)
         Bug("_FFindTag has a bug");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     ccNew.chid = chid;
     ccNew.ctg = ctg;
@@ -229,7 +229,7 @@ bool TAGL::FInsertChild(PTAG ptag, CHID chid, CTG ctg)
         return fTrue;
     }
     prgcc = (CC *)_pggtagf->QvGet(itagf);
-    // linear search through prgcc to find where to insert ccNew
+    // 3DMMv1.0: linear search through prgcc to find where to insert ccNew
     for (icc = 0; icc < ccc; icc++)
     {
         if (prgcc[icc].ctg > ccNew.ctg)
@@ -242,7 +242,7 @@ bool TAGL::FInsertChild(PTAG ptag, CHID chid, CTG ctg)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Cache all the tags and child tags in TAGL
 ***************************************************************************/
 bool TAGL::FCacheTags(void)
@@ -251,29 +251,29 @@ bool TAGL::FCacheTags(void)
 
     int32_t itagf;
     TAGFL tagf;
-    int32_t ccc; // count of CCs
+    int32_t ccc; // 3DMMv1.0: count of CCs
     int32_t icc;
     CC cc;
     TAG tag;
 
     for (itagf = 0; itagf < _pggtagf->IvMac(); itagf++)
     {
-        // Cache the main tag
+        // 3DMMv1.0: Cache the main tag
         _pggtagf->GetFixed(itagf, &tagf);
         if (!vptagm->FCacheTagToHD(&tagf.tag, tagf.fCacheChildren))
             return fFalse;
 
-        // Cache the child tags
+        // 3DMMv1.0: Cache the child tags
         ccc = _pggtagf->Cb(itagf) / SIZEOF(CC);
         for (icc = 0; icc < ccc; icc++)
         {
             _pggtagf->GetRgb(itagf, icc * SIZEOF(CC), SIZEOF(CC), &cc);
             if (!vptagm->FBuildChildTag(&tagf.tag, cc.chid, cc.ctg, &tag))
                 return fFalse;
-            // Note that if we ever have the case where we don't always
-            // want the CC tag to be cached with all its children, we could
-            // change the CC structure to hold a boolean and pass it to
-            // FCacheTagToHD here.
+            // 3DMMv1.0: Note that if we ever have the case where we don't always
+            // 3DMMv1.0: want the CC tag to be cached with all its children, we could
+            // 3DMMv1.0: change the CC structure to hold a boolean and pass it to
+            // 3DMMv1.0: FCacheTagToHD here.
             if (!vptagm->FCacheTagToHD(&tag, fTrue))
                 return fFalse;
         }
@@ -282,7 +282,7 @@ bool TAGL::FCacheTags(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TAGL.
 ***************************************************************************/
 void TAGL::AssertValid(uint32_t grf)
@@ -291,7 +291,7 @@ void TAGL::AssertValid(uint32_t grf)
     AssertPo(_pggtagf, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the TAGL
 ***************************************************************************/
 void TAGL::MarkMem(void)
@@ -300,4 +300,4 @@ void TAGL::MarkMem(void)
     TAGL_PAR::MarkMem();
     MarkMemObj(_pggtagf);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

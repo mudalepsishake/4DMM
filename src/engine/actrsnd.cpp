@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Actor Sound.
 
@@ -14,7 +14,7 @@
 
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Add a sound event to the actor event list, and create an undo object
 
@@ -50,7 +50,7 @@ bool ACTR::FSetSnd(PTAG ptag, tribool fLoop, tribool fQueue, tribool fMotionMatc
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Add a sound event to the actor event list
     For user sounds, the chid must also be fetched for the argument *ptag
@@ -74,19 +74,19 @@ bool ACTR::FSetSndCore(PTAG ptag, tribool fLoop, tribool fQueue, tribool fMotion
     int32_t sqn;
     int32_t cbVar;
 
-    // Verify sound before including in the event list
+    // 3DMMv1.0: Verify sound before including in the event list
     pmsnd = (PMSND)vptagm->PbacoFetch(ptag, MSND::FReadMsnd);
     if (pvNil == pmsnd)
         goto LFail;
 
     if (pmsnd->Sty() == styMidi)
     {
-        // There are no midi actor sounds in the product
+        // 3DMMv1.0: There are no midi actor sounds in the product
         PushErc(ercSocNoActrMidi);
         goto LFail;
     }
 
-    // Verify space up front
+    // 3DMMv1.0: Verify space up front
     cbVar = kcbVarStep + kcbVarSnd;
     if (!_pggaev->FEnsureSpace(2, cbVar, fgrpNil))
         return fFalse;
@@ -109,7 +109,7 @@ bool ACTR::FSetSndCore(PTAG ptag, tribool fLoop, tribool fQueue, tribool fMotion
     }
 
     if (!fMotionMatch)
-        aevsnd.celn = smmNil; // Not a motion match sound
+        aevsnd.celn = smmNil; // 3DMMv1.0: Not a motion match sound
     else
     {
         if (!_ptmpl->FGetCcelActn(_anidCur, &ccel))
@@ -122,8 +122,8 @@ bool ACTR::FSetSndCore(PTAG ptag, tribool fLoop, tribool fQueue, tribool fMotion
 
     ReleasePpo(&pmsnd);
 
-    // Remove "no sounds" of this sqn between here and the next
-    // sound of this sqn
+    // 3DMMv1.0: Remove "no sounds" of this sqn between here and the next
+    // 3DMMv1.0: sound of this sqn
     sqn = MSND::SqnActr(sty, _arid);
     for (iaev = _iaevCur; iaev < _pggaev->IvMac(); iaev++)
     {
@@ -137,17 +137,17 @@ bool ACTR::FSetSndCore(PTAG ptag, tribool fLoop, tribool fQueue, tribool fMotion
         if (MSND::SqnActr(aevsndT.sty, _arid) != sqn)
             continue;
 
-        // Quit when reach real sound of same sqn
+        // 3DMMv1.0: Quit when reach real sound of same sqn
         if (!aevsndT.fNoSound)
             break;
         _RemoveAev(iaev);
         iaev--;
     }
 
-    // Enqueue the motion match sounds in the Msq
-    // Allow the edit even if all sounds do not play
+    // 3DMMv1.0: Enqueue the motion match sounds in the Msq
+    // 3DMMv1.0: Allow the edit even if all sounds do not play
     if (!(_pscen->GrfScen() & fscenSounds))
-        _FEnqueueSmmInMsq(); // Ignore errors : other sounds involved
+        _FEnqueueSmmInMsq(); // 3DMMv1.0: Ignore errors : other sounds involved
 
     Pscen()->Pmvie()->Pmcc()->SetSndFrame(fTrue);
     return fTrue;
@@ -157,7 +157,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Enqueue the sound at event iaev.
     Enter motion match sounds in the smm gl.
@@ -176,12 +176,12 @@ bool ACTR::_FEnqueueSnd(int32_t iaev)
     _pggaev->Get(iaev, &aevsnd);
 
     //
-    // Motion match sounds are not enqueued when event iaev is seen
-    // Otherwise the sound would be played twice
+    // 3DMMv1.0: Motion match sounds are not enqueued when event iaev is seen
+    // 3DMMv1.0: Otherwise the sound would be played twice
     //
     if (aevsnd.celn != smmNil)
     {
-        // Insert Smm for this cel in the gl
+        // 3DMMv1.0: Insert Smm for this cel in the gl
         return _FInsertSmm(iaev);
     }
 
@@ -190,7 +190,7 @@ bool ACTR::_FEnqueueSnd(int32_t iaev)
     else
         tool = toolSounder;
 
-    // If the scene was imported, the sound will need to be resolved
+    // 3DMMv1.0: If the scene was imported, the sound will need to be resolved
     if (aevsnd.tag.sid == ksidUseCrf)
     {
         if (!_pscen->Pmvie()->FResolveSndTag(&aevsnd.tag, aevsnd.chid))
@@ -198,7 +198,7 @@ bool ACTR::_FEnqueueSnd(int32_t iaev)
             Bug("Actrsnd: Expected to resolve snd tag");
             goto LFail;
         }
-        _pggaev->Put(iaev, &aevsnd); // Update event
+        _pggaev->Put(iaev, &aevsnd); // 3DMMv1.0: Update event
     }
 
     pmsnd = (PMSND)vptagm->PbacoFetch(&aevsnd.tag, MSND::FReadMsnd);
@@ -219,7 +219,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Play the motion match sounds appropriate to the current cel
 
@@ -255,7 +255,7 @@ bool ACTR::_FEnqueueSmmInMsq(void)
                 Bug("Actrsnd: Expected to resolve snd tag");
                 goto LFail;
             }
-            _pglsmm->Put(ismm, psmm); // Update event
+            _pglsmm->Put(ismm, psmm); // 3DMMv1.0: Update event
         }
 
         pmsnd = (PMSND)vptagm->PbacoFetch(&psmm->aevsnd.tag, MSND::FReadMsnd);
@@ -265,12 +265,12 @@ bool ACTR::_FEnqueueSmmInMsq(void)
             continue;
         }
 
-        // Motion match sounds need to be entered at low priority as sounds of the
-        // same type take precedence over them
+        // 3DMMv1.0: Motion match sounds need to be entered at low priority as sounds of the
+        // 3DMMv1.0: same type take precedence over them
         if (!_pscen->Pmvie()->Pmsq()->FEnqueue(pmsnd, _arid, psmm->aevsnd.fLoop, psmm->aevsnd.fQueue, psmm->aevsnd.vlm,
                                                pmsnd->Spr(toolMatcher), fTrue, 0, fTrue))
         {
-            // Continuing would result in additional error
+            // 3DMMv1.0: Continuing would result in additional error
             goto LFail;
         }
 
@@ -283,7 +283,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Insert a motion match sound in the smm queue
 
@@ -313,17 +313,17 @@ bool ACTR::_FInsertSmm(int32_t iaev)
         if (psmm->aevsnd.sty != paevsnd->sty)
             continue;
 
-        // Replace the current smm with the new
+        // 3DMMv1.0: Replace the current smm with the new
         _pglsmm->Put(ismm, &smm);
         return fTrue;
     }
 
-    // No sound for this cel was found
-    // Add a new mm sound
+    // 3DMMv1.0: No sound for this cel was found
+    // 3DMMv1.0: Add a new mm sound
     return _pglsmm->FAdd(&smm);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Delete old motion sounds in event list
 
@@ -337,7 +337,7 @@ bool ACTR::_FRemoveAevMm(int32_t anid)
     AEVSND aevsnd;
     AEVACTN aevactn;
 
-    // Remove motion match sounds from the previous action
+    // 3DMMv1.0: Remove motion match sounds from the previous action
     for (iaev = _iaevCur; iaev < _pggaev->IvMac(); iaev++)
     {
         paev = (AEV *)_pggaev->QvFixedGet(iaev);
@@ -353,7 +353,7 @@ bool ACTR::_FRemoveAevMm(int32_t anid)
         if (aetSnd != paev->aet)
             continue;
 
-        // Test if sound is motion match
+        // 3DMMv1.0: Test if sound is motion match
         _pggaev->Get(iaev, &aevsnd);
         if (smmNil == aevsnd.celn)
             continue;
@@ -364,7 +364,7 @@ bool ACTR::_FRemoveAevMm(int32_t anid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Insert default motion match sounds in event list
 
@@ -380,27 +380,27 @@ bool ACTR::_FAddAevDefMm(int32_t anid)
     int32_t sty;
     bool fSoundExists;
 
-    // Insert new motion match sounds
+    // 3DMMv1.0: Insert new motion match sounds
     if (!_ptmpl->FGetCcelActn(anid, &ccel))
         return fFalse;
 
     for (iceln = 0; iceln < ccel; iceln++)
     {
         if (!_ptmpl->FGetSndActnCel(anid, iceln, &fSoundExists, &tag))
-            continue; // Ignore failure
+            continue; // 3DMMv1.0: Ignore failure
         if (!fSoundExists)
             continue;
 
         pmsnd = (PMSND)vptagm->PbacoFetch(&tag, MSND::FReadMsnd);
         if (pvNil == pmsnd)
-            continue; // Ignore failure
+            continue; // 3DMMv1.0: Ignore failure
 
         vlm = pmsnd->Vlm();
         sty = pmsnd->Sty();
 
         if (!FSetSndCore(&tag, tribool::tNo, (tribool)vlm, tribool::tNo, sty, tribool::tYes))
         {
-            goto LFail; // Continuing pointless
+            goto LFail; // 3DMMv1.0: Continuing pointless
         }
 
         ReleasePpo(&pmsnd);
@@ -413,7 +413,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Set the Volume for sounds in the current frame of the specified sty
 
@@ -439,7 +439,7 @@ bool ACTR::FSetVlmSnd(int32_t sty, bool fMotionMatch, int32_t vlm)
 
     celn = _celnCur % ccel;
 
-    // Set the volume for any events in the actor list for this frame
+    // 3DMMv1.0: Set the volume for any events in the actor list for this frame
     for (iaev = _iaevFrmMin; iaev < _iaevCur; iaev++)
     {
         _pggaev->GetFixed(iaev, &aev);
@@ -459,15 +459,15 @@ bool ACTR::FSetVlmSnd(int32_t sty, bool fMotionMatch, int32_t vlm)
         _pggaev->Put(iaev, &aevsnd);
     }
 
-    // Set the volume for any earlier motion match sounds
-    // which land in this cel
+    // 3DMMv1.0: Set the volume for any earlier motion match sounds
+    // 3DMMv1.0: which land in this cel
     if (fMotionMatch && !fActnThisFrame)
     {
         for (iaev = _iaevFrmMin - 1; iaev > 0; iaev--)
         {
             _pggaev->GetFixed(iaev, &aev);
 
-            // Quit when the action changes
+            // 3DMMv1.0: Quit when the action changes
             if (aev.aet == aetActn || (nfrmMM != ivNil && nfrmMM > aev.nfrm))
                 break;
 
@@ -478,20 +478,20 @@ bool ACTR::FSetVlmSnd(int32_t sty, bool fMotionMatch, int32_t vlm)
             if (aevsnd.sty != sty)
                 continue;
 
-            // Only adjust sounds that match this cel
+            // 3DMMv1.0: Only adjust sounds that match this cel
             if (aevsnd.celn != celn)
                 continue;
             aevsnd.vlm = vlm;
             _pggaev->Put(iaev, &aevsnd);
             nfrmMM = aev.nfrm;
-            // There are no queued motion match sounds by spec
+            // 3DMMv1.0: There are no queued motion match sounds by spec
             break;
         }
     }
 
     if (fMotionMatch)
     {
-        // Adjust the volume in the smm also
+        // 3DMMv1.0: Adjust the volume in the smm also
         for (ismm = 0; ismm < _pglsmm->IvMac(); ismm++)
         {
             _pglsmm->Get(ismm, &smm);
@@ -503,7 +503,7 @@ bool ACTR::FSetVlmSnd(int32_t sty, bool fMotionMatch, int32_t vlm)
             if (smm.aevsnd.sty != sty)
                 continue;
 
-            // Set the volume in the smm
+            // 3DMMv1.0: Set the volume in the smm
             smm.aevsnd.vlm = vlm;
             _pglsmm->Put(ismm, &smm);
         }
@@ -513,7 +513,7 @@ bool ACTR::FSetVlmSnd(int32_t sty, bool fMotionMatch, int32_t vlm)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Query actor for current frame sounds
 
@@ -540,7 +540,7 @@ bool ACTR::FQuerySnd(int32_t sty, bool fMotionMatch, PGL *pglTagSnd, int32_t *pv
 
     if (!fMotionMatch)
     {
-        // Non-motion match sounds
+        // 3DMMv1.0: Non-motion match sounds
         for (iaev = _iaevFrmMin; iaev < _iaevCur; iaev++)
         {
             _pggaev->GetFixed(iaev, &aev);
@@ -551,7 +551,7 @@ bool ACTR::FQuerySnd(int32_t sty, bool fMotionMatch, PGL *pglTagSnd, int32_t *pv
             if (aevsnd.sty != sty)
                 continue;
 
-            // Handle motion match sounds later
+            // 3DMMv1.0: Handle motion match sounds later
             if (aevsnd.celn != smmNil)
                 continue;
             if (aevsnd.tag.sid == ksidUseCrf)
@@ -573,7 +573,7 @@ bool ACTR::FQuerySnd(int32_t sty, bool fMotionMatch, PGL *pglTagSnd, int32_t *pv
 
         celn = _celnCur % ccel;
 
-        // Motion match sounds
+        // 3DMMv1.0: Motion match sounds
         for (ismm = 0; ismm < _pglsmm->IvMac(); ismm++)
         {
             _pglsmm->Get(ismm, &smm);
@@ -609,7 +609,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Delete a sound in this frame
 
@@ -627,9 +627,9 @@ bool ACTR::FDeleteSndCore(int32_t sty, bool fMotionMatch)
     int32_t celn;
     AEV aev;
     SMM smm;
-    int32_t nfrmMM = ivNil; // For motion match, this may be an earlier frame
+    int32_t nfrmMM = ivNil; // 3DMMv1.0: For motion match, this may be an earlier frame
 
-    // First the actor event list
+    // 3DMMv1.0: First the actor event list
     if (!_ptmpl->FGetCcelActn(_anidCur, &ccel))
         return fFalse;
     celn = _celnCur % ccel;
@@ -650,24 +650,24 @@ bool ACTR::FDeleteSndCore(int32_t sty, bool fMotionMatch)
         if ((aevsnd.celn != smmNil) != fMotionMatch)
             continue;
 
-        // Only delete the sound that match this cel
+        // 3DMMv1.0: Only delete the sound that match this cel
         if (fMotionMatch && aevsnd.celn != celn)
             continue;
 
-        // Delete this sound & continue to remove any
-        // other sounds which are possibly chained
+        // 3DMMv1.0: Delete this sound & continue to remove any
+        // 3DMMv1.0: other sounds which are possibly chained
         _RemoveAev(iaev);
         nfrmMM = aev.nfrm;
     }
 
     if (fMotionMatch)
     {
-        // Also the motion match sound list : smm
+        // 3DMMv1.0: Also the motion match sound list : smm
         if (!_ptmpl->FGetCcelActn(_anidCur, &ccel))
             return fFalse;
         celn = _celnCur % ccel;
 
-        // Motion match sounds
+        // 3DMMv1.0: Motion match sounds
         for (ismm = 0; ismm < _pglsmm->IvMac(); ismm++)
         {
             _pglsmm->Get(ismm, &smm);
@@ -684,7 +684,7 @@ bool ACTR::FDeleteSndCore(int32_t sty, bool fMotionMatch)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FSoundInFrm
         Enumerates all actor events for current frame looking for a sound
         event.
@@ -697,7 +697,7 @@ bool ACTR::FSoundInFrm(void)
     AssertThis(0);
     AssertPo(Pscen(), 0);
 
-    /* Can't provide useful info if we're not at the current scene frame */
+    /* 3DMMv1.0: Can't provide useful info if we're not at the current scene frame */
     if (Pscen()->Nfrm() != _nfrmCur)
         return fFalse;
 
@@ -712,7 +712,7 @@ bool ACTR::FSoundInFrm(void)
     return fFalse;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Resolve all sound tags
 
 ******************************************************************************/

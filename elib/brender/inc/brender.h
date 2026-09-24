@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: brender.h 1.17 1995/03/01 16:08:11 sam Exp $
@@ -111,7 +111,7 @@ extern "C"
 #include "fmt.h"
 #endif
 
-    /*
+    /* 3DMMv1.0:
      * Function prototypes
      */
 
@@ -127,7 +127,7 @@ extern "C"
 #include "fwpextra.h"
 #endif
 
-    /*
+    /* 3DMMv1.0:
      * Inline functions
      */
 

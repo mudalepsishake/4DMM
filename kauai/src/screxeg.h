@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef SCREXEG_H
 #define SCREXEG_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Gob based script interpreter
 ****************************************/
 typedef class SCEG *PSCEG;
@@ -28,13 +28,13 @@ class SCEG : public SCEG_PAR
     ASSERT
 
   protected:
-    // CAUTION: _pgob may be nil (even if the gob still exists)! Always access
-    // thru _PgobThis.  When something is done that may cause the gob to be
-    // freed (such as calling another script), set this to nil.
+    // 3DMMv1.0: CAUTION: _pgob may be nil (even if the gob still exists)! Always access
+    // 3DMMv1.0: thru _PgobThis.  When something is done that may cause the gob to be
+    // 3DMMv1.0: freed (such as calling another script), set this to nil.
     PGOB _pgob;
-    int32_t _hid;  // the handler id of the initialization gob
-    int32_t _grid; // the unique gob run-time id of the initialization gob
-    PWOKS _pwoks;  // the kidspace world this script belongs to
+    int32_t _hid;  // 3DMMv1.0: the handler id of the initialization gob
+    int32_t _grid; // 3DMMv1.0: the unique gob run-time id of the initialization gob
+    PWOKS _pwoks;  // 3DMMv1.0: the kidspace world this script belongs to
 
     virtual PGOB _PgobThis(void);
     virtual PGOB _PgobFromHid(int32_t hid);
@@ -63,7 +63,7 @@ class SCEG : public SCEG_PAR
     virtual bool FResume(int32_t *plwReturn = pvNil, bool *pfPaused = pvNil) override;
 };
 
-// a Chunky resource reader for a color table
+// 3DMMv1.0: a Chunky resource reader for a color table
 bool FReadColorTable(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
 
-#endif //! SCREXEG_H
+#endif //! 3DMMv1.0: SCREXEG_H

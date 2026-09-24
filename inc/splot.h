@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     splot.h: Splot machine class
 
@@ -21,10 +21,10 @@ class SPLOT : public SPLOT_PAR
     CMD_MAP_DEC(SPLOT)
 
   private:
-    /* The movie */
+    /* 3DMMv1.0: The movie */
     PMVIE _pmvie;
 
-    /* The lists of content */
+    /* 3DMMv1.0: The lists of content */
     PBCL _pbclBkgd;
     SFL _sflBkgd;
     PBCL _pbclCam;
@@ -36,17 +36,17 @@ class SPLOT : public SPLOT_PAR
     PBCL _pbclSound;
     SFL _sflSound;
 
-    /* Current selected content */
+    /* 3DMMv1.0: Current selected content */
     int32_t _ithdBkgd;
     int32_t _ithdCam;
     int32_t _ithdActr;
     int32_t _ithdProp;
     int32_t _ithdSound;
 
-    /* State of the SPLOT */
+    /* 3DMMv1.0: State of the SPLOT */
     bool _fDirty;
 
-    /* Miscellaneous stuff */
+    /* 3DMMv1.0: Miscellaneous stuff */
     PGL _pglclrSav;
 
     SPLOT(PGCB pgcb) : SPLOT_PAR(pgcb)

@@ -1,4 +1,4 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 #ifndef SITOBREN_H
@@ -6,56 +6,56 @@
 
 #include <stdio.h>
 #include "util.h"
-#include "soc.h"     // Needs knowledge of Socrates data structs
-#include "tyModel.h" // API for SoftImage db lib
+#include "soc.h"     // 3DMMv1.0: Needs knowledge of Socrates data structs
+#include "tyModel.h" // 3DMMv1.0: API for SoftImage db lib
 #include "dkfilter.h"
 #include "tySceneT.h"
 #include "mssio.h"
 
-/* HASH_FIXED means use a fixed-length hash table; the implication is that
+/* 3DMMv1.0: HASH_FIXED means use a fixed-length hash table; the implication is that
     the hash value will be a small number of bits, so that the table isn't
     too large.  A variable-length hash table will allow for large numbers
     of bits in the hash value. */
 #define HASH_FIXED 0
 
-/* Generic hashed database structure */
+/* 3DMMv1.0: Generic hashed database structure */
 typedef struct _hshdb
 {
     struct _hshdb *phshdbNext;
     uint luHash;
 } HSHDB, *PHSHDB;
 
-/* Brender Model DataBase structure */
+/* 3DMMv1.0: Brender Model DataBase structure */
 typedef struct _bmdb
 {
-    HSHDB hshdb;   // hash DB header
-    MODLF *pmodlf; // the file data
+    HSHDB hshdb;   // 3DMMv1.0: hash DB header
+    MODLF *pmodlf; // 3DMMv1.0: the file data
     long cbModlf;
-    CHID chidBmdl;  // BMDL child ID
-    CNO cnoBmdl;    // BMDL CNO
-    char *pszName;  // name of the BMDL
-    PGL pglkidCmtl; // GL of CMTL parents' CNOs
+    CHID chidBmdl;  // 3DMMv1.0: BMDL child ID
+    CNO cnoBmdl;    // 3DMMv1.0: BMDL CNO
+    char *pszName;  // 3DMMv1.0: name of the BMDL
+    PGL pglkidCmtl; // 3DMMv1.0: GL of CMTL parents' CNOs
     unsigned fFixWrap : 1, fSpherical : 1;
 } BMDB, *PBMDB;
 
-/* Brender MATrix34 DataBase structure */
+/* 3DMMv1.0: Brender MATrix34 DataBase structure */
 typedef struct _bmatdb
 {
     HSHDB hshdb;
     int ixf;
 } BMATDB, *PBMATDB;
 
-/* Brender Model HieraRchy */
+/* 3DMMv1.0: Brender Model HieraRchy */
 typedef struct _bmhr
 {
-    MODLF *pmodlf; // the file data
+    MODLF *pmodlf; // 3DMMv1.0: the file data
     long cbModlf;
-    BMAT34 bmat34; // XF
+    BMAT34 bmat34; // 3DMMv1.0: XF
     MTRLF mtrlf;
     PSTN pstnMtrlFile;
-    BRUFR brufrUOffset; // Material offsets
+    BRUFR brufrUOffset; // 3DMMv1.0: Material offsets
     BRUFR brufrVOffset;
-    short uMinCrop; // Material cropping
+    short uMinCrop; // 3DMMv1.0: Material cropping
     short uMaxCrop;
     short vMinCrop;
     short vMaxCrop;
@@ -66,45 +66,45 @@ typedef struct _bmhr
     struct _bmhr *pbmhrSibling;
 } BMHR, *PBMHR;
 
-/* A color range */
+/* 3DMMv1.0: A color range */
 typedef struct _crng
 {
     long lwBase, lwRange;
 } CRNG;
 
-/* A CMTL descriptor */
+/* 3DMMv1.0: A CMTL descriptor */
 typedef struct _cmtld
 {
-    CNO cno;      // the CMTL's CNO
-    CHID chidCur; // the next CHID for the CMTL's children
-    short ibps;   // the body part set as specified in the .hrc file
-    CHID chid;    // the CHID of this CMTL
+    CNO cno;      // 3DMMv1.0: the CMTL's CNO
+    CHID chidCur; // 3DMMv1.0: the next CHID for the CMTL's children
+    short ibps;   // 3DMMv1.0: the body part set as specified in the .hrc file
+    CHID chid;    // 3DMMv1.0: the CHID of this CMTL
 } CMTLD, *PCMTLD;
 
-/* A TMAP descriptor */
+/* 3DMMv1.0: A TMAP descriptor */
 typedef struct _tmapd
 {
-    PSTN pstn;    // the name of the TMAP
-    long ccnoPar; // the number of MTRL parents
-    long xp;      // the size of the bitmap
+    PSTN pstn;    // 3DMMv1.0: the name of the TMAP
+    long ccnoPar; // 3DMMv1.0: the number of MTRL parents
+    long xp;      // 3DMMv1.0: the size of the bitmap
     long yp;
 } TMAPD, *PTMAPD;
 
 enum
 {
-    ttActor = ttLimChlx, // TMPL initialization
-    ttActionS2B,         // Define a single action for the TMPL
-    ttBackgroundS2B,     // Define a background
-    ttCostume,           // Define a costime for a TMPL
+    ttActor = ttLimChlx, // 3DMMv1.0: TMPL initialization
+    ttActionS2B,         // 3DMMv1.0: Define a single action for the TMPL
+    ttBackgroundS2B,     // 3DMMv1.0: Define a background
+    ttCostume,           // 3DMMv1.0: Define a costime for a TMPL
 
-    ttPosition, // SoftImage POS_STATIC token
-    ttInterest, // SoftImage INT_STATIC token
+    ttPosition, // 3DMMv1.0: SoftImage POS_STATIC token
+    ttInterest, // 3DMMv1.0: SoftImage INT_STATIC token
     ttNearCam,
     ttFarCam,
     ttFovCam,
-    ttStatic, // SoftImage STATIC token
+    ttStatic, // 3DMMv1.0: SoftImage STATIC token
 
-    ttCno, // Tokens for converter script cmd parms
+    ttCno, // 3DMMv1.0: Tokens for converter script cmd parms
     ttCalled,
     ttXRest,
     ttYRest,
@@ -126,7 +126,7 @@ enum
     ttMaterials,
     ttFilename,
 
-    ttFloat, // data type is floating point
+    ttFloat, // 3DMMv1.0: data type is floating point
 
     ttLimS2B
 };
@@ -178,23 +178,23 @@ class S2BLX : public S2BLX_PAR
 #define CnoAdd(ccno) (_cnoCur = (((_cnoPar & 0x0FFFF0000) + 0x010000) | (_cnoCur & 0x0FFFF) + (ccno)))
 #define CnoNext() CnoAdd(1)
 
-/* Some useful helper functions */
+/* 3DMMv1.0: Some useful helper functions */
 PGL PglcrngFromPal(PGL pglclr);
 long LwcrngNearestBrclr(BRCLR brclr, PGL pglclr, PGL pglcrng);
 
 #if HASH_FIXED
 
-#define kcpbmdb 64 // must be a power of 2
+#define kcpbmdb 64 // 3DMMv1.0: must be a power of 2
 #define kmskBmdb (kcpbmdb - 1)
 #define kcbrgpbmdb (size(PBMDB) * kcpbmdb)
-// #define an appropriate fixed-size polynomial here
+// 3DMMv1.0: #define an appropriate fixed-size polynomial here
 
-#else // HASH_FIXED
+#else // 3DMMv1.0: HASH_FIXED
 
 #define kluCrcPoly 0xEDB88320L
 #define kluHashInit 0xFFFFFFFFL
 
-#endif // !HASH_FIXED
+#endif // 3DMMv1.0: !HASH_FIXED
 
 #define kszLight "%s-light%d.1-0.sal"
 #define kszCam "%s-cam.1-%d.sac"
@@ -325,7 +325,7 @@ class S2B : public S2B_PAR
     PGL _pglclr;
 
   protected:
-    /* General script interpreter and chunk output stuff */
+    /* 3DMMv1.0: General script interpreter and chunk output stuff */
     bool _FDoTtActor(bool *pfHaveActor);
     bool _FDoTtActionS2B(void);
     bool _FDoTtBackgroundS2B(void);
@@ -333,7 +333,7 @@ class S2B : public S2B_PAR
     bool _FReadCmdline(char *szResult, bool *pfGotTok, const SCRP rgscrp[], ...);
     void _DumpHeader(CTG ctg, CNO cno, PSTN pstnName, bool fPack);
 
-    /* TMPL-specific stuff */
+    /* 3DMMv1.0: TMPL-specific stuff */
     bool _FInitGlpiCost(bool fForceCost);
     bool _FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN pstnSubmodel = pvNil,
                         PBMHR pbmhrParent = pvNil, int cLevel = 0);
@@ -364,7 +364,7 @@ class S2B : public S2B_PAR
     bool _FTmapFromBmp(PBMHR pbmhr, CNO cnoPar, PSTN pstnMtrl);
     bool _FFlushTmaps(void);
 
-    /* BKGD-specific stuff */
+    /* 3DMMv1.0: BKGD-specific stuff */
     bool _FDumpLites(int cLite, PSTN stnBkgd);
     bool _FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal);
     bool _FBvec3Read(PS2BLX ps2blx, BVEC3 *pbvec3, PS2BTK ps2btk);
@@ -373,7 +373,7 @@ class S2B : public S2B_PAR
     void _ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos);
     bool _FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp, CAM *pcam);
 
-    /* Brender-knowledgable utilities */
+    /* 3DMMv1.0: Brender-knowledgable utilities */
     bool _FBrsFromS2btk(PS2BTK ps2btk, BRS *pbrs)
     {
         if (ps2btk->tok.tt == ttLong)
@@ -393,4 +393,4 @@ class S2B : public S2B_PAR
     bool FConvertSI(PMSNK pmsnkErr, PMSNK pmsnkDst, PFNI pfniInc = pvNil, uint32_t grfs2b = fs2bNil);
 };
 
-#endif // !SITOBREN_H
+#endif // 3DMMv1.0: !SITOBREN_H

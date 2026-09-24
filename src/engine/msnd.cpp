@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     msnd.cpp: Movie Sound class
 
@@ -34,17 +34,17 @@ BEGIN_CMD_MAP(MSQ, CMH)
 ON_CID_ME(cidAlarm, &MSQ::FCmdAlarm, pvNil)
 END_CMD_MAP_NIL()
 
-// Sound format for high quality import
+// 3DMMEx: Sound format for high quality import
 const ma_format kfmtHigh = ma_format_s16;
 const ma_uint32 kcchanHigh = 2;
 const ma_uint32 klwSampleRateHigh = 44100;
 
-// Sound format for low quality import
+// 3DMMEx: Sound format for low quality import
 const ma_format kfmtLow = ma_format_u8;
 const ma_uint32 kcchanLow = 1;
 const ma_uint32 klwSampleRateLow = 11025;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     A PFNRPO to read a MSND from a file
 
@@ -58,7 +58,7 @@ bool MSND::FReadMsnd(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
 
     MSND *pmsnd;
 
-    *pcb = SIZEOF(MSND); // estimate MSND size
+    *pcb = SIZEOF(MSND); // 3DMMv1.0: estimate MSND size
     if (pvNil == ppbaco)
         return fTrue;
 
@@ -77,7 +77,7 @@ bool MSND::FReadMsnd(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Retrieve information contained in the msnd chunk
 
@@ -107,7 +107,7 @@ bool MSND::FGetMsndInfo(PCFL pcfl, CTG ctg, CNO cno, bool *pfInvalid, int32_t *p
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Init a MSND from the given chunk of the given CFL
 
@@ -140,7 +140,7 @@ bool MSND::_FInit(PCFL pcfl, CTG ctg, CNO cno)
     if (_fInvalid)
         return fTrue;
 
-    // If there is a SND child, it is not a "no sound"
+    // 3DMMv1.0: If there is a SND child, it is not a "no sound"
     if (pcfl->FGetKidChid(ctg, cno, kchidSnd, &kid))
     {
         _cnoSnd = kid.cki.cno;
@@ -155,7 +155,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Write an MSND MIDI chunk to file *pcfl
     ie, write the MSND chunk, its name, and the midi child
@@ -178,11 +178,11 @@ bool MSND::FWriteMidi(PCFL pcflDest, PMIDS pmids, STN *pstnName, CNO *pcno)
     msndf.vlmDefault = kvlmFull;
     msndf.fInvalid = fFalse;
 
-    // Create the msnd chunk
+    // 3DMMv1.0: Create the msnd chunk
     if (!pcflDest->FAddPv(&msndf, SIZEOF(MSNDF), kctgMsnd, pcno))
         return fFalse;
 
-    // Create the midi chunk as a child of the msnd chunk
+    // 3DMMv1.0: Create the midi chunk as a child of the msnd chunk
     if (!pcflDest->FAddChild(kctgMsnd, *pcno, kchidSnd, pmids->CbOnFile(), kctgMidi, &cno, &blck))
         goto LFail;
 
@@ -195,11 +195,11 @@ bool MSND::FWriteMidi(PCFL pcflDest, PMIDS pmids, STN *pstnName, CNO *pcno)
     return fTrue;
 
 LFail:
-    pcflDest->Delete(kctgMsnd, *pcno); // Deletes the midi chunk also
+    pcflDest->Delete(kctgMsnd, *pcno); // 3DMMv1.0: Deletes the midi chunk also
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Write an MSND Wave file to a file
     ie, write the MSND chunk, its name, and the midi child
@@ -227,11 +227,11 @@ bool MSND::FWriteWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, STN *pstnName, C
     floSrc.cb = pfilSrc->FpMac();
     floSrc.fp = 0;
 
-    // Create the msnd chunk
+    // 3DMMv1.0: Create the msnd chunk
     if (!pcflDest->FAddPv(&msndf, SIZEOF(MSNDF), kctgMsnd, pcno))
         return fFalse;
 
-    // Create the wave chunk as a child of the msnd chunk
+    // 3DMMv1.0: Create the wave chunk as a child of the msnd chunk
     if (!pcflDest->FAddChild(kctgMsnd, *pcno, kchidSnd, floSrc.cb, kctgWave, &cno))
         goto LFail;
 
@@ -247,11 +247,11 @@ bool MSND::FWriteWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, STN *pstnName, C
     return fTrue;
 
 LFail:
-    pcflDest->Delete(kctgMsnd, *pcno); // Deletes the wave chunk also
+    pcflDest->Delete(kctgMsnd, *pcno); // 3DMMv1.0: Deletes the wave chunk also
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Copy the midi file to a chunk in the current movie
     The *pcno is returned
@@ -279,8 +279,8 @@ bool MSND::FCopyMidi(PFIL pfilSrc, PCFL pcflDest, CNO *pcno, PSTN pstn)
         goto LFail;
     }
 
-    // Create the chunk & write it to this movie
-    // Adopt it later as a child of kctgMvie
+    // 3DMMv1.0: Create the chunk & write it to this movie
+    // 3DMMv1.0: Adopt it later as a child of kctgMvie
     if (!MSND::FWriteMidi(pcflDest, pmids, &stnName, pcno))
         goto LFail;
 
@@ -292,7 +292,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Copy the wave file to a chunk in the current movie
 
@@ -308,9 +308,9 @@ bool MSND::FCopyWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, CNO *pcno, PSTN p
 
     bool fRet = fFalse;
     FNI fniSrc;
-    STN stnName; // sound name
-    STN stnSrc;  // src file path name
-    STN stnNew;  // temp file path
+    STN stnName; // 3DMMv1.0: sound name
+    STN stnSrc;  // 3DMMv1.0: src file path name
+    STN stnNew;  // 3DMMEx: temp file path
     bool fCompress = fTrue;
     int32_t lwProp = 0;
     ma_result result;
@@ -326,8 +326,8 @@ bool MSND::FCopyWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, CNO *pcno, PSTN p
 
     ClearPb(rgbFrames, SIZEOF(rgbFrames));
 
-    // Check if high quality sound import is enabled
-    // This option skips downsampling the imported file to 11M8
+    // 3DMMEx: Check if high quality sound import is enabled
+    // 3DMMEx: This option skips downsampling the imported file to 11M8
     if (vpappb->FGetProp(kpridHighQualitySoundImport, &lwProp))
     {
         fCompress = !(FPure(lwProp));
@@ -340,11 +340,11 @@ bool MSND::FCopyWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, CNO *pcno, PSTN p
         stnName = *pstn;
     fniSrc.GetStnPath(&stnSrc);
 
-    // Note: We always re-encode the file to ensure it is uncompressed PCM.
-    // This avoids issues with missing audio codecs.
-    // fCompress here means downsample to the low-fi sound of old 3DMM.
-    // FUTURE: 3DMM also encoded the sound files with ADPCM. We could
-    // implement that if we want it to sound worse/more authentic!
+    // 3DMMEx: Note: We always re-encode the file to ensure it is uncompressed PCM.
+    // 3DMMEx: This avoids issues with missing audio codecs.
+    // 3DMMEx: fCompress here means downsample to the low-fi sound of old 3DMM.
+    // 3DMMEx: FUTURE: 3DMM also encoded the sound files with ADPCM. We could
+    // 3DMMEx: implement that if we want it to sound worse/more authentic!
 
     if (fCompress)
         decodercfg = ma_decoder_config_init(kfmtLow, kcchanLow, klwSampleRateLow);
@@ -354,14 +354,14 @@ bool MSND::FCopyWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, CNO *pcno, PSTN p
     encodercfg =
         ma_encoder_config_init(ma_encoding_format_wav, decodercfg.format, decodercfg.channels, decodercfg.sampleRate);
 
-    // Open the source file
+    // 3DMMEx: Open the source file
     result = ma_decoder_init_file(stnSrc.Psz(), &decodercfg, &decoder);
     AssertVar(result == MA_SUCCESS, "ma_decoder_init_file failed", &result);
     if (result != MA_SUCCESS)
         goto LFail;
     fInitDecoder = fTrue;
 
-    // Create the encoder
+    // 3DMMEx: Create the encoder
     if (!fniNew.FGetTemp())
     {
         Bug("Could not create a temp path");
@@ -375,7 +375,7 @@ bool MSND::FCopyWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, CNO *pcno, PSTN p
         goto LFail;
     fInitEncoder = fTrue;
 
-    // Copy frames from the decoder to the encoder
+    // 3DMMEx: Copy frames from the decoder to the encoder
     while (fTrue)
     {
         ma_uint64 cframesRead =
@@ -400,7 +400,7 @@ bool MSND::FCopyWave(PFIL pfilSrc, PCFL pcflDest, int32_t sty, CNO *pcno, PSTN p
     ma_encoder_uninit(&encoder);
     fInitEncoder = fFalse;
 
-    // Copy the encoded sound into the movie
+    // 3DMMEx: Copy the encoded sound into the movie
     pfilNew = FIL::PfilOpen(&fniNew, ffilNil);
     AssertPo(pfilNew, 0);
     if (!pfilNew)
@@ -425,7 +425,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Invalidate a sound
 
@@ -437,7 +437,7 @@ bool MSND::FInvalidate(void)
     KID kid;
     MSNDF msndf;
 
-    // Invalidate the msnd on file
+    // 3DMMv1.0: Invalidate the msnd on file
     if (!Pcrf()->Pcfl()->FGetKidChid(kctgMsnd, Cno(), kchidSnd, &kid))
         return fFalse;
     msndf.bo = kboCur;
@@ -449,12 +449,12 @@ bool MSND::FInvalidate(void)
         return fFalse;
     Pcrf()->Pcfl()->DeleteChild(Ctg(), Cno(), kid.cki.ctg, kid.cki.cno);
 
-    // Invalidate the cache representation
+    // 3DMMv1.0: Invalidate the cache representation
     _fInvalid = fTrue;
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Clean up and delete this movie sound
 
@@ -464,7 +464,7 @@ MSND::~MSND(void)
     AssertBaseThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Return the sqn for an msnd attached to an actor object of
     id == objid
@@ -479,7 +479,7 @@ int32_t MSND::SqnActr(int32_t sty, int32_t objid)
     return (sqnActr | sqnsty | SwLow(objid));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Return the sqn for an msnd attached to an actor object of
     id == objid
@@ -492,7 +492,7 @@ int32_t MSND::SqnBkgd(int32_t sty, int32_t objid)
     return (sqnBkgd | sqnsty | SwLow(objid));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Return the priority for a tool,sty combination
 
@@ -527,7 +527,7 @@ int32_t MSND::Spr(int32_t tool)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Play this sound
 
@@ -537,8 +537,8 @@ void MSND::Play(int32_t objID, bool fLoop, bool fQueue, int32_t vlm, int32_t spr
     AssertThis(0);
 
     int32_t cactRepeat;
-    int32_t sqn; // sound queue
-    int32_t scl; // sound class
+    int32_t sqn; // 3DMMv1.0: sound queue
+    int32_t scl; // 3DMMv1.0: sound class
     int32_t sii{};
 
     static int32_t _siiLastMidi;
@@ -554,7 +554,7 @@ void MSND::Play(int32_t objID, bool fLoop, bool fQueue, int32_t vlm, int32_t spr
 
     if (_sty == styMidi && _ctgSnd == _ctgLastMidi && _cnoSnd == _cnoLastMidi && vpsndm->FPlaying(_siiLastMidi))
     {
-        // Don't restart midi if the same sound is still playing
+        // 3DMMv1.0: Don't restart midi if the same sound is still playing
         return;
     }
 
@@ -574,7 +574,7 @@ void MSND::Play(int32_t objID, bool fLoop, bool fQueue, int32_t vlm, int32_t spr
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     New MSQ
 
@@ -601,7 +601,7 @@ PMSQ MSQ::PmsqNew(void)
     return pmsq;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Enqueue a sound	in the MSQ.  Overwrites sounds of the same type.
 
@@ -632,8 +632,8 @@ bool MSQ::FEnqueue(PMSND pmsnd, int32_t objID, bool fLoop, bool fQueue, int32_t 
             if (sqnT == sqn)
             {
                 if (fLowPri)
-                    return fTrue; // Nothing to enqueue;  same type already taken
-                // Hi priority.  Get rid of lower priority sound.
+                    return fTrue; // 3DMMv1.0: Nothing to enqueue;  same type already taken
+                // 3DMMv1.0: Hi priority.  Get rid of lower priority sound.
                 ReleasePpo(&psqe->pmsnd);
                 _pglsqe->Delete(isqe);
                 break;
@@ -667,7 +667,7 @@ bool MSQ::FEnqueue(PMSND pmsnd, int32_t objID, bool fLoop, bool fQueue, int32_t 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Dequeue and Play the MSQ sounds
     If _dtim == kdtimOff, empty the queue
@@ -714,7 +714,7 @@ void MSQ::PlayMsq(void)
     return;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Flush Queue	 -  without playing the sounds
 
@@ -730,7 +730,7 @@ void MSQ::FlushMsq(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     FCmdAlarm - Timeout has elapsed.  Stop all sounds
 
@@ -745,7 +745,7 @@ bool MSQ::FCmdAlarm(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Clean up and delete this movie sound queue
 
@@ -760,7 +760,7 @@ MSQ::~MSQ(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the MSND.
 ***************************************************************************/
 void MSND::AssertValid(uint32_t grf)
@@ -770,18 +770,18 @@ void MSND::AssertValid(uint32_t grf)
     AssertIn(_sty, 0, styLim);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the MSND
 ***************************************************************************/
 void MSND::MarkMem(void)
 {
     AssertThis(0);
     MSND_PAR::MarkMem();
-    // Note: don't mark _prca, because _prca marks us, and would cause
-    // an infinite recursive loop.
+    // 3DMMv1.0: Note: don't mark _prca, because _prca marks us, and would cause
+    // 3DMMv1.0: an infinite recursive loop.
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the MSQ.
 ***************************************************************************/
 void MSQ::AssertValid(uint32_t grf)
@@ -791,7 +791,7 @@ void MSQ::AssertValid(uint32_t grf)
     AssertPo(_pclok, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the MSND
 ***************************************************************************/
 void MSQ::MarkMem(void)
@@ -802,4 +802,4 @@ void MSQ::MarkMem(void)
     MarkMemObj(_pclok);
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

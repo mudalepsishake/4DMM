@@ -648,6 +648,29 @@
 #define kxpregSettingsBrowser   	 33
 #define kypregSettingsBrowser   	 41
 
+#define kxpCameraTrackAlign          145
+#define kypCameraTrackAlign          4
+#define kdxpCameraTrackAlign         45
+#define kdypCameraTrackAlign         42
+
+// Depth Motion Tween indicator/editor.  These are the native XY/XZ toggle's
+// registration-point coordinates, not its visible top-left.  With bitmap
+// registration (18,46) and the Settings panel at screen Y=47, position
+// (114,48) places the visible/clickable control at screen 96,49 through the
+// requested 133,95 region.
+#define kxpDepthMotionTween             114
+#define kypDepthMotionTween             48
+#define kxpregDepthMotionTween          18
+#define kypregDepthMotionTween          46
+
+// Manual Camera toggle.  With the same native toggle registration point and
+// Settings panel Y offset, (77,48) places the visible control at screen
+// 59,49 through 96,95.
+#define kxpManualCamera                 77
+#define kypManualCamera                 48
+#define kxpregManualCamera              18
+#define kypregManualCamera              46
+
 #define kxpSettingsCameras   		 224
 #define kypSettingsCameras   		 48
 #define kxpregSettingsCameras   	 25
@@ -740,6 +763,18 @@
 #define kypActorsSooner   			47
 #define kxpregActorsSooner   		25
 #define kypregActorsSooner   		46
+
+// Camera-track continue-animation-in-place toggle.  The full invisible hit
+// region uses the requested empty toolbar space; the familiar XY toggle art
+// is centered inside it as a temporary on/off indicator.
+#define kxpActorsContinueInPlace          549
+#define kypActorsContinueInPlace          49
+#define kdxpActorsContinueInPlace         48
+#define kdypActorsContinueInPlace         46
+#define kxpActorsContinueInPlaceVisual    564
+#define kypActorsContinueInPlaceVisual    49
+#define kxpregActorsContinueInPlace       18
+#define kypregActorsContinueInPlace       46
 
 #define kxpActorsBiography   		574
 #define kypActorsBiography   		47

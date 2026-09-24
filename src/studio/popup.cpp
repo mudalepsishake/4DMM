@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     popup.cpp: Popup menu classes
 
@@ -21,7 +21,14 @@ BEGIN_CMD_MAP(MP, BRWD)
 ON_CID_GEN(cidSelIdle, &MP::FCmdSelIdle, pvNil)
 END_CMD_MAP_NIL()
 
-/***************************************************************************
+MP::~MP(void)
+{
+#if defined(KAUAI_WIN32) && defined(BRENDER_MODERN_14)
+    Hide4DMMUiScaleApePopupOverlay(this);
+#endif
+}
+
+/** 3DMMv1.0: *************************************************************************
     Create a new popup menu
 ***************************************************************************/
 PMP MP::PmpNew(int32_t kidParent, int32_t kidMenu, PRCA prca, PCMD pcmd, BWS bws, int32_t ithumSelect,
@@ -58,8 +65,8 @@ PMP MP::PmpNew(int32_t kidParent, int32_t kidMenu, PRCA prca, PCMD pcmd, BWS bws
     }
 
     //
-    // Add ourselves as a CMH with a high priority so that we can
-    // filter out SelIdle messages
+    // 3DMMv1.0: Add ourselves as a CMH with a high priority so that we can
+    // 3DMMv1.0: filter out SelIdle messages
     //
     if (!vpcex->FAddCmh(pmp, -1000))
     {
@@ -71,8 +78,8 @@ PMP MP::PmpNew(int32_t kidParent, int32_t kidMenu, PRCA prca, PCMD pcmd, BWS bws
     pmp->_cid = cid;
     pmp->_pcmh = pcmh;
 
-    // Need to adjust the size if cthum <= cfrm
-    // New height should be dypTop + cthum * dypFrm + dypTop
+    // 3DMMv1.0: Need to adjust the size if cthum <= cfrm
+    // 3DMMv1.0: New height should be dypTop + cthum * dypFrm + dypTop
     cthum = pmp->_Cthum();
     cfrm = pmp->_cfrm;
 
@@ -98,13 +105,16 @@ PMP MP::PmpNew(int32_t kidParent, int32_t kidMenu, PRCA prca, PCMD pcmd, BWS bws
         pmp->SetPos(&rcAbs, &rcRel);
     }
     AssertPo(pmp, 0);
+#if defined(KAUAI_WIN32) && defined(BRENDER_MODERN_14)
+    Show4DMMUiScaleApePopupOverlay(pmp);
+#endif
     return pmp;
 LFail:
     ReleasePpo(&pmp);
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enqueue a cid saying what was selected
 ***************************************************************************/
 void MP::_ApplySelection(int32_t ithumSelect, int32_t sid)
@@ -122,7 +132,7 @@ void MP::_ApplySelection(int32_t ithumSelect, int32_t sid)
     vpcex->EnqueueCid(_cid, _pcmh, pvNil, ithumSelect, sid);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _IthumFromThum
         Override the default BWRL routine so that we can map a font bitfield
         to the proper ithum.
@@ -161,7 +171,7 @@ int32_t MP::_IthumFromThum(int32_t thumSelect, int32_t sidSelect)
     return ithum;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do selection idle processing.  Make sure not to change any selection
     states.
 ***************************************************************************/
@@ -175,7 +185,7 @@ bool MP::FCmdSelIdle(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the MP.
 ***************************************************************************/
 void MP::AssertValid(uint32_t grf)
@@ -184,7 +194,7 @@ void MP::AssertValid(uint32_t grf)
     AssertBasePo(_pcmh, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the MP
 ***************************************************************************/
 void MP::MarkMem(void)
@@ -193,12 +203,12 @@ void MP::MarkMem(void)
     MP_PAR::MarkMem();
     MarkMemObj(_pcmh);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 //
 //
 //
-//  MPFNT (font menu) stuff begins here
+// 3DMMv1.0:  MPFNT (font menu) stuff begins here
 //
 //
 //
@@ -207,7 +217,14 @@ BEGIN_CMD_MAP(MPFNT, BRWD)
 ON_CID_GEN(cidSelIdle, &MPFNT::FCmdSelIdle, pvNil)
 END_CMD_MAP_NIL()
 
-/***************************************************************************
+MPFNT::~MPFNT(void)
+{
+#if defined(KAUAI_WIN32) && defined(BRENDER_MODERN_14)
+    Hide4DMMUiScaleApePopupOverlay(this);
+#endif
+}
+
+/** 3DMMv1.0: *************************************************************************
     Create a new font menu
 ***************************************************************************/
 PMPFNT MPFNT::PmpfntNew(PRCA prca, int32_t kidParent, int32_t kidMenu, PCMD pcmd, int32_t ithumSelect, PGST pgst)
@@ -249,8 +266,8 @@ PMPFNT MPFNT::PmpfntNew(PRCA prca, int32_t kidParent, int32_t kidMenu, PCMD pcmd
         goto LFail;
 
     //
-    // Add ourselves as a CMH with a high priority so that we can
-    // filter out SelIdle messages
+    // 3DMMv1.0: Add ourselves as a CMH with a high priority so that we can
+    // 3DMMv1.0: filter out SelIdle messages
     //
     if (!vpcex->FAddCmh(pmpfnt, -1000))
     {
@@ -262,6 +279,9 @@ PMPFNT MPFNT::PmpfntNew(PRCA prca, int32_t kidParent, int32_t kidMenu, PCMD pcmd
     pmpfnt->_AdjustRc(pmpfnt->_Cthum(), pmpfnt->_cfrm);
 
     AssertPo(pmpfnt, 0);
+#if defined(KAUAI_WIN32) && defined(BRENDER_MODERN_14)
+    Show4DMMUiScaleApePopupOverlay(pmpfnt);
+#endif
     return pmpfnt;
 
 LFail:
@@ -269,7 +289,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the font of the TGOB to the font listed in the menu item
 ***************************************************************************/
 bool MPFNT::_FSetThumFrame(int32_t istn, PGOB pgobPar)
@@ -279,7 +299,7 @@ bool MPFNT::_FSetThumFrame(int32_t istn, PGOB pgobPar)
         PTGOB ptgob = (PTGOB)pgobPar->PgobFirstChild();
         int32_t onn;
 
-        /* By the time we get this far, MPFNT_PAR should have already checked
+        /* 3DMMv1.0: By the time we get this far, MPFNT_PAR should have already checked
             these */
         Assert(ptgob != pvNil, "No TGOB for the text");
         Assert(ptgob->FIs(kclsTGOB), "GOB isn't a TGOB");
@@ -292,7 +312,7 @@ bool MPFNT::_FSetThumFrame(int32_t istn, PGOB pgobPar)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Tell the studio that the font was selected
 ***************************************************************************/
 void MPFNT::_ApplySelection(int32_t ithumSelect, int32_t sid)
@@ -305,7 +325,7 @@ void MPFNT::_ApplySelection(int32_t ithumSelect, int32_t sid)
     vpcex->EnqueueCid(cidTextSetFont, _pstdio, pvNil, onn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hide the scroll arrows if necessary
 ***************************************************************************/
 void MPFNT::_AdjustRc(int32_t cthum, int32_t cfrm)
@@ -317,11 +337,11 @@ void MPFNT::_AdjustRc(int32_t cthum, int32_t cfrm)
     RC rcAbs;
     RC rcRel;
 
-    /* Still need to adjust if cthum == cfrm to hide scroll arrows */
+    /* 3DMMv1.0: Still need to adjust if cthum == cfrm to hide scroll arrows */
     if (cthum > cfrm)
         return;
 
-    /* For the font popup, the GOBs that are interesting for adjusting the
+    /* 3DMMv1.0: For the font popup, the GOBs that are interesting for adjusting the
         entire browser are actually the parents of the thumbnail frames */
     pgob = vapp.Pkwa()->PgobFromHid(_kidFrmFirst);
     AssertPo(pgob, 0);
@@ -336,7 +356,7 @@ void MPFNT::_AdjustRc(int32_t cthum, int32_t cfrm)
     SetPos(&rcAbs, &rcRel);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do selection idle processing.  Make sure not to change any selection
     states.
 ***************************************************************************/
@@ -350,7 +370,7 @@ bool MPFNT::FCmdSelIdle(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the MPFNT.
 ***************************************************************************/
 void MPFNT::AssertValid(uint32_t grf)
@@ -358,7 +378,7 @@ void MPFNT::AssertValid(uint32_t grf)
     MPFNT_PAR::AssertValid(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the MPFNT
 ***************************************************************************/
 void MPFNT::MarkMem(void)
@@ -366,4 +386,4 @@ void MPFNT::MarkMem(void)
     AssertThis(0);
     MPFNT_PAR::MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

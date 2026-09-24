@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,37 +15,37 @@
 ***************************************************************************/
 
 #ifndef SYMC
-/* Wings includes Mac headers explicitly (this isn't all of them): */
-// NOTE: avoid including Traps.h because it defines a bunch of stuff
-// that we use as methods!
+/* 3DMMv1.0: Wings includes Mac headers explicitly (this isn't all of them): */
+// 3DMMv1.0: NOTE: avoid including Traps.h because it defines a bunch of stuff
+// 3DMMv1.0: that we use as methods!
 #define __TRAPS__
 
 #include <types.h>
 #include <errors.h>
-#include <osutils.h>  //types.h
-#include <memory.h>   //types.h
-#include <diskinit.h> //types.h
-#include <fonts.h>    //types.h
-#include <quickdra.h> //types.h, qdtext.h
-#include <qdoffscr.h> //quickdra.h
-#include <textedit.h> //quickdra.h
-#include <controls.h> //quickdra.h
-#include <menus.h>    //quickdra.h
-#include <events.h>   //types.h quickdra.h osutils.h
-#include <desk.h>     //types.h quickdra.h events.h
-#include <windows.h>  //quickdra.h events.h controls.h
-#include <palettes.h> //quickdra.h windows.h
-#include <dialogs.h>  //windows.h textedit.h
-#include <files.h>    //types.h osutils.h segload.h
-#include <resource.h> //types.h files.h
-#include <resource.h> //types.h files.h
-#include <folders.h>  //types.h files.h
+#include <osutils.h>  // 3DMMv1.0: types.h
+#include <memory.h>   // 3DMMv1.0: types.h
+#include <diskinit.h> // 3DMMv1.0: types.h
+#include <fonts.h>    // 3DMMv1.0: types.h
+#include <quickdra.h> // 3DMMv1.0: types.h, qdtext.h
+#include <qdoffscr.h> // 3DMMv1.0: quickdra.h
+#include <textedit.h> // 3DMMv1.0: quickdra.h
+#include <controls.h> // 3DMMv1.0: quickdra.h
+#include <menus.h>    // 3DMMv1.0: quickdra.h
+#include <events.h>   // 3DMMv1.0: types.h quickdra.h osutils.h
+#include <desk.h>     // 3DMMv1.0: types.h quickdra.h events.h
+#include <windows.h>  // 3DMMv1.0: quickdra.h events.h controls.h
+#include <palettes.h> // 3DMMv1.0: quickdra.h windows.h
+#include <dialogs.h>  // 3DMMv1.0: windows.h textedit.h
+#include <files.h>    // 3DMMv1.0: types.h osutils.h segload.h
+#include <resource.h> // 3DMMv1.0: types.h files.h
+#include <resource.h> // 3DMMv1.0: types.h files.h
+#include <folders.h>  // 3DMMv1.0: types.h files.h
 #include <finder.h>   //
-#include <standard.h> //types.h dialogs.h files.h
-#include <script.h>   //types.h quickdra.h intlreso.h
-#include <textutil.h> //types.h script.h osutils.h
+#include <standard.h> // 3DMMv1.0: types.h dialogs.h files.h
+#include <script.h>   // 3DMMv1.0: types.h quickdra.h intlreso.h
+#include <textutil.h> // 3DMMv1.0: types.h script.h osutils.h
 #include <lowmem.h>
-#else //! SYMC
+#else //! 3DMMv1.0: SYMC
 #include <script.h>
 #include <qdoffscreen.h>
 #include <palettes.h>
@@ -66,7 +66,7 @@ inline int32_t LMGetCurrentA5(void)
 {
     return *(int32_t *)CurrentA5;
 }
-#endif //! SYMC
+#endif //! 3DMMv1.0: SYMC
 
 typedef GrafPort PRT;
 typedef GrafPort *PPRT;

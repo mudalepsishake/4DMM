@@ -1,9 +1,9 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-//{{NO_DEPENDENCIES}}
-// App Studio generated include file.
-// Used by FT.RC
+// 3DMMv1.0: {{NO_DEPENDENCIES}}
+// 3DMMv1.0: App Studio generated include file.
+// 3DMMv1.0: Used by FT.RC
 //
 #define cidTestSuite 40001
 #define cidNewTestWnd 40002
@@ -26,7 +26,7 @@
 #define cidTestTextEdit 40020
 #define cidTestMbmps 40021
 
-// Next default values for new objects
+// 3DMMv1.0: Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

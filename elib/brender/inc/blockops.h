@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: blockops.h 1.6 1995/02/22 21:36:56 sam Exp $
@@ -9,7 +9,7 @@
  */
 #if defined(__WATCOMC__)
 
-/*
+/* BRender:
  * Inline block operations for Watcom C
  */
 
@@ -19,7 +19,7 @@ void BrIBlockFill(void *dest_ptr, int value, int dwords);
 void BrIBlockCopy(void *dest_ptr, void *src_ptr, int dwords);
 #pragma aux BrIBlockCopy = "rep movsd" parm[edi][esi][ecx];
 
-/* Inline copy near block to far block
+/* BRender: Inline copy near block to far block
  */
 void BrIFarBlockCopy(void __far *dest_ptr, void *src_ptr, int dwords);
 #pragma aux BrIFarBlockCopy = "push	es"                                                                                \

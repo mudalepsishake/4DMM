@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -261,7 +261,7 @@ AROP _rgaropSccg[] = {
     {opNil, pvNil, 0, 0, 0, fTrue},
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a string to an operator.
 ***************************************************************************/
 int32_t SCCG::_OpFromStn(PSTN pstn)
@@ -275,7 +275,7 @@ int32_t SCCG::_OpFromStn(PSTN pstn)
     return SCCG_PAR::_OpFromStn(pstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an op code to a string.
 ***************************************************************************/
 bool SCCG::_FGetStnFromOp(int32_t op, PSTN pstn)
@@ -288,7 +288,7 @@ bool SCCG::_FGetStnFromOp(int32_t op, PSTN pstn)
     return SCCG_PAR::_FGetStnFromOp(op, pstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a string to an operator with argument information (for in-fix
     compiler).
 ***************************************************************************/
@@ -302,7 +302,7 @@ bool SCCG::_FGetOpFromName(PSTN pstn, int32_t *pop, int32_t *pclwFixed, int32_t 
     return SCCG_PAR::_FGetOpFromName(pstn, pop, pclwFixed, pclwVar, pcactMinVar, pfVoid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current version number of the script compiler.
 ***************************************************************************/
 int16_t SCCG::_SwCur(void)
@@ -310,7 +310,7 @@ int16_t SCCG::_SwCur(void)
     return kswCurSccg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the back version number of the script compiler.  Versions
     back to here can read this script.
 ***************************************************************************/
@@ -319,7 +319,7 @@ int16_t SCCG::_SwBack(void)
     return kswBackSccg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the min version number of the script compiler.  We can read
     scripts back to this version.
 ***************************************************************************/

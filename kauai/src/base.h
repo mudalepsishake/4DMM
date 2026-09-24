@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,14 +17,14 @@
 #ifndef BASE_H
 #define BASE_H
 
-/* Character-based constants */
+/* 3DMMEx: Character-based constants */
 #define KLCONST2(a, b) ((a << 8) | b)
 
 #define KLCONST3(a, b, c) ((a << 16) | (b << 8) | c)
 
 #define KLCONST4(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | d)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Run-time class determination support.  Each class, FOO, that uses this
     needs a constant, kclsFOO, defined somewhere (preferably with the class
     declaration) and needs FOO_PAR defined to be the class' parent class.
@@ -45,7 +45,7 @@
   public:                                                                                                              \
     virtual int32_t Cls(void) override;
 
-// RTCLASS_DEC for the top-level BASE class
+// 3DMMEx: RTCLASS_DEC for the top-level BASE class
 #define RTCLASS_DEC_BASE                                                                                               \
   public:                                                                                                              \
     static bool FWouldBe(int32_t cls);                                                                                 \
@@ -93,7 +93,7 @@
         return kcls##foo;                                                                                              \
     }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Debugging aids - for finding lost memory and asserting the validity
     of objects.
 ***************************************************************************/
@@ -206,7 +206,7 @@ inline void ResumeAssertValid(void)
 void __AssertOnCopy(void);
 void MarkUtilMem(void);
 
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 
 #define SuspendAssertValid()
 #define ResumeAssertValid()
@@ -225,9 +225,9 @@ void MarkUtilMem(void);
 #define NOCOPY(cls)
 #define MarkUtilMem()
 
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Macro to release an object and clear the pointer to it.
 ***************************************************************************/
 #define ReleasePpo(ppo)                                                                                                \
@@ -239,7 +239,7 @@ void MarkUtilMem(void);
     else                                                                                                               \
         (void)0
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Base class. Any instances allocated using NewObj (as opposed to being
     on the stack) are guaranteed to be zero'ed out. Also provides reference
     counting and debug lost memory checks.
@@ -259,15 +259,15 @@ class BASE
   public:
 #ifdef DEBUG
     void *operator new(size_t cb, schar *pszsFile, int32_t lwLine) noexcept;
-    void operator delete(void *pv, schar *pszsFile, int32_t lwLine); // To prevent warning C4291
+    void operator delete(void *pv, schar *pszsFile, int32_t lwLine); // 3DMMEx: To prevent warning C4291
     void operator delete(void *pv);
     void MarkMemStub(void);
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
     void *operator new(size_t cb) noexcept;
 #ifdef WIN
     void operator delete(void *pv);
-#endif // WIN
-#endif //! DEBUG
+#endif // 3DMMv1.0: WIN
+#endif //! 3DMMv1.0: DEBUG
     BASE(void);
     virtual ~BASE(void)
     {
@@ -282,7 +282,7 @@ class BASE
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Base linked list
 ***************************************************************************/
 #define BLL_DEC(cls, rtn)                                                                                              \
@@ -317,4 +317,4 @@ class BLL : public BLL_PAR
     }
 };
 
-#endif //! BASE_H
+#endif //! 3DMMv1.0: BASE_H

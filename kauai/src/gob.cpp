@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -30,7 +30,7 @@ RTCLASS(GTE)
 int32_t GOB::_ginDefGob = kginSysInval;
 int32_t GOB::_gridLast;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fill in the elements of the GCB.
 ***************************************************************************/
 void GCB::Set(int32_t hid, PGOB pgob, uint32_t grfgob, int32_t gin, RC *prcAbs, RC *prcRel)
@@ -51,7 +51,7 @@ void GCB::Set(int32_t hid, PGOB pgob, uint32_t grfgob, int32_t gin, RC *prcAbs, 
         _rcRel = *prcRel;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to shut down all GOBs.
 ***************************************************************************/
 void GOB::ShutDown(void)
@@ -60,13 +60,13 @@ void GOB::ShutDown(void)
     {
         _pgobScreen->FAttachHwnd(kwndNil);
 
-        // freeing the _pgobScreen also updates _pgobScreen to its sibling.
-        // _pgobScreen is really the root of the forest.
+        // 3DMMv1.0: freeing the _pgobScreen also updates _pgobScreen to its sibling.
+        // 3DMMv1.0: _pgobScreen is really the root of the forest.
         _pgobScreen->Release();
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a graphics object.  pgob is either the parent of the new
     gob or a sibling, according to (grfgob & fgobSibling).
 ***************************************************************************/
@@ -75,7 +75,7 @@ GOB::GOB(PGCB pgcb) : CMH(pgcb->_hid)
     _Init(pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the gob.
 ***************************************************************************/
 void GOB::_Init(PGCB pgcb)
@@ -115,7 +115,7 @@ void GOB::_Init(PGCB pgcb)
     _fCreating = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for GOB.
 ***************************************************************************/
 GOB::GOB(int32_t hid) : CMH(hid)
@@ -124,7 +124,7 @@ GOB::GOB(int32_t hid) : CMH(hid)
     _Init(&gcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     First tells the app that the gob is dying; then calls Release on all direct
     child gobs of this GOB; then calls delete on itself.
 ***************************************************************************/
@@ -136,10 +136,10 @@ void GOB::Release(void)
     if (--_cactRef > 0)
         return;
 
-    // Mark this gob as being freed (may already be marked)
+    // 3DMMv1.0: Mark this gob as being freed (may already be marked)
     _fFreeing = fTrue;
 
-    // invalidate
+    // 3DMMv1.0: invalidate
     if (pvNil == _pgobPar || !_pgobPar->_fFreeing)
         InvalRc(pvNil);
 
@@ -149,7 +149,7 @@ void GOB::Release(void)
     delete this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the graphics object class.
 ***************************************************************************/
 GOB::~GOB(void)
@@ -157,7 +157,7 @@ GOB::~GOB(void)
     AssertThis(0);
     PGOB *ppgob;
 
-    // remove it from the sibling list
+    // 3DMMv1.0: remove it from the sibling list
     Assert(pvNil == _pgobChd, "gob still has children");
     for (ppgob = pvNil != _pgobPar ? &_pgobPar->_pgobChd : &_pgobScreen; *ppgob != this && pvNil != *ppgob;
          ppgob = &(*ppgob)->_pgobSib)
@@ -168,7 +168,7 @@ GOB::~GOB(void)
     else
         Bug("corrupt gob tree");
 
-    // nuke its port and hwnd
+    // 3DMMv1.0: nuke its port and hwnd
     if (pvNil != _pgpt && (pvNil == _pgobPar || _pgpt != _pgobPar->_pgpt))
         ReleasePpo(&_pgpt);
     if (_hwnd != kwndNil)
@@ -177,7 +177,7 @@ GOB::~GOB(void)
     ReleasePpo(&_pcurs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Called by OS specific code when an hwnd is activated or deactivated.
     We inform the entire gob subtree for the hwnd so individual elements
     can do whatever is necessary.  This is a static member function.
@@ -189,7 +189,7 @@ void GOB::ActivateHwnd(KWND hwnd, bool fActive)
     if (pvNil == (pgob = PgobFromHwnd(hwnd)))
         return;
 
-    // if it's becoming active, bring it to the front in our gob tree.
+    // 3DMMv1.0: if it's becoming active, bring it to the front in our gob tree.
     if (fActive)
         pgob->SendBehind(pvNil);
 
@@ -204,7 +204,7 @@ void GOB::ActivateHwnd(KWND hwnd, bool fActive)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make this the first child of its parent.  Doesn't invalidate anything.
 ***************************************************************************/
 void GOB::BringToFront(void)
@@ -213,7 +213,7 @@ void GOB::BringToFront(void)
     SendBehind(pvNil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put this GOB behind the given sibling.  If pgobBehind is nil, does
     the equivalent of a BringToFront.  Asserts that pgobBehind and this
     gob have the same parent.  Does no invalidation.
@@ -232,9 +232,9 @@ void GOB::SendBehind(PGOB pgobBehind)
 
     pgob = PgobPrevSib();
     if (pgob == pgobBehind)
-        return; // nothing to do
+        return; // 3DMMv1.0: nothing to do
 
-    // take this gob out of the sibling list
+    // 3DMMv1.0: take this gob out of the sibling list
     if (pvNil == pgob)
     {
         Assert(_pgobPar->_pgobChd == this, "corrupt GOB tree");
@@ -246,7 +246,7 @@ void GOB::SendBehind(PGOB pgobBehind)
         pgob->_pgobSib = _pgobSib;
     }
 
-    // now insert it after pgobBehind
+    // 3DMMv1.0: now insert it after pgobBehind
     if (pvNil == pgobBehind)
     {
         _pgobSib = _pgobPar->_pgobChd;
@@ -261,7 +261,7 @@ void GOB::SendBehind(PGOB pgobBehind)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the given rc in this gob.  If gin is ginNil, nothing is done.
     If gin is kginRedraw, the area is redraw.  If gin is kginMark, the area
     is marked dirty at the framework level.  If gin is kginSysInval, the
@@ -307,8 +307,8 @@ void GOB::InvalRc(RC *prc, int32_t gin)
         break;
 
     case kginDraw:
-        // do this so we do whatever the app does during a normal draw, such
-        // as drawing offscreen....
+        // 3DMMv1.0: do this so we do whatever the app does during a normal draw, such
+        // 3DMMv1.0: as drawing offscreen....
         vpappb->UpdateHwnd(pgob->_hwnd, &rc);
         break;
 
@@ -323,7 +323,7 @@ void GOB::InvalRc(RC *prc, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate the given rc in this gob.  If gin is ginNil, nothing is done.
     If gin is kginRedraw, the area is validated at both the framework level
     and the system level.  If gin is kginMark or kginSysInval, the area is
@@ -362,13 +362,13 @@ void GOB::ValidRc(RC *prc, int32_t gin)
 
     if (gin != kginSysInval)
     {
-        // do a framework level validation
+        // 3DMMv1.0: do a framework level validation
         vpappb->UnmarkRc(&rc, pgob);
     }
 
     if (gin != kginMark)
     {
-        // do a system level validation
+        // 3DMMv1.0: do a system level validation
         RCS rcs;
 
         rcs = RCS(rc);
@@ -376,7 +376,7 @@ void GOB::ValidRc(RC *prc, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the dirty portion of this gob.  Return true iff the dirty rectangle
     is non-empty.  If gin is kginDraw, gets the union of the marked area
     and system-invalidated area.
@@ -411,13 +411,13 @@ bool GOB::FGetRcInval(RC *prc, int32_t gin)
 
     if (kginSysInval != gin)
     {
-        // get any marked area
+        // 3DMMv1.0: get any marked area
         vpappb->FGetMarkedRc(pgob->_hwnd, prc);
     }
 
     if (kginMark != gin)
     {
-        // get any system invalidated area
+        // 3DMMv1.0: get any system invalidated area
         RC rcT;
 
 #if defined(KAUAI_WIN32)
@@ -426,7 +426,7 @@ bool GOB::FGetRcInval(RC *prc, int32_t gin)
         GetUpdateRect(pgob->_hwnd, &rcs, fFalse);
         rcT = RC(rcs);
 #elif defined(KAUAI_SDL)
-        // No system invalidated areas
+        // 3DMMEx: No system invalidated areas
         rcT = {};
 #else
 #error not implemented
@@ -439,7 +439,7 @@ bool GOB::FGetRcInval(RC *prc, int32_t gin)
     return !prc->FEmpty();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scrolls the given rectangle in the GOB.  Translates any invalid portion.
     Handles this being covered by any GOBs or system windows.  If prc is
     nil, the entire content rectangle is used.
@@ -484,7 +484,7 @@ void GOB::Scroll(RC *prc, int32_t dxp, int32_t dyp, int32_t gin, RC *prcBad1, RC
     if (pvNil == pgob)
         return;
 
-    // check for GOBs on top of this one.
+    // 3DMMv1.0: check for GOBs on top of this one.
     gte.Init(pgob, fgteBackToFront);
     fFound = fFalse;
     grfgteIn = fgteNil;
@@ -501,8 +501,8 @@ void GOB::Scroll(RC *prc, int32_t dxp, int32_t dyp, int32_t gin, RC *prcBad1, RC
         pgobT->GetRc(&rcT, cooHwnd);
         if (rcT.FIntersect(&rc))
         {
-            // there is a GOB on top of this one, just invalidate the
-            // rectangle to be scrolled
+            // 3DMMv1.0: there is a GOB on top of this one, just invalidate the
+            // 3DMMv1.0: rectangle to be scrolled
             pgob->ValidRc(&rc, kginDraw);
             pgob->InvalRc(&rc, gin);
             if (pvNil != prcBad1)
@@ -512,10 +512,10 @@ void GOB::Scroll(RC *prc, int32_t dxp, int32_t dyp, int32_t gin, RC *prcBad1, RC
         grfgteIn = fgteSkipToSib;
     }
 
-    // translate any marked area
+    // 3DMMv1.0: translate any marked area
     if (FGetRcInval(&rcT, kginMark))
     {
-        // something is marked
+        // 3DMMv1.0: something is marked
         rcT.Offset(dpt.xp, dpt.yp);
         if (rcT.FIntersect(&rc))
         {
@@ -527,12 +527,12 @@ void GOB::Scroll(RC *prc, int32_t dxp, int32_t dyp, int32_t gin, RC *prcBad1, RC
     }
 
 #if defined(KAUAI_WIN32)
-    // SW_INVALIDATE invalidates any uncovered stuff and translates any
-    // previously invalid stuff
+    // 3DMMv1.0: SW_INVALIDATE invalidates any uncovered stuff and translates any
+    // 3DMMv1.0: previously invalid stuff
     RECT rcs = RCS(rc);
     ScrollWindowEx(pgob->_hwnd, dxp, dyp, pvNil, &rcs, hNil, pvNil, SW_INVALIDATE);
 
-    // compute the bad rectangles
+    // 3DMMv1.0: compute the bad rectangles
     GNV::GetBadRcForScroll(&rc, dxp, dyp, &rcBad1, &rcBad2);
 
     if (pvNil != prcBad1)
@@ -553,7 +553,7 @@ void GOB::Scroll(RC *prc, int32_t dxp, int32_t dyp, int32_t gin, RC *prcBad1, RC
     case kginMark:
         vpappb->MarkRc(&rcBad1, pgob);
         vpappb->MarkRc(&rcBad2, pgob);
-        // fall through
+        // 3DMMv1.0: fall through
     case ginNil:
         if (!rcBad1.FEmpty())
         {
@@ -572,7 +572,7 @@ void GOB::Scroll(RC *prc, int32_t dxp, int32_t dyp, int32_t gin, RC *prcBad1, RC
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the gob and its children into the given port.  If the pgpt is nil,
     use the GOB's UI (natural) port.  If the prc is pvNil, use the GOB's
     rectangle based at (0, 0).  If prcClip is not nil, only GOB's that
@@ -586,7 +586,7 @@ void GOB::DrawTree(PGPT pgpt, RC *prc, RC *prcClip, uint32_t grfgob)
     AssertNilOrVarMem(prc);
     AssertNilOrVarMem(prcClip);
     RC rcSrc, rcClip, rcSrcGob, rcClipGob, rcVis, rc;
-    // to translate from this->local to pgob->local coordinates add dpt
+    // 3DMMv1.0: to translate from this->local to pgob->local coordinates add dpt
     PT dpt;
 
     if (pgpt == pvNil && (pgpt = _pgpt) == pvNil)
@@ -599,7 +599,7 @@ void GOB::DrawTree(PGPT pgpt, RC *prc, RC *prcClip, uint32_t grfgob)
 
     dpt = _rcCur.PtTopLeft();
 
-    // get the source and clip rectangles in local (this) coordinates
+    // 3DMMv1.0: get the source and clip rectangles in local (this) coordinates
     rcSrc = _rcCur;
     if (rcSrc.FEmpty())
         return;
@@ -631,7 +631,7 @@ void GOB::DrawTree(PGPT pgpt, RC *prc, RC *prcClip, uint32_t grfgob)
                     goto LNextSib;
             }
 
-            // get the source and clip rectangles in local (pgob) coordinates
+            // 3DMMv1.0: get the source and clip rectangles in local (pgob) coordinates
             rcSrcGob = pgob->_rcCur;
             dpt.xp -= rcSrcGob.xpLeft;
             dpt.yp -= rcSrcGob.ypTop;
@@ -640,16 +640,16 @@ void GOB::DrawTree(PGPT pgpt, RC *prc, RC *prcClip, uint32_t grfgob)
             if (!rcClipGob.FIntersect(&rcSrcGob))
                 goto LOffsetNextSib;
 
-            // set the source rectangle
+            // 3DMMv1.0: set the source rectangle
             gnv.SetRcSrc(&rcSrcGob);
 
-            // set the dest rc
+            // 3DMMv1.0: set the dest rc
             rc = rcSrcGob - dpt;
             if (pvNil != prc)
                 rc.Map(&rcSrc, prc);
             gnv.SetRcDst(&rc);
 
-            // set the vis rectangle
+            // 3DMMv1.0: set the vis rectangle
             if (grfgob & (fgobAutoVis | fgobUseVis))
             {
                 if (!rcVis.FIntersect(&rcClipGob))
@@ -669,7 +669,7 @@ void GOB::DrawTree(PGPT pgpt, RC *prc, RC *prcClip, uint32_t grfgob)
                 rcClipGob = rcVis;
             }
 
-            // draw the gob
+            // 3DMMv1.0: draw the gob
             pgob->Draw(&gnv, &rcClipGob);
         }
         if (grfgte & fgtePost)
@@ -680,7 +680,7 @@ void GOB::DrawTree(PGPT pgpt, RC *prc, RC *prcClip, uint32_t grfgob)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the gob and its children into the given port.  If the pgpt is nil,
     use the GOB's UI (natural) port.  If the prc is pvNil, use the GOB's
     rectangle based at (0, 0).  Only GOB's that intersect pregn will be
@@ -693,7 +693,7 @@ void GOB::DrawTreeRgn(PGPT pgpt, RC *prc, REGN *pregn, uint32_t grfgob)
     AssertNilOrVarMem(prc);
     AssertPo(pregn, 0);
     RC rcSrc, rcSrcGob, rcClipGob, rcVis, rc;
-    // to translate from this->local to pgob->local coordinates add dpt
+    // 3DMMv1.0: to translate from this->local to pgob->local coordinates add dpt
     PT dpt;
 
     if (pgpt == pvNil && (pgpt = _pgpt) == pvNil)
@@ -708,7 +708,7 @@ void GOB::DrawTreeRgn(PGPT pgpt, RC *prc, REGN *pregn, uint32_t grfgob)
 
     dpt = _rcCur.PtTopLeft();
 
-    // get the source rectangle and clip region in local (this) coordinates
+    // 3DMMv1.0: get the source rectangle and clip region in local (this) coordinates
     rcSrc = _rcCur;
     rcSrc.OffsetToOrigin();
     if (rcSrc.FEmpty())
@@ -746,7 +746,7 @@ void GOB::DrawTreeRgn(PGPT pgpt, RC *prc, REGN *pregn, uint32_t grfgob)
                     goto LNextSib;
             }
 
-            // get the source and clip rectangles in local (pgob) coordinates
+            // 3DMMv1.0: get the source and clip rectangles in local (pgob) coordinates
             rcSrcGob = pgob->_rcCur;
             dpt.xp -= rcSrcGob.xpLeft;
             dpt.yp -= rcSrcGob.ypTop;
@@ -761,16 +761,16 @@ void GOB::DrawTreeRgn(PGPT pgpt, RC *prc, REGN *pregn, uint32_t grfgob)
 
             rcClipGob.Offset(dpt.xp, dpt.yp);
 
-            // set the source rectangle
+            // 3DMMv1.0: set the source rectangle
             gnv.SetRcSrc(&rcSrcGob);
 
-            // set the dest rc
+            // 3DMMv1.0: set the dest rc
             rc = rcSrcGob - dpt;
             if (pvNil != prc)
                 rc.Map(&rcSrc, prc);
             gnv.SetRcDst(&rc);
 
-            // set the vis rectangle
+            // 3DMMv1.0: set the vis rectangle
             if (grfgob & (fgobAutoVis | fgobUseVis))
             {
                 if (!rcVis.FIntersect(&rcClipGob))
@@ -789,13 +789,13 @@ void GOB::DrawTreeRgn(PGPT pgpt, RC *prc, REGN *pregn, uint32_t grfgob)
                     gnv.SetRcVis(&rcVis);
             }
 
-            // draw the gob
-            // NOTE: we use pregn and not pregnClip or pregnClipGob for speed.
-            // Using pregn, the cached hrgn stuff kicks in to only require
-            // one hrgn creation. If we use pregnClip we only have one hrgn
-            // creation here, but another one when the offscreen bitmap is
-            // copied to the screen. Using pregnClipGob would cause lots
-            // of hregn creations.
+            // 3DMMv1.0: draw the gob
+            // 3DMMv1.0: NOTE: we use pregn and not pregnClip or pregnClipGob for speed.
+            // 3DMMv1.0: Using pregn, the cached hrgn stuff kicks in to only require
+            // 3DMMv1.0: one hrgn creation. If we use pregnClip we only have one hrgn
+            // 3DMMv1.0: creation here, but another one when the offscreen bitmap is
+            // 3DMMv1.0: copied to the screen. Using pregnClipGob would cause lots
+            // 3DMMv1.0: of hregn creations.
             pgpt->ClipToRegn(&pregn);
             pgob->Draw(&gnv, &rcClipGob);
             pgpt->ClipToRegn(&pregn);
@@ -817,7 +817,7 @@ LFail:
     DrawTree(pgpt, prc, &rc, grfgob);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the GOB into the given graphics environment.  On entry, the source
     rectangle of the GNV is set to (0, 0, dxp, dyp), where dxp and dyp are
     the width and height of the gob.  The gob is free to change the source
@@ -828,7 +828,7 @@ void GOB::Draw(PGNV pgnv, RC *prcClip)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make this gob fill up its parent's interior.
 ***************************************************************************/
 void GOB::Maximize(void)
@@ -840,7 +840,7 @@ void GOB::Maximize(void)
     _SetRcCur();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the gob's position.  Invalidates both the old and new position.
 ***************************************************************************/
 void GOB::SetPos(RC *prcAbs, RC *prcRel)
@@ -861,7 +861,7 @@ void GOB::SetPos(RC *prcAbs, RC *prcRel)
     _SetRcCur();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the gob's position.
 ***************************************************************************/
 void GOB::GetPos(RC *prcAbs, RC *prcRel)
@@ -875,7 +875,7 @@ void GOB::GetPos(RC *prcAbs, RC *prcRel)
         *prcRel = _rcRel;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the gob's rectangle from its hwnd.
 ***************************************************************************/
 void GOB::SetRcFromHwnd(void)
@@ -885,7 +885,7 @@ void GOB::SetRcFromHwnd(void)
     _SetRcCur();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the bounding rectangle of the gob in the given coordinates.
 ***************************************************************************/
 void GOB::GetRc(RC *prc, int32_t coo)
@@ -899,7 +899,7 @@ void GOB::GetRc(RC *prc, int32_t coo)
     prc->Offset(dpt.xp - _rcCur.xpLeft, dpt.yp - _rcCur.ypTop);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the visible rectangle of the gob in the given coordinates.
 ***************************************************************************/
 void GOB::GetRcVis(RC *prc, int32_t coo)
@@ -913,7 +913,7 @@ void GOB::GetRcVis(RC *prc, int32_t coo)
     prc->Offset(dpt.xp - _rcCur.xpLeft, dpt.yp - _rcCur.ypTop);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the rectangle for the gob in cooHwnd coordinates and return the
     enclosing hwnd (if there is one).  This is a protected API.
 ***************************************************************************/
@@ -928,7 +928,7 @@ KWND GOB::_HwndGetRc(RC *prc)
     return hwnd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the hwnd that contains this GOB.
 ***************************************************************************/
 KWND GOB::HwndContainer(void)
@@ -945,7 +945,7 @@ KWND GOB::HwndContainer(void)
     return kwndNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a point from cooSrc coordinates to cooDst coordinates (relative
     to the gob).
 ***************************************************************************/
@@ -963,7 +963,7 @@ void GOB::MapPt(PT *ppt, int32_t cooSrc, int32_t cooDst)
     ppt->yp += dpt.yp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an rc from cooSrc coordinates to cooDst coordinates (relative to
     the gob).
 ***************************************************************************/
@@ -979,7 +979,7 @@ void GOB::MapRc(RC *prc, int32_t cooSrc, int32_t cooDst)
     prc->Offset(dpt.xp, dpt.yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the dxp and dyp to map from local coordinates to coo coordinates.
     If coo is cooHwnd or cooGlobal, also return the containing hwnd
     (otherwise return hNil).
@@ -1022,14 +1022,14 @@ KWND GOB::_HwndGetDptFromCoo(PT *pdpt, int32_t coo)
             hwnd = pgob->_hwnd;
         if (cooGlobal == coo && kwndNil != hwnd)
         {
-            // Map from Hwnd to screen
+            // 3DMMv1.0: Map from Hwnd to screen
 #if defined(KAUAI_WIN32)
             POINT pts;
             pts = POINT(*pdpt);
 
             ClientToScreen(hwnd, &pts);
 #elif defined(KAUAI_SDL)
-            // FIXME MCA: is this correct?
+            // 3DMMEx: FIXME MCA: is this correct?
             SDL_Renderer *rdr;
             float fxp, fyp;
             int xpWnd, ypWnd;
@@ -1057,17 +1057,17 @@ KWND GOB::_HwndGetDptFromCoo(PT *pdpt, int32_t coo)
     return hwnd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the minimum and maximum size for a gob.
 ***************************************************************************/
 void GOB::GetMinMax(RC *prcMinMax)
 {
     prcMinMax->xpLeft = prcMinMax->ypTop = 0;
-    // yes kswMax for safety
+    // 3DMMv1.0: yes kswMax for safety
     prcMinMax->xpRight = prcMinMax->ypBottom = kswMax;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to find the gob containing the given point (in global
     coordinates).  If the mouse isn't over a GOB, this returns pvNil and
     sets *pptLocal to the passed in (xp, yp).
@@ -1121,14 +1121,14 @@ PGOB GOB::PgobFromPtGlobal(int32_t xp, int32_t yp, PT *pptLocal)
 #if defined(KAUAI_WIN32)
     return pgob->PgobFromPt(pts.x, pts.y, pptLocal);
 #elif defined(KAUAI_SDL)
-    // FIXME MCA: is this right?
+    // 3DMMEx: FIXME MCA: is this right?
     return pgob->PgobFromPt(pts.xp, pts.yp, pptLocal);
 #else
 #error not implemented
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine which gob in the tree starting with this GOB the given point
     is in.  This may return pvNil if no gob claims to contain the given
     point.  xp, yp is assumed to be in this gob's parent's coordinates.
@@ -1144,8 +1144,8 @@ PGOB GOB::PgobFromPt(int32_t xp, int32_t yp, PT *pptLocal)
 
     if (FPtInBounds(xp, yp))
     {
-        // the point is in our bounding rectangle, so give the children
-        // a whack at it
+        // 3DMMv1.0: the point is in our bounding rectangle, so give the children
+        // 3DMMv1.0: a whack at it
         PGOB pgob, pgobT;
 
         for (pgob = _pgobChd; pvNil != pgob; pgob = pgob->_pgobSib)
@@ -1155,8 +1155,8 @@ PGOB GOB::PgobFromPt(int32_t xp, int32_t yp, PT *pptLocal)
         }
     }
 
-    // call FPtIn whether or not FInBounds returned true so a parent can will some
-    // extra space to a child
+    // 3DMMv1.0: call FPtIn whether or not FInBounds returned true so a parent can will some
+    // 3DMMv1.0: extra space to a child
     if (FPtIn(xp, yp))
     {
         if (pptLocal != pvNil)
@@ -1170,7 +1170,7 @@ PGOB GOB::PgobFromPt(int32_t xp, int32_t yp, PT *pptLocal)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine whether the given point (in this gob's local coordinates)
     is in this gob. This will be subclassed by all non-rectangular gobs
     (including ones that don't want to respond to the mouse at all).
@@ -1181,7 +1181,7 @@ bool GOB::FPtIn(int32_t xp, int32_t yp)
     AssertThis(0);
     RC rc;
 
-    // tool tips and their children are "invisible".
+    // 3DMMv1.0: tool tips and their children are "invisible".
     if (khidToolTip == Hid())
         return fFalse;
 
@@ -1189,7 +1189,7 @@ bool GOB::FPtIn(int32_t xp, int32_t yp)
     return rc.FPtIn(xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine whether the given point (in this gob's local coordinates)
     is in this gob's bounding rectangle.  This indicates whether it's OK to
     ask the GOB's children whether the point is in them.  This will be
@@ -1202,7 +1202,7 @@ bool GOB::FPtInBounds(int32_t xp, int32_t yp)
     AssertThis(0);
     RC rc;
 
-    // tool tips and their children are "invisible".
+    // 3DMMv1.0: tool tips and their children are "invisible".
     if (khidToolTip == Hid())
         return fFalse;
 
@@ -1210,7 +1210,7 @@ bool GOB::FPtInBounds(int32_t xp, int32_t yp)
     return rc.FPtIn(xp, yp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Default mouse down handler just enqueues a cidActivateSel, cidSelIdle and
     a cidTrackMouse command.
 ***************************************************************************/
@@ -1232,7 +1232,7 @@ void GOB::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     vpcex->EnqueueCmd((PCMD)&cmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the _rcCur values based on _rcAbs and _rcRel.  If there is an OS
     window associated with this GOB, set _rcCur based on the hwnd.
     Invalidates the old and new rectangles.
@@ -1244,7 +1244,7 @@ void GOB::_SetRcCur(void)
     uint32_t grfgte;
     RC rc, rcVis;
 
-    // invalidate the original rc
+    // 3DMMv1.0: invalidate the original rc
     InvalRc(pvNil);
 
     gte.Init(this, fgteNil);
@@ -1253,8 +1253,8 @@ void GOB::_SetRcCur(void)
         if (!(grfgte & fgtePre))
             continue;
 
-        // get the new rc and the rcVis of the parent (in the parent's local
-        // coordinates)
+        // 3DMMv1.0: get the new rc and the rcVis of the parent (in the parent's local
+        // 3DMMv1.0: coordinates)
 
         if (pgob->_hwnd != hNil)
         {
@@ -1264,8 +1264,8 @@ void GOB::_SetRcCur(void)
             GetClientRect(pgob->_hwnd, &rcs);
             rc = rcs;
 #elif defined(KAUAI_SDL)
-            // The rectangle is always the same as that of the logical application
-            // since logical coordinates are independent of window size
+            // 3DMMEx: The rectangle is always the same as that of the logical application
+            // 3DMMEx: since logical coordinates are independent of window size
             rc.Set(0, 0, kdxpLogical, kdypLogical);
 #else
 #error not implemented
@@ -1291,8 +1291,8 @@ void GOB::_SetRcCur(void)
             rcVis.Max();
         }
 
-        // intersect the parents visible portion with the new rc to get
-        // this gob's visible portion
+        // 3DMMv1.0: intersect the parents visible portion with the new rc to get
+        // 3DMMv1.0: this gob's visible portion
         rcVis.FIntersect(&rc);
 
         pgob->_rcCur = rc;
@@ -1300,17 +1300,17 @@ void GOB::_SetRcCur(void)
 
         if (grfgte & fgteRoot)
         {
-            // invalidate the new rectangle - we do it here so children
-            // can draw and validate themselves if they want
+            // 3DMMv1.0: invalidate the new rectangle - we do it here so children
+            // 3DMMv1.0: can draw and validate themselves if they want
             InvalRc(pvNil);
         }
 
-        // tell the gob that it has a new rectangle
+        // 3DMMv1.0: tell the gob that it has a new rectangle
         pgob->_NewRc();
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the previous sibling for the gob.
 ***************************************************************************/
 PGOB GOB::PgobPrevSib(void)
@@ -1333,7 +1333,7 @@ PGOB GOB::PgobPrevSib(void)
     return pgob;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the last child of the gob.
 ***************************************************************************/
 PGOB GOB::PgobLastChild(void)
@@ -1350,7 +1350,7 @@ PGOB GOB::PgobLastChild(void)
     return pgob;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: find the currently active MDI gob.
 ***************************************************************************/
 PGOB GOB::PgobMdiActive(void)
@@ -1362,7 +1362,7 @@ PGOB GOB::PgobMdiActive(void)
     return PgobFromHwnd(hwnd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: find the first gob of the given class in the screen's gob
     tree.
 ***************************************************************************/
@@ -1373,7 +1373,7 @@ PGOB GOB::PgobFromClsScr(int32_t cls)
     return _pgobScreen->PgobFromCls(cls);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a gob in this gob's subtree that is of the given class.
 ***************************************************************************/
 PGOB GOB::PgobFromCls(int32_t cls)
@@ -1392,7 +1392,7 @@ PGOB GOB::PgobFromCls(int32_t cls)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a direct child of this gob of the given class.
 ***************************************************************************/
 PGOB GOB::PgobChildFromCls(int32_t cls)
@@ -1408,7 +1408,7 @@ PGOB GOB::PgobChildFromCls(int32_t cls)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a gob of the given class in the parent chain of this gob.
 ***************************************************************************/
 PGOB GOB::PgobParFromCls(int32_t cls)
@@ -1424,7 +1424,7 @@ PGOB GOB::PgobParFromCls(int32_t cls)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: find the first gob with the given hid in the screen's gob
     tree.
 ***************************************************************************/
@@ -1437,7 +1437,7 @@ PGOB GOB::PgobFromHidScr(int32_t hid)
     return _pgobScreen->PgobFromHid(hid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a gob in this gobs subtree having the given hid.
 ***************************************************************************/
 PGOB GOB::PgobFromHid(int32_t hid)
@@ -1456,7 +1456,7 @@ PGOB GOB::PgobFromHid(int32_t hid)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a direct child of this gob having the given hid.
 ***************************************************************************/
 PGOB GOB::PgobChildFromHid(int32_t hid)
@@ -1472,7 +1472,7 @@ PGOB GOB::PgobChildFromHid(int32_t hid)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a gob with the given hid in the parent chain of this gob.
 ***************************************************************************/
 PGOB GOB::PgobParFromHid(int32_t hid)
@@ -1488,7 +1488,7 @@ PGOB GOB::PgobParFromHid(int32_t hid)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a gob in this gobs subtree having the given gob run-time id.
 ***************************************************************************/
 PGOB GOB::PgobFromGrid(int32_t grid)
@@ -1507,7 +1507,7 @@ PGOB GOB::PgobFromGrid(int32_t grid)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles a close command.
 ***************************************************************************/
 bool GOB::FCmdCloseWnd(PCMD pcmd)
@@ -1517,7 +1517,7 @@ bool GOB::FCmdCloseWnd(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles a mouse track command.
 ***************************************************************************/
 bool GOB::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -1526,7 +1526,7 @@ bool GOB::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command function to handle a key stroke.
 ***************************************************************************/
 bool GOB::FCmdKey(PCMD_KEY pcmd)
@@ -1534,7 +1534,7 @@ bool GOB::FCmdKey(PCMD_KEY pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command function to handle a bad key command (sent by a child to
     its parent).
 ***************************************************************************/
@@ -1543,7 +1543,7 @@ bool GOB::FCmdBadKey(PCMD_BADKEY pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do selection idle processing.  Make sure the selection is on or off
     according to rglw[0] (non-zero means on) and set rglw[0] to false.
     Always return false.
@@ -1556,7 +1556,7 @@ bool GOB::FCmdSelIdle(PCMD pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Activate the selection.  Default does nothing.
 ***************************************************************************/
 bool GOB::FCmdActivateSel(PCMD pcmd)
@@ -1567,7 +1567,7 @@ bool GOB::FCmdActivateSel(PCMD pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The mouse moved in this GOB, set the cursor.
 ***************************************************************************/
 bool GOB::FCmdMouseMove(PCMD_MOUSE pcmd)
@@ -1579,7 +1579,7 @@ bool GOB::FCmdMouseMove(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Drag the rectangle, restricting to [zpMin, zpLim).  While zp is in
     [zpMinActive, zpLimActive), the bar is filled with solid invert, otherwise
     with patterned (50%) invert.
@@ -1607,7 +1607,7 @@ int32_t GOB::ZpDragRc(RC *prc, bool fVert, int32_t zp, int32_t zpMin, int32_t zp
         rcActive.Set(zpMinActive, 0, zpLimActive, 1);
     }
 
-    // draw the initial bar
+    // 3DMMv1.0: draw the initial bar
     fActive = rcActive.FPtIn(pt.xp, pt.yp);
     if (fActive)
         gnv.FillRc(prc, kacrInvert);
@@ -1620,19 +1620,19 @@ int32_t GOB::ZpDragRc(RC *prc, bool fVert, int32_t zp, int32_t zpMin, int32_t zp
         if (!fDown)
             break;
 
-        // pin the pt to rcBound
+        // 3DMMv1.0: pin the pt to rcBound
         rcBound.PinPt(&dpt);
         Assert(dpt.xp == 0 || dpt.yp == 0, "bad pinned point");
         if (pt == dpt)
             continue;
 
-        // move the bar
+        // 3DMMv1.0: move the bar
         fActiveNew = rcActive.FPtIn(dpt.xp, dpt.yp);
         dpt -= pt;
         if (FPure(fActive) == FPure(fActiveNew))
         {
-            // invert the two pieces of the difference between
-            // the new and old rectangles
+            // 3DMMv1.0: invert the two pieces of the difference between
+            // 3DMMv1.0: the new and old rectangles
             RC rc1, rc2;
             int32_t dzp;
 
@@ -1666,14 +1666,14 @@ int32_t GOB::ZpDragRc(RC *prc, bool fVert, int32_t zp, int32_t zpMin, int32_t zp
         }
         else if (fActive)
         {
-            // just draw the two
+            // 3DMMv1.0: just draw the two
             gnv.FillRc(prc, kacrInvert);
             *prc += dpt;
             gnv.FillRcApt(prc, &vaptGray, kacrInvert, kacrClear);
         }
         else
         {
-            // just draw the two
+            // 3DMMv1.0: just draw the two
             gnv.FillRcApt(prc, &vaptGray, kacrInvert, kacrClear);
             *prc += dpt;
             gnv.FillRc(prc, kacrInvert);
@@ -1682,7 +1682,7 @@ int32_t GOB::ZpDragRc(RC *prc, bool fVert, int32_t zp, int32_t zpMin, int32_t zp
         pt += dpt;
     }
 
-    // erase the current bar
+    // 3DMMv1.0: erase the current bar
     if (fActive)
         gnv.FillRc(prc, kacrInvert);
     else
@@ -1690,7 +1690,7 @@ int32_t GOB::ZpDragRc(RC *prc, bool fVert, int32_t zp, int32_t zpMin, int32_t zp
     return fVert ? pt.yp : pt.xp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the cursor for this GOB to pcurs.
 ***************************************************************************/
 void GOB::SetCurs(PCURS pcurs)
@@ -1704,7 +1704,7 @@ void GOB::SetCurs(PCURS pcurs)
     ReleasePpo(&pcurs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the cursor for this GOB as indicated.
 ***************************************************************************/
 void GOB::SetCursCno(PRCA prca, CNO cno)
@@ -1721,7 +1721,7 @@ void GOB::SetCursCno(PRCA prca, CNO cno)
     ReleasePpo(&pcurs);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the address of the variable list belonging to this gob.  When the
     gob is freed, the pointer is no longer valid.
 ***************************************************************************/
@@ -1731,7 +1731,7 @@ PGL *GOB::Ppglrtvm(void)
     return &_pglrtvm;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up a tool tip if this GOB has one.
 ***************************************************************************/
 bool GOB::FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse)
@@ -1743,7 +1743,7 @@ bool GOB::FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the state of the GOB. Must be non-zero.
 ***************************************************************************/
 int32_t GOB::LwState(void)
@@ -1753,7 +1753,7 @@ int32_t GOB::LwState(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the GOB.
 ***************************************************************************/
 void GOB::AssertValid(uint32_t grf)
@@ -1769,7 +1769,7 @@ void GOB::AssertValid(uint32_t grf)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory referenced by the gob.
 ***************************************************************************/
 void GOB::MarkMem(void)
@@ -1780,7 +1780,7 @@ void GOB::MarkMem(void)
     MarkMemObj(_pglrtvm);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for this gob and all descendent gobs.
 ***************************************************************************/
 void GOB::MarkGobTree(void)
@@ -1796,9 +1796,9 @@ void GOB::MarkGobTree(void)
             pgob->MarkMem();
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a GOB tree enumerator.
 ***************************************************************************/
 GTE::GTE(void)
@@ -1806,7 +1806,7 @@ GTE::GTE(void)
     _es = esDone;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize a GOB tree enumerator.
 ***************************************************************************/
 void GTE::Init(PGOB pgob, uint32_t grfgte)
@@ -1817,7 +1817,7 @@ void GTE::Init(PGOB pgob, uint32_t grfgte)
     _es = pgob == pvNil ? esDone : esStart;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Goes to the next node in the sub tree being enumerated.  Returns false
     iff the enumeration is done.
 ***************************************************************************/
@@ -1843,9 +1843,9 @@ bool GTE::FNextGob(PGOB *ppgob, uint32_t *pgrfgteOut, uint32_t grfgte)
                 goto LCheckForKids;
             }
         }
-        // fall through
+        // 3DMMv1.0: fall through
     case esGoRight:
-        // go to the sibling (if there is one) or parent
+        // 3DMMv1.0: go to the sibling (if there is one) or parent
         if (_pgobCur == _pgobRoot)
         {
             _es = esDone;
@@ -1867,7 +1867,7 @@ bool GTE::FNextGob(PGOB *ppgob, uint32_t *pgrfgteOut, uint32_t grfgte)
         }
         else
         {
-            // no more siblings, go to parent
+            // 3DMMv1.0: no more siblings, go to parent
             _pgobCur = _pgobCur->_pgobPar;
             *pgrfgteOut |= fgtePost;
             if (_pgobCur == _pgobRoot)

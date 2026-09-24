@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,7 +18,7 @@
 
 #define ChidFromSnoDchid(sno, dchid) LwHighLow((int16_t)(sno), (int16_t)(dchid))
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Graphical object representation.  A bitmap, fill, tiled bitmap, etc.
 ***************************************************************************/
 typedef class GORP *PGORP;
@@ -51,7 +51,7 @@ class GORP : public GORP_PAR
     virtual void Stream(bool fStream);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Graphical object fill representation.
 ***************************************************************************/
 typedef class GORF *PGORF;
@@ -79,7 +79,7 @@ class GORF : public GORF_PAR
     virtual void GetRcContent(RC *prc) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Graphical object bitmap representation.
 ***************************************************************************/
 typedef class GORB *PGORB;
@@ -108,7 +108,7 @@ class GORB : public GORB_PAR
     virtual void Stream(bool fStream) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Graphical object tiled bitmap representation.
 ***************************************************************************/
 enum
@@ -133,7 +133,7 @@ class GORT : public GORT_PAR
     RTCLASS_DEC
 
   protected:
-    // a TILE chunk
+    // 3DMMv1.0: a TILE chunk
     struct GOTIL
     {
         int16_t bo;
@@ -152,8 +152,8 @@ class GORT : public GORT_PAR
     int32_t _dxpRightFlex;
     int32_t _dypLeftFlex;
     int32_t _dypRightFlex;
-    int32_t _dxp; // the total width
-    int32_t _dyp; // the total height
+    int32_t _dxp; // 3DMMv1.0: the total width
+    int32_t _dyp; // 3DMMv1.0: the total height
 
     bool _fStream;
 
@@ -174,7 +174,7 @@ class GORT : public GORT_PAR
     virtual void Stream(bool fStream) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Graphical object video representation.
 ***************************************************************************/
 typedef class GORV *PGORV;
@@ -217,7 +217,7 @@ class GORV : public GORV_PAR
     virtual void Resume(void) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     These are the mouse tracking states for kidspace gobs. gmsNil is an
     illegal state used in the tables to signal that we should assert.
 
@@ -252,7 +252,7 @@ enum
 {
     gmsNil,
 
-    // non-tracking states
+    // 3DMMv1.0: non-tracking states
     kgmsEnterState,
     kgmsIdle,
     kgmsRollOn,
@@ -260,7 +260,7 @@ enum
     kgmsOn,
     kgmsReleaseOff,
 
-    // tracking states
+    // 3DMMv1.0: tracking states
     kgmsMinTrack,
     kgmsPressOn = kgmsMinTrack,
     kgmsReleaseOn,
@@ -274,7 +274,7 @@ enum
     kgmsLim = kgmsLimTrack
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Graphic Object in Kidspace.  Because of script invocation, the GOK
     may be destroyed in just about every method of the GOK.  So most methods
     return a boolean indicating whether the GOK still exists.
@@ -282,10 +282,10 @@ enum
 enum
 {
     fgokNil = 0,
-    fgokKillAnim = 1,   // kill current animation
-    fgokNoAnim = 2,     // don't launch an animation
-    fgokReset = 4,      // if the current rep is requested, totally reset it
-    fgokMouseSound = 8, // set the mouse sound as well
+    fgokKillAnim = 1,   // 3DMMv1.0: kill current animation
+    fgokNoAnim = 2,     // 3DMMv1.0: don't launch an animation
+    fgokReset = 4,      // 3DMMv1.0: if the current rep is requested, totally reset it
+    fgokMouseSound = 8, // 3DMMv1.0: set the mouse sound as well
 };
 
 typedef class GOK *PGOK;
@@ -299,55 +299,55 @@ class GOK : public GOK_PAR
     CMD_MAP_DEC(GOK)
 
   protected:
-    int32_t _dxp; // offset from top-left to the registration point
+    int32_t _dxp; // 3DMMv1.0: offset from top-left to the registration point
     int32_t _dyp;
-    int32_t _zp; // z-coord (for placing GOK's relative to this one)
+    int32_t _zp; // 3DMMv1.0: z-coord (for placing GOK's relative to this one)
 
-    int32_t _dxpPref; // preferred size (if non-zero)
+    int32_t _dxpPref; // 3DMMv1.0: preferred size (if non-zero)
     int32_t _dypPref;
 
-    PWOKS _pwoks; // the kidspace world that this GOK belongs to
-    PRCA _prca;   // Chunky resource chain
-    PCRF _pcrf;   // Chunky resource file
+    PWOKS _pwoks; // 3DMMv1.0: the kidspace world that this GOK belongs to
+    PRCA _prca;   // 3DMMv1.0: Chunky resource chain
+    PCRF _pcrf;   // 3DMMv1.0: Chunky resource file
 
-    int16_t _sno;       // state number
-    int16_t _cactMouse; // mouse click count of last mouse down
-    uint32_t _grfcust;  // cursor state at last mouse down
-    int32_t _gmsCur;    // gob mouse tracking state
+    int16_t _sno;       // 3DMMv1.0: state number
+    int16_t _cactMouse; // 3DMMv1.0: mouse click count of last mouse down
+    uint32_t _grfcust;  // 3DMMv1.0: cursor state at last mouse down
+    int32_t _gmsCur;    // 3DMMv1.0: gob mouse tracking state
 
-    bool _fRect : 1;          // whether to use rectangular hit testing exclusively
-    bool _fNoHit : 1;         // invisible to the mouse
-    bool _fNoHitKids : 1;     // children of this GOK are invisible to the mouse
-    bool _fNoSlip : 1;        // animations shouldn't slip
-    bool _fGorpDirty : 1;     // whether the GORP changed while deferred
-    bool _fMouseSndDirty : 1; // whether playing the mouse sound was deferred
-    bool _fStream : 1;        // once we switch reps, we won't use this one again
+    bool _fRect : 1;          // 3DMMv1.0: whether to use rectangular hit testing exclusively
+    bool _fNoHit : 1;         // 3DMMv1.0: invisible to the mouse
+    bool _fNoHitKids : 1;     // 3DMMv1.0: children of this GOK are invisible to the mouse
+    bool _fNoSlip : 1;        // 3DMMv1.0: animations shouldn't slip
+    bool _fGorpDirty : 1;     // 3DMMv1.0: whether the GORP changed while deferred
+    bool _fMouseSndDirty : 1; // 3DMMv1.0: whether playing the mouse sound was deferred
+    bool _fStream : 1;        // 3DMMv1.0: once we switch reps, we won't use this one again
 
-    int32_t _cactDeferGorp; // defer marking and positioning the gorp
-    PGORP _pgorp;           // the graphical representation
-    CKI _ckiGorp;           // cki of the current gorp
+    int32_t _cactDeferGorp; // 3DMMv1.0: defer marking and positioning the gorp
+    PGORP _pgorp;           // 3DMMv1.0: the graphical representation
+    CKI _ckiGorp;           // 3DMMv1.0: cki of the current gorp
 
-    int32_t _dtim;    // current time increment for animation
-    PSCEG _pscegAnim; // animation script
-    CHID _chidAnim;   // chid of current animation
+    int32_t _dtim;    // 3DMMv1.0: current time increment for animation
+    PSCEG _pscegAnim; // 3DMMv1.0: animation script
+    CHID _chidAnim;   // 3DMMv1.0: chid of current animation
 
     PGOKD _pgokd;
 
-    int32_t _siiSound;     // sound to kill when we go away
-    int32_t _siiMouse;     // mouse tracking sound - kill it when we go away
-    CKI _ckiMouseSnd;      // for deferred playing of the mouse sound
-    int32_t _cactDeferSnd; // defer starting the mouse sound if this is > 0
+    int32_t _siiSound;     // 3DMMv1.0: sound to kill when we go away
+    int32_t _siiMouse;     // 3DMMv1.0: mouse tracking sound - kill it when we go away
+    CKI _ckiMouseSnd;      // 3DMMv1.0: for deferred playing of the mouse sound
+    int32_t _cactDeferSnd; // 3DMMv1.0: defer starting the mouse sound if this is > 0
 
-    // cid/hid filtering
+    // 3DMMv1.0: cid/hid filtering
     struct CMFLT
     {
         int32_t cid;
         int32_t hid;
         CHID chidScript;
     };
-    PGL _pglcmflt; // list of cmd filtering structs, sorted by cid
+    PGL _pglcmflt; // 3DMMv1.0: list of cmd filtering structs, sorted by cid
 
-    int32_t _hidToolTipSrc; // get the tool tip info from this GOK
+    int32_t _hidToolTipSrc; // 3DMMv1.0: get the tool tip info from this GOK
 
     GOK(GCB *pgcb);
     ~GOK(void);
@@ -440,4 +440,4 @@ class GOK : public GOK_PAR
     virtual void Stream(bool fStream);
 };
 
-#endif //! KIDSPACE_H
+#endif //! 3DMMv1.0: KIDSPACE_H

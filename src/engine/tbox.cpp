@@ -1,16 +1,16 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 //
-//  tbox.cpp
+// 3DMMv1.0:  tbox.cpp
 //
-//  Author: Sean Selitrennikoff
+// 3DMMv1.0:  Author: Sean Selitrennikoff
 //
-//  Status: All changes must be code reviewed.
+// 3DMMv1.0:  Status: All changes must be code reviewed.
 //
-//  Date: November, 1994
+// 3DMMv1.0:  Date: November, 1994
 //
-//  This file contains all functionality for text box manipulation.
+// 3DMMv1.0:  This file contains all functionality for text box manipulation.
 //
 #include "soc.h"
 ASSERTNAME
@@ -21,18 +21,18 @@ RTCLASS(TBXB)
 RTCLASS(TCLP)
 
 //
-// How many pixels a scrolling text box scrolls by
+// 3DMMv1.0: How many pixels a scrolling text box scrolls by
 //
 #define kdypScroll 1
 
 //
 //
-// UNDO objects for text boxes
+// 3DMMv1.0: UNDO objects for text boxes
 //
 //
 
 //
-// Undoes changing textbox type operations
+// 3DMMv1.0: Undoes changing textbox type operations
 //
 typedef class TUNT *PTUNT;
 
@@ -66,12 +66,13 @@ class TUNT : public TUNT_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 RTCLASS(TUNT)
 
 //
-// Undoes sizing operations
+// 3DMMv1.0: Undoes sizing operations
 //
 typedef class TUNS *PTUNS;
 
@@ -105,12 +106,13 @@ class TUNS : public TUNS_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 RTCLASS(TUNS)
 
 //
-// Undoes hiding/showing operations
+// 3DMMv1.0: Undoes hiding/showing operations
 //
 typedef class TUNH *PTUNH;
 
@@ -150,12 +152,13 @@ class TUNH : public TUNH_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 RTCLASS(TUNH)
 
 //
-// Undoes all editing operations
+// 3DMMv1.0: Undoes all editing operations
 //
 typedef class TUND *PTUND;
 
@@ -185,12 +188,13 @@ class TUND : public TUND_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 RTCLASS(TUND)
 
 //
-// Undoes coloring background operations
+// 3DMMv1.0: Undoes coloring background operations
 //
 typedef class TUNC *PTUNC;
 
@@ -224,16 +228,17 @@ class TUNC : public TUNC_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 RTCLASS(TUNC)
 
 //
 //
-// BEGIN TBXB and TBXG
+// 3DMMv1.0: BEGIN TBXB and TBXG
 //
 //
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Creates a textbox display area.
  *
@@ -256,7 +261,7 @@ PTBXB TBXB::PtbxbNew(PTBOX ptbox, PGCB pgcb)
     ACR acr;
 
     //
-    // Create the border
+    // 3DMMv1.0: Create the border
     //
     ptbxb = NewObj TBXB(ptbox, pgcb);
     if (ptbxb == pvNil)
@@ -265,7 +270,7 @@ PTBXB TBXB::PtbxbNew(PTBOX ptbox, PGCB pgcb)
     }
 
     //
-    // Now create the DDG area for the text
+    // 3DMMv1.0: Now create the DDG area for the text
     //
     rcAbs.Set(kdzpBorderTbox, kdzpBorderTbox, -kdzpBorderTbox, -kdzpBorderTbox);
     rcRel.Set(krelZero, krelZero, krelOne, krelOne);
@@ -281,7 +286,7 @@ PTBXB TBXB::PtbxbNew(PTBOX ptbox, PGCB pgcb)
     return ptbxb;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Draws a textbox border
  *
@@ -311,7 +316,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Draw border
+    // 3DMMv1.0: Draw border
     //
     pgnv->GetRcSrc(&rc);
     rc.Inset(kdzpBorderTbox / 2, kdzpBorderTbox / 2);
@@ -326,7 +331,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Upper left anchor
+    // 3DMMv1.0: Upper left anchor
     //
     pgnv->GetRcSrc(&rc);
     rc.ypBottom = rc.ypTop + kdzpBorderTbox;
@@ -339,7 +344,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Upper Middle anchor
+    // 3DMMv1.0: Upper Middle anchor
     //
     rc.xpLeft = (lwSave - rc.xpLeft - kdzpBorderTbox) / 2;
     rc.xpRight = rc.xpLeft + kdzpBorderTbox;
@@ -350,7 +355,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Upper right anchor
+    // 3DMMv1.0: Upper right anchor
     //
     rc.xpLeft = (lwSave - kdzpBorderTbox);
     rc.xpRight = lwSave;
@@ -361,7 +366,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Middle left anchor
+    // 3DMMv1.0: Middle left anchor
     //
     pgnv->GetRcSrc(&rc);
     rc.ypTop = (rc.ypBottom - rc.ypTop - kdzpBorderTbox) / 2;
@@ -375,7 +380,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Middle right anchor
+    // 3DMMv1.0: Middle right anchor
     //
     rc.xpLeft = (lwSave - kdzpBorderTbox);
     rc.xpRight = lwSave;
@@ -386,7 +391,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Lower left anchor
+    // 3DMMv1.0: Lower left anchor
     //
     pgnv->GetRcSrc(&rc);
     rc.ypTop = rc.ypBottom - kdzpBorderTbox;
@@ -399,7 +404,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Lower middle anchor
+    // 3DMMv1.0: Lower middle anchor
     //
     rc.xpLeft = (lwSave - rc.xpLeft - kdzpBorderTbox) / 2;
     rc.xpRight = rc.xpLeft + kdzpBorderTbox;
@@ -410,7 +415,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 
     //
-    // Lower right anchor
+    // 3DMMv1.0: Lower right anchor
     //
     rc.xpLeft = (lwSave - kdzpBorderTbox);
     rc.xpRight = lwSave;
@@ -421,7 +426,7 @@ void TBXB::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles mouse commands for clicking and dragging.
  *
@@ -468,7 +473,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
 
         Assert(vpcex->PgobTracking() == pvNil, "mouse already being tracked!");
         //
-        // Select this text box if not already
+        // 3DMMv1.0: Select this text box if not already
         //
         if (_ptbox->Pscen()->PtboxSelected() != _ptbox)
         {
@@ -480,7 +485,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         vpcex->EnqueueCid(cidTboxClicked, pvNil, pvNil, itbox, fTrue);
 
         //
-        // Check for nuker
+        // 3DMMv1.0: Check for nuker
         //
         if (pmvu->Tool() == toolActorNuke)
         {
@@ -499,7 +504,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         }
 
         //
-        // Store all initial information
+        // 3DMMv1.0: Store all initial information
         //
         vpcex->TrackMouse(this);
     }
@@ -512,7 +517,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         }
 
         //
-        // mouse drag/up
+        // 3DMMv1.0: mouse drag/up
         //
         Assert(vpcex->PgobTracking() == this, "not tracking mouse!");
         Assert(pcmd->cid == cidTrackMouse, 0);
@@ -545,13 +550,13 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         }
 
         //
-        // Now do work based on what we are doing -- dragging, stretching, shrinking.
+        // 3DMMv1.0: Now do work based on what we are doing -- dragging, stretching, shrinking.
         //
         GetRc(&rc, cooParent);
         rcOld = rc;
 
         //
-        // Do vertical adjustment
+        // 3DMMv1.0: Do vertical adjustment
         //
         switch (_tbxt)
         {
@@ -576,7 +581,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         }
 
         //
-        // Do horizontal adjustment
+        // 3DMMv1.0: Do horizontal adjustment
         //
         switch (_tbxt)
         {
@@ -609,7 +614,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         if ((rc != rcOld) && !_ptbox->Pscen()->Pmvie()->Pmcc()->FMinimized())
         {
             //
-            // Reposition the textbox.
+            // 3DMMv1.0: Reposition the textbox.
             //
 
             SetPos(&rc);
@@ -617,13 +622,13 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         }
 
         //
-        // If mouse up
+        // 3DMMv1.0: If mouse up
         //
         if (!(pcmd->grfcust & fcustMouse) && !_fTrackingMouse)
         {
 
             //
-            // Add an undo object for the resize/move
+            // 3DMMv1.0: Add an undo object for the resize/move
             //
             GetRc(&rc, cooLocal);
             if (_rcOrig != rc)
@@ -660,7 +665,7 @@ bool TBXB::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles mouse move commands
  *
@@ -682,7 +687,7 @@ bool TBXB::FCmdMouseMove(PCMD_MOUSE pcmd)
     AssertPo(pmvu, 0);
 
     //
-    // Check for cut, copy, paste, nuke tools
+    // 3DMMv1.0: Check for cut, copy, paste, nuke tools
     //
     if ((pmvu->Tool() == toolCutObject) || (pmvu->Tool() == toolCopyObject) || (pmvu->Tool() == toolPasteObject) ||
         (pmvu->Tool() == toolActorNuke))
@@ -721,7 +726,7 @@ bool TBXB::FCmdMouseMove(PCMD_MOUSE pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Finds which anchor point the given point is in.
  *
@@ -742,7 +747,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     GetRc(&rc, cooLocal);
 
     //
-    // Is the cursor in upper-left anchor?
+    // 3DMMv1.0: Is the cursor in upper-left anchor?
     //
     if ((xp < kdzpBorderTbox) && (yp < kdzpBorderTbox))
     {
@@ -750,7 +755,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in lower-right anchor?
+    // 3DMMv1.0: Is the cursor in lower-right anchor?
     //
     if ((xp > rc.xpRight - kdzpBorderTbox) && (yp > rc.ypBottom - kdzpBorderTbox))
     {
@@ -758,7 +763,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in upper-right anchor?
+    // 3DMMv1.0: Is the cursor in upper-right anchor?
     //
     if ((xp > rc.xpRight - kdzpBorderTbox) && (yp < kdzpBorderTbox))
     {
@@ -766,7 +771,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in lower-left anchor?
+    // 3DMMv1.0: Is the cursor in lower-left anchor?
     //
     if ((xp < kdzpBorderTbox) && (yp > rc.ypBottom - kdzpBorderTbox))
     {
@@ -774,7 +779,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in middle top?
+    // 3DMMv1.0: Is the cursor in middle top?
     //
     if ((xp <= (rc.xpRight - rc.xpLeft + kdzpBorderTbox) / 2) &&
         (xp >= (rc.xpRight - rc.xpLeft - kdzpBorderTbox) / 2) && (yp < kdzpBorderTbox))
@@ -783,7 +788,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in middle bottom?
+    // 3DMMv1.0: Is the cursor in middle bottom?
     //
     if ((xp <= (rc.xpRight - rc.xpLeft + kdzpBorderTbox) / 2) &&
         (xp >= (rc.xpRight - rc.xpLeft - kdzpBorderTbox) / 2) && (yp > rc.ypBottom - kdzpBorderTbox))
@@ -792,7 +797,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in middle left?
+    // 3DMMv1.0: Is the cursor in middle left?
     //
     if ((yp <= (rc.ypBottom - rc.ypTop + kdzpBorderTbox) / 2) &&
         (yp >= (rc.ypBottom - rc.ypTop - kdzpBorderTbox) / 2) && (xp < kdzpBorderTbox))
@@ -801,7 +806,7 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Is the cursor in middle right?
+    // 3DMMv1.0: Is the cursor in middle right?
     //
     if ((yp <= (rc.ypBottom - rc.ypTop + kdzpBorderTbox) / 2) &&
         (yp >= (rc.ypBottom - rc.ypTop - kdzpBorderTbox) / 2) && (xp > rc.xpRight - kdzpBorderTbox))
@@ -810,12 +815,12 @@ TBXT TBXB::_TbxtAnchor(int32_t xp, int32_t yp)
     }
 
     //
-    // Not in an anchor.
+    // 3DMMv1.0: Not in an anchor.
     //
     return (tbxtMove);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Callback for when this text box window gets activated
  *
@@ -841,7 +846,7 @@ void TBXB::Activate(bool fActive)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Will return fFalse if tbox is to be ignored.
  *
@@ -862,8 +867,8 @@ bool TBXB::FPtIn(int32_t xp, int32_t yp)
     AssertPo(pmvu, 0);
 
     //
-    // Pass through if not in text mode, or in a tool that
-    // does not select this text box.
+    // 3DMMv1.0: Pass through if not in text mode, or in a tool that
+    // 3DMMv1.0: does not select this text box.
     //
     if (!pmvu->FTextMode() ||
         ((pmvu->Tool() == toolSceneNuke) || (pmvu->Tool() == toolSceneChop) || (pmvu->Tool() == toolSceneChopBack)) ||
@@ -876,7 +881,7 @@ bool TBXB::FPtIn(int32_t xp, int32_t yp)
     return (TBXB_PAR::FPtIn(xp, yp));
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Attach the mouse to this border.
  *
  * Parameters:
@@ -913,7 +918,7 @@ void TBXB::AttachToMouse(void)
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TBXB
  *
  * Parameters:
@@ -929,7 +934,7 @@ void TBXB::MarkMem(void)
     TBXB_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Assert the validity of the TBXB.
  *
@@ -948,8 +953,8 @@ void TBXB::AssertValid(uint32_t grf)
 #endif
 
 //
-// Disable the some default rich text functionality,
-// and then intercept other commands.
+// 3DMMv1.0: Disable the some default rich text functionality,
+// 3DMMv1.0: and then intercept other commands.
 //
 BEGIN_CMD_MAP(TBXG, DDG)
 ON_CID_GEN(cidSave, pvNil, pvNil)
@@ -967,7 +972,7 @@ ON_CID_GEN(cidUndo, pvNil, pvNil)
 ON_CID_GEN(cidRedo, pvNil, pvNil)
 END_CMD_MAP_NIL()
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for text box DDGs.
  *
@@ -976,7 +981,7 @@ TBXG::~TBXG()
 {
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Creates a textbox display area.
  *
@@ -1010,7 +1015,7 @@ PTBXG TBXG::PtbxgNew(PTBOX ptbox, PGCB pgcb)
     return ptbxg;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Draws a textbox innards
  *
@@ -1031,14 +1036,14 @@ void TBXG::Draw(PGNV pgnv, RC *prcClip)
     RC rc;
 
     //
-    // In order to do scrolling text boxex, the easiest
-    // way to get the text to scroll is to grow the DDG
-    // upward (to the top of the screen), but then clip
-    // the drawing to within the border.
+    // 3DMMv1.0: In order to do scrolling text boxex, the easiest
+    // 3DMMv1.0: way to get the text to scroll is to grow the DDG
+    // 3DMMv1.0: upward (to the top of the screen), but then clip
+    // 3DMMv1.0: the drawing to within the border.
     //
-    // The DDG will automatically be clipped to within
-    // the border GOB, but the drawn border (dashes and
-    // anchors) must then be subtracted.
+    // 3DMMv1.0: The DDG will automatically be clipped to within
+    // 3DMMv1.0: the border GOB, but the drawn border (dashes and
+    // 3DMMv1.0: anchors) must then be subtracted.
     //
     GetRc(&rc, cooParent);
     rc.ypTop = kdzpBorderTbox;
@@ -1049,7 +1054,7 @@ void TBXG::Draw(PGNV pgnv, RC *prcClip)
     TBXG_PAR::Draw(pgnv, &rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Callback for when this text box window gets activated
  *
@@ -1071,7 +1076,7 @@ void TBXG::Activate(bool fActive)
     ptbox->Select(fActive);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles when the user starts typing
  *
@@ -1104,7 +1109,7 @@ void TBXG::InvalCp(int32_t cp, int32_t ccpIns, int32_t ccpDel)
     TBXG_PAR::InvalCp(cp, ccpIns, ccpDel);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles mouse move commands
  *
@@ -1127,7 +1132,7 @@ bool TBXG::FCmdMouseMove(PCMD_MOUSE pcmd)
     AssertPo(pmvu, 0);
 
     //
-    // Check for cut, copy, paste tools
+    // 3DMMv1.0: Check for cut, copy, paste tools
     //
     switch (pmvu->Tool())
     {
@@ -1160,7 +1165,7 @@ bool TBXG::FCmdMouseMove(PCMD_MOUSE pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles other mouse commands
  *
@@ -1187,7 +1192,7 @@ bool TBXG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     AssertPo(pmvu, 0);
 
     //
-    // Check for the nuker
+    // 3DMMv1.0: Check for the nuker
     //
     if (pmvu->Tool() == toolActorNuke)
     {
@@ -1202,7 +1207,7 @@ bool TBXG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     }
 
     //
-    // No selecting text with the fill bucket or type changers
+    // 3DMMv1.0: No selecting text with the fill bucket or type changers
     //
     if ((pmvu->Tool() != toolTboxFillBkgd) && (pmvu->Tool() != toolTboxStory) && (pmvu->Tool() != toolTboxCredit))
     {
@@ -1288,7 +1293,7 @@ bool TBXG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Will return fFalse if tbox is to be ignored.
  *
@@ -1312,8 +1317,8 @@ bool TBXG::FPtIn(int32_t xp, int32_t yp)
     AssertPo(pmvu, 0);
 
     //
-    // Pass through if not in text mode, or in a tool that
-    // does not select this text box.
+    // 3DMMv1.0: Pass through if not in text mode, or in a tool that
+    // 3DMMv1.0: does not select this text box.
     //
     if (!pmvu->FTextMode() ||
         ((pmvu->Tool() == toolSceneNuke) || (pmvu->Tool() == toolSceneChop) || (pmvu->Tool() == toolSceneChopBack)))
@@ -1324,7 +1329,7 @@ bool TBXG::FPtIn(int32_t xp, int32_t yp)
     return (TBXG_PAR::FPtIn(xp, yp));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Used for resizing.  We don't actually change the width of the
  * document, only the size of the view.
@@ -1349,7 +1354,7 @@ int32_t TBXG::_DxpDoc()
     return (rc.Dxp() - 2 * kdxpIndentTxtg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Notification that there is a new rectangle.  Here we reformat the text
  * to fit into the new rectangle.
@@ -1370,7 +1375,7 @@ void TBXG::_NewRc(void)
     GetRc(&rc, cooLocal);
 
     //
-    // Only reformat if the width changes
+    // 3DMMv1.0: Only reformat if the width changes
     //
     if (_rcOld.Dxp() == rc.Dxp())
     {
@@ -1386,7 +1391,7 @@ void TBXG::_NewRc(void)
     _Reformat(0, cpLim, cpLim);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles preparing for cut, copy or paste.
  *
@@ -1422,7 +1427,7 @@ bool TBXG::FCmdClip(PCMD pcmd)
             return (fTrue);
         }
         //
-        // Pass this onto the MVU for pasting
+        // 3DMMv1.0: Pass this onto the MVU for pasting
         //
 
         cmd = *pcmd;
@@ -1455,7 +1460,7 @@ bool TBXG::FCmdClip(PCMD pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handles enabling of all cut, copy, paste commands.
  *
@@ -1485,8 +1490,8 @@ bool TBXG::FEnableDdgCmd(PCMD pcmd, uint32_t *pgrfeds)
     case cidPaste:
     case cidPasteTool:
         //
-        // First check if the clipboard contains any text
-        // which we might need to paste *into* the text box.
+        // 3DMMv1.0: First check if the clipboard contains any text
+        // 3DMMv1.0: which we might need to paste *into* the text box.
         //
         if (ptbox->FSelected() && !vpclip->FDocIsClip(pvNil) && _FPaste(vpclip, fFalse, cidPaste))
         {
@@ -1495,7 +1500,7 @@ bool TBXG::FEnableDdgCmd(PCMD pcmd, uint32_t *pgrfeds)
         }
 
         //
-        // Now check if clipboard is a text box.
+        // 3DMMv1.0: Now check if clipboard is a text box.
         //
         if (!vpclip->FGetFormat(kclsTCLP))
         {
@@ -1510,7 +1515,7 @@ bool TBXG::FEnableDdgCmd(PCMD pcmd, uint32_t *pgrfeds)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Actually does cut, copy or paste command.
  *
@@ -1569,7 +1574,7 @@ bool TBXG::_FDoClip(int32_t tool)
     case toolCopyObject:
 
         //
-        // Copy the text box
+        // 3DMMv1.0: Copy the text box
         //
         if (!ptbox->FDup(&ptboxDup))
         {
@@ -1578,7 +1583,7 @@ bool TBXG::_FDoClip(int32_t tool)
         AssertPo(ptboxDup, 0);
 
         //
-        // Create the clip board object
+        // 3DMMv1.0: Create the clip board object
         //
         ptclp = TCLP::PtclpNew(ptboxDup);
         AssertNilOrPo(ptclp, 0);
@@ -1589,7 +1594,7 @@ bool TBXG::_FDoClip(int32_t tool)
         }
 
         //
-        // Hide the current tbox
+        // 3DMMv1.0: Hide the current tbox
         //
         if (tool == toolCutObject)
         {
@@ -1631,7 +1636,7 @@ bool TBXG::_FDoClip(int32_t tool)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Decides if a text box needs to scroll right now.
  *
@@ -1650,19 +1655,19 @@ bool TBXG::FNeedToScroll()
     int32_t dyp;
 
     //
-    // Get the height of the remaining text
+    // 3DMMv1.0: Get the height of the remaining text
     //
     GetNaturalSize(pvNil, &dyp);
     dyp -= _dypDisp;
     GetRc(&rc, cooLocal);
 
     //
-    // Check vs the height of the box.
+    // 3DMMv1.0: Check vs the height of the box.
     //
     return dyp > rc.Dyp();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Scrolls up by one pixel, or to the beginning of the text.
  *
@@ -1692,7 +1697,7 @@ void TBXG::Scroll(int32_t scaVert)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Tells if any text is selected or not.
  *
@@ -1709,7 +1714,7 @@ bool TBXG::FTextSelected(void)
     return (_cpAnchor != _cpOther);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Get the character properties for displaying the given cp.
  *
@@ -1735,7 +1740,7 @@ void TBXG::_FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin, int32_t *pcpLim)
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TBXG
  *
  * Parameters:
@@ -1752,7 +1757,7 @@ void TBXG::MarkMem(void)
     MarkMemObj(_ptbxb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Assert the validity of the TBXG.
  *
@@ -1769,18 +1774,18 @@ void TBXG::AssertValid(uint32_t grf)
     AssertPo(_ptbxb, 0);
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 //
 //
-// BEGIN TBOX
+// 3DMMv1.0: BEGIN TBOX
 //
 //
 
 #define kbomTboxh 0x5FFFC000
 
 //
-// header information for saving text boxes to a file
+// 3DMMv1.0: header information for saving text boxes to a file
 //
 struct TBOXH
 {
@@ -1796,7 +1801,7 @@ struct TBOXH
     bool fStory;
 };
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Creates a textbox
  *
@@ -1838,13 +1843,15 @@ PTBOX TBOX::PtboxNew(PSCEN pscen, RC *prcRel, bool fStory)
     ptbox->_pscen = pscen;
     ptbox->_fStory = fStory;
     ptbox->SetAcrBack(kacrClear, fdocNil);
-    Assert(pscen == pvNil || pscen->Pmvie()->CundbMax() == 1, "TUND assumes there is one level of undo!");
+    // Each text edit is wrapped in a TUND and stored in the movie's undo
+    // history.  Keep the text document's private stack at one item; TUND owns
+    // the wrapped undo record and can replay it from the movie's larger stack.
     ptbox->SetCundbMax(1);
 
     return ptbox;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the dirty flag on the movie.
  *
@@ -1865,7 +1872,7 @@ void TBOX::SetDirty(bool fDirty)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Reads a textbox
  *
@@ -1890,7 +1897,7 @@ PTBOX TBOX::PtboxRead(PCRF pcrf, CNO cno, PSCEN pscen)
     PCFL pcfl = pcrf->Pcfl();
 
     //
-    // Find the chunk and read in the header.
+    // 3DMMv1.0: Find the chunk and read in the header.
     //
     if (!pcfl->FFind(kctgTbox, cno, &blck) || !blck.FUnpackData() || (blck.Cb() != SIZEOF(TBOXH)) ||
         !blck.FReadRgb(&tboxh, SIZEOF(TBOXH), 0))
@@ -1900,7 +1907,7 @@ PTBOX TBOX::PtboxRead(PCRF pcrf, CNO cno, PSCEN pscen)
     }
 
     //
-    // Check header for byte swapping
+    // 3DMMv1.0: Check header for byte swapping
     //
     if (tboxh.bo == kboOther)
     {
@@ -1939,7 +1946,7 @@ PTBOX TBOX::PtboxRead(PCRF pcrf, CNO cno, PSCEN pscen)
     return ptbox;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Writes the text box to a specifc chunk number
  *
@@ -1992,7 +1999,7 @@ bool TBOX::FWrite(PCFL pcfl, CNO cno)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the owning scene of the textbox.
  *
@@ -2014,7 +2021,7 @@ void TBOX::SetScen(PSCEN pscen)
     _pscen = pscen;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the type of the textbox.
  *
@@ -2044,7 +2051,7 @@ void TBOX::SetTypeCore(bool fStory)
     ptbxg->Ptbxb()->InvalRc(pvNil);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Attaches the textbox to the mouse.
  *
@@ -2072,7 +2079,7 @@ void TBOX::AttachToMouse(void)
     ptbxg->Ptbxb()->AttachToMouse();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the type of the textbox and creates an undo object
  *
@@ -2116,7 +2123,7 @@ bool TBOX::FSetType(bool fStory)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the bounding rectangle of the textbox.
  *
@@ -2143,7 +2150,7 @@ void TBOX::SetRc(RC *prc)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Returns if the text box is currently visible or not.
  *
@@ -2160,7 +2167,7 @@ bool TBOX::FIsVisible(void)
     return ((_nfrmCur >= _nfrmFirst) && (_nfrmCur < _nfrmMax));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Returns the starting and ending frames the text box appears in.
  *
@@ -2197,7 +2204,7 @@ bool TBOX::FGetLifetime(int32_t *pnfrmStart, int32_t *pnfrmLast)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Selects/Deselects a text box.
  *
@@ -2232,7 +2239,7 @@ void TBOX::Select(bool fSel)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Makes a text box goto a certain frame.
  *
@@ -2270,7 +2277,7 @@ bool TBOX::FGotoFrame(int32_t nfrm)
         {
 
             //
-            // Create a GOB for this text box
+            // 3DMMv1.0: Create a GOB for this text box
             //
             gcb.Set(khidDdg, Pscen()->Pmvie()->PddgActive(), fgobNil, kginMark, &_rc, pvNil);
             ptbxb = TBXB::PtbxbNew(this, &gcb);
@@ -2289,7 +2296,7 @@ bool TBOX::FGotoFrame(int32_t nfrm)
     if (!FIsVisible() && (ptbxg != pvNil))
     {
         //
-        // Release the GOB for the text box.
+        // 3DMMv1.0: Release the GOB for the text box.
         //
         ptbxb = ptbxg->Ptbxb();
         ReleasePpo(&ptbxb);
@@ -2298,7 +2305,25 @@ bool TBOX::FGotoFrame(int32_t nfrm)
     return (fTrue);
 }
 
-/****************************************************
+/***************************************************************************
+ * Insert one duplicate scene frame immediately after nfrm.  Text-box
+ * lifetimes use an exclusive upper bound, so visible boxes simply extend
+ * one frame while boxes which begin later move forward one frame.
+ ***************************************************************************/
+void TBOX::InsertDuplicateFramesAfter(int32_t nfrm, int32_t cfrm)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 0, klwMax);
+
+    if (cfrm <= 0)
+        return;
+    if (_nfrmFirst > nfrm)
+        _nfrmFirst += cfrm;
+    if (_nfrmMax != klwMax && _nfrmMax > nfrm)
+        _nfrmMax += cfrm;
+}
+
+/** 3DMMv1.0: **************************************************
  *
  * Makes a text box visible at a certain frame.
  *
@@ -2327,7 +2352,7 @@ bool TBOX::FShowCore(void)
     return (FGotoFrame(_nfrmCur));
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Makes a text box visible at a certain frame and an undo.
  *
@@ -2371,7 +2396,7 @@ bool TBOX::FShow(void)
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Removes a text box at a certain frame.
  *
@@ -2396,7 +2421,7 @@ void TBOX::HideCore(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Removes a text box at a certain frame and has an undo.
  *
@@ -2441,7 +2466,7 @@ bool TBOX::FHide(void)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Copies an entire text box.
  *
@@ -2478,7 +2503,7 @@ bool TBOX::FDup(PTBOX *pptbox)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the background color of the text box.
  *
@@ -2519,7 +2544,7 @@ bool TBOX::FSetAcrBack(ACR acr)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the color for text in the text box.
  *
@@ -2552,7 +2577,7 @@ bool TBOX::FSetAcrText(ACR acr)
     return (ptbxg->FApplyChp(&chpNew, &chpDiff));
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FSetDypFontText
         Sets the font size for the current selection of the textbox
 
@@ -2582,7 +2607,7 @@ bool TBOX::FSetDypFontText(int32_t dypFont)
     return ptbxg->FApplyChp(&chpNew, &chpDiff);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FSetStyleText
         Sets the font style for the current selection of the textbox
 
@@ -2612,7 +2637,7 @@ bool TBOX::FSetStyleText(uint32_t grfont)
     return ptbxg->FApplyChp(&chpNew, &chpDiff);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FSetOnnText
         Sets the font face for the current selection of the textbox
 
@@ -2642,7 +2667,7 @@ bool TBOX::FSetOnnText(int32_t onn)
     return ptbxg->FApplyChp(&chpNew, &chpDiff);
 }
 
-/******************************************************************************
+/** 3DMMEx: ****************************************************************************
     FetchChpSel
         Gets the character formatting for the current selection of the active
         DDG for this TBOX.  Returns the formatting of the first character of
@@ -2698,7 +2723,7 @@ void TBOX::FetchChpSel(PCHP pchp, uint32_t *pgrfchp)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Decides if a text box needs to scroll right now.
  *
@@ -2724,7 +2749,7 @@ bool TBOX::FNeedToScroll(void)
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Scrolls up by one line.
  *
@@ -2746,7 +2771,7 @@ void TBOX::Scroll(void)
     ptbxg->Scroll(scaLineDown);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Tells if any text is selected or not.
  *
@@ -2773,7 +2798,7 @@ bool TBOX::FTextSelected(void)
     return (ptbxg->FTextSelected());
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the starting frame number for a text box.
  *
@@ -2790,7 +2815,7 @@ void TBOX::SetStartFrame(int32_t nfrm)
     _nfrmFirst = nfrm;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Adds an undo object to the movie.
  *
@@ -2836,7 +2861,7 @@ bool TBOX::FAddUndo(PUNDB pundb)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Clears the undo buffer.
  *
@@ -2855,7 +2880,7 @@ void TBOX::ClearUndo()
     Pscen()->Pmvie()->ClearUndo();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Ensure that the DDG for this tbox is the proper size,
  * used for cleaning after a playback.
@@ -2887,7 +2912,7 @@ void TBOX::CleanDdg(void)
     pddg->SetPos(&rcAbs, &rcRel);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Get the Itbox number for this tbox.
  *
@@ -2917,7 +2942,7 @@ int32_t TBOX::Itbox(void)
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TBOX
  *
  * Parameters:
@@ -2933,7 +2958,7 @@ void TBOX::MarkMem(void)
     TBOX_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Assert the validity of the TBOX.
  *
@@ -2953,17 +2978,17 @@ void TBOX::AssertValid(uint32_t grf)
     }
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 //
 //
 //
-// BEGIN UNDO STUFF
+// 3DMMv1.0: BEGIN UNDO STUFF
 //
 //
 //
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for textbox undo objects.
  *
@@ -2981,7 +3006,7 @@ PTUNT TUNT::PtuntNew()
     return (ptunt);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for text box undo objects
  *
@@ -2990,7 +3015,7 @@ TUNT::~TUNT(void)
 {
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -3001,6 +3026,15 @@ TUNT::~TUNT(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void TUNT::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Change Text Box Type"));
+}
+
 bool TUNT::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -3040,7 +3074,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -3060,7 +3094,7 @@ bool TUNT::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TUNT
  *
  * Parameters:
@@ -3076,7 +3110,7 @@ void TUNT::MarkMem(void)
     TUNT_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TUNT.
 ***************************************************************************/
 void TUNT::AssertValid(uint32_t grf)
@@ -3085,7 +3119,7 @@ void TUNT::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for textbox undo objects.
  *
@@ -3103,7 +3137,7 @@ PTUNS TUNS::PtunsNew()
     return (ptuns);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for text box undo objects
  *
@@ -3112,7 +3146,7 @@ TUNS::~TUNS(void)
 {
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -3123,6 +3157,15 @@ TUNS::~TUNS(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void TUNS::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Resize Text Box"));
+}
+
 bool TUNS::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -3167,7 +3210,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -3187,7 +3230,7 @@ bool TUNS::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TUNS
  *
  * Parameters:
@@ -3203,7 +3246,7 @@ void TUNS::MarkMem(void)
     TUNS_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TUNS.
 ***************************************************************************/
 void TUNS::AssertValid(uint32_t grf)
@@ -3212,7 +3255,7 @@ void TUNS::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for textbox undo objects.
  *
@@ -3230,7 +3273,7 @@ PTUNH TUNH::PtunhNew()
     return (ptunh);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for text box undo objects
  *
@@ -3240,7 +3283,7 @@ TUNH::~TUNH(void)
     AssertBaseThis(0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -3251,6 +3294,15 @@ TUNH::~TUNH(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void TUNH::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Change Text Box Timing"));
+}
+
 bool TUNH::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -3310,7 +3362,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -3330,7 +3382,7 @@ bool TUNH::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TUNH
  *
  * Parameters:
@@ -3346,7 +3398,7 @@ void TUNH::MarkMem(void)
     TUNH_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TUNH.
 ***************************************************************************/
 void TUNH::AssertValid(uint32_t grf)
@@ -3355,7 +3407,7 @@ void TUNH::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for textbox undo objects which
  * are the result of the document changing.
@@ -3382,7 +3434,7 @@ PTUND TUND::PtundNew(PUNDB pundb)
     return (ptund);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for text box undo objects
  *
@@ -3394,7 +3446,7 @@ TUND::~TUND(void)
     PTBOX ptbox;
 
     //
-    // Clear the owning tbox undo list
+    // 3DMMv1.0: Clear the owning tbox undo list
     //
     if (_iscen == _pmvie->Iscen())
     {
@@ -3410,7 +3462,7 @@ TUND::~TUND(void)
     ReleasePpo(&_pundb);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -3421,6 +3473,15 @@ TUND::~TUND(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void TUND::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Edit Text"));
+}
+
 bool TUND::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -3456,7 +3517,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -3503,7 +3564,7 @@ LFail:
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TUND
  *
  * Parameters:
@@ -3520,7 +3581,7 @@ void TUND::MarkMem(void)
     MarkMemObj(_pundb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TUND.
 ***************************************************************************/
 void TUND::AssertValid(uint32_t grf)
@@ -3529,7 +3590,7 @@ void TUND::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for textbox undo objects which
  * are the result of background color changing.
@@ -3549,7 +3610,7 @@ PTUNC TUNC::PtuncNew(void)
     return (ptunc);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for text box undo objects
  *
@@ -3559,7 +3620,7 @@ TUNC::~TUNC(void)
     AssertBaseThis(0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -3570,6 +3631,15 @@ TUNC::~TUNC(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void TUNC::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Change Text Box Color"));
+}
+
 bool TUNC::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -3609,7 +3679,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -3626,7 +3696,7 @@ bool TUNC::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TUNC
  *
  * Parameters:
@@ -3642,7 +3712,7 @@ void TUNC::MarkMem(void)
     TUNC_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TUNC.
 ***************************************************************************/
 void TUNC::AssertValid(uint32_t grf)
@@ -3655,13 +3725,13 @@ void TUNC::AssertValid(uint32_t grf)
 //
 //
 //
-// BEGIN TCLP
+// 3DMMv1.0: BEGIN TCLP
 //
 //
 //
 //
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Destructor for text box clipboard documents
  *
@@ -3671,7 +3741,7 @@ TCLP::~TCLP(void)
     ReleasePpo(&_ptbox);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Destructor for text box clipboard documents
  *
@@ -3699,7 +3769,7 @@ PTCLP TCLP::PtclpNew(PTBOX ptbox)
     return (ptclp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Pastes the text box associated with this clipboard object to the
  * current frame.
@@ -3721,7 +3791,7 @@ bool TCLP::FPaste(PSCEN pscen)
     RC rcWorkspace(kxpDefaultTbox, kypDefaultTbox, pscen->Pmvie()->Pmcc()->Dxp(), pscen->Pmvie()->Pmcc()->Dyp());
 
     //
-    // Copy the text box
+    // 3DMMv1.0: Copy the text box
     //
     if (!_ptbox->FDup(&ptboxDup))
     {
@@ -3753,7 +3823,7 @@ bool TCLP::FPaste(PSCEN pscen)
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the TCLP
  *
  * Parameters:
@@ -3770,7 +3840,7 @@ void TCLP::MarkMem(void)
     MarkMemObj(_ptbox);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Assert the validity of the TCLP.
  *
@@ -3787,4 +3857,4 @@ void TCLP::AssertValid(uint32_t grf)
     AssertPo(_ptbox, 0);
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai test app
     Reviewed:
@@ -16,9 +16,9 @@ ASSERTNAME
 
 #ifdef DEBUG
 void CheckForLostMem(BASE *po);
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define CheckForLostMem(po)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
 void TestUtil(void);
 int32_t _LwSqrt(int32_t lw);
@@ -48,11 +48,11 @@ class APP : public APP_PAR
     bool FCmdTextEdit(PCMD pcmd);
 #ifdef WIN
     bool FCmdTestFni(PCMD pcmd);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
     bool FCmdSetScreen(PCMD pcmd);
     bool FEnableScreen(PCMD pcmd, uint32_t *pgrfeds);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
     bool FEnableMacro(PCMD pcmd, uint32_t *pgrfeds);
 };
 
@@ -70,7 +70,7 @@ ON_CID_GEN(cidStartRecording, &APP::FCmdMacro, &APP::FEnableMacro)
 ON_CID_GEN(cidStartPlaying, &APP::FCmdMacro, &APP::FEnableMacro)
 #ifdef WIN
 ON_CID_GEN(cidTestFni, &APP::FCmdTestFni, pvNil)
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
 ON_CID_GEN(cidSetColor, &APP::FCmdSetScreen, APP::FEnableScreen)
 ON_CID_GEN(cidSetGrayScale, &APP::FCmdSetScreen, APP::FEnableScreen)
@@ -80,7 +80,7 @@ ON_CID_GEN(cidSetDepth4, &APP::FCmdSetScreen, APP::FEnableScreen)
 ON_CID_GEN(cidSetDepth8, &APP::FCmdSetScreen, APP::FEnableScreen)
 ON_CID_GEN(cidSetDepth16, &APP::FCmdSetScreen, APP::FEnableScreen)
 ON_CID_GEN(cidSetDepth32, &APP::FCmdSetScreen, APP::FEnableScreen)
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 END_CMD_MAP_NIL()
 
 APP vapp;
@@ -95,7 +95,7 @@ const int32_t _cacr = SIZEOF(_rgacr) / SIZEOF(_rgacr[0]);
 
 RTCLASS(APP)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main for a frame app.
 ***************************************************************************/
 void FrameMain(void)
@@ -103,7 +103,7 @@ void FrameMain(void)
     vapp.Run(fappNil, fgobNil, kginDefault);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the name for the frame tester app.
 ***************************************************************************/
 void APP::GetStnAppName(PSTN pstn)
@@ -111,7 +111,7 @@ void APP::GetStnAppName(PSTN pstn)
     *pstn = PszLit("Frame Tester");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the app.
 ***************************************************************************/
 bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
@@ -123,7 +123,7 @@ bool APP::_FInit(uint32_t grfapp, uint32_t grfgob, int32_t ginDef)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unmarks all hqs, marks all hqs known to be in use, then asserts
     on all unmarked hqs.
 ***************************************************************************/
@@ -132,17 +132,17 @@ void CheckForLostMem(BASE *po)
     UnmarkAllMem();
     UnmarkAllObjs();
 
-    MarkMemObj(&vapp); // marks all frame-work memory
-    MarkUtilMem();     // marks all util memory
+    MarkMemObj(&vapp); // 3DMMv1.0: marks all frame-work memory
+    MarkUtilMem();     // 3DMMv1.0: marks all util memory
     if (pvNil != po)
         po->MarkMem();
 
     AssertUnmarkedMem();
     AssertUnmarkedObjs();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test the util code.
 ***************************************************************************/
 bool APP::FCmdTestSuite(PCMD pcmd)
@@ -151,7 +151,7 @@ bool APP::FCmdTestSuite(PCMD pcmd)
     return fTrue;
 }
 
-// graphic pattern rectangle
+// 3DMMv1.0: graphic pattern rectangle
 #define GPRC_PAR GOB
 #define kclsGPRC KLCONST4('G', 'P', 'R', 'C')
 class GPRC : public GPRC_PAR
@@ -175,7 +175,7 @@ class GPRC : public GPRC_PAR
     virtual bool FCmdTrackMouse(PCMD_MOUSE pcmd) override;
 };
 
-// graphic fill rectangle
+// 3DMMv1.0: graphic fill rectangle
 #define GFRC_PAR GOB
 #define kclsGFRC KLCONST4('G', 'F', 'R', 'C')
 class GFRC : public GFRC_PAR
@@ -197,7 +197,7 @@ class GFRC : public GFRC_PAR
 RTCLASS(GPRC)
 RTCLASS(GFRC)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for patterned rectangle.
 ***************************************************************************/
 GPRC::GPRC(PGCB pgcb, APT *papt, ACR acrFore, ACR acrBack, bool fTrackMouse) : GOB(pgcb)
@@ -209,7 +209,7 @@ GPRC::GPRC(PGCB pgcb, APT *papt, ACR acrFore, ACR acrBack, bool fTrackMouse) : G
     _fTrackMouse = fTrackMouse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the GPRC.
 ***************************************************************************/
 GPRC::~GPRC(void)
@@ -218,7 +218,7 @@ GPRC::~GPRC(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the GPRC.
 ***************************************************************************/
 void GPRC::MarkMem(void)
@@ -227,9 +227,9 @@ void GPRC::MarkMem(void)
     GPRC_PAR::MarkMem();
     MarkMemObj(_pogn);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the patterned rectangle.
 ***************************************************************************/
 void GPRC::Draw(PGNV pgnv, RC *prcClip)
@@ -280,7 +280,7 @@ void GPRC::Draw(PGNV pgnv, RC *prcClip)
         pgnv->FillRc(&rc, kacrInvert);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Track mouse proc.  Makes us act like a button.
 ***************************************************************************/
 bool GPRC::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -305,11 +305,11 @@ bool GPRC::FCmdTrackMouse(PCMD_MOUSE pcmd)
 
     if (fDown)
     {
-        // mouse is still down
+        // 3DMMv1.0: mouse is still down
         fLitNew = FPtIn(pt.xp, pt.yp);
         if (FPure(_fLit) != FPure(fLitNew))
         {
-            // invert it
+            // 3DMMv1.0: invert it
             GNV gnv(this);
             RC rc;
 
@@ -323,7 +323,7 @@ bool GPRC::FCmdTrackMouse(PCMD_MOUSE pcmd)
         vpcex->EndMouseTracking();
         if (_fLit)
         {
-            // turn it off and push a close command
+            // 3DMMv1.0: turn it off and push a close command
             GNV gnv(this);
             RC rc;
 
@@ -356,7 +356,7 @@ bool GPRC::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for filled rectangle.
 ***************************************************************************/
 GFRC::GFRC(PGCB pgcb, ACR acr, bool fOval) : GOB(pgcb)
@@ -366,7 +366,7 @@ GFRC::GFRC(PGCB pgcb, ACR acr, bool fOval) : GOB(pgcb)
     _fFrame = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the filled rectangle.
 ***************************************************************************/
 void GFRC::Draw(PGNV pgnv, RC *prcClip)
@@ -388,7 +388,7 @@ void GFRC::Draw(PGNV pgnv, RC *prcClip)
         pgnv->FillRc(&rc, _acr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The mouse hit us - so die.
 ***************************************************************************/
 void GFRC::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -405,7 +405,7 @@ void GFRC::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-// test document
+// 3DMMv1.0: test document
 #define TDC_PAR GOB
 #define kclsTDC KLCONST3('T', 'D', 'C')
 class TDC : public TDC_PAR
@@ -426,12 +426,12 @@ class TDC : public TDC_PAR
 
 RTCLASS(TDC)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     _NewRc (from GOB) of TDC.
 ***************************************************************************/
 void TDC::_NewRc(void)
 {
-    // set the scroll bar ranges and values
+    // 3DMMv1.0: set the scroll bar ranges and values
     PSCB pscb;
     int32_t dxp, dyp;
     RC rc, rcPar;
@@ -445,7 +445,7 @@ void TDC::_NewRc(void)
     {
         rc.Offset(dxp, dyp);
         SetPos(&rc, pvNil);
-        // we'll be getting another _NewRc to set the scroll bars by
+        // 3DMMv1.0: we'll be getting another _NewRc to set the scroll bars by
         return;
     }
 
@@ -455,7 +455,7 @@ void TDC::_NewRc(void)
         pscb->SetValMinMax(-rc.ypTop, 0, LwMax(0, rc.Dyp() - rcPar.Dyp()));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw routine for the TDC.
 ***************************************************************************/
 void TDC::Draw(PGNV pgnv, RC *prcClip)
@@ -466,7 +466,7 @@ void TDC::Draw(PGNV pgnv, RC *prcClip)
     pgnv->FillRc(&rc, kacrRed);
 }
 
-// graphic test doc window
+// 3DMMv1.0: graphic test doc window
 #define DWN_PAR GOB
 #define kclsDWN KLCONST3('D', 'W', 'N')
 class DWN : public DWN_PAR
@@ -496,7 +496,7 @@ int32_t DWN::_cdwn = 0;
 
 RTCLASS(DWN)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new dwn.
 ***************************************************************************/
 DWN *DWN::PdwnNew(void)
@@ -520,14 +520,14 @@ DWN *DWN::PdwnNew(void)
     RC rcAbs;
     APT apt = {0xFF, 0x01, 0x7D, 0x45, 0x5D, 0x41, 0x7F, 0x00};
 
-    // add a size box and some scroll bar
+    // 3DMMv1.0: add a size box and some scroll bar
     WSB::PwsbNew(pdwn, fgobNil);
     gcb.Set(khidVScroll, pdwn);
     SCB::PscbNew(&gcb, fscbVert | fscbStandardRc);
     gcb.Set(khidHScroll, pdwn);
     SCB::PscbNew(&gcb, fscbHorz | fscbStandardRc);
 
-    // create a content gob
+    // 3DMMv1.0: create a content gob
     gcb.Set(98, pdwn);
     SCB::GetClientRc(fscbVert | fscbHorz, &gcb._rcAbs, &gcb._rcRel);
     pgob = NewObj GOB(&gcb);
@@ -535,7 +535,7 @@ DWN *DWN::PdwnNew(void)
     if (pgob == pvNil)
         return pdwn;
 
-    // create the test document gob
+    // 3DMMv1.0: create the test document gob
     gcb.Set(99, pgob);
     gcb._rcRel.xpLeft = gcb._rcRel.ypTop = krelZero;
     gcb._rcRel.xpRight = gcb._rcRel.ypBottom = krelZero;
@@ -593,7 +593,7 @@ DWN *DWN::PdwnNew(void)
     return pdwn;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles scrolling.
 ***************************************************************************/
 bool DWN::FCmdScroll(PCMD pcmd)
@@ -636,7 +636,7 @@ bool DWN::FCmdScroll(PCMD pcmd)
         val = pcmd->rglw[1];
         break;
     }
-    // pin the new value to the max and min
+    // 3DMMv1.0: pin the new value to the max and min
     val = LwMin(pscb->ValMax(), LwMax(pscb->ValMin(), val));
 
     if (val != pscb->Val() && (pgob = PgobFromHid(99)) != pvNil)
@@ -655,7 +655,7 @@ bool DWN::FCmdScroll(PCMD pcmd)
     return fTrue;
 }
 
-// text test window
+// 3DMMv1.0: text test window
 #define TTW_PAR DWN
 #define kclsTTW KLCONST3('T', 'T', 'W')
 class TTW : public TTW_PAR
@@ -676,7 +676,7 @@ class TTW : public TTW_PAR
 
 RTCLASS(TTW)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new ttw.
 ***************************************************************************/
 TTW *TTW::PttwNew(void)
@@ -718,7 +718,7 @@ void TTW::Draw(PGNV pgnv, RC *prcClip)
     int32_t irc;
     const int32_t cdxp = 8;
     const int32_t cdyp = 10;
-    struct TNM // Text alignment NaMe
+    struct TNM // 3DMMv1.0: Text alignment NaMe
     {
         int32_t lw;
         achar ch;
@@ -779,7 +779,7 @@ void TTW::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     Draw(&gnv, &rc);
 }
 
-// Frame rectangle test window
+// 3DMMv1.0: Frame rectangle test window
 #define RTW_PAR DWN
 #define kclsRTW KLCONST3('R', 'T', 'W')
 class RTW : public RTW_PAR
@@ -801,7 +801,7 @@ class RTW : public RTW_PAR
 
 RTCLASS(RTW)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new rtw.
 ***************************************************************************/
 RTW *RTW::PrtwNew(void)
@@ -831,7 +831,7 @@ class DOC : public DOCB
     }
 };
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test the gob code
 ******************************************************************************/
 bool APP::FCmdNewTestWnd(PCMD pcmd)
@@ -841,7 +841,7 @@ bool APP::FCmdNewTestWnd(PCMD pcmd)
 
     if (pcmd->pgg == pvNil)
     {
-        // put up the dialog
+        // 3DMMv1.0: put up the dialog
         PDLG pdlg;
 
         pdlg = DLG::PdlgNew(200);
@@ -856,17 +856,17 @@ bool APP::FCmdNewTestWnd(PCMD pcmd)
     pcmd->pgg->GetRgb(2, 0, SIZEOF(int32_t), &lw);
     switch (lw)
     {
-    case 0: // new graphics window
+    case 0: // 3DMMv1.0: new graphics window
         if (pvNil == DWN::PdwnNew())
             goto LFail;
         break;
 
-    case 1: // new text window
+    case 1: // 3DMMv1.0: new text window
         if (pvNil == TTW::PttwNew())
             goto LFail;
         break;
 
-    case 2: // new DMD
+    case 2: // 3DMMv1.0: new DMD
         PDOCB pdocb;
 
         if (pvNil == (pdocb = NewObj DOC()))
@@ -882,11 +882,11 @@ bool APP::FCmdNewTestWnd(PCMD pcmd)
     return fTrue;
 
 LFail:
-    pcmd->cid = cidNil; // don't record
+    pcmd->cid = cidNil; // 3DMMv1.0: don't record
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test the gob code
 ******************************************************************************/
 bool APP::FCmdTextTestWnd(PCMD pcmd)
@@ -895,7 +895,7 @@ bool APP::FCmdTextTestWnd(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test rectangle framing speed.
 ******************************************************************************/
 bool APP::FCmdTimeTestRc(PCMD pcmd)
@@ -904,7 +904,7 @@ bool APP::FCmdTimeTestRc(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Perform the test.
 ******************************************************************************/
 void RTW::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -983,7 +983,7 @@ void RTW::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     Draw(&gnv, &rc);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Paint the RTW GOB.
 ******************************************************************************/
 void RTW::Draw(PGNV pgnv, RC *prcClip)
@@ -1018,7 +1018,7 @@ int32_t _LwSqrt(int32_t lw)
 
     wLo = wHi >> 1;
 
-    /* wLo^2 < lw <= wHi^2 */
+    /* 3DMMv1.0: wLo^2 < lw <= wHi^2 */
     while (wLo < wHi)
     {
         wMid = (wLo + wHi) >> 1;
@@ -1038,7 +1038,7 @@ int32_t _LwSqrt(int32_t lw)
     return (int32_t)(((int32_t)wHi * wHi - lw < lw - (int32_t)wLo * wLo) ? wHi : wLo);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command function to handle macro recording and playback.
 ***************************************************************************/
 bool APP::FCmdMacro(PCMD pcmd)
@@ -1046,7 +1046,7 @@ bool APP::FCmdMacro(PCMD pcmd)
     FNI fni;
     PCFL pcfl;
 
-    // make sure we're not already recording or playing a macro.
+    // 3DMMv1.0: make sure we're not already recording or playing a macro.
     if (vpcex->FRecording() || vpcex->FPlaying())
         return fTrue;
 
@@ -1078,7 +1078,7 @@ bool APP::FCmdMacro(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles enabling of macro recording and playback commands.
 ***************************************************************************/
 bool APP::FEnableMacro(PCMD pcmd, uint32_t *pgrfeds)
@@ -1091,7 +1091,7 @@ bool APP::FEnableMacro(PCMD pcmd, uint32_t *pgrfeds)
 }
 
 #ifdef WIN
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Test windows fni code to build an fni from a path
 ******************************************************************************/
 bool APP::FCmdTestFni(PCMD pcmd)
@@ -1101,7 +1101,7 @@ bool APP::FCmdTestFni(PCMD pcmd)
     FNI fni;
     PDLG pdlg;
 
-    // put up the dialog
+    // 3DMMv1.0: put up the dialog
     pdlg = DLG::PdlgNew(201);
     if (pdlg == pvNil)
         goto LFail;
@@ -1117,18 +1117,18 @@ bool APP::FCmdTestFni(PCMD pcmd)
     MessageBox((HWND)NULL, stnT.Psz(), stn.Psz(), MB_OK);
 
 LFail:
-    pcmd->cid = cidNil; // don't record
+    pcmd->cid = cidNil; // 3DMMv1.0: don't record
     return fTrue;
 }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-// point in R3
+// 3DMMv1.0: point in R3
 struct PTT
 {
     int32_t xt, yt, zt;
 };
 
-// world of perspective
+// 3DMMv1.0: world of perspective
 struct WOP
 {
     PTT pttEye;
@@ -1136,10 +1136,10 @@ struct WOP
     int32_t ztMax;
 
     PT PtMap(int32_t xt, int32_t yt, int32_t zt);
-    // PTT PttUnmap(int32_t xp, int32_t yp, int32_t yt);
+    // 3DMMEx: PTT PttUnmap(int32_t xp, int32_t yp, int32_t yt);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map an R3 point to a screen point.
 ***************************************************************************/
 PT WOP::PtMap(int32_t xt, int32_t yt, int32_t zt)
@@ -1151,7 +1151,7 @@ PT WOP::PtMap(int32_t xt, int32_t yt, int32_t zt)
 }
 
 #ifdef FUTURE
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map a screen point to an R3 point.  yt stays fixed.
 ***************************************************************************/
 PTT WOP::PttUnmap(int32_t xp, int32_t yp, int32_t yt)
@@ -1163,9 +1163,9 @@ PTT WOP::PttUnmap(int32_t xp, int32_t yp, int32_t yt)
         yp = pttEye.yt;
     ypBound
 }
-#endif // FUTURE
+#endif // 3DMMv1.0: FUTURE
 
-// perspective doc
+// 3DMMv1.0: perspective doc
 class DOCP : public DOCB
 {
   public:
@@ -1179,7 +1179,7 @@ class DOCP : public DOCB
     void GetRcPic(RC *prc);
 };
 
-// ddg for a docp
+// 3DMMv1.0: ddg for a docp
 class DDP : public DDG
 {
   protected:
@@ -1195,7 +1195,7 @@ class DDP : public DDG
     void DrawNumbers(PGNV pgnv);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a perspective doc.
 ***************************************************************************/
 DOCP::DOCP(void)
@@ -1213,7 +1213,7 @@ DOCP::DOCP(void)
     _dyt = 50;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new pane for a perspective doc.
 ***************************************************************************/
 PDDG DOCP::PddgNew(PGCB pgcb)
@@ -1221,7 +1221,7 @@ PDDG DOCP::PddgNew(PGCB pgcb)
     return DDP::PddpNew(this, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the on screen rectangle for the perspective doc.
 ***************************************************************************/
 void DOCP::GetRcPic(RC *prc)
@@ -1236,14 +1236,14 @@ void DOCP::GetRcPic(RC *prc)
     prc->ypTop = pt.yp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a perspective doc pane.
 ***************************************************************************/
 DDP::DDP(DOCP *pdocp, PGCB pgcb) : DDG(pdocp, pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DDP.
 ***************************************************************************/
 DDP *DDP::PddpNew(DOCP *pdocp, PGCB pgcb)
@@ -1264,7 +1264,7 @@ DDP *DDP::PddpNew(DOCP *pdocp, PGCB pgcb)
     return pddp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draws the perspective doc.
 ***************************************************************************/
 void DDP::Draw(PGNV pgnv, RC *prcClip)
@@ -1275,7 +1275,7 @@ void DDP::Draw(PGNV pgnv, RC *prcClip)
     pgnv->ClipRc(prcClip);
     pgnv->FillRc(prcClip, kacrWhite);
 
-    // draw the vanishing point in red
+    // 3DMMv1.0: draw the vanishing point in red
     rc.Set(pdocp->_wop.pttEye.xt - 3, pdocp->_wop.pttEye.yt - 3, pdocp->_wop.pttEye.xt + 4, pdocp->_wop.pttEye.yt + 4);
     if (rcT.FIntersect(&rc, prcClip))
     {
@@ -1286,12 +1286,12 @@ void DDP::Draw(PGNV pgnv, RC *prcClip)
         pgnv->FillRc(&rc, kacrRed);
     }
 
-    // draw the square
+    // 3DMMv1.0: draw the square
     DrawRc(pgnv);
     DrawNumbers(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the square and it's coordinates.
 ***************************************************************************/
 void DDP::DrawRc(PGNV pgnv)
@@ -1303,7 +1303,7 @@ void DDP::DrawRc(PGNV pgnv)
     pgnv->FillRc(&rc, kacrBlue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the coordinates in the GNV.
 ***************************************************************************/
 void DDP::DrawNumbers(PGNV pgnv)
@@ -1316,7 +1316,7 @@ void DDP::DrawNumbers(PGNV pgnv)
     pgnv->DrawStn(&stn, 0, 0, kacrBlack, kacrWhite);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Track the mouse and drag the square.
 ***************************************************************************/
 void DDP::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -1333,13 +1333,13 @@ void DDP::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
         dpt = pt - ptPrev;
         if (grfcust & fcustShift)
         {
-            // x - z
+            // 3DMMv1.0: x - z
             dpt.yp = pdocp->_pttSquare.zt -
                      LwBound(pdocp->_pttSquare.zt - dpt.yp, pdocp->_wop.pttEye.zt / 2, pdocp->_wop.ztMax);
         }
         else if (grfcust & fcustCmd)
         {
-            // y - z
+            // 3DMMv1.0: y - z
             dpt.xp = LwBound(pdocp->_pttSquare.zt + dpt.xp, pdocp->_wop.pttEye.zt / 2, pdocp->_wop.ztMax) -
                      pdocp->_pttSquare.zt;
         }
@@ -1349,19 +1349,19 @@ void DDP::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
             vpappb->MarkRc(&rc, this);
             if (grfcust & fcustShift)
             {
-                // x - z
+                // 3DMMv1.0: x - z
                 pdocp->_pttSquare.xt += dpt.xp;
                 pdocp->_pttSquare.zt -= dpt.yp;
             }
             else if (grfcust & fcustCmd)
             {
-                // y - z
+                // 3DMMv1.0: y - z
                 pdocp->_pttSquare.zt += dpt.xp;
                 pdocp->_pttSquare.yt += dpt.yp;
             }
             else
             {
-                // x - y
+                // 3DMMv1.0: x - y
                 pdocp->_pttSquare.xt += dpt.xp;
                 pdocp->_pttSquare.yt += dpt.yp;
             }
@@ -1375,7 +1375,7 @@ void DDP::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new perspective doc and window.
 ***************************************************************************/
 bool APP::FCmdTestPerspective(PCMD pcmd)
@@ -1390,7 +1390,7 @@ bool APP::FCmdTestPerspective(PCMD pcmd)
     return fTrue;
 }
 
-// picture document
+// 3DMMv1.0: picture document
 #define DOCPIC_PAR DOCB
 class DOCPIC : public DOCPIC_PAR
 {
@@ -1413,7 +1413,7 @@ class DOCPIC : public DOCPIC_PAR
     virtual bool FSaveToFni(FNI *pfni, bool fSetFni) override;
 };
 
-// picture document display
+// 3DMMv1.0: picture document display
 #define DDPIC_PAR DDG
 class DDPIC : public DDPIC_PAR
 {
@@ -1426,7 +1426,7 @@ class DDPIC : public DDPIC_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for picture document.
 ***************************************************************************/
 DOCPIC::DOCPIC(void)
@@ -1434,7 +1434,7 @@ DOCPIC::DOCPIC(void)
     _ppic = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for picture document.
 ***************************************************************************/
 DOCPIC::~DOCPIC(void)
@@ -1443,7 +1443,7 @@ DOCPIC::~DOCPIC(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DOCPIC.
 ***************************************************************************/
 void DOCPIC::MarkMem(void)
@@ -1452,9 +1452,9 @@ void DOCPIC::MarkMem(void)
     DOCPIC_PAR::MarkMem();
     MarkMemObj(_ppic);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new picture document.
 ***************************************************************************/
 DOCPIC *DOCPIC::PdocpicNew(void)
@@ -1523,7 +1523,7 @@ DOCPIC *DOCPIC::PdocpicNew(void)
     return pdocpic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new display gob for the document.
 ***************************************************************************/
 PDDG DOCPIC::PddgNew(PGCB pgcb)
@@ -1531,7 +1531,7 @@ PDDG DOCPIC::PddgNew(PGCB pgcb)
     return DDPIC::PddpicNew(this, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the picture in a chunky file.
 ***************************************************************************/
 bool DOCPIC::FSaveToFni(FNI *pfni, bool fSetFni)
@@ -1549,14 +1549,14 @@ bool DOCPIC::FSaveToFni(FNI *pfni, bool fSetFni)
     return fT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a picture doc pane.
 ***************************************************************************/
 DDPIC::DDPIC(DOCPIC *pdocpic, PGCB pgcb) : DDG(pdocpic, pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DDPIC.
 ***************************************************************************/
 DDPIC *DDPIC::PddpicNew(DOCPIC *pdocpic, PGCB pgcb)
@@ -1577,7 +1577,7 @@ DDPIC *DDPIC::PddpicNew(DOCPIC *pdocpic, PGCB pgcb)
     return pddpic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draws the picture doc.
 ***************************************************************************/
 void DDPIC::Draw(PGNV pgnv, RC *prcClip)
@@ -1586,7 +1586,7 @@ void DDPIC::Draw(PGNV pgnv, RC *prcClip)
     int32_t i, j;
     RC rc(0, 0, 33, 16);
 
-    // draw the picture and draw directly
+    // 3DMMv1.0: draw the picture and draw directly
     pgnv->FillRc(prcClip, kacrLtGray);
     rc.Inset(-1, -1);
     pgnv->SetRcSrc(&rc);
@@ -1607,7 +1607,7 @@ void DDPIC::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new picture doc and window.
 ***************************************************************************/
 bool APP::FCmdTestPictures(PCMD pcmd)
@@ -1622,7 +1622,7 @@ bool APP::FCmdTestPictures(PCMD pcmd)
     return fTrue;
 }
 
-// GPT Document.
+// 3DMMv1.0: GPT Document.
 #define DOCGPT_PAR DOCB
 class DOCGPT : public DOCGPT_PAR
 {
@@ -1644,7 +1644,7 @@ class DOCGPT : public DOCGPT_PAR
     }
 };
 
-// GPT display class.
+// 3DMMv1.0: GPT display class.
 #define DDGPT_PAR DDG
 class DDGPT : public DDGPT_PAR
 {
@@ -1657,7 +1657,7 @@ class DDGPT : public DDGPT_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for mbmp document.
 ***************************************************************************/
 DOCGPT::DOCGPT(void)
@@ -1665,7 +1665,7 @@ DOCGPT::DOCGPT(void)
     _pgpt = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for mbmp document.
 ***************************************************************************/
 DOCGPT::~DOCGPT(void)
@@ -1674,7 +1674,7 @@ DOCGPT::~DOCGPT(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DOCGPT.
 ***************************************************************************/
 void DOCGPT::MarkMem(void)
@@ -1683,9 +1683,9 @@ void DOCGPT::MarkMem(void)
     DOCGPT_PAR::MarkMem();
     MarkMemObj(_pgpt);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new mbmp document.
 ***************************************************************************/
 DOCGPT *DOCGPT::PdocgptNew(void)
@@ -1721,7 +1721,7 @@ DOCGPT *DOCGPT::PdocgptNew(void)
             clr.bBlue = uint8_t(255 - i);
             break;
         }
-        if (i == 100) // make 100 always the same	- yellow
+        if (i == 100) // 3DMMv1.0: make 100 always the same	- yellow
         {
             clr.bRed = uint8_t(kbMax);
             clr.bGreen = uint8_t(kbMax);
@@ -1738,19 +1738,19 @@ DOCGPT *DOCGPT::PdocgptNew(void)
     pmbmp = pvNil;
     pgnv = pvNil;
 
-    // Create the gpt
+    // 3DMMv1.0: Create the gpt
     if (pvNil == (pgpt = GPT::PgptNewOffscreen(&rc, 8)))
         goto LFail;
 
     if (pvNil == (pgnv = NewObj GNV(pgpt)))
         goto LFail;
 
-    // The color mapped to 100 is the transparent pixel value for
-    // the MBMP, so start everything as transparent.
+    // 3DMMv1.0: The color mapped to 100 is the transparent pixel value for
+    // 3DMMv1.0: the MBMP, so start everything as transparent.
     acr.SetToIndex(100);
     pgnv->FillRc(&rc, acr);
 
-    // Fill the foreground with a pattern
+    // 3DMMv1.0: Fill the foreground with a pattern
     rcT.Set(0, 0, 128, 128);
     pgnv->FillRc(&rcT, acr63);
     rcT.Set(128, 128, 256, 256);
@@ -1776,7 +1776,7 @@ DOCGPT *DOCGPT::PdocgptNew(void)
     rcT.Set(128, 0, 192, 64);
     pgnv->FillOval(&rcT, kacrWhite);
 
-    // Create an MBMP from the foreground.
+    // 3DMMv1.0: Create an MBMP from the foreground.
     pmbmp = MBMP::PmbmpNew(pgpt->PrgbLockPixels(), pgpt->CbRow(), rc.Dyp(), &rc, 0, 0, 100);
     pgpt->Unlock();
 
@@ -1819,7 +1819,7 @@ LFail:
     return pdocgpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new display gob for the document.
 ***************************************************************************/
 PDDG DOCGPT::PddgNew(PGCB pgcb)
@@ -1827,14 +1827,14 @@ PDDG DOCGPT::PddgNew(PGCB pgcb)
     return DDGPT::PddgptNew(this, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a gpt doc pane.
 ***************************************************************************/
 DDGPT::DDGPT(DOCGPT *pdocgpt, PGCB pgcb) : DDG(pdocgpt, pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DDMBMP.
 ***************************************************************************/
 DDGPT *DDGPT::PddgptNew(DOCGPT *pdocgpt, PGCB pgcb)
@@ -1855,7 +1855,7 @@ DDGPT *DDGPT::PddgptNew(DOCGPT *pdocgpt, PGCB pgcb)
     return pddgpt;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draws the gpt doc.
 ***************************************************************************/
 void DDGPT::Draw(PGNV pgnv, RC *prcClip)
@@ -1873,7 +1873,7 @@ void DDGPT::Draw(PGNV pgnv, RC *prcClip)
     return;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new mbmp and window.
 ***************************************************************************/
 bool APP::FCmdTestMbmps(PCMD pcmd)
@@ -1889,7 +1889,7 @@ bool APP::FCmdTestMbmps(PCMD pcmd)
 }
 
 #ifdef MAC
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the main screen as indicated.
 ***************************************************************************/
 bool APP::FCmdSetScreen(PCMD pcmd)
@@ -1931,7 +1931,7 @@ bool APP::FCmdSetScreen(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the menu stuff for the screen resolutions.
 ***************************************************************************/
 bool APP::FEnableScreen(PCMD pcmd, uint32_t *pgrfeds)
@@ -1982,9 +1982,9 @@ bool APP::FEnableScreen(PCMD pcmd, uint32_t *pgrfeds)
     *pgrfeds = (fEnable ? fedsEnable : fedsDisable) | (fCheck ? fedsBullet : fedsUncheck);
     return fTrue;
 }
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-// test animations
+// 3DMMv1.0: test animations
 typedef class TAN *PTAN;
 #define TAN_PAR GOB
 class TAN : public TAN_PAR
@@ -2011,7 +2011,7 @@ END_CMD_MAP_NIL()
 
 int32_t TAN::_cact = 0;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new picture doc and window.
 ***************************************************************************/
 bool APP::FCmdFastUpdate(PCMD pcmd)
@@ -2020,14 +2020,14 @@ bool APP::FCmdFastUpdate(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a Test animation gob.
 ***************************************************************************/
 TAN::TAN(PGCB pgcb) : GOB(pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new animation test gob
 ***************************************************************************/
 PTAN TAN::PtanNew(void)
@@ -2059,13 +2059,13 @@ PTAN TAN::PtanNew(void)
     return ptan;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Alarm handler for a TAN.
 ***************************************************************************/
 bool TAN::FCmdAlarm(PCMD pcmd)
 {
     if (pcmd->rglw[0] != vclok.Hid())
-        return fFalse; // wrong clock
+        return fFalse; // 3DMMv1.0: wrong clock
 
     RC rcPar, rc;
     RC rcT;
@@ -2096,12 +2096,12 @@ bool TAN::FCmdAlarm(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the thing
 ***************************************************************************/
 void TAN::Draw(PGNV pgnv, RC *prcClip)
 {
-    //_apt.MoveOrigin(1, 1);
+    // 3DMMv1.0: _apt.MoveOrigin(1, 1);
     pgnv->FillRcApt(prcClip, &_apt, kacrRed, kacrBlue);
 }
 
@@ -2121,7 +2121,7 @@ class TED : public TED_PAR
     virtual bool FCmdBadKey(PCMD_BADKEY pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new window containing a bunch of edit controls.
 ***************************************************************************/
 bool APP::FCmdTextEdit(PCMD pcmd)
@@ -2130,7 +2130,7 @@ bool APP::FCmdTextEdit(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new TED.
 ***************************************************************************/
 PTED TED::PtedNew(void)
@@ -2191,7 +2191,7 @@ PTED TED::PtedNew(void)
     return pted;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A key wasn't handled by the edit control.
 ***************************************************************************/
 bool TED::FCmdBadKey(PCMD_BADKEY pcmd)
@@ -2214,7 +2214,7 @@ bool TED::FCmdBadKey(PCMD_BADKEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the background of the TED.
 ***************************************************************************/
 void TED::Draw(PGNV pgnv, RC *prcClip)

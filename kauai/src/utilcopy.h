@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -36,8 +36,8 @@ uint32_t FcmpCompareRgb(const void *pv1, const void *pv2, int32_t cb);
         Bug("sizes don't match");                                                                                      \
     else                                                                                                               \
         SwapPb(pv1, pv2, SIZEOF(*pv1))
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define SwapVars(pv1, pv2) SwapPb(pv1, pv2, SIZEOF(*pv1))
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-#endif // UTILCOPY_H
+#endif // 3DMMv1.0: UTILCOPY_H

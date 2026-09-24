@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tagman.cpp: Tag Manager class (TAGM)
 
@@ -45,18 +45,18 @@ RTCLASS(TAGM)
 
 const BOM kbomSid = 0xc0000000;
 
-// Source File Structure...keeps track of known sources and caches
+// 3DMMv1.0: Source File Structure...keeps track of known sources and caches
 struct SFS
 {
   public:
-    int32_t sid;          // ID for this source
-    FNI fniHD;            // FNI of the HD directory
-    FNI fniCD;            // FNI of the CD directory
-    PCRM pcrmSource;      // CRM of files on the CD (or possibly HD)
-    tribool tContentOnHD; // Is the content on the HD or CD?
+    int32_t sid;          // 3DMMv1.0: ID for this source
+    FNI fniHD;            // 3DMMv1.0: FNI of the HD directory
+    FNI fniCD;            // 3DMMv1.0: FNI of the CD directory
+    PCRM pcrmSource;      // 3DMMv1.0: CRM of files on the CD (or possibly HD)
+    tribool tContentOnHD; // 3DMMv1.0: Is the content on the HD or CD?
 
   public:
-    void Clear(void) // Zeros out an SFS
+    void Clear(void) // 3DMMv1.0: Zeros out an SFS
     {
         sid = ksidInvalid;
         fniHD.SetNil();
@@ -66,7 +66,7 @@ struct SFS
     }
 };
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Functions for serializing and deserialing TAGs
 ***************************************************************************/
 void DeserializeTagfToTag(PTAGF ptagf, PTAG ptag)
@@ -86,7 +86,7 @@ void SerializeTagToTagf(PTAG ptag, PTAGF ptagf)
     ptagf->cno = ptag->cno;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the tag manager
 ***************************************************************************/
 PTAGM TAGM::PtagmNew(PFNI pfniHDRoot, PFNINSCD pfninscd, int32_t cbCache)
@@ -109,7 +109,7 @@ PTAGM TAGM::PtagmNew(PFNI pfniHDRoot, PFNINSCD pfninscd, int32_t cbCache)
     if (pvNil == ptagm->_pglsfs)
         goto LFail;
 
-    ptagm->_pgstSource = GST::PgstNew(SIZEOF(int32_t)); // extra data is sid
+    ptagm->_pgstSource = GST::PgstNew(SIZEOF(int32_t)); // 3DMMv1.0: extra data is sid
     if (pvNil == ptagm->_pgstSource)
         goto LFail;
 
@@ -120,7 +120,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Tag Manager destructor
 ***************************************************************************/
 TAGM::~TAGM(void)
@@ -142,7 +142,7 @@ TAGM::~TAGM(void)
     ReleasePpo(&_pgstSource);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Split a merged string into its long and short components
 ***************************************************************************/
 void TAGM::SplitString(PSTN pstnMerged, PSTN pstnLong, PSTN pstnShort)
@@ -163,12 +163,12 @@ void TAGM::SplitString(PSTN pstnMerged, PSTN pstnLong, PSTN pstnShort)
             return;
         }
     }
-    // no slash, so set both pstnLong and pstnShort to pstnMerged
+    // 3DMMv1.0: no slash, so set both pstnLong and pstnShort to pstnMerged
     *pstnLong = *pstnMerged;
     *pstnShort = *pstnMerged;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return source title string table so it can be embedded in documents
 ***************************************************************************/
 PGST TAGM::PgstSource(void)
@@ -177,7 +177,7 @@ PGST TAGM::PgstSource(void)
     return _pgstSource;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If there is an stn for the given sid in _pgstSource, return the
     location of the stn.
 ***************************************************************************/
@@ -193,7 +193,7 @@ bool TAGM::_FFindSid(int32_t sid, int32_t *pistn)
     for (istn = 0; istn < _pgstSource->IvMac(); istn++)
     {
         _pgstSource->GetExtra(istn, &sidT);
-        if (sid == sidT) // it's already in there
+        if (sid == sidT) // 3DMMv1.0: it's already in there
         {
             if (pvNil != pistn)
                 *pistn = istn;
@@ -204,7 +204,7 @@ bool TAGM::_FFindSid(int32_t sid, int32_t *pistn)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add source title string table entries to tag manager, if it doesn't
     already know them.
 ***************************************************************************/
@@ -231,7 +231,7 @@ bool TAGM::FMergeGstSource(PGST pgst, int16_t bo, int16_t osk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add source title string to tag manager, if it's not already there
 ***************************************************************************/
 bool TAGM::FAddStnSource(PSTN pstn, int32_t sid)
@@ -241,12 +241,85 @@ bool TAGM::FAddStnSource(PSTN pstn, int32_t sid)
     Assert(sid >= 0, "Invalid sid");
 
     if (_FFindSid(sid))
-        return fTrue; // String is already there
+        return fTrue; // 3DMMv1.0: String is already there
 
-    return _pgstSource->FAddStn(pstn, &sid); // Try to add it
+    return _pgstSource->FAddStn(pstn, &sid); // 3DMMv1.0: Try to add it
 }
 
 /***************************************************************************
+    Add or replace the source directory name for sid and forget any open
+    resource manager for the old directory.  VMM movies use this to point
+    their Virtual3dmm source at a private extracted cache.
+***************************************************************************/
+bool TAGM::FSetStnSource(PSTN pstn, int32_t sid)
+{
+    AssertThis(0);
+    AssertPo(pstn, 0);
+    Assert(sid >= 0, "Invalid sid");
+
+    int32_t istn;
+    int32_t isfs;
+    SFS sfs;
+
+    if (_FFindSid(sid, &istn))
+    {
+        if (!_pgstSource->FPutStn(istn, pstn))
+            return fFalse;
+    }
+    else if (!_pgstSource->FAddStn(pstn, &sid))
+    {
+        return fFalse;
+    }
+
+    // Release the CRM and reset path detection so the next tag lookup scans
+    // the replacement directory rather than continuing to use stale VXP data.
+    for (isfs = 0; isfs < _pglsfs->IvMac(); isfs++)
+    {
+        _pglsfs->Get(isfs, &sfs);
+        if (sfs.sid != sid)
+            continue;
+
+        ReleasePpo(&sfs.pcrmSource);
+        sfs.Clear();
+        sfs.sid = sid;
+        _pglsfs->Put(isfs, &sfs);
+    }
+
+    return fTrue;
+}
+
+/***************************************************************************
+    Completely forget one source ID.  VMM loading needs this stronger
+    operation before replacing the transient Virtual3dmm cache: FSetStnSource
+    deliberately keeps the SID present, while FMergeGstSource deliberately
+    refuses to replace an SID that already exists.
+***************************************************************************/
+bool TAGM::FRemoveStnSource(int32_t sid)
+{
+    AssertThis(0);
+    Assert(sid >= 0, "Invalid sid");
+
+    int32_t istn;
+    SFS sfs;
+
+    // Drop open source CRMs first so VMMCache can be deleted/rebuilt without
+    // leaving a file owned by the previous package open.
+    for (int32_t isfs = _pglsfs->IvMac(); isfs-- > 0; )
+    {
+        _pglsfs->Get(isfs, &sfs);
+        if (sfs.sid != sid)
+            continue;
+        ReleasePpo(&sfs.pcrmSource);
+        _pglsfs->Delete(isfs);
+    }
+
+    if (_FFindSid(sid, &istn))
+        _pgstSource->Delete(istn);
+
+    return fTrue;
+}
+
+/** 3DMMv1.0: *************************************************************************
     Find the sid with the given string as its source name.  pstn can be
     the merged name, the short name, or the long name.
 ***************************************************************************/
@@ -279,7 +352,7 @@ bool TAGM::FGetSid(PSTN pstn, int32_t *psid)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the string of the source with the given sid
 ***************************************************************************/
 bool TAGM::_FGetStnMergedOfSid(int32_t sid, PSTN pstn)
@@ -300,7 +373,7 @@ bool TAGM::_FGetStnMergedOfSid(int32_t sid, PSTN pstn)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the string of the source with the given sid
 ***************************************************************************/
 bool TAGM::_FGetStnSplitOfSid(int32_t sid, PSTN pstnLong, PSTN pstnShort)
@@ -317,7 +390,7 @@ bool TAGM::_FGetStnSplitOfSid(int32_t sid, PSTN pstnLong, PSTN pstnShort)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Builds the FNI to the HD files for a given sid
     - If we don't even know the string for the sid, return fFalse
     - If there is no fniHD, set *pfExists to fFalse and return fTrue
@@ -338,20 +411,20 @@ bool TAGM::_FBuildFniHD(int32_t sid, PFNI pfniHD, bool *pfExists)
     *pfExists = fFalse;
     if (!_FGetStnSplitOfSid(sid, &stnLong, &stnShort))
     {
-        return fFalse; // can't even determine if fniHD exists or not
+        return fFalse; // 3DMMv1.0: can't even determine if fniHD exists or not
     }
 
     fni = _fniHDRoot;
     if (!fni.FDownDir(&stnLong, ffniMoveToDir) && !fni.FDownDir(&stnShort, ffniMoveToDir))
     {
-        return fTrue; // fniHD doesn't exist
+        return fTrue; // 3DMMv1.0: fniHD doesn't exist
     }
     *pfniHD = fni;
     *pfExists = fTrue;
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if there are any content files in the directory specified by pfni
 ***************************************************************************/
 bool TAGM::_FDetermineIfContentOnFni(PFNI pfni, bool *pfContentOnFni)
@@ -373,7 +446,7 @@ bool TAGM::_FDetermineIfContentOnFni(PFNI pfni, bool *pfContentOnFni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns whether the directory pointed to by pfniCD exists where we
     think it does.  Or, if pstn is non-nil, try to go down from pfniCD
     to pstn.
@@ -393,10 +466,10 @@ bool TAGM::_FEnsureFniCD(int32_t sid, FNI *pfniCD, PSTN pstn)
     vpers = &ersT;
 
 #ifdef WIN
-    // Block the Windows "There is no disk in the drive" message
+    // 3DMMv1.0: Block the Windows "There is no disk in the drive" message
     UINT em;
     em = SetErrorMode(SEM_FAILCRITICALERRORS);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
     if (pvNil != pstn)
         fRet = pfniCD->FDownDir(pstn, ffniMoveToDir);
@@ -404,14 +477,14 @@ bool TAGM::_FEnsureFniCD(int32_t sid, FNI *pfniCD, PSTN pstn)
         fRet = (pfniCD->TExists() == tYes);
 
 #ifdef WIN
-    SetErrorMode(em); // restore the error mode
-#endif                // WIN
+    SetErrorMode(em); // 3DMMv1.0: restore the error mode
+#endif                // 3DMMv1.0: WIN
 
     vpers = pers;
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This function verifies that the source (e.g., CD) is where we think it
     is, and searches for it otherwise.  Pass the previously determined FNI
     of the CD directory file in pfniCD.  Or if this is the first time
@@ -422,7 +495,7 @@ bool TAGM::_FFindFniCD(int32_t sid, PFNI pfniCD, bool *pfFniChanged)
 {
     AssertThis(0);
     Assert(sid >= 0, "Invalid sid");
-    AssertPo(pfniCD, ffniEmpty | ffniDir); // could be a blank FNI
+    AssertPo(pfniCD, ffniEmpty | ffniDir); // 3DMMv1.0: could be a blank FNI
     AssertVarMem(pfFniChanged);
 
     FNE fne;
@@ -433,33 +506,33 @@ bool TAGM::_FFindFniCD(int32_t sid, PFNI pfniCD, bool *pfFniChanged)
 
     *pfFniChanged = fFalse;
 
-    // If pfniCD's ftg is not ftgNil, we've opened this source before,
-    // so look for it where it was last time.
+    // 3DMMv1.0: If pfniCD's ftg is not ftgNil, we've opened this source before,
+    // 3DMMv1.0: so look for it where it was last time.
     if (ftgNil != pfniCD->Ftg())
     {
         if (_FEnsureFniCD(sid, pfniCD))
         {
-            // The source is where we thought it was
+            // 3DMMv1.0: The source is where we thought it was
             return fTrue;
         }
         else
         {
-            // With the way the CRM stuff works now, the CRM can't
-            // move to another path.  So fail if the CD isn't exactly
-            // where it was before.
+            // 3DMMv1.0: With the way the CRM stuff works now, the CRM can't
+            // 3DMMv1.0: move to another path.  So fail if the CD isn't exactly
+            // 3DMMv1.0: where it was before.
             return fFalse;
         }
     }
 
     if (!_FGetStnSplitOfSid(sid, &stnLong, &stnShort))
         return fFalse;
-    // The source has moved/disappeared, or we're opening it for the first
-    // time, so search all drives for it.
+    // 3DMMv1.0: The source has moved/disappeared, or we're opening it for the first
+    // 3DMMv1.0: time, so search all drives for it.
     if (!fne.FInit(pvNil, pvNil, 0))
         return fFalse;
     while (fne.FNextFni(&fni))
     {
-        if (fni.Grfvk() & fvkFloppy) // don't buzz floppies
+        if (fni.Grfvk() & fvkFloppy) // 3DMMv1.0: don't buzz floppies
             continue;
         fniCD = fni;
         if (!_FEnsureFniCD(sid, &fniCD, &stnShort) && !_FEnsureFniCD(sid, &fniCD, &stnLong))
@@ -470,11 +543,11 @@ bool TAGM::_FFindFniCD(int32_t sid, PFNI pfniCD, bool *pfFniChanged)
         *pfniCD = fniCD;
         return fTrue;
     }
-    // Couldn't find the source
+    // 3DMMv1.0: Couldn't find the source
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Calls the client-supplied callback, which should tell the user that
     the source named stn cannot be found.  Returns fTrue if the user wants
     to retry, else fFalse.
@@ -495,7 +568,7 @@ bool TAGM::_FRetry(int32_t sid)
     return _pfninscd(&stnLong);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Builds the CRM for the given sid's source.  pfniDir tells where the
     content files are.
 ***************************************************************************/
@@ -516,7 +589,7 @@ PCRM TAGM::_PcrmSourceNew(int32_t sid, PFNI pfniDir)
     if (pvNil == pcrmSource)
         goto LFail;
 
-    // Add all chunky files in content directory to pcrmSource
+    // 3DMMv1.0: Add all chunky files in content directory to pcrmSource
     if (!fne.FInit(pfniDir, &ftgChk, 1))
         goto LFail;
     while (fne.FNextFni(&fni))
@@ -535,7 +608,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the source CRM for the given sid, creating (and remembering) a
     new one if there isn't one already.  It verifies that the CD is still
     in the drive, unless fDontHitCD is fTrue.
@@ -557,7 +630,7 @@ PCRM TAGM::_PcrmSourceGet(int32_t sid, bool fDontHitCD)
         if (sid == sfs.sid)
             goto LSetupSfs;
     }
-    // SFS for this sid doesn't exist in _pglsfs, so make one
+    // 3DMMv1.0: SFS for this sid doesn't exist in _pglsfs, so make one
     sfs.Clear();
     sfs.sid = sid;
     if (!_pglsfs->FAdd(&sfs, &isfs))
@@ -593,21 +666,21 @@ LSetupSfs:
         return sfs.pcrmSource;
     }
 
-    // Else content is not on HD, so look at CD
+    // 3DMMv1.0: Else content is not on HD, so look at CD
     if (!fDontHitCD)
     {
-        // Verify that CD is where we thought it was, or find
-        // it if we haven't found it before
+        // 3DMMv1.0: Verify that CD is where we thought it was, or find
+        // 3DMMv1.0: it if we haven't found it before
         while (!_FFindFniCD(sid, &sfs.fniCD, &fFniChanged))
         {
-            // Ask user to insert the CD
+            // 3DMMv1.0: Ask user to insert the CD
             if (!_FRetry(sid))
                 return pvNil;
         }
         if (fFniChanged)
         {
             Assert(sfs.pcrmSource == pvNil, "fniCD can't change once pcrm is opened!");
-            _pglsfs->Put(isfs, &sfs); // update sfs.fniCD
+            _pglsfs->Put(isfs, &sfs); // 3DMMv1.0: update sfs.fniCD
         }
     }
     if (pvNil == sfs.pcrmSource)
@@ -627,7 +700,7 @@ LSetupSfs:
     return sfs.pcrmSource;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines whether source is on HD (if it is, don't cache its stuff to
     HD!)  Note that the function return value is whether the function
     completed without error, not whether the source is on HD.
@@ -649,7 +722,7 @@ bool TAGM::_FDetermineIfSourceHD(int32_t sid, bool *pfIsOnHD)
         if (sid == sfs.sid)
             goto LSetupSfs;
     }
-    // SFS for this sid doesn't exist in _pglsfs, so make one
+    // 3DMMv1.0: SFS for this sid doesn't exist in _pglsfs, so make one
     sfs.Clear();
     sfs.sid = sid;
     if (!_pglsfs->FAdd(&sfs, &isfs))
@@ -677,7 +750,7 @@ LSetupSfs:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the FNI for the HD directory
 ***************************************************************************/
 bool TAGM::_FGetFniHD(int32_t sid, PFNI pfniHD)
@@ -695,7 +768,7 @@ bool TAGM::_FGetFniHD(int32_t sid, PFNI pfniHD)
         if (sid == sfs.sid)
             goto LSetupSFS;
     }
-    // SFS for this sid doesn't exist in _pglsfs, so make one
+    // 3DMMv1.0: SFS for this sid doesn't exist in _pglsfs, so make one
     sfs.Clear();
     sfs.sid = sid;
     if (!_pglsfs->FAdd(&sfs, &isfs))
@@ -711,7 +784,7 @@ LSetupSFS:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the FNI for the CD directory
 ***************************************************************************/
 bool TAGM::_FGetFniCD(int32_t sid, PFNI pfniCD, bool fAskForCD)
@@ -729,7 +802,7 @@ bool TAGM::_FGetFniCD(int32_t sid, PFNI pfniCD, bool fAskForCD)
         if (sid == sfs.sid)
             goto LSetupSFS;
     }
-    // SFS for this sid doesn't exist in _pglsfs, so make one
+    // 3DMMv1.0: SFS for this sid doesn't exist in _pglsfs, so make one
     sfs.Clear();
     sfs.sid = sid;
     if (!_pglsfs->FAdd(&sfs, &isfs))
@@ -748,7 +821,7 @@ LSetupSFS:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the file with name pstn on the HD or CD.
 ***************************************************************************/
 bool TAGM::FFindFile(int32_t sid, PSTN pstn, PFNI pfni, bool fAskForCD)
@@ -764,23 +837,23 @@ bool TAGM::FFindFile(int32_t sid, PSTN pstn, PFNI pfni, bool fAskForCD)
         return fFalse;
     ftg = pfni->Ftg();
 
-    // First, look on the HD
+    // 3DMMv1.0: First, look on the HD
     if (!_FGetFniHD(sid, pfni))
         return fFalse;
     if (pfni->FSetLeaf(pstn, ftg) && tYes == pfni->TExists())
         return fTrue;
 
-    // Now look on the CD, asking for it if fAskForCD
+    // 3DMMv1.0: Now look on the CD, asking for it if fAskForCD
     if (!_FGetFniCD(sid, pfni, fAskForCD))
         return fFalse;
     if (pfni->FSetLeaf(pstn, ftg) && tYes == pfni->TExists())
         return fTrue;
 
     pfni->SetNil();
-    return fFalse; // file not found
+    return fFalse; // 3DMMv1.0: file not found
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Build a tag for a child of another tag.  Note that this may hit the
     CD if _PcrmSourceGet has not yet been called for ptagPar->sid.
 ***************************************************************************/
@@ -802,7 +875,7 @@ bool TAGM::FBuildChildTag(PTAG ptagPar, CHID chid, CTG ctgChild, PTAG ptagChild)
         AssertPo(ptagPar->pcrf, 0);
         if (!ptagPar->pcrf->Pcfl()->FGetKidChidCtg(ptagPar->ctg, ptagPar->cno, chid, ctgChild, &kid))
         {
-            return fFalse; // child chunk not found
+            return fFalse; // 3DMMv1.0: child chunk not found
         }
         ptagChild->sid = ksidUseCrf;
         ptagChild->pcrf = ptagPar->pcrf;
@@ -816,10 +889,10 @@ bool TAGM::FBuildChildTag(PTAG ptagPar, CHID chid, CTG ctgChild, PTAG ptagChild)
         return fFalse;
     pcrfSource = pcrmSource->PcrfFindChunk(ptagPar->ctg, ptagPar->cno);
     if (pvNil == pcrfSource)
-        return fFalse; // parent chunk not found
+        return fFalse; // 3DMMv1.0: parent chunk not found
     if (!pcrfSource->Pcfl()->FGetKidChidCtg(ptagPar->ctg, ptagPar->cno, chid, ctgChild, &kid))
     {
-        return fFalse; // child chunk not found
+        return fFalse; // 3DMMv1.0: child chunk not found
     }
     ptagChild->sid = ptagPar->sid;
     ptagChild->ctg = kid.cki.ctg;
@@ -829,6 +902,31 @@ bool TAGM::FBuildChildTag(PTAG ptagPar, CHID chid, CTG ctgChild, PTAG ptagChild)
 }
 
 /***************************************************************************
+    Resolve the CFL which owns a TAG without transferring ownership.
+
+    Actor Studio uses this only long enough to copy a complete stock TMPL
+    subtree into the movie autosave CRF.  Keep the CRM/TAGM as the owner.
+***************************************************************************/
+PCFL TAGM::PcflFindTag4DMM(PTAG ptag)
+{
+    AssertThis(0);
+    AssertVarMem(ptag);
+    Assert(ptag->sid >= 0, "Invalid sid");
+
+    if (ptag->sid == ksidUseCrf)
+    {
+        AssertPo(ptag->pcrf, 0);
+        return ptag->pcrf != pvNil ? ptag->pcrf->Pcfl() : pvNil;
+    }
+
+    PCRM pcrmSource = _PcrmSourceGet(ptag->sid);
+    if (pcrmSource == pvNil)
+        return pvNil;
+    PCRF pcrfSource = pcrmSource->PcrfFindChunk(ptag->ctg, ptag->cno);
+    return pcrfSource != pvNil ? pcrfSource->Pcfl() : pvNil;
+}
+
+/** 3DMMv1.0: *************************************************************************
     Put specified chunk in cache file, if it's not there yet
 ***************************************************************************/
 bool TAGM::FCacheTagToHD(PTAG ptag, bool fCacheChildChunks)
@@ -845,7 +943,7 @@ bool TAGM::FCacheTagToHD(PTAG ptag, bool fCacheChildChunks)
     if (ksidUseCrf == ptag->sid)
         return fTrue;
 
-    // Do nothing if the source itself is already on HD
+    // 3DMMv1.0: Do nothing if the source itself is already on HD
     if (!_FDetermineIfSourceHD(ptag->sid, &fSourceIsOnHD))
         goto LFail;
     if (fSourceIsOnHD)
@@ -856,13 +954,13 @@ bool TAGM::FCacheTagToHD(PTAG ptag, bool fCacheChildChunks)
         goto LFail;
     pcrfSource = pcrmSource->PcrfFindChunk(ptag->ctg, ptag->cno);
     if (pvNil == pcrfSource)
-        goto LFail; // chunk not found
+        goto LFail; // 3DMMv1.0: chunk not found
 
     pcfl = pcrfSource->Pcfl();
     if (fCacheChildChunks)
     {
-        // Cache the chunk specified by the tag, and all its child
-        // chunks.
+        // 3DMMv1.0: Cache the chunk specified by the tag, and all its child
+        // 3DMMv1.0: chunks.
         CGE cge;
         KID kid;
         uint32_t grfcgeIn = 0;
@@ -880,7 +978,7 @@ bool TAGM::FCacheTagToHD(PTAG ptag, bool fCacheChildChunks)
     }
     else
     {
-        // Just cache the chunk specified by the tag
+        // 3DMMv1.0: Just cache the chunk specified by the tag
         if (!pcfl->FEnsureOnExtra(ptag->ctg, ptag->cno))
             goto LFail;
     }
@@ -890,7 +988,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resolve the TAG to a BACO.  Only use HD cache files, unless fUseCD is
     fTrue.
 ***************************************************************************/
@@ -906,13 +1004,13 @@ PBACO TAGM::PbacoFetch(PTAG ptag, PFNRPO pfnrpo, bool fUseCD)
 
     if (ptag->sid == ksidUseCrf)
     {
-        // Tag knows pcrf, so just read from there.  Nothing we can do if
-        // it's not there.
+        // 3DMMv1.0: Tag knows pcrf, so just read from there.  Nothing we can do if
+        // 3DMMv1.0: it's not there.
         AssertPo(ptag->pcrf, 0);
         return ptag->pcrf->PbacoFetch(ptag->ctg, ptag->cno, pfnrpo);
     }
 
-    // fTrue parameter ensures that _PcrmSourceGet won't hit the CD
+    // 3DMMv1.0: fTrue parameter ensures that _PcrmSourceGet won't hit the CD
     pcrmSource = _PcrmSourceGet(ptag->sid, fTrue);
     if (pvNil == pcrmSource)
         return pvNil;
@@ -921,7 +1019,7 @@ PBACO TAGM::PbacoFetch(PTAG ptag, PFNRPO pfnrpo, bool fUseCD)
     return pbaco;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clear the cache for source sid.  If sid is sidNil, clear all caches.
 ***************************************************************************/
 void TAGM::ClearCache(int32_t sid, uint32_t grftagm)
@@ -946,16 +1044,16 @@ void TAGM::ClearCache(int32_t sid, uint32_t grftagm)
             continue;
         if (grftagm & ftagmFile)
         {
-            // The following line may seem silly, since we already have
-            // sfs.pcrmSource.  But it ensures that the crm's CD is inserted,
-            // since the FReopen() will need the CD to be in.
+            // 3DMMv1.0: The following line may seem silly, since we already have
+            // 3DMMv1.0: sfs.pcrmSource.  But it ensures that the crm's CD is inserted,
+            // 3DMMv1.0: since the FReopen() will need the CD to be in.
             pcrmSource = _PcrmSourceGet(sfs.sid);
             if (pvNil == pcrmSource)
                 continue;
         }
         else
         {
-            // Just doing a memory purge, so sfs.pcrmSource is valid.
+            // 3DMMv1.0: Just doing a memory purge, so sfs.pcrmSource is valid.
             pcrmSource = sfs.pcrmSource;
         }
         icrfMac = pcrmSource->Ccrf();
@@ -969,13 +1067,13 @@ void TAGM::ClearCache(int32_t sid, uint32_t grftagm)
             {
                 if (grftagm & ftagmFile)
                 {
-                    // Clear the HD cache by reopening the file
-                    pcrf->Pcfl()->FReopen(); // Ignore error
+                    // 3DMMv1.0: Clear the HD cache by reopening the file
+                    pcrf->Pcfl()->FReopen(); // 3DMMv1.0: Ignore error
                 }
                 if (grftagm & ftagmMemory)
                 {
-                    // Clear RAM cache (for BACOs with 0 cactRef) by
-                    // temporarily setting the CRF's cbMax to 0
+                    // 3DMMv1.0: Clear RAM cache (for BACOs with 0 cactRef) by
+                    // 3DMMv1.0: temporarily setting the CRF's cbMax to 0
                     cbMax = pcrf->CbMax();
                     pcrf->SetCbMax(0);
                     pcrf->SetCbMax(cbMax);
@@ -987,7 +1085,7 @@ void TAGM::ClearCache(int32_t sid, uint32_t grftagm)
     vpappb->EndLongOp();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Prepares this tag to be used (resolved).  The tag is invalid until you
     call this, *except* you can pass the tag to FCacheTagToHD() before
     calling FOpenTag().  If you FOpenTag() a tag, you must CloseTag() it
@@ -1009,7 +1107,7 @@ bool TAGM::FOpenTag(PTAG ptag, PCRF pcrfDest, PCFL pcflSrc)
         if (!pcflSrc->FCopy(ptag->ctg, ptag->cno, pcrfDest->Pcfl(), &cnoDest))
         {
             ptag->pcrf = pvNil;
-            return fFalse; // copy failed
+            return fFalse; // 3DMMv1.0: copy failed
         }
         ptag->cno = cnoDest;
     }
@@ -1018,7 +1116,7 @@ bool TAGM::FOpenTag(PTAG ptag, PCRF pcrfDest, PCFL pcflSrc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save tag's data in the given CRF.  If fRedirect, the tag now points
     to the copy in the CRF.
 ***************************************************************************/
@@ -1037,7 +1135,7 @@ bool TAGM::FSaveTag(PTAG ptag, PCRF pcrf, bool fRedirect)
 
     if (!ptag->pcrf->Pcfl()->FCopy(ptag->ctg, ptag->cno, pcrf->Pcfl(), &cnoDest))
     {
-        return fFalse; // copy failed
+        return fFalse; // 3DMMv1.0: copy failed
     }
 
     if (fRedirect)
@@ -1051,7 +1149,7 @@ bool TAGM::FSaveTag(PTAG ptag, PCRF pcrf, bool fRedirect)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Call this for each tag when you're duplicating it.  Increments
     refcount on the tag's CRF.
 ***************************************************************************/
@@ -1067,14 +1165,14 @@ void TAGM::DupTag(PTAG ptag)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close the tag
 ***************************************************************************/
 void TAGM::CloseTag(PTAG ptag)
 {
     AssertVarMem(ptag);
-    // Client destructors often call CloseTag on an uninitialized tag, so
-    // don't Assert on ksidInvalid tags...just ignore them
+    // 3DMMv1.0: Client destructors often call CloseTag on an uninitialized tag, so
+    // 3DMMv1.0: don't Assert on ksidInvalid tags...just ignore them
     Assert(ptag->sid == ksidInvalid || ptag->sid >= 0, "Invalid sid");
 
     if (ptag->sid == ksidUseCrf)
@@ -1084,7 +1182,7 @@ void TAGM::CloseTag(PTAG ptag)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compare two tags.  Tags are sorted first by sid, then CTG, then CNO.
 ***************************************************************************/
 uint32_t TAGM::FcmpCompareTags(PTAG ptag1, PTAG ptag2)
@@ -1106,8 +1204,8 @@ uint32_t TAGM::FcmpCompareTags(PTAG ptag1, PTAG ptag2)
         return fcmpLt;
     if (ptag1->cno > ptag2->cno)
         return fcmpGt;
-    // If both sids are ksidUseCrf, compare CRFs
-    if (ptag1->sid == ksidUseCrf) // implies ptag2->sid == ksidUseCrf
+    // 3DMMv1.0: If both sids are ksidUseCrf, compare CRFs
+    if (ptag1->sid == ksidUseCrf) // 3DMMv1.0: implies ptag2->sid == ksidUseCrf
     {
         if (ptag1->pcrf < ptag2->pcrf)
             return fcmpLt;
@@ -1118,7 +1216,7 @@ uint32_t TAGM::FcmpCompareTags(PTAG ptag1, PTAG ptag2)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TAGM.
 ***************************************************************************/
 void TAGM::AssertValid(uint32_t grf)
@@ -1140,7 +1238,7 @@ void TAGM::AssertValid(uint32_t grf)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the TAGM.
 ***************************************************************************/
 void TAGM::MarkMem(void)
@@ -1159,10 +1257,10 @@ void TAGM::MarkMem(void)
         MarkMemObj(sfs.pcrmSource);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the TAG.
 ***************************************************************************/
 void TAG::MarkMem(void)
@@ -1173,4 +1271,4 @@ void TAG::MarkMem(void)
         MarkMemObj(pcrf);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

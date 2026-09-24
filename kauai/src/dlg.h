@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,36 +18,36 @@
 
 #ifdef MAC
 typedef DialogPtr HDLG;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 #ifdef WIN
 typedef HWND HDLG;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-// type of dialog item
+// 3DMMv1.0: type of dialog item
 enum
 {
-    ditkButton,     // no value
-    ditkCheckBox,   // long (bool)
-    ditkRadioGroup, // long (index)
-    ditkEditText,   // streamed stn
-    ditkCombo,      // streamed stn, followed by a list of streamed stn's.
+    ditkButton,     // 3DMMv1.0: no value
+    ditkCheckBox,   // 3DMMv1.0: long (bool)
+    ditkRadioGroup, // 3DMMv1.0: long (index)
+    ditkEditText,   // 3DMMv1.0: streamed stn
+    ditkCombo,      // 3DMMv1.0: streamed stn, followed by a list of streamed stn's.
     ditkLim
 };
 
-// dialog item
+// 3DMMv1.0: dialog item
 struct DIT
 {
-    int32_t sitMin; // first system item number (for this DIT)
-    int32_t sitLim; // lim of system item numbers (for this DIT)
-    int32_t ditk;   // kind of item
+    int32_t sitMin; // 3DMMv1.0: first system item number (for this DIT)
+    int32_t sitLim; // 3DMMv1.0: lim of system item numbers (for this DIT)
+    int32_t ditk;   // 3DMMv1.0: kind of item
 };
 
 typedef class DLG *PDLG;
 
-// callback to notify of an item change (while the dialog is active)
+// 3DMMv1.0: callback to notify of an item change (while the dialog is active)
 typedef bool (*PFNDLG)(PDLG pdlg, int32_t *pidit, void *pv);
 
-// dialog class - a DLG is a GG of DITs
+// 3DMMv1.0: dialog class - a DLG is a GG of DITs
 #define DLG_PAR GG
 #define kclsDLG KLCONST3('D', 'L', 'G')
 class DLG : public DLG_PAR
@@ -62,7 +62,7 @@ class DLG : public DLG_PAR
 
 #ifdef WIN
     friend INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
     DLG(int32_t rid);
     bool _FInit(void);
@@ -83,12 +83,12 @@ class DLG : public DLG_PAR
 
     int32_t IditDo(int32_t iditFocus = ivNil);
 
-    // these are only valid while the dialog is up
+    // 3DMMv1.0: these are only valid while the dialog is up
     bool FGetValues(int32_t iditMin, int32_t iditLim);
     void SetValues(int32_t iditMin, int32_t iditLim);
     void SelectDit(int32_t idit);
 
-    // argument access
+    // 3DMMv1.0: argument access
     int32_t IditFromSit(int32_t sit);
     void GetDit(int32_t idit, DIT *pdit)
     {
@@ -113,4 +113,4 @@ class DLG : public DLG_PAR
     void ClearList(int32_t idit);
 };
 
-#endif //! DLG_H
+#endif //! 3DMMv1.0: DLG_H

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,7 +17,7 @@ RTCLASS(TRUL)
 
 const int32_t kdxpMax = 0x01000000;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Character run data.
 ***************************************************************************/
 typedef struct CHRD *PCHRD;
@@ -29,7 +29,7 @@ struct CHRD
     int32_t xpLimDraw;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Character run class. This is used to format a line, draw a line,
     map between cp and xp on a line, etc.
 ***************************************************************************/
@@ -116,7 +116,7 @@ class CHR
 };
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CHR.
 ***************************************************************************/
 void CHR::AssertValid(uint32_t grf)
@@ -125,9 +125,9 @@ void CHR::AssertValid(uint32_t grf)
     AssertPo(_ptxtb, 0);
     AssertPo(_pgnv, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the CHR.
 ***************************************************************************/
 void CHR::Init(CHP *pchp, PAP *ppap, PTXTB ptxtb, PGNV pgnv, int32_t cpMin, int32_t cpLim, int32_t xpBase,
@@ -155,7 +155,7 @@ void CHR::Init(CHP *pchp, PAP *ppap, PTXTB ptxtb, PGNV pgnv, int32_t cpMin, int3
     _xpMin = xpBase;
     _xpBreak = LwMin(xpBreak, xpLimLine);
 
-    // apply any indenting
+    // 3DMMv1.0: apply any indenting
     if (0 == xpBase)
     {
         switch (_pap.nd)
@@ -180,15 +180,15 @@ void CHR::Init(CHP *pchp, PAP *ppap, PTXTB ptxtb, PGNV pgnv, int32_t cpMin, int3
     _chrd.xpLim = _chrd.xpLimDraw = _xpMin;
     _chrdBop = _chrd;
 
-    // get the vertical dimensions
+    // 3DMMv1.0: get the vertical dimensions
     _pgnv->SetFont(_chp.onn, _chp.grfont, _chp.dypFont, tahLeft, tavBaseline);
 
-#ifndef SOC_BUG_1500 // REVIEW shonk: Win95 bug workaround
-    // If we don't draw to the _pgnv before getting the metrics, the metrics
-    // can be different than after we draw!
+#ifndef SOC_BUG_1500 // 3DMMv1.0: REVIEW shonk: Win95 bug workaround
+    // 3DMMv1.0: If we don't draw to the _pgnv before getting the metrics, the metrics
+    // 3DMMv1.0: can be different than after we draw!
     achar ch = kchSpace;
     _pgnv->DrawRgch(&ch, 1, 0, 0);
-#endif //! REVIEW
+#endif //! 3DMMv1.0: REVIEW
 
     _pgnv->GetRcFromRgch(&rc, pvNil, 0);
     _dypAscent = LwMax(0, -rc.ypTop - _chp.dypOffset);
@@ -197,7 +197,7 @@ void CHR::Init(CHP *pchp, PAP *ppap, PTXTB ptxtb, PGNV pgnv, int32_t cpMin, int3
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next run (within the bounds we were inited with).
 ***************************************************************************/
 void CHR::GetNextRun(bool fMustAdvance)
@@ -207,7 +207,7 @@ void CHR::GetNextRun(bool fMustAdvance)
     achar ch;
     RC rc;
 
-    // Start the next run
+    // 3DMMv1.0: Start the next run
     if (FIn(_chrd.cpLim, _cpMin + 1, _cpLimFetch))
         BltPb(_rgch + _chrd.cpLim - _cpMin, _rgch, (_cpLimFetch - _chrd.cpLim) * SIZEOF(achar));
     _cpMin = _chrd.cpLimDraw = _chrd.cpLim;
@@ -218,7 +218,7 @@ void CHR::GetNextRun(bool fMustAdvance)
     if (_cpMin >= _cpLim)
         return;
 
-    // Refill the buffer
+    // 3DMMv1.0: Refill the buffer
     if (_cpLimFetch < _cpLim && _cpLimFetch < _cpMin + kcchMaxChr)
     {
         int32_t cpFetch = LwMax(_cpMin, _cpLimFetch);
@@ -236,8 +236,8 @@ void CHR::GetNextRun(bool fMustAdvance)
     {
         if (_chrd.cpLim >= _cpLimFetch || (fchIgnore & (grfch = GrfchFromCh(ch = _rgch[_chrd.cpLim - _cpMin]))))
         {
-            // we're out of characters or this is an ignoreable character -
-            // return the run
+            // 3DMMv1.0: we're out of characters or this is an ignoreable character -
+            // 3DMMv1.0: return the run
             if (!_FFit())
                 _SetToBop();
             else
@@ -247,14 +247,14 @@ void CHR::GetNextRun(bool fMustAdvance)
 
         if (grfch & fchTab)
         {
-            // handle the string of tabs, then return the run
+            // 3DMMv1.0: handle the string of tabs, then return the run
             _DoTab();
             break;
         }
 
         if (grfch & fchBreak)
         {
-            // This line must break after this character - return the run.
+            // 3DMMv1.0: This line must break after this character - return the run.
             if (!_FFit())
             {
                 _SetToBop();
@@ -264,7 +264,7 @@ void CHR::GetNextRun(bool fMustAdvance)
             _chrd.cpLim++;
             _SkipIgnores();
 
-            // this is a BOP
+            // 3DMMv1.0: this is a BOP
             _chrdBop = _chrd;
             _fBreak = fTrue;
             break;
@@ -275,7 +275,7 @@ void CHR::GetNextRun(bool fMustAdvance)
             _chrd.cpLimDraw = ++_chrd.cpLim;
             if (_FFit())
             {
-                // this is a BOP
+                // 3DMMv1.0: this is a BOP
                 _chrdBop = _chrd;
                 continue;
             }
@@ -283,13 +283,13 @@ void CHR::GetNextRun(bool fMustAdvance)
             _fBreak = fTrue;
             if (grfch & fchWhiteOverhang)
             {
-                // see if everything but this character fits
+                // 3DMMv1.0: see if everything but this character fits
                 int32_t xp = _chrd.xpLim;
 
                 _chrd.cpLimDraw--;
                 if (_FFit())
                 {
-                    // fits with the overhang
+                    // 3DMMv1.0: fits with the overhang
                     _chrd.xpLim = xp;
                     _chrdBop = _chrd;
                     _SkipIgnores();
@@ -303,11 +303,11 @@ void CHR::GetNextRun(bool fMustAdvance)
 
         if (kchObject == ch)
         {
-            // this is an object character
+            // 3DMMv1.0: this is an object character
             if (_chrd.cpLim > _cpMin)
             {
-                // return the run before processing the object - objects
-                // go in their own run.
+                // 3DMMv1.0: return the run before processing the object - objects
+                // 3DMMv1.0: go in their own run.
                 if (!_FFit())
                     _SetToBop();
                 else
@@ -315,10 +315,10 @@ void CHR::GetNextRun(bool fMustAdvance)
                 break;
             }
 
-            // return just the object (if it really is an object)
+            // 3DMMv1.0: return just the object (if it really is an object)
             if (!_ptxtb->FGetObjectRc(_chrd.cpLim, _pgnv, &_chp, &rc))
             {
-                // treat as a normal character
+                // 3DMMv1.0: treat as a normal character
                 _chrd.cpLimDraw = ++_chrd.cpLim;
                 continue;
             }
@@ -343,14 +343,14 @@ void CHR::GetNextRun(bool fMustAdvance)
             break;
         }
 
-        // normal character
+        // 3DMMv1.0: normal character
         _chrd.cpLimDraw = ++_chrd.cpLim;
     }
 
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Test whether everything from _cpMin to _chrd.cpLimDraw fits. Assumes the
     font is set in the _pgnv.
 ***************************************************************************/
@@ -370,7 +370,7 @@ bool CHR::_FFit(void)
     return _chrd.xpLimDraw <= _xpBreak;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the CHR to the last break opportunity. If there wasn't one and
     _fMustAdvance is true, gobble as many characters as we can, but at least
     one.
@@ -382,9 +382,9 @@ void CHR::_SetToBop(void)
     _fBreak = fTrue;
     if (_chrdBop.cpLim <= _cpMin && _fMustAdvance)
     {
-        // no break opportunity seen - gobble as many characters as we can,
-        // but at least one.
-        // do a binary search for the character to break at
+        // 3DMMv1.0: no break opportunity seen - gobble as many characters as we can,
+        // 3DMMv1.0: but at least one.
+        // 3DMMv1.0: do a binary search for the character to break at
         Assert(_chrd.cpLimDraw > _cpMin, "why is _chrd.cpLimDraw == _cpMin?");
 
         RC rc;
@@ -404,11 +404,11 @@ void CHR::_SetToBop(void)
         AssertIn(ivMin, 0, _chrd.cpLimDraw - _cpMin + 1);
         if (ivMin == 0)
         {
-            // nothing fits - use one character
+            // 3DMMv1.0: nothing fits - use one character
             ivMin = 1;
         }
 
-        // set _chrd.cpLim and _chrd.cpLimDraw, then set the _xp values
+        // 3DMMv1.0: set _chrd.cpLim and _chrd.cpLimDraw, then set the _xp values
         _chrd.cpLim = _chrd.cpLimDraw = _cpMin + ivMin;
         _FFit();
     }
@@ -418,7 +418,7 @@ void CHR::_SetToBop(void)
     _SkipIgnores();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Skip any trailing ignore characters. Just changes _chrd.cpLim.
 ***************************************************************************/
 void CHR::_SkipIgnores(void)
@@ -445,7 +445,7 @@ void CHR::_SkipIgnores(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swallow as many tabs as possible.
 ***************************************************************************/
 void CHR::_DoTab(void)
@@ -464,10 +464,10 @@ void CHR::_DoTab(void)
         _chrd.xpLim = LwRoundAway(_chrd.xpLim + 1, _pap.dxpTab);
         if (_chrd.xpLim > _xpBreak)
         {
-            // this tab would carry us over the edge.
+            // 3DMMv1.0: this tab would carry us over the edge.
             if (_chrd.cpLim == _cpMin + 1 && _fMustAdvance)
             {
-                // the line is empty, so we have to force the tab onto the line
+                // 3DMMv1.0: the line is empty, so we have to force the tab onto the line
                 _SkipIgnores();
                 _fBreak = fTrue;
             }
@@ -476,7 +476,7 @@ void CHR::_DoTab(void)
             return;
         }
 
-        // this is a BOP
+        // 3DMMv1.0: this is a BOP
         _chrd.xpLimDraw = _chrd.xpLim;
         _chrdBop = _chrd;
     }
@@ -484,7 +484,7 @@ void CHR::_DoTab(void)
     _SkipIgnores();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the text document display GOB.
 ***************************************************************************/
 TXTG::TXTG(PTXTB ptxtb, PGCB pgcb) : TXTG_PAR(ptxtb, pgcb)
@@ -495,7 +495,7 @@ TXTG::TXTG(PTXTB ptxtb, PGCB pgcb) : TXTG_PAR(ptxtb, pgcb)
     _pgnv = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for TXTG.
 ***************************************************************************/
 TXTG::~TXTG(void)
@@ -506,7 +506,7 @@ TXTG::~TXTG(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a TXTG.
 ***************************************************************************/
 void TXTG::AssertValid(uint32_t grf)
@@ -516,10 +516,10 @@ void TXTG::AssertValid(uint32_t grf)
     AssertIn(_ilinInval, 0, _pgllin->IvMac() + 1);
     AssertPo(_pgnv, 0);
     AssertNilOrPo(_ptrul, 0);
-    // REVIEW shonk: TXTG::AssertValid: fill out.
+    // 3DMMv1.0: REVIEW shonk: TXTG::AssertValid: fill out.
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the TXTG.
 ***************************************************************************/
 void TXTG::MarkMem(void)
@@ -529,9 +529,9 @@ void TXTG::MarkMem(void)
     MarkMemObj(_pgllin);
     MarkMemObj(_pgnv);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the text document display gob.
 ***************************************************************************/
 bool TXTG::_FInit(void)
@@ -544,8 +544,8 @@ bool TXTG::_FInit(void)
     if (pvNil == (_pgllin = GL::PglNew(SIZEOF(LIN))))
         return fFalse;
 
-    // Allocate the GNV for formatting. Use an offscreen one iff _fMark
-    // is set.
+    // 3DMMv1.0: Allocate the GNV for formatting. Use an offscreen one iff _fMark
+    // 3DMMv1.0: is set.
     if (_fMark)
     {
         RC rc(0, 0, 1, 1);
@@ -580,7 +580,7 @@ bool TXTG::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Deactivate the TXTG - turn off the selection.
 ***************************************************************************/
 void TXTG::_Activate(bool fActive)
@@ -592,7 +592,7 @@ void TXTG::_Activate(bool fActive)
         _SwitchSel(fFalse, kginSysInval);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the LIN for the given ilin.  If ilin is past the end of _pgllin,
     _CalcLine is called repeatedly and new lines are added to _pgllin.
     The actual index of the returned line is put in *pilinActual (if not nil).
@@ -629,7 +629,7 @@ void TXTG::_FetchLin(int32_t ilin, LIN *plin, int32_t *pilinActual)
             qlin++;
         }
 
-        // adjust LINs up to ilinLim
+        // 3DMMv1.0: adjust LINs up to ilinLim
         for (; _ilinInval < ilinLim; _ilinInval++, qlin++)
         {
             qlin->cpMin = cpLim;
@@ -655,7 +655,7 @@ void TXTG::_FetchLin(int32_t ilin, LIN *plin, int32_t *pilinActual)
     }
     else
     {
-        // get the LIN in case we don't actuall calc any lines below
+        // 3DMMv1.0: get the LIN in case we don't actuall calc any lines below
         *plin = *(LIN *)_pgllin->QvGet(ilinLim - 1);
         cpLim = plin->cpMin + plin->ccp;
         dypTot = plin->dypTot + plin->dyp;
@@ -675,7 +675,7 @@ void TXTG::_FetchLin(int32_t ilin, LIN *plin, int32_t *pilinActual)
         *pilinActual = ilinLim - 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the LIN that contains the given cpFind. pilin and/or plin can be nil.
     If fCalcLines is false, we won't calculate any new lines and the
     returned LIN may be before cpFind.
@@ -694,7 +694,7 @@ void TXTG::_FindCp(int32_t cpFind, LIN *plin, int32_t *pilin, bool fCalcLines)
     int32_t ilinMac;
     bool fAdd;
 
-    // get the starting cp and dypTot values for _ilinInval
+    // 3DMMv1.0: get the starting cp and dypTot values for _ilinInval
     qlin = (LIN *)_pgllin->QvGet(_ilinInval);
     if (_ilinInval == 0)
     {
@@ -711,7 +711,7 @@ void TXTG::_FindCp(int32_t cpFind, LIN *plin, int32_t *pilin, bool fCalcLines)
 
     if (cpFind < cpLim)
     {
-        // do a binary search to find the LIN containing cpFind
+        // 3DMMv1.0: do a binary search to find the LIN containing cpFind
         int32_t ivMin, ivLim, iv;
 
         for (ivMin = 0, ivLim = _ilinInval; ivMin < ivLim;)
@@ -741,7 +741,7 @@ void TXTG::_FindCp(int32_t cpFind, LIN *plin, int32_t *pilin, bool fCalcLines)
     Assert(cpFind >= cpLim, "why isn't cpFind >= cpLim?");
     if (_ilinInval < (ilinMac = _pgllin->IvMac()))
     {
-        // adjust LINs up to cpFind
+        // 3DMMv1.0: adjust LINs up to cpFind
         qlin = (LIN *)_pgllin->QvGet(_ilinInval);
         for (; _ilinInval < ilinMac && cpFind >= cpLim; _ilinInval++, qlin++)
         {
@@ -778,7 +778,7 @@ void TXTG::_FindCp(int32_t cpFind, LIN *plin, int32_t *pilin, bool fCalcLines)
         return;
     }
 
-    // have to calculate some lines
+    // 3DMMv1.0: have to calculate some lines
     for (fAdd = fTrue; cpFind >= cpLim; ilinMac++)
     {
         _CalcLine(cpLim, dypTot, &lin);
@@ -794,7 +794,7 @@ void TXTG::_FindCp(int32_t cpFind, LIN *plin, int32_t *pilin, bool fCalcLines)
         *plin = lin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the LIN that contains the given dypFind value (measured from the top
     of the document). pilin and/or plin can be nil.
     If fCalcLines is false, we won't calculate any new lines and the
@@ -814,7 +814,7 @@ void TXTG::_FindDyp(int32_t dypFind, LIN *plin, int32_t *pilin, bool fCalcLines)
     int32_t ilinMac;
     bool fAdd;
 
-    // get the starting cp and dypTot values for _ilinInval
+    // 3DMMv1.0: get the starting cp and dypTot values for _ilinInval
     qlin = (LIN *)_pgllin->QvGet(_ilinInval);
     if (_ilinInval == 0)
     {
@@ -831,7 +831,7 @@ void TXTG::_FindDyp(int32_t dypFind, LIN *plin, int32_t *pilin, bool fCalcLines)
 
     if (dypFind < dypTot)
     {
-        // do a binary search to find the LIN containing dypFind
+        // 3DMMv1.0: do a binary search to find the LIN containing dypFind
         int32_t ivMin, ivLim, iv;
 
         for (ivMin = 0, ivLim = _ilinInval; ivMin < ivLim;)
@@ -861,7 +861,7 @@ void TXTG::_FindDyp(int32_t dypFind, LIN *plin, int32_t *pilin, bool fCalcLines)
     Assert(dypFind >= dypTot, "why isn't dypFind >= dypTot?");
     if (_ilinInval < (ilinMac = _pgllin->IvMac()))
     {
-        // adjust LINs up to cp
+        // 3DMMv1.0: adjust LINs up to cp
         qlin = (LIN *)_pgllin->QvGet(_ilinInval);
         for (; _ilinInval < ilinMac && dypFind >= dypTot; _ilinInval++, qlin++)
         {
@@ -903,7 +903,7 @@ void TXTG::_FindDyp(int32_t dypFind, LIN *plin, int32_t *pilin, bool fCalcLines)
     {
         if (pvNil != plin)
         {
-            // Get a valid lin.
+            // 3DMMv1.0: Get a valid lin.
             if (ilinMac > 0)
                 _pgllin->Get(ilinMac - 1, &lin);
             else
@@ -930,7 +930,7 @@ void TXTG::_FindDyp(int32_t dypFind, LIN *plin, int32_t *pilin, bool fCalcLines)
         *plin = lin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Recalculate the _pgllin after an edit.  Sets *pyp, *pdypIns, *pdypDel
     to indicate the vertical display space that was affected.
 ***************************************************************************/
@@ -953,36 +953,36 @@ void TXTG::_Reformat(int32_t cp, int32_t ccpIns, int32_t ccpDel, int32_t *pyp, i
     _fXpValid = fFalse;
     cpMac = _ptxtb->CpMac();
 
-    // Find the LIN that contains cp (if there is one) - don't calc any lines
-    // to get the LIN.
+    // 3DMMv1.0: Find the LIN that contains cp (if there is one) - don't calc any lines
+    // 3DMMv1.0: to get the LIN.
     _FindCp(cp, &linOld, &ilinOld, fFalse);
 
     if (cp >= linOld.cpMin + linOld.ccp)
     {
-        // the LIN for this cp was not cached - recalc from the beginning of
-        // the last lin.
+        // 3DMMv1.0: the LIN for this cp was not cached - recalc from the beginning of
+        // 3DMMv1.0: the last lin.
         ccpIns += cp - linOld.cpMin;
         ccpDel += cp - linOld.cpMin;
         cp = linOld.cpMin;
     }
     AssertIn(cp, linOld.cpMin, linOld.cpMin + linOld.ccp + (linOld.ccp == 0));
 
-    // make sure the previous line is formatted correctly
+    // 3DMMv1.0: make sure the previous line is formatted correctly
     if (ilinOld > 0 && !_ptxtb->FMinPara(linOld.cpMin))
     {
         _FetchLin(ilinOld - 1, &lin);
         _CalcLine(lin.cpMin, lin.dypTot, &linT);
         if (linT.ccp != lin.ccp)
         {
-            // edit affected previous line - so start
-            // formatting from there
+            // 3DMMv1.0: edit affected previous line - so start
+            // 3DMMv1.0: formatting from there
             ilinOld--;
             linOld = lin;
         }
     }
     AssertIn(cp, linOld.cpMin, cpMac);
 
-    // remove deleted lines
+    // 3DMMv1.0: remove deleted lines
     Assert(ilinOld <= _ilinInval, 0);
     _ilinInval = ilinOld;
     for (ccp = dypDel = 0; linOld.cpMin + ccp <= cp + ccpDel && ilinOld < _pgllin->IvMac();)
@@ -993,11 +993,11 @@ void TXTG::_Reformat(int32_t cp, int32_t ccpIns, int32_t ccpDel, int32_t *pyp, i
         _pgllin->Delete(ilinOld);
     }
 
-    // insert the new lines
+    // 3DMMv1.0: insert the new lines
     cpCur = linOld.cpMin;
     dypCur = linOld.dypTot;
 
-    // cpNext is the cp of the next (possibly stale) LIN in _pgllin
+    // 3DMMv1.0: cpNext is the cp of the next (possibly stale) LIN in _pgllin
     if (ilinOld < _pgllin->IvMac())
     {
         cpNext = linOld.cpMin + ccp - ccpDel + ccpIns;
@@ -1023,8 +1023,8 @@ void TXTG::_Reformat(int32_t cp, int32_t ccpIns, int32_t ccpDel, int32_t *pyp, i
 
         if (ilin >= _pgllin->IvMac())
         {
-            // no more LINs that might be preservable, so we may as well
-            // stop trying.
+            // 3DMMv1.0: no more LINs that might be preservable, so we may as well
+            // 3DMMv1.0: stop trying.
             ilin = _pgllin->IvMac();
             if (cpNext < cpMac)
                 dypDel = kswMax;
@@ -1036,8 +1036,8 @@ void TXTG::_Reformat(int32_t cp, int32_t ccpIns, int32_t ccpDel, int32_t *pyp, i
         AssertIn(ilin, 0, _pgllin->IvMac());
         if (cpCur == cpNext)
         {
-            // everything from here on should be correct - we still need to
-            // set _ilinDisp
+            // 3DMMv1.0: everything from here on should be correct - we still need to
+            // 3DMMv1.0: set _ilinDisp
             break;
         }
 
@@ -1085,7 +1085,7 @@ void TXTG::_Reformat(int32_t cp, int32_t ccpIns, int32_t ccpDel, int32_t *pyp, i
         *pdypDel = dypDel;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Calculate the end of the line, the left position of the line, the height
     of the line and the ascent of the line.
 ***************************************************************************/
@@ -1122,7 +1122,7 @@ void TXTG::_CalcLine(int32_t cpMin, int32_t dypBase, LIN *plin)
 
     for (;;)
     {
-        // make sure the chp is valid
+        // 3DMMv1.0: make sure the chp is valid
         if (run.cpLim >= cpLimChp)
         {
             _FetchChp(run.cpLim, &chp, pvNil, &cpLimChp);
@@ -1141,7 +1141,7 @@ void TXTG::_CalcLine(int32_t cpMin, int32_t dypBase, LIN *plin)
 
         if (chrd.cpLim == run.cpLim)
         {
-            // didn't move forward - use runSure
+            // 3DMMv1.0: didn't move forward - use runSure
             Assert(runSure.cpLim > cpMin, "why don't we have a BOP?");
             run = runSure;
             break;
@@ -1155,7 +1155,7 @@ void TXTG::_CalcLine(int32_t cpMin, int32_t dypBase, LIN *plin)
 
         if (chr.FBreak())
         {
-            // we know that this is the end of the line - use run or runT
+            // 3DMMv1.0: we know that this is the end of the line - use run or runT
             if (run.xpLim > chr.XpBreak() && runT.cpLim > cpMin)
                 run = runT;
             break;
@@ -1163,7 +1163,7 @@ void TXTG::_CalcLine(int32_t cpMin, int32_t dypBase, LIN *plin)
 
         if (chrdBop.cpLim > runT.cpLim)
         {
-            // put chrdBop info into runSure
+            // 3DMMv1.0: put chrdBop info into runSure
             runSure.cpLim = chrdBop.cpLim;
             runSure.xpLim = chrdBop.xpLimDraw;
             runSure.dypAscent = LwMax(runSure.dypAscent, chr.DypAscent());
@@ -1207,7 +1207,7 @@ void TXTG::_CalcLine(int32_t cpMin, int32_t dypBase, LIN *plin)
     plin->dypTot = dypBase;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the cp that the point is in.  If fClosest is true, this finds the
     cp boundary that the point is closest to (for traditional selection).
     If fClosest is false, it finds the character that the point is over.
@@ -1231,11 +1231,11 @@ bool TXTG::_FGetCpFromPt(int32_t xp, int32_t yp, int32_t *pcp, bool fClosest)
         return fTrue;
     }
 
-    // we've found the line, now get the cp on the line
+    // 3DMMv1.0: we've found the line, now get the cp on the line
     return _FGetCpFromXp(xp, &lin, pcp, fClosest);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the cp on the line given by *plin that the xp is in.  If fClosest
     is true, this finds the cp boundary that the point is closest to (for
     traditional selection).  If fClosest is false, it finds the character
@@ -1278,12 +1278,12 @@ bool TXTG::_FGetCpFromXp(int32_t xp, LIN *plin, int32_t *pcp, bool fClosest)
 
     for (;;)
     {
-        // make sure the chp is valid
+        // 3DMMv1.0: make sure the chp is valid
         if (cpCur >= cpLimChp)
         {
             if (cpCur >= cpLim)
             {
-                // everything fit
+                // 3DMMv1.0: everything fit
                 *pcp = LwMax(plin->cpMin, _ptxtb->CpPrev(cpLim));
                 return fTrue;
             }
@@ -1308,7 +1308,7 @@ bool TXTG::_FGetCpFromXp(int32_t xp, LIN *plin, int32_t *pcp, bool fClosest)
             {
                 CHRD chrdT;
 
-                // get the length from cpCur to cpPrev
+                // 3DMMv1.0: get the length from cpCur to cpPrev
                 chr.Init(&chp, &pap, _ptxtb, _pgnv, cpCur, cpPrev, xpCur, dxpDoc, xp);
                 chr.GetNextRun(fTrue);
                 chr.GetChrd(&chrdT);
@@ -1331,7 +1331,7 @@ bool TXTG::_FGetCpFromXp(int32_t xp, LIN *plin, int32_t *pcp, bool fClosest)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the vertical bounds of the line containing cp and the horizontal
     position of the cp on the line.  If fView is true, the values are in
     view coordinates. If fView is false, the values are in logical values
@@ -1367,7 +1367,7 @@ void TXTG::_GetXpYpFromCp(int32_t cp, int32_t *pypMin, int32_t *pypLim, int32_t 
         *pypBaseLine = lin.dypTot + lin.dypAscent;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the xp location of the given cp. Assumes that cpLine is the start
     of the line containing cp. This includes a buffer on the left of
     kdxpIndentTxtg, but doesn't include centering or right justification
@@ -1393,7 +1393,7 @@ int32_t TXTG::_DxpFromCp(int32_t cpLine, int32_t cp)
 
     for (;;)
     {
-        // make sure the chp is valid
+        // 3DMMv1.0: make sure the chp is valid
         if (cpCur >= cpLimChp)
         {
             _FetchChp(cpCur, &chp, pvNil, &cpLimChp);
@@ -1417,7 +1417,7 @@ int32_t TXTG::_DxpFromCp(int32_t cpLine, int32_t cp)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replaces the characters between cp1 and cp2 with the given ones.
 ***************************************************************************/
 bool TXTG::FReplace(achar *prgch, int32_t cch, int32_t cp1, int32_t cp2)
@@ -1439,7 +1439,7 @@ bool TXTG::FReplace(achar *prgch, int32_t cch, int32_t cp1, int32_t cp2)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the display from cp.  If we're the active TXTG, also redraw.
 ***************************************************************************/
 void TXTG::InvalCp(int32_t cp, int32_t ccpIns, int32_t ccpDel)
@@ -1451,7 +1451,7 @@ void TXTG::InvalCp(int32_t cp, int32_t ccpIns, int32_t ccpDel)
     Assert(!_fSelOn, "selection is on in InvalCp!");
     int32_t cpAnchor, cpOther;
 
-    // adjust the sel
+    // 3DMMv1.0: adjust the sel
     cpAnchor = _cpAnchor;
     cpOther = _cpOther;
     FAdjustIv(&cpAnchor, cp, ccpIns, ccpDel);
@@ -1471,7 +1471,7 @@ void TXTG::InvalCp(int32_t cp, int32_t ccpIns, int32_t ccpDel)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reformat the TXTG and update the display.  If this TXTG is not the
     active one, the display is invalidated instead of updated.
 ***************************************************************************/
@@ -1481,10 +1481,10 @@ void TXTG::_ReformatAndDraw(int32_t cp, int32_t ccpIns, int32_t ccpDel)
     int32_t yp, dypIns, dypDel;
     RC rcUpdate(0, 0, 0, 0);
 
-    // reformat
+    // 3DMMv1.0: reformat
     _Reformat(cp, ccpIns, ccpDel, &yp, &dypIns, &dypDel);
 
-    // determine the dirty rectangles and if we're active, update them
+    // 3DMMv1.0: determine the dirty rectangles and if we're active, update them
     GetRc(&rcLoc, cooLocal);
     if (!_fActive)
     {
@@ -1501,10 +1501,10 @@ void TXTG::_ReformatAndDraw(int32_t cp, int32_t ccpIns, int32_t ccpDel)
     rc.ypBottom = yp + dypIns;
     if (dypIns != dypDel)
     {
-        // Have some bits to blt vertically. If the background isn't clear,
-        // but _fMark is set, still do the scroll, since _fMark is intended
-        // to avoid flashing (allowing offscreen drawing) and scrolling doesn't
-        // flash anyway.
+        // 3DMMv1.0: Have some bits to blt vertically. If the background isn't clear,
+        // 3DMMv1.0: but _fMark is set, still do the scroll, since _fMark is intended
+        // 3DMMv1.0: to avoid flashing (allowing offscreen drawing) and scrolling doesn't
+        // 3DMMv1.0: flash anyway.
         if (_fClear)
             rc.ypBottom = rcLoc.ypBottom;
         else
@@ -1523,7 +1523,7 @@ void TXTG::_ReformatAndDraw(int32_t cp, int32_t ccpIns, int32_t ccpDel)
     _fXpValid = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Perform a scroll according to scaHorz and scaVert.
 ***************************************************************************/
 void TXTG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t scvVert)
@@ -1578,18 +1578,18 @@ void TXTG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
             break;
 
         case scaPageDown:
-            // scroll down a page
+            // 3DMMv1.0: scroll down a page
             GetRc(&rc, cooLocal);
             _FindDyp(rc.Dyp() + _dypDisp, &lin, &ilin);
 
             if (lin.cpMin <= _cpDisp)
             {
-                // we didn't go anywhere so force going down a line
+                // 3DMMv1.0: we didn't go anywhere so force going down a line
                 _FetchLin(_ilinDisp + 1, &lin, &ilin);
             }
             else if (lin.dypTot + lin.dyp > _dypDisp + rc.Dyp() && ilin > _ilinDisp + 1)
             {
-                // the line crosses the bottom of the ddg so back up one
+                // 3DMMv1.0: the line crosses the bottom of the ddg so back up one
                 Assert(ilin > 0, 0);
                 _FetchLin(ilin - 1, &lin, &ilin);
             }
@@ -1601,7 +1601,7 @@ void TXTG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
             break;
 
         case scaLineDown:
-            // scroll down a line
+            // 3DMMv1.0: scroll down a line
             _FetchLin(_ilinDisp + 1, &lin, &_ilinDisp);
             dyp = lin.dypTot - _dypDisp;
             _cpDisp = lin.cpMin;
@@ -1609,26 +1609,26 @@ void TXTG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
             break;
 
         case scaPageUp:
-            // scroll down a page
+            // 3DMMv1.0: scroll down a page
             if (_ilinDisp <= 0)
                 break;
             GetRc(&rc, cooLocal);
             _FetchLin(_ilinDisp, &linDisp);
             Assert(linDisp.dypTot == _dypDisp, 0);
 
-            // determine where to scroll to - try to keep the top line
-            // visible, but scroll up at least one line
+            // 3DMMv1.0: determine where to scroll to - try to keep the top line
+            // 3DMMv1.0: visible, but scroll up at least one line
             dyp = LwMax(0, linDisp.dypTot + linDisp.dyp - rc.Dyp());
             _FindDyp(dyp, &lin, &ilin);
             if (lin.cpMin >= linDisp.cpMin)
             {
-                // we didn't go anywhere so force going up a line
+                // 3DMMv1.0: we didn't go anywhere so force going up a line
                 _FetchLin(_ilinDisp - 1, &lin, &ilin);
             }
             else if (linDisp.dypTot + linDisp.dyp > lin.dypTot + rc.Dyp() && ilin < _ilinDisp - 1)
             {
-                // the previous disp line crosses the bottom of the ddg, so move
-                // down one line
+                // 3DMMv1.0: the previous disp line crosses the bottom of the ddg, so move
+                // 3DMMv1.0: down one line
                 _FetchLin(ilin + 1, &lin, &ilin);
             }
 
@@ -1639,7 +1639,7 @@ void TXTG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
             break;
 
         case scaLineUp:
-            // scroll up a line
+            // 3DMMv1.0: scroll up a line
             if (_ilinDisp <= 0)
                 break;
             _FetchLin(_ilinDisp - 1, &lin, &_ilinDisp);
@@ -1658,7 +1658,7 @@ void TXTG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
         _ScrollDxpDyp(dxp, dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the bits in the window.
 ***************************************************************************/
 void TXTG::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
@@ -1666,7 +1666,7 @@ void TXTG::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
     AssertThis(0);
     RC rcLoc, rcBad1, rcBad2;
 
-    // determine the dirty rectangles and update them
+    // 3DMMv1.0: determine the dirty rectangles and update them
     GetRc(&rcLoc, cooLocal);
     if (_fClear)
     {
@@ -1680,7 +1680,7 @@ void TXTG::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
         vpappb->UpdateMarked();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update the display of the document.
 ***************************************************************************/
 void TXTG::Draw(PGNV pgnv, RC *prcClip)
@@ -1694,7 +1694,7 @@ void TXTG::Draw(PGNV pgnv, RC *prcClip)
     _SetScrollValues();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draws some lines of the document.
 ***************************************************************************/
 void TXTG::DrawLines(PGNV pgnv, RC *prcClip, int32_t dxp, int32_t dyp, int32_t ilinMin, int32_t ilinLim,
@@ -1738,10 +1738,10 @@ void TXTG::DrawLines(PGNV pgnv, RC *prcClip, int32_t dxp, int32_t dyp, int32_t i
         cpLimLine = cpLine + lin.ccp;
         xpChr = 0;
 
-        // draw the line
+        // 3DMMv1.0: draw the line
         for (;;)
         {
-            // make sure the chp is valid
+            // 3DMMv1.0: make sure the chp is valid
             if (cpCur >= cpLimChp)
             {
                 _FetchChp(cpCur, &chp, pvNil, &cpLimChp);
@@ -1755,12 +1755,12 @@ void TXTG::DrawLines(PGNV pgnv, RC *prcClip, int32_t dxp, int32_t dyp, int32_t i
 
             if (chrd.cpLimDraw > cpCur)
             {
-                // draw some text
+                // 3DMMv1.0: draw some text
                 xp = xpBase + chr.XpMin();
 
                 if (chr.FObject())
                 {
-                    // draw the object
+                    // 3DMMv1.0: draw the object
                     _ptxtb->FDrawObject(chr.CpMin(), pgnv, &xp, yp + lin.dypAscent + chp.dypOffset, &chp, prcClip);
                 }
                 else
@@ -1786,7 +1786,7 @@ void TXTG::DrawLines(PGNV pgnv, RC *prcClip, int32_t dxp, int32_t dyp, int32_t i
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Gives a subclass an opportunity to draw extra stuff associated with
     the line. Default does nothing.
 ***************************************************************************/
@@ -1794,7 +1794,7 @@ void TXTG::_DrawLinExtra(PGNV pgnv, PRC prcClip, LIN *plin, int32_t dxp, int32_t
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mousedown in the TXTG.
 ***************************************************************************/
 bool TXTG::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -1819,7 +1819,7 @@ bool TXTG::FCmdTrackMouse(PCMD_MOUSE pcmd)
         Assert(pcmd->cid == cidTrackMouse, 0);
     }
 
-    // do autoscrolling
+    // 3DMMv1.0: do autoscrolling
     GetRc(&rc, cooLocal);
     if (!FIn(xp, rc.xpLeft, rc.xpRight))
     {
@@ -1838,7 +1838,7 @@ bool TXTG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     if (scaHorz != scaNil || scaVert != scaNil)
         _Scroll(scaHorz, scaVert);
 
-    // set the selection
+    // 3DMMv1.0: set the selection
     if (_FGetCpFromPt(xp, yp, &cp, !_fSelByWord))
     {
         if (pcmd->cid != cidMouseDown || (pcmd->grfcust & fcustShift))
@@ -1857,7 +1857,7 @@ bool TXTG::FCmdTrackMouse(PCMD_MOUSE pcmd)
         }
         _fXpValid = fFalse;
     }
-    _SwitchSel(fTrue); // make sure the selection is on
+    _SwitchSel(fTrue); // 3DMMv1.0: make sure the selection is on
 
     if (!(pcmd->grfcust & fcustMouse))
         vpcex->EndMouseTracking();
@@ -1865,7 +1865,7 @@ bool TXTG::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do idle processing.  If this handler has the active selection, make sure
     the selection is on or off according to rglw[0] (non-zero means on)
     and set rglw[0] to false.  Always return false.
@@ -1874,7 +1874,7 @@ bool TXTG::FCmdSelIdle(PCMD pcmd)
 {
     AssertThis(0);
 
-    // if rglw[1] is this one's hid, don't change the sel state.
+    // 3DMMv1.0: if rglw[1] is this one's hid, don't change the sel state.
     if (pcmd->rglw[1] != Hid())
     {
         if (!pcmd->rglw[0])
@@ -1888,7 +1888,7 @@ bool TXTG::FCmdSelIdle(PCMD pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current selection.
 ***************************************************************************/
 void TXTG::GetSel(int32_t *pcpAnchor, int32_t *pcpOther)
@@ -1901,7 +1901,7 @@ void TXTG::GetSel(int32_t *pcpAnchor, int32_t *pcpOther)
     *pcpOther = _cpOther;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection.
 ***************************************************************************/
 void TXTG::SetSel(int32_t cpAnchor, int32_t cpOther, int32_t gin)
@@ -1930,7 +1930,7 @@ void TXTG::SetSel(int32_t cpAnchor, int32_t cpOther, int32_t gin)
         }
         else
         {
-            // they have the same anchor and neither is an insertion
+            // 3DMMv1.0: they have the same anchor and neither is an insertion
             _InvertCpRange(_pgnv, _cpOther, cpOther, gin);
             _cpOther = cpOther;
         }
@@ -1943,7 +1943,7 @@ void TXTG::SetSel(int32_t cpAnchor, int32_t cpOther, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the selection is visible (at least the _cpOther end of it).
 ***************************************************************************/
 void TXTG::ShowSel(void)
@@ -1957,7 +1957,7 @@ void TXTG::ShowSel(void)
     LIN linOther, linAnchor, lin;
     int32_t cpAnchor = _cpAnchor;
 
-    // find the lines we want to show
+    // 3DMMv1.0: find the lines we want to show
     _FindCp(_cpOther, &linOther, &ilinOther);
     _FindCp(_cpAnchor, &linAnchor, &ilinAnchor);
     linOther.dypTot -= _dypDisp;
@@ -1973,7 +1973,7 @@ void TXTG::ShowSel(void)
             dypSel = linOther.dypTot - linAnchor.dypTot + linOther.dyp;
         if (dypSel > rc.Dyp())
         {
-            // just show _cpOther
+            // 3DMMv1.0: just show _cpOther
             cpAnchor = _cpOther;
             ilinAnchor = ilinOther;
             linAnchor = linOther;
@@ -1982,12 +1982,12 @@ void TXTG::ShowSel(void)
 
         if (linOther.dypTot < 0 || linAnchor.dypTot < 0)
         {
-            // scroll up
+            // 3DMMv1.0: scroll up
             cpScroll = LwMin(linOther.cpMin, linAnchor.cpMin);
         }
         else if (linOther.dypTot + linOther.dyp >= rc.Dyp() || linAnchor.dypTot + linAnchor.dyp >= rc.Dyp())
         {
-            // scroll down
+            // 3DMMv1.0: scroll down
             ilin = LwMin(ilinOther, ilinAnchor);
             cpScroll = LwMin(linOther.cpMin, linAnchor.cpMin);
             dypSel = rc.Dyp() - dypSel;
@@ -2004,12 +2004,12 @@ void TXTG::ShowSel(void)
         }
     }
 
-    // now do the horizontal stuff
+    // 3DMMv1.0: now do the horizontal stuff
     xpMin = _DxpFromCp(linOther.cpMin, _cpOther) + linOther.xpLeft - _scvHorz;
     xpLim = _DxpFromCp(linAnchor.cpMin, cpAnchor) + linAnchor.xpLeft - _scvHorz;
     if (LwAbs(xpLim - xpMin) > rc.Dxp())
     {
-        // can't show both
+        // 3DMMv1.0: can't show both
         if (xpMin > xpLim)
         {
             xpLim = xpMin;
@@ -2026,7 +2026,7 @@ void TXTG::ShowSel(void)
         _Scroll(scaToVal, scaToVal, _scvHorz - dxpScroll, cpScroll);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Turn the selection off.
 ***************************************************************************/
 void TXTG::HideSel(void)
@@ -2040,7 +2040,7 @@ void TXTG::HideSel(void)
     _tsSel = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Turn the sel on or off according to fOn.
 ***************************************************************************/
 void TXTG::_SwitchSel(bool fOn, int32_t gin)
@@ -2058,7 +2058,7 @@ void TXTG::_SwitchSel(bool fOn, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert the current selection.
 ***************************************************************************/
 void TXTG::_InvertSel(PGNV pgnv, int32_t gin)
@@ -2070,7 +2070,7 @@ void TXTG::_InvertSel(PGNV pgnv, int32_t gin)
     GetRc(&rc, cooLocal);
     if (_cpAnchor == _cpOther)
     {
-        // insertion bar
+        // 3DMMv1.0: insertion bar
         _GetXpYpFromCp(_cpAnchor, &rcT.ypTop, &rcT.ypBottom, &rcT.xpLeft);
         rcT.xpRight = --rcT.xpLeft + 2;
         if (rcT.FIntersect(&rc))
@@ -2085,7 +2085,7 @@ void TXTG::_InvertSel(PGNV pgnv, int32_t gin)
         _InvertCpRange(pgnv, _cpAnchor, _cpOther, gin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert a range.
 ***************************************************************************/
 void TXTG::_InvertCpRange(PGNV pgnv, int32_t cp1, int32_t cp2, int32_t gin)
@@ -2107,7 +2107,7 @@ void TXTG::_InvertCpRange(PGNV pgnv, int32_t cp1, int32_t cp2, int32_t gin)
 
     if (rc1.ypTop == rc2.ypTop && rc1.ypBottom == rc2.ypBottom)
     {
-        // only one line involved
+        // 3DMMv1.0: only one line involved
         rc1.xpRight = rc2.xpRight;
         if (rcT.FIntersect(&rc1, &rcClip))
         {
@@ -2119,7 +2119,7 @@ void TXTG::_InvertCpRange(PGNV pgnv, int32_t cp1, int32_t cp2, int32_t gin)
         return;
     }
 
-    // invert the sel on the first line
+    // 3DMMv1.0: invert the sel on the first line
     rc1.xpRight = kdxpIndentTxtg - _scvHorz + _DxpDoc();
     if (rcT.FIntersect(&rc1, &rcClip))
     {
@@ -2129,7 +2129,7 @@ void TXTG::_InvertCpRange(PGNV pgnv, int32_t cp1, int32_t cp2, int32_t gin)
             InvalRc(&rcT, gin);
     }
 
-    // invert the main rectangular block
+    // 3DMMv1.0: invert the main rectangular block
     rc1.xpLeft = kdxpIndentTxtg - _scvHorz;
     rc1.ypTop = rc1.ypBottom;
     rc1.ypBottom = rc2.ypTop;
@@ -2141,7 +2141,7 @@ void TXTG::_InvertCpRange(PGNV pgnv, int32_t cp1, int32_t cp2, int32_t gin)
             InvalRc(&rcT, gin);
     }
 
-    // invert the last line
+    // 3DMMv1.0: invert the last line
     rc2.xpLeft = rc1.xpLeft;
     if (rcT.FIntersect(&rc2, &rcClip))
     {
@@ -2152,7 +2152,7 @@ void TXTG::_InvertCpRange(PGNV pgnv, int32_t cp1, int32_t cp2, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a key down.
 ***************************************************************************/
 bool TXTG::FCmdKey(PCMD_KEY pcmd)
@@ -2171,8 +2171,8 @@ bool TXTG::FCmdKey(PCMD_KEY pcmd)
     RC rc;
     achar rgch[kcchInsBuf + 1];
 
-    // keep fetching characters until we get a cursor key, delete key or
-    // until the buffer is full.
+    // 3DMMv1.0: keep fetching characters until we get a cursor key, delete key or
+    // 3DMMv1.0: until the buffer is full.
     vkDone = vkNil;
     ichLim = 0;
     do
@@ -2180,7 +2180,7 @@ bool TXTG::FCmdKey(PCMD_KEY pcmd)
         grfcust = pcmd->grfcust;
         switch (pcmd->vk)
         {
-        // these keys all terminate the key fetching loop
+        // 3DMMv1.0: these keys all terminate the key fetching loop
         case kvkHome:
         case kvkEnd:
         case kvkLeft:
@@ -2203,7 +2203,7 @@ bool TXTG::FCmdKey(PCMD_KEY pcmd)
 #ifdef WIN
                 if ((achar)pcmd->ch == kchReturn)
                     rgch[ichLim++] = kchLineFeed;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
             }
             break;
         }
@@ -2214,7 +2214,7 @@ bool TXTG::FCmdKey(PCMD_KEY pcmd)
 LInsert:
     if (ichLim > 0)
     {
-        // have some characters to insert
+        // 3DMMv1.0: have some characters to insert
         FReplace(rgch, ichLim, _cpAnchor, _cpOther);
     }
 
@@ -2259,11 +2259,11 @@ LInsert:
     case kvkPageUp:
     case kvkDown:
     case kvkPageDown:
-        // get the LIN for _cpOther and make sure _xpSel is up to date
+        // 3DMMv1.0: get the LIN for _cpOther and make sure _xpSel is up to date
         _FindCp(_cpOther, &lin, &ilin);
         if (!_fXpValid)
         {
-            // get the xp of _cpOther
+            // 3DMMv1.0: get the xp of _cpOther
             _xpSel = lin.xpLeft + _DxpFromCp(lin.cpMin, _cpOther);
             _fXpValid = fTrue;
         }
@@ -2290,13 +2290,13 @@ LInsert:
 
             if (linT.cpMin >= lin.cpMin)
             {
-                // we didn't go anywhere so force going up a line
+                // 3DMMv1.0: we didn't go anywhere so force going up a line
                 _FetchLin(ilin - 1, &lin);
             }
             else if (lin.dypTot + lin.dyp > linT.dypTot + rc.Dyp() && ilinT < ilin - 1)
             {
-                // the previous line crosses the bottom of the ddg, so move
-                // down one line
+                // 3DMMv1.0: the previous line crosses the bottom of the ddg, so move
+                // 3DMMv1.0: down one line
                 _FetchLin(ilinT + 1, &lin);
             }
             else
@@ -2324,12 +2324,12 @@ LInsert:
 
             if (linT.cpMin <= lin.cpMin)
             {
-                // we didn't go anywhere so force going down a line
+                // 3DMMv1.0: we didn't go anywhere so force going down a line
                 _FetchLin(ilin + 1, &lin);
             }
             else if (linT.dypTot + linT.dyp > lin.dypTot + rc.Dyp() && ilinT > ilin + 1)
             {
-                // the line crosses the bottom of the ddg so back up one line
+                // 3DMMv1.0: the line crosses the bottom of the ddg so back up one line
                 Assert(ilinT > 0, 0);
                 _FetchLin(ilinT - 1, &lin);
             }
@@ -2338,15 +2338,15 @@ LInsert:
             break;
         }
 
-        // we have the line, now find the position on the line
+        // 3DMMv1.0: we have the line, now find the position on the line
         _FGetCpFromXp(_xpSel - _scvHorz, &lin, &dcp);
         dcp -= _cpOther;
 
     LSetSel:
-        // move the selection
+        // 3DMMv1.0: move the selection
         if (grfcust & fcustShift)
         {
-            // extend selection
+            // 3DMMv1.0: extend selection
             SetSel(_cpAnchor, _cpOther + dcp);
             ShowSel();
         }
@@ -2382,7 +2382,7 @@ LInsert:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the maximum scroll value for this view of the doc.
 ***************************************************************************/
 int32_t TXTG::_ScvMax(bool fVert)
@@ -2398,7 +2398,7 @@ int32_t TXTG::_ScvMax(bool fVert)
     return LwMax(0, dxp - rc.Dxp());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the logical width of the text "page".
 ***************************************************************************/
 int32_t TXTG::_DxpDoc(void)
@@ -2406,7 +2406,7 @@ int32_t TXTG::_DxpDoc(void)
     return _ptxtb->DxpDef();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the tab width.  Default does nothing.
 ***************************************************************************/
 void TXTG::SetDxpTab(int32_t dxp)
@@ -2414,7 +2414,7 @@ void TXTG::SetDxpTab(int32_t dxp)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the document width.  Default calls SetDxpDef on the TXTB.
 ***************************************************************************/
 void TXTG::SetDxpDoc(int32_t dxp)
@@ -2424,7 +2424,7 @@ void TXTG::SetDxpDoc(int32_t dxp)
     _ptxtb->SetDxpDef(dxp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Show or hide the ruler.
 ***************************************************************************/
 void TXTG::ShowRuler(bool fShow)
@@ -2468,7 +2468,7 @@ void TXTG::ShowRuler(bool fShow)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the height of the ruler.
 ***************************************************************************/
 int32_t TXTG::_DypTrul(void)
@@ -2477,7 +2477,7 @@ int32_t TXTG::_DypTrul(void)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the ruler.
 ***************************************************************************/
 PTRUL TXTG::_PtrulNew(PGCB pgcb)
@@ -2486,7 +2486,7 @@ PTRUL TXTG::_PtrulNew(PGCB pgcb)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the natural width and height of the view on the document.
 ***************************************************************************/
 void TXTG::GetNaturalSize(int32_t *pdxp, int32_t *pdyp)
@@ -2505,7 +2505,7 @@ void TXTG::GetNaturalSize(int32_t *pdxp, int32_t *pdyp)
     *pdyp = lin.dypTot + lin.dyp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the plain line text document display gob.
 ***************************************************************************/
 TXLG::TXLG(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32_t dypFont, int32_t cchTab)
@@ -2524,7 +2524,7 @@ TXLG::TXLG(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32_t dypFont
     _cchTab = LwBound(cchTab, 1, kcbMax);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new plain line text doc display gob.
 ***************************************************************************/
 PTXLG TXLG::PtxlgNew(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32_t dypFont, int32_t cchTab)
@@ -2542,7 +2542,7 @@ PTXLG TXLG::PtxlgNew(PTXTB ptxtb, PGCB pgcb, int32_t onn, uint32_t grfont, int32
     return ptxlg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the width of the logical "page".  For a TXLG, this is some big
     value, so we do no word wrap.
 ***************************************************************************/
@@ -2551,7 +2551,7 @@ int32_t TXLG::_DxpDoc(void)
     return kswMax;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the tab width.
 ***************************************************************************/
 void TXLG::SetDxpTab(int32_t dxp)
@@ -2567,7 +2567,7 @@ void TXLG::SetDxpTab(int32_t dxp)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the document width.  Does nothing.
 ***************************************************************************/
 void TXLG::SetDxpDoc(int32_t dxp)
@@ -2575,7 +2575,7 @@ void TXLG::SetDxpDoc(int32_t dxp)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the character properties for display.  These are the same for all
     characters in the TXLG.
 ***************************************************************************/
@@ -2598,7 +2598,7 @@ void TXLG::_FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin, int32_t *pcpLim)
         *pcpLim = _ptxtb->CpMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the paragraph properties for disply.  These are constant for all
     characters in the TXLG.
 ***************************************************************************/
@@ -2619,7 +2619,7 @@ void TXLG::_FetchPap(int32_t cp, PPAP ppap, int32_t *pcpMin, int32_t *pcpLim)
         *pcpLim = _ptxtb->CpMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the selection.
 ***************************************************************************/
 bool TXLG::_FCopySel(PDOCB *ppdocb)
@@ -2652,7 +2652,7 @@ bool TXLG::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the selection.
 ***************************************************************************/
 void TXLG::_ClearSel(void)
@@ -2663,7 +2663,7 @@ void TXLG::_ClearSel(void)
     ShowSel();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paste the selection.
 ***************************************************************************/
 bool TXLG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
@@ -2706,14 +2706,14 @@ bool TXLG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a rich text document display gob.
 ***************************************************************************/
 TXRG::TXRG(PTXRD ptxrd, PGCB pgcb) : TXRG_PAR(ptxrd, pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new rich text document display GOB.
 ***************************************************************************/
 PTXRG TXRG::PtxrgNew(PTXRD ptxrd, PGCB pgcb)
@@ -2732,7 +2732,7 @@ PTXRG TXRG::PtxrgNew(PTXRD ptxrd, PGCB pgcb)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a TXRG.
 ***************************************************************************/
 void TXRG::AssertValid(uint32_t grf)
@@ -2740,9 +2740,9 @@ void TXRG::AssertValid(uint32_t grf)
     TXRG_PAR::AssertValid(0);
     AssertNilOrPo(_ptrul, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the character properties for displaying the given cp.
 ***************************************************************************/
 void TXRG::_FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin, int32_t *pcpLim)
@@ -2750,7 +2750,7 @@ void TXRG::_FetchChp(int32_t cp, PCHP pchp, int32_t *pcpMin, int32_t *pcpLim)
     ((PTXRD)_ptxtb)->FetchChp(cp, pchp, pcpMin, pcpLim);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the paragraph properties for displaying the given cp.
 ***************************************************************************/
 void TXRG::_FetchPap(int32_t cp, PPAP ppap, int32_t *pcpMin, int32_t *pcpLim)
@@ -2758,7 +2758,7 @@ void TXRG::_FetchPap(int32_t cp, PPAP ppap, int32_t *pcpMin, int32_t *pcpLim)
     ((PTXRD)_ptxtb)->FetchPap(cp, ppap, pcpMin, pcpLim);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the tab width for the currently selected paragraph(s).
 ***************************************************************************/
 void TXRG::SetDxpTab(int32_t dxp)
@@ -2786,7 +2786,7 @@ void TXRG::SetDxpTab(int32_t dxp)
     ShowSel();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection for the TXRG.  Invalidates _chpIns if the selection
     changes.
 ***************************************************************************/
@@ -2812,7 +2812,7 @@ void TXRG::SetSel(int32_t cpAnchor, int32_t cpOther, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the chp to use to replace the given range of characters. If the
     range is empty and not at the beginning of a paragraph, gets the chp
     of the previous character. Otherwise gets the chp of the character at
@@ -2833,14 +2833,14 @@ void TXRG::_FetchChpSel(int32_t cp1, int32_t cp2, PCHP pchp)
         }
     }
 
-    // NOTE: don't just call _FetchChp here.  _FetchChp allows derived
-    // classes to modify the chp used for display without affecting the
-    // chp used for editing.  This chp is an editing chp.  Same note
-    // applies several other places in this file.
+    // 3DMMv1.0: NOTE: don't just call _FetchChp here.  _FetchChp allows derived
+    // 3DMMv1.0: classes to modify the chp used for display without affecting the
+    // 3DMMv1.0: chp used for editing.  This chp is an editing chp.  Same note
+    // 3DMMv1.0: applies several other places in this file.
     ((PTXRD)_ptxtb)->FetchChp(cp, pchp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the _chpIns is valid.
 ***************************************************************************/
 void TXRG::_EnsureChpIns(void)
@@ -2854,7 +2854,7 @@ void TXRG::_EnsureChpIns(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replaces the characters between cp1 and cp2 with the given ones.
 ***************************************************************************/
 bool TXRG::FReplace(achar *prgch, int32_t cch, int32_t cp1, int32_t cp2)
@@ -2886,7 +2886,7 @@ bool TXRG::FReplace(achar *prgch, int32_t cch, int32_t cp1, int32_t cp2)
 
     if (fSetChpIns)
     {
-        // preserve the _chpIns
+        // 3DMMv1.0: preserve the _chpIns
         _chpIns = chp;
         _fValidChp = fTrue;
     }
@@ -2894,7 +2894,7 @@ bool TXRG::FReplace(achar *prgch, int32_t cch, int32_t cp1, int32_t cp2)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the selection.
 ***************************************************************************/
 bool TXRG::_FCopySel(PDOCB *ppdocb)
@@ -2926,7 +2926,7 @@ bool TXRG::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the selection.
 ***************************************************************************/
 void TXRG::_ClearSel(void)
@@ -2935,7 +2935,7 @@ void TXRG::_ClearSel(void)
     ShowSel();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paste the selection.
 ***************************************************************************/
 bool TXRG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
@@ -2990,7 +2990,7 @@ bool TXRG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply the given character properties to the current selection.
 ***************************************************************************/
 bool TXRG::FApplyChp(PCHP pchp, PCHP pchpDiff)
@@ -3044,7 +3044,7 @@ bool TXRG::FApplyChp(PCHP pchp, PCHP pchpDiff)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply the given paragraph properties to the current selection.
 ***************************************************************************/
 bool TXRG::FApplyPap(PPAP ppap, PPAP ppapDiff, bool fExpand)
@@ -3070,7 +3070,7 @@ bool TXRG::FApplyPap(PPAP ppap, PPAP ppapDiff, bool fExpand)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply a character or paragraph property
 ***************************************************************************/
 bool TXRG::FCmdApplyProperty(PCMD pcmd)
@@ -3114,13 +3114,13 @@ bool TXRG::FCmdApplyProperty(PCMD pcmd)
         chpOld.onn = ~onn;
         goto LApplyChp;
     case cidChooseSubSuper:
-        // the amount to offset by is pcmd->rglw[0] ^ (1L << 31), so 0 can be
-        // used to indicate that we're to ask the user.
+        // 3DMMv1.0: the amount to offset by is pcmd->rglw[0] ^ (1L << 31), so 0 can be
+        // 3DMMv1.0: used to indicate that we're to ask the user.
         if (pcmd->rglw[0] == 0)
         {
             int32_t dyp = _chpIns.dypOffset;
 
-            // ask the user for the amount to sub/superscript by
+            // 3DMMv1.0: ask the user for the amount to sub/superscript by
             if (!_FGetOtherSubSuper(&dyp))
                 return fTrue;
             pcmd->rglw[0] = dyp ^ (1L << 31);
@@ -3133,7 +3133,7 @@ bool TXRG::FCmdApplyProperty(PCMD pcmd)
         {
             int32_t dyp = _chpIns.dypFont;
 
-            // ask the user for the font size
+            // 3DMMv1.0: ask the user for the font size
             if (!_FGetOtherSize(&dyp))
                 return fTrue;
             pcmd->rglw[0] = dyp;
@@ -3181,7 +3181,7 @@ bool TXRG::FCmdApplyProperty(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a font size from the user.
 ***************************************************************************/
 bool TXRG::_FGetOtherSize(int32_t *pdypFont)
@@ -3193,7 +3193,7 @@ bool TXRG::_FGetOtherSize(int32_t *pdypFont)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the amount to sub/superscript from the user.
 ***************************************************************************/
 bool TXRG::_FGetOtherSubSuper(int32_t *pdypOffset)
@@ -3205,7 +3205,7 @@ bool TXRG::_FGetOtherSubSuper(int32_t *pdypOffset)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Apply a character or paragraph property
 ***************************************************************************/
 bool TXRG::FSetColor(ACR *pacrFore, ACR *pacrBack)
@@ -3236,7 +3236,7 @@ bool TXRG::FSetColor(ACR *pacrFore, ACR *pacrBack)
     return FApplyChp(&chp, &chpDiff);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enable, check/uncheck property commands.
 ***************************************************************************/
 bool TXRG::FEnablePropCmd(PCMD pcmd, uint32_t *pgrfeds)

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
   scene.cpp
 
@@ -44,21 +44,40 @@
 #include "soc.h"
 ASSERTNAME
 
+#if defined(KAUAI_WIN32)
+extern void Queue4DMMObjectGroupsSelectionRefresh(void);
+#define REFRESH_4DMM_OBJECT_GROUP_SELECTION_UI() Queue4DMMObjectGroupsSelectionRefresh()
+#else
+#define REFRESH_4DMM_OBJECT_GROUP_SELECTION_UI() ((void)0)
+#endif
+
+#if defined(BRENDER_MODERN_14)
+#define MODERN_BR_SCENE_LOG(...) \
+    do \
+    { \
+        if (FBrModernLogEnabled()) \
+            BrModernLog(__VA_ARGS__); \
+    } while (0)
+#else
+#define MODERN_BR_SCENE_LOG(...) ((void)0)
+#endif
+
 //
-// Scene event types
+// 3DMMv1.0: Scene event types
 //
 enum SEVT
-{                   // StartEv	FrmEv	Param
-    sevtAddActr,    //    X		  		pactr/chid
-    sevtPlaySnd,    // 	  		  X		SSE (Scene Sound Event)
-    sevtAddTbox,    // 	  X				ptbox/chid
-    sevtChngCamera, // 			  X		icam
-    sevtSetBkgd,    // 	  X				Background Tag
-    sevtPause       // 			  X		type, duration
+{                   // 3DMMv1.0: StartEv	FrmEv	Param
+    sevtAddActr,    // 3DMMv1.0:    X		  		pactr/chid
+    sevtPlaySnd,    // 3DMMv1.0: 	  		  X		SSE (Scene Sound Event)
+    sevtAddTbox,    // 3DMMv1.0: 	  X				ptbox/chid
+    sevtChngCamera, // 3DMMv1.0: 			  X		icam
+    sevtSetBkgd,    // 3DMMv1.0: 	  X				Background Tag
+    sevtPause,      // 3DMMv1.0: 			  X		type, duration
+    sevtBlankFrame  // 			  X		no variable data
 };
 
 //
-// Struct for saving event pause information
+// 3DMMv1.0: Struct for saving event pause information
 //
 struct SEVP
 {
@@ -67,26 +86,26 @@ struct SEVP
 };
 
 //
-// Scene thumbnails
+// 3DMMv1.0: Scene thumbnails
 //
 const auto kdxpThumbnail = 144;
 const auto kdypThumbnail = 81;
 const auto kbTransparent = 250;
 
 //
-// Scene event
+// 3DMMv1.0: Scene event
 //
 struct SEV
 {
-    int32_t nfrm; // frame number of the event.
-    SEVT sevt;    // event type
+    int32_t nfrm; // 3DMMv1.0: frame number of the event.
+    SEVT sevt;    // 3DMMv1.0: event type
 };
 
 const auto kbomSev = 0xF0000000;
 const auto kbomLong = 0xC0000000;
 
 //
-// Header for the scene chunk when on file
+// 3DMMv1.0: Header for the scene chunk when on file
 //
 struct SCENH
 {
@@ -98,11 +117,11 @@ struct SCENH
 };
 
 const auto kbomScenh = 0x5FC00000;
-/****************************************
+/** 3DMMv1.0: **************************************
     TAGC - Tag,Chid combo
 ****************************************/
 
-/* On-disk representation of TAGC */
+/* 3DMMEx: On-disk representation of TAGC */
 struct TAGCF
 {
     CHID chid;
@@ -119,7 +138,7 @@ struct TAGC
     TAG tag;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     SSE - scene sound event
 ****************************************/
 const BOM kbomSse = 0xFF000000;
@@ -127,10 +146,10 @@ typedef struct SSE *PSSE;
 struct SSE
 {
     int32_t vlm;
-    int32_t sty; // sound type
+    int32_t sty; // 3DMMv1.0: sound type
     bool fLoop;
     int32_t ctagc;
-    //	TAGC _rgtagcSnd[_ctagc]; // variable array of tagcs follows SSE
+    // 3DMMv1.0:	TAGC _rgtagcSnd[_ctagc]; // variable array of tagcs follows SSE
 
   protected:
     static int32_t _Cb(int32_t ctagc)
@@ -181,7 +200,7 @@ struct SSE
 void ReleasePpsse(PSSE *ppsse);
 
 //
-// Undo object for chopping operation.
+// 3DMMv1.0: Undo object for chopping operation.
 //
 typedef class SUNC *PSUNC;
 
@@ -196,8 +215,13 @@ class SUNC : public SUNC_PAR
   protected:
     CNO _cno;
     PCRF _pcrf;
+    CTSTATE *_pctstate;
+    STN _stnUndoName;
     SUNC(void)
     {
+        _cno = cnoNil;
+        _pcrf = pvNil;
+        _pctstate = pvNil;
     }
 
   public:
@@ -205,13 +229,62 @@ class SUNC : public SUNC_PAR
     ~SUNC(void);
 
     bool FSave(PSCEN pscen);
+    void SetUndoName(const achar *pszUndoName)
+    {
+        _stnUndoName.SetSz(pszUndoName);
+    }
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 //
-// Undo object for background operations
+// Lightweight undo for the two native frame-edge operations.  These paths
+// change only the scene bounds (plus the persistent first-frame camera event),
+// so serializing every actor and model would defeat the original instant frame
+// creation behavior.
+//
+typedef class SUNF *PSUNF;
+
+#define SUNF_PAR MUNB
+#define kclsSUNF KLCONST4('S', 'U', 'N', 'F')
+class SUNF : public SUNF_PAR
+{
+    RTCLASS_DEC
+    MARKMEM
+    ASSERT
+
+  protected:
+    int32_t _cfrm;
+    bool _fBefore;
+    bool _fBlank;
+    bool _fInserted;
+    bool _fHasCameraState;
+    CTSTATE *_pctstate;
+
+    SUNF(void)
+    {
+        _cfrm = 0;
+        _fBefore = fFalse;
+        _fBlank = fFalse;
+        _fInserted = fTrue;
+        _fHasCameraState = fFalse;
+        _pctstate = pvNil;
+    }
+
+  public:
+    static PSUNF PsunfNew(void);
+    ~SUNF(void);
+    bool FSave(PSCEN pscen, bool fBefore, bool fBlank, int32_t cfrm);
+
+    virtual bool FDo(PDOCB pdocb) override;
+    virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
+};
+
+//
+// 3DMMv1.0: Undo object for background operations
 //
 typedef class SUNK *PSUNK;
 
@@ -250,10 +323,11 @@ class SUNK : public SUNK_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 //
-// Undo object for transition operations
+// 3DMMv1.0: Undo object for transition operations
 //
 typedef class SUNR *PSUNR;
 
@@ -282,10 +356,11 @@ class SUNR : public SUNR_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 //
-// Undo object for pause operations
+// 3DMMv1.0: Undo object for pause operations
 //
 typedef class SUNP *PSUNP;
 
@@ -324,10 +399,11 @@ class SUNP : public SUNP_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 //
-// Undo object for text box operations
+// 3DMMv1.0: Undo object for text box operations
 //
 typedef class SUNX *PSUNX;
 
@@ -376,10 +452,11 @@ class SUNX : public SUNX_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 //
-// Undo object for sound operations
+// 3DMMv1.0: Undo object for sound operations
 //
 typedef class SUNS *PSUNS;
 
@@ -392,8 +469,8 @@ class SUNS : public SUNS_PAR
     ASSERT
 
   protected:
-    PSSE _psse;   // may be pvNil
-    int32_t _sty; // sty to use if _psse is pvNil
+    PSSE _psse;   // 3DMMv1.0: may be pvNil
+    int32_t _sty; // 3DMMv1.0: sty to use if _psse is pvNil
 
     SUNS(void)
     {
@@ -420,10 +497,11 @@ class SUNS : public SUNS_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 //
-// Undo object for title operations
+// 3DMMv1.0: Undo object for title operations
 //
 typedef class SUNT *PSUNT;
 
@@ -453,6 +531,7 @@ class SUNT : public SUNT_PAR
 
     virtual bool FDo(PDOCB pdocb) override;
     virtual bool FUndo(PDOCB pdocb) override;
+    virtual void GetUndoName(PSTN pstn) override;
 };
 
 RTCLASS(SCEN)
@@ -463,9 +542,10 @@ RTCLASS(SUNK)
 RTCLASS(SUNP)
 RTCLASS(SUNX)
 RTCLASS(SUNC)
+RTCLASS(SUNF)
 RTCLASS(SUNR)
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Constructor for scenes.  This function is private, use PscenNew()
  * for public construction.
@@ -482,18 +562,22 @@ SCEN::SCEN(PMVIE pmvie)
     AssertNilOrPo(pmvie, 0);
 
     _pmvie = pmvie;
+    _pactrSelected = pvNil;
+    _pactrSelected2 = pvNil;
+    _pglaridSelected = pvNil;
+    _ptboxSelected = pvNil;
     _nfrmCur = 1;
     _nfrmLast = 1;
     _nfrmFirst = 1;
-    _trans = transDissolve; // default transition
+    _trans = transDissolve; // 3DMMv1.0: default transition
 
     //
-    // By default we disable pauses in the studio
+    // 3DMMv1.0: By default we disable pauses in the studio
     //
     _grfscen = fscenPauses;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Exported constructor for scenes.
  *
@@ -512,7 +596,7 @@ PSCEN SCEN::PscenNew(PMVIE pmvie)
     PSCEN pscen;
 
     //
-    // Create the object
+    // 3DMMv1.0: Create the object
     //
     pscen = NewObj SCEN(pmvie);
     if (pscen == pvNil)
@@ -521,7 +605,7 @@ PSCEN SCEN::PscenNew(PMVIE pmvie)
     }
 
     //
-    // Initialize event list
+    // 3DMMv1.0: Initialize event list
     //
     pscen->_pggsevFrm = GG::PggNew(SIZEOF(SEV));
     if (pscen->_pggsevFrm == pvNil)
@@ -538,6 +622,12 @@ PSCEN SCEN::PscenNew(PMVIE pmvie)
 
     pscen->_pglpactr = GL::PglNew(SIZEOF(PACTR), 0);
     if (pscen->_pglpactr == pvNil)
+    {
+        goto LFail;
+    }
+
+    pscen->_pglaridSelected = GL::PglNew(SIZEOF(int32_t), 0);
+    if (pscen->_pglaridSelected == pvNil)
     {
         goto LFail;
     }
@@ -562,7 +652,7 @@ LFail:
     return (pvNil);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scenes.
  *
@@ -583,7 +673,7 @@ SCEN::~SCEN(void)
     PACTR pactr;
 
     //
-    // Remove starting events
+    // 3DMMv1.0: Remove starting events
     //
 
     if (_pggsevStart != pvNil)
@@ -623,7 +713,7 @@ SCEN::~SCEN(void)
     ReleasePpo(&_pggsevStart);
 
     //
-    // Walk and delete all frame events.
+    // 3DMMv1.0: Walk and delete all frame events.
     //
     if (_pggsevFrm != pvNil)
     {
@@ -631,7 +721,7 @@ SCEN::~SCEN(void)
         {
 
             //
-            // For each event, release any child objects.
+            // 3DMMv1.0: For each event, release any child objects.
             //
             qsev = (PSEV)_pggsevFrm->QvFixedGet(isev);
             switch (qsev->sevt)
@@ -655,6 +745,7 @@ SCEN::~SCEN(void)
             }
             case sevtPause:
             case sevtChngCamera:
+            case sevtBlankFrame:
                 break;
 
             default:
@@ -665,41 +756,42 @@ SCEN::~SCEN(void)
     }
 
     //
-    // Delete frame event list.
+    // 3DMMv1.0: Delete frame event list.
     //
     ReleasePpo(&_pggsevFrm);
 
     //
-    // Remove the GL of actors.  We do not Release the actors
-    // themselves as our reference was released above in the
-    // the _pggsevStart.
+    // 3DMMv1.0: Remove the GL of actors.  We do not Release the actors
+    // 3DMMv1.0: themselves as our reference was released above in the
+    // 3DMMv1.0: the _pggsevStart.
     //
     ReleasePpo(&_pglpactr);
+    ReleasePpo(&_pglaridSelected);
 
     //
-    // Remove the GL of tboxes.  We do not Release the tboxes
-    // themselves as our reference was released above in the
-    // the _pggsevStart.
+    // 3DMMv1.0: Remove the GL of tboxes.  We do not Release the tboxes
+    // 3DMMv1.0: themselves as our reference was released above in the
+    // 3DMMv1.0: the _pggsevStart.
     //
     ReleasePpo(&_pglptbox);
 
     //
-    // Release the background
+    // 3DMMv1.0: Release the background
     //
     ReleasePpo(&_pbkgd);
 
     //
-    // Release the thumbnail
+    // 3DMMv1.0: Release the thumbnail
     //
     ReleasePpo(&_pmbmp);
 
     //
-    // Free the background sound
+    // 3DMMv1.0: Free the background sound
     //
     ReleasePpsse(&_psseBkgd);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scenes.  This method is used to not only
  * destruct a scene, but to remove all lights, actors and
@@ -730,7 +822,7 @@ void SCEN::Close(PSCEN *ppscen)
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SCEN
  *
  * Parameters:
@@ -754,6 +846,7 @@ void SCEN::MarkMem(void)
     MarkMemObj(_pggsevStart);
     MarkMemObj(_pggsevFrm);
     MarkMemObj(_pglpactr);
+    MarkMemObj(_pglaridSelected);
     MarkMemObj(_pglptbox);
     MarkMemObj(_pmbmp);
 
@@ -773,7 +866,7 @@ void SCEN::MarkMem(void)
         MarkPv(_psseBkgd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SCEN.
 ***************************************************************************/
 void SCEN::AssertValid(uint32_t grf)
@@ -785,9 +878,11 @@ void SCEN::AssertValid(uint32_t grf)
 
     AssertPo(&_stnName, 0);
     AssertNilOrPo(_pactrSelected, 0);
+    AssertNilOrPo(_pactrSelected2, 0);
     AssertNilOrPo(_pbkgd, 0);
     AssertNilOrPo(_pmbmp, 0);
     AssertPo(_pglpactr, 0);
+    AssertPo(_pglaridSelected, 0);
     AssertPo(_pglptbox, 0);
     AssertPo(_pggsevFrm, 0);
     AssertPo(_pggsevStart, 0);
@@ -801,6 +896,7 @@ void SCEN::AssertValid(uint32_t grf)
         case sevtPlaySnd:
         case sevtPause:
         case sevtChngCamera:
+        case sevtBlankFrame:
             break;
         default:
             Bug("Unknown event type");
@@ -824,7 +920,7 @@ void SCEN::AssertValid(uint32_t grf)
 
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the transition of the scene and creates an undo object.
  *
@@ -860,7 +956,7 @@ bool SCEN::FSetTransition(TRANS trans)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Sets the name of the scene and creates an undo object.
  *
@@ -902,7 +998,7 @@ bool SCEN::FSetName(PSTN pstn)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine jumps to an arbitrary frame, updating actors, and adding
  * new frames to the scene if needed.
@@ -919,28 +1015,41 @@ bool SCEN::FGotoFrm(int32_t nfrm)
 {
     AssertThis(0);
 
+    MVIE::DiagLog("SCEN::FGotoFrm enter scene=%ld old=%ld target=%ld first=%ld last=%ld event_cursor=%ld events=%ld actors=%ld tboxes=%ld grf=0x%08lX",
+                  (long)Pmvie()->Iscen(), (long)_nfrmCur, (long)nfrm,
+                  (long)_nfrmFirst, (long)_nfrmLast, (long)_isevFrmLim,
+                  (long)_pggsevFrm->IvMac(), (long)_pglpactr->IvMac(),
+                  (long)_pglptbox->IvMac(), (unsigned long)_grfscen);
+    MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm enter");
+
     bool fSoundInFrame = fFalse, fUpdateSndFrame = nfrm != _nfrmCur;
     SEV sev;
     PMVU pmvu;
     void *qvVar;
     int32_t isev;
     int32_t nfrmOld = _nfrmCur;
+    uint64_t qwPerfStage = 0;
+    uint32_t cusecPerfForceActors = 0;
+    uint32_t cusecPerfForceTboxes = 0;
+    uint32_t cusecPerfVisibility = 0;
+    uint32_t cusecPerfCamera = 0;
+    uint32_t cusecPerfPrerender = 0;
 
     if (nfrm < _nfrmCur)
     {
 
         //
-        // Assume no pause type
+        // 3DMMv1.0: Assume no pause type
         //
         Pmvie()->Pmcc()->PauseType(witNil);
 
         //
-        // Go backwards
+        // 3DMMv1.0: Go backwards
         //
         if (nfrm < _nfrmFirst)
         {
             //
-            // Move first frame back in time
+            // 3DMMv1.0: Move first frame back in time
             //
             _MoveBackFirstFrame(nfrm);
             _MarkMovieDirty();
@@ -949,7 +1058,7 @@ bool SCEN::FGotoFrm(int32_t nfrm)
         _nfrmCur = nfrm;
 
         //
-        // Unplay all events to dest frame.
+        // 3DMMv1.0: Unplay all events to dest frame.
         //
         for (; _isevFrmLim > 0; _isevFrmLim--)
         {
@@ -960,6 +1069,8 @@ bool SCEN::FGotoFrm(int32_t nfrm)
             }
 
             qvVar = _pggsevFrm->QvGet(_isevFrmLim - 1);
+            MVIE::DiagLog("SCEN::FGotoFrm unplay event index=%ld event_frame=%ld type=%ld",
+                          (long)(_isevFrmLim - 1), (long)sev.nfrm, (long)sev.sevt);
             if (!_FUnPlaySev(&sev, qvVar))
             {
                 PushErc(ercSocGotoFrameFailure);
@@ -968,7 +1079,7 @@ bool SCEN::FGotoFrm(int32_t nfrm)
         }
 
         //
-        // Play events in this frame
+        // 3DMMv1.0: Play events in this frame
         //
         for (isev = _isevFrmLim - 1; isev >= 0; isev--)
         {
@@ -978,6 +1089,8 @@ bool SCEN::FGotoFrm(int32_t nfrm)
                 break;
             }
             qvVar = _pggsevFrm->QvGet(isev);
+            MVIE::DiagLog("SCEN::FGotoFrm replay event index=%ld event_frame=%ld type=%ld",
+                          (long)isev, (long)sev.nfrm, (long)sev.sevt);
             if (!_FPlaySev(&sev, qvVar, _grfscen))
             {
                 PushErc(ercSocGotoFrameFailure);
@@ -1001,12 +1114,12 @@ bool SCEN::FGotoFrm(int32_t nfrm)
         _nfrmCur = nfrm;
 
         //
-        // Assume no pause type
+        // 3DMMv1.0: Assume no pause type
         //
         Pmvie()->Pmcc()->PauseType(witNil);
 
         //
-        // Go forwards
+        // 3DMMv1.0: Go forwards
         //
         if (_nfrmCur > _nfrmLast)
         {
@@ -1015,7 +1128,7 @@ bool SCEN::FGotoFrm(int32_t nfrm)
         }
 
         //
-        // Play all events to dest frame.
+        // 3DMMv1.0: Play all events to dest frame.
         //
         for (; _isevFrmLim < _pggsevFrm->IvMac(); _isevFrmLim++)
         {
@@ -1025,6 +1138,8 @@ bool SCEN::FGotoFrm(int32_t nfrm)
                 break;
             }
             qvVar = _pggsevFrm->QvGet(_isevFrmLim);
+            MVIE::DiagLog("SCEN::FGotoFrm play event index=%ld event_frame=%ld type=%ld current=%ld",
+                          (long)_isevFrmLim, (long)sev.nfrm, (long)sev.sevt, (long)_nfrmCur);
             if (!_FPlaySev(&sev, qvVar, (sev.nfrm == _nfrmCur ? _grfscen : (_grfscen | fscenSounds | fscenPauses))))
             {
                 PushErc(ercSocGotoFrameFailure);
@@ -1035,22 +1150,139 @@ bool SCEN::FGotoFrm(int32_t nfrm)
         }
     }
 
+    MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm before _FForceActorsToFrm");
+    if (MVIE::FPerformanceMode())
+        qwPerfStage = MVIE::PerfNow();
     if (!(_grfscen & fscenActrs) && !_FForceActorsToFrm(nfrm, &fSoundInFrame))
     {
         return (fFalse);
     }
 
+    if (MVIE::FPerformanceMode())
+        cusecPerfForceActors = MVIE::PerfElapsedUs(qwPerfStage);
+    MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm after _FForceActorsToFrm/before _FForceTboxesToFrm");
+    if (MVIE::FPerformanceMode())
+        qwPerfStage = MVIE::PerfNow();
     if (!(_grfscen & fscenTboxes) && !_FForceTboxesToFrm(nfrm))
     {
         return (fFalse);
     }
 
-    if (!(_grfscen & fscenActrs))
+    if (MVIE::FPerformanceMode())
+        cusecPerfForceTboxes = MVIE::PerfElapsedUs(qwPerfStage);
+    MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm after _FForceTboxesToFrm");
+
+    if (MVIE::FPerformanceMode())
+        qwPerfStage = MVIE::PerfNow();
+    // A Shift+Ctrl-inserted blank frame owns no actor/text visibility, but it
+    // does not alter any actor route or text-box lifetime.  Reapply ordinary
+    // visibility on every nonblank frame so leaving a blank frame is clean.
+    bool fBlankFrame = fFalse;
+    for (isev = 0; isev < _pggsevFrm->IvMac(); isev++)
     {
-        _DoPrerenderingWork(fFalse);
+        _pggsevFrm->GetFixed(isev, &sev);
+        if (sev.nfrm > _nfrmCur)
+            break;
+        if (sev.nfrm == _nfrmCur && sev.sevt == sevtBlankFrame)
+        {
+            fBlankFrame = fTrue;
+            break;
+        }
     }
 
+    // BODY visibility is reference-counted.  The prerender subsystem owns one
+    // of those hide/show references while an actor is baked into the current
+    // background.  The blank-frame visibility pass must not consume that
+    // reference or a later prerender Show() will drive _cactHidden below zero.
+    if (fBlankFrame)
+    {
+        bool fAnyPrerendered = fFalse;
+        for (int32_t iactr = 0; iactr < _pglpactr->IvMac(); iactr++)
+        {
+            PACTR pactr;
+            _pglpactr->Get(iactr, &pactr);
+            if (pactr->FPrerendered())
+            {
+                fAnyPrerendered = fTrue;
+                break;
+            }
+        }
+        if (fAnyPrerendered)
+            _EndPrerendering();
+    }
+
+    for (int32_t iactr = 0; iactr < _pglpactr->IvMac(); iactr++)
+    {
+        PACTR pactr;
+        _pglpactr->Get(iactr, &pactr);
+        bool fShouldBeVisible = !fBlankFrame && pactr->FOnStage();
+        bool fVisible = pactr->Pbody()->FVisible();
+        if (fShouldBeVisible && !fVisible && !pactr->FPrerendered())
+            pactr->Show();
+        else if (!fShouldBeVisible && fVisible)
+            pactr->Hide();
+    }
+    if (fBlankFrame)
+    {
+        SelectActr(pvNil);
+        SelectTbox(pvNil);
+        for (int32_t itbox = 0; itbox < _pglptbox->IvMac(); itbox++)
+        {
+            PTBOX ptbox;
+            _pglptbox->Get(itbox, &ptbox);
+            ptbox->FGotoFrame(ptbox->NfrmFirst() - 1);
+        }
+    }
+
+    if (MVIE::FPerformanceMode())
+        cusecPerfVisibility = MVIE::PerfElapsedUs(qwPerfStage);
+
+    // Prerendering snapshots the BRender world from the camera that is active
+    // at the instant BWLD::Prerender() runs.  Install the .3ct-adjusted camera
+    // first so a static held Manual/Depth camera can use the stock optimization
+    // without baking actors from the scene's baseline viewpoint.
+    MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm before ApplyCameraTrack/prerender");
+    if (MVIE::FPerformanceMode())
+        qwPerfStage = MVIE::PerfNow();
+    Pmvie()->ApplyCameraTrack();
+    if (MVIE::FPerformanceMode())
+        cusecPerfCamera += MVIE::PerfElapsedUs(qwPerfStage);
+
+    if (!(_grfscen & fscenActrs) && !fBlankFrame)
+    {
+        MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm before _DoPrerenderingWork");
+        if (MVIE::FPerformanceMode())
+            qwPerfStage = MVIE::PerfNow();
+        _DoPrerenderingWork(fFalse);
+        if (MVIE::FPerformanceMode())
+            cusecPerfPrerender += MVIE::PerfElapsedUs(qwPerfStage);
+        MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm after _DoPrerenderingWork");
+    }
+
+    // Frame-slider jumps and other editor seeks must preview the same camera
+    // position that playback will render.  FGotoFrm has now finished replaying
+    // the scene's ordinary camera events, so the scene-local .3ct offset gets
+    // the final word before the view is invalidated and redrawn.
+    if (MVIE::FPerformanceMode())
+        qwPerfStage = MVIE::PerfNow();
+    Pmvie()->ApplyCameraTrack();
+    if (MVIE::FPerformanceMode())
+        cusecPerfCamera += MVIE::PerfElapsedUs(qwPerfStage);
+
+    // Playback refreshes attached lights in MVIE::FCmdRender. Editor seeks do
+    // not, so centralize the non-playing refresh here after every actor event
+    // and camera sample for the destination frame has been applied.
+    if (!Pmvie()->FPlaying())
+    {
+        Pmvie()->UpdateTestLightAttachment();
+        MVIE::LightEditorLog(Pmvie(), "editor_goto_frame complete target=%ld", (long)_nfrmCur);
+    }
     Pmvie()->InvalViews();
+    MVIE::DiagSetContext(Pmvie(), "SCEN::FGotoFrm complete");
+
+    if (MVIE::FPerformanceMode())
+        MVIE::PerfAddSceneTimings(cusecPerfForceActors, cusecPerfForceTboxes,
+                                  cusecPerfVisibility, cusecPerfCamera, cusecPerfPrerender);
 
     if (fUpdateSndFrame)
         Pmvie()->Pmcc()->SetSndFrame(fSoundInFrame);
@@ -1058,7 +1290,7 @@ bool SCEN::FGotoFrm(int32_t nfrm)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This function is an optimization which could be completely
  * skipped if desired.  The idea is to not render actors frame
@@ -1087,6 +1319,17 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
 {
     AssertThis(0);
 
+#if defined(BRENDER_MODERN_14)
+    // The legacy optimization bakes static actors into BWLD's CPU RGB/Z
+    // background buffers, then hides those actors for subsequent playback
+    // frames. Modern BRender/OpenGL renders the authoritative actor image on
+    // the GPU, so that 1995 CPU/GDI snapshot does not contain the completed
+    // modern frame. Hiding the supposedly baked actors therefore makes static
+    // objects black/invisible while the movie plays. Keep actors live in the
+    // Modern renderer; the legacy renderer retains its original optimization.
+    return;
+#endif
+
     int32_t isev;
     SEV sev;
     int32_t nfrmNextChange;
@@ -1094,20 +1337,50 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
     PACTR pactr;
     int32_t cactrPrerendered;
 
+    // A prerendered actor has already been baked into the background buffers.
+    // The old camera-track guard disabled prerendering for an entire scene if
+    // that scene contained even one .3ct key, which makes large static portions
+    // unnecessarily expensive.  End a snapshot only while the camera is truly
+    // changing around this frame.  Static held .3ct poses are allowed to use
+    // normal 3DMM prerendering from the adjusted camera installed by FGotoFrm.
+    bool fAnyPrerendered = fFalse;
+    for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
+    {
+        _pglpactr->Get(ipactr, &pactr);
+        if (pactr->FPrerendered())
+        {
+            fAnyPrerendered = fTrue;
+            break;
+        }
+    }
+
+    if (MVIE::FSceneDynamicLightingActive() || Pmvie()->FCameraTrackNeedsLiveActors())
+    {
+        if (fAnyPrerendered)
+            _EndPrerendering();
+        return;
+    }
+
+    // If a moving custom camera has just settled into a held pose, there is no
+    // native sevtChngCamera event to restart the optimization.  Start one fresh
+    // snapshot the first time we reach that stable section.
+    if (Pmvie()->FCameraTrackActive() && !fAnyPrerendered)
+        fStartNow = fTrue;
+
     //
-    // If the movie was playing and there was a camera view change
-    // in this frame, prerender any actors that don't change from
-    // here to the next camera view change or the end of the scene.
+    // 3DMMv1.0: If the movie was playing and there was a camera view change
+    // 3DMMv1.0: in this frame, prerender any actors that don't change from
+    // 3DMMv1.0: here to the next camera view change or the end of the scene.
     //
     if (!Pmvie()->FPlaying())
     {
-        return; // only prerender if the movie is playing
+        return; // 3DMMv1.0: only prerender if the movie is playing
     }
 
-    // Do prerender if this is the first frame of the scene
-    // (even though there's no sevtChngCamera), or if fStartNow
-    // is fTrue, or if there is a sevtChngCamera in this
-    // frame.  Otherwise, just return.
+    // 3DMMv1.0: Do prerender if this is the first frame of the scene
+    // 3DMMv1.0: (even though there's no sevtChngCamera), or if fStartNow
+    // 3DMMv1.0: is fTrue, or if there is a sevtChngCamera in this
+    // 3DMMv1.0: frame.  Otherwise, just return.
     if (_nfrmCur != _nfrmFirst && !fStartNow)
     {
         for (isev = _isevFrmLim - 1; isev >= 0; isev--)
@@ -1115,21 +1388,21 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
             _pggsevFrm->GetFixed(isev, &sev);
             if (sev.nfrm != _nfrmCur)
             {
-                return; // no camera view change in this frame
+                return; // 3DMMv1.0: no camera view change in this frame
             }
             if (sev.sevt == sevtChngCamera)
             {
-                break; // found one!
+                break; // 3DMMv1.0: found one!
             }
         }
         if (isev < 0)
         {
-            return; // no camera view in this frame
+            return; // 3DMMv1.0: no camera view in this frame
         }
     }
 
-    // Find when the next view change is
-    nfrmNextChange = _nfrmLast; // if no more view changes, go til end of scene
+    // 3DMMv1.0: Find when the next view change is
+    nfrmNextChange = _nfrmLast; // 3DMMv1.0: if no more view changes, go til end of scene
     for (isev = _isevFrmLim; isev < _pggsevFrm->IvMac(); isev++)
     {
         _pggsevFrm->GetFixed(isev, &sev);
@@ -1140,8 +1413,8 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
         }
     }
 
-    // Hide all actors that can't be prerendered this time, and count how many
-    // can be prerendered this time
+    // 3DMMv1.0: Hide all actors that can't be prerendered this time, and count how many
+    // 3DMMv1.0: can be prerendered this time
     cactrPrerendered = 0;
     for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
     {
@@ -1155,9 +1428,9 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
             cactrPrerendered++;
             if (pactr->FPrerendered())
             {
-                // Actor was prerendered in last view and in this
-                // view.  Temporarily show the actor so it shows
-                // up in the prerendered background
+                // 3DMMv1.0: Actor was prerendered in last view and in this
+                // 3DMMv1.0: view.  Temporarily show the actor so it shows
+                // 3DMMv1.0: up in the prerendered background
                 pactr->Show();
                 pactr->SetPrerendered(fFalse);
             }
@@ -1167,9 +1440,9 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
     {
         Pmvie()->Pbwld()->Prerender();
     }
-    // Show all the actors that were hidden (and show them again if they were
-    // prerendered last time and can't be now), and hide the newly prerendered
-    // actors.
+    // 3DMMv1.0: Show all the actors that were hidden (and show them again if they were
+    // 3DMMv1.0: prerendered last time and can't be now), and hide the newly prerendered
+    // 3DMMv1.0: actors.
     for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
     {
         _pglpactr->Get(ipactr, &pactr);
@@ -1191,7 +1464,7 @@ void SCEN::_DoPrerenderingWork(bool fStartNow)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * 	Ends any current prerendering by restoring the background
  *  RGB and Z buffers of the BWLD, showing all previously
@@ -1211,7 +1484,7 @@ void SCEN::_EndPrerendering(void)
     int32_t ipactr;
     PACTR pactr;
 
-    // Show all the actors that were being prerendered
+    // 3DMMv1.0: Show all the actors that were being prerendered
     Pmvie()->Pbwld()->Unprerender();
     for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
     {
@@ -1224,7 +1497,7 @@ void SCEN::_EndPrerendering(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine replays all the events, filtered by
  * grfscen, in the current frame.
@@ -1247,7 +1520,7 @@ bool SCEN::FReplayFrm(uint32_t grfscen)
     PACTR pactr;
 
     //
-    // Play events in this frame
+    // 3DMMv1.0: Play events in this frame
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -1257,7 +1530,7 @@ bool SCEN::FReplayFrm(uint32_t grfscen)
             break;
         }
         qvVar = _pggsevFrm->QvGet(isev);
-        // Note: FReplayFrm always suppresses camera changes
+        // 3DMMv1.0: Note: FReplayFrm always suppresses camera changes
         if (!_FPlaySev(&sev, qvVar, (~grfscen) | fscenCams))
         {
             PushErc(ercSocGotoFrameFailure);
@@ -1283,7 +1556,7 @@ bool SCEN::FReplayFrm(uint32_t grfscen)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine recalculates the length of the movie.
  *
@@ -1342,7 +1615,7 @@ void SCEN::InvalFrmRange(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine plays a single event.
  *
@@ -1376,7 +1649,7 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
         PSSE psse;
 
         psse = (PSSE)qvVar;
-        // If it's midi, copy it to _psseBkgd
+        // 3DMMv1.0: If it's midi, copy it to _psseBkgd
         if (psse->sty == styMidi)
         {
             PSSE psseDup;
@@ -1411,7 +1684,7 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
 
         if (Pmvie()->Trans() == transNil)
         {
-            Pmvie()->SetTrans(transCut); // so we do palette change at next draw
+            Pmvie()->SetTrans(transCut); // 3DMMv1.0: so we do palette change at next draw
         }
 
         _pbkgd = pbkgd;
@@ -1421,28 +1694,52 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
     case sevtAddActr:
 
         //
-        // Add the actor to the roll call.
+        // 3DMMv1.0: Add the actor to the roll call.
         //
         pactr = *(PACTR *)qvVar;
 
         AssertPo(pactr, 0);
+        MODERN_BR_SCENE_LOG("SCEN::_FPlaySev AddActr BEGIN scene=%p actor=%p arid=%ld body=%p frame=%ld scene_roll_before=%ld",
+                            this, pactr, (long)pactr->Arid(), pactr->Pbody(), (long)_nfrmCur,
+                            (long)_pglpactr->IvMac());
 
         if (_pglpactr->FPush(&pactr) == fFalse)
         {
+            MODERN_BR_SCENE_LOG("SCEN::_FPlaySev AddActr FAIL FPush actor=%p arid=%ld",
+                                pactr, (long)pactr->Arid());
             return (fFalse);
         }
 
         pactr->SetPscen(this);
+        if (pactr->Pbody() == pvNil)
+        {
+            TAG tagTmpl;
+            pactr->GetTagTmpl(&tagTmpl);
+            MODERN_BR_SCENE_LOG("SCEN::_FPlaySev AddActr FAIL create_body actor=%p arid=%ld sid=%ld ctg=0x%08lX cno=%ld",
+                                pactr, (long)pactr->Arid(), (long)tagTmpl.sid,
+                                (unsigned long)tagTmpl.ctg, (long)tagTmpl.cno);
+            MVIE::MultiLog(_pmvie,
+                "actor_insert FAIL stage=create_body arid=%ld sid=%ld ctg=0x%08lX cno=%ld",
+                (long)pactr->Arid(), (long)tagTmpl.sid,
+                (unsigned long)tagTmpl.ctg, (long)tagTmpl.cno);
+            _pglpactr->FPop(&pactr);
+            return fFalse;
+        }
 
         //
-        // Plop them into this frame
+        // 3DMMv1.0: Plop them into this frame
         //
         if (!pactr->FGotoFrame(_nfrmCur))
         {
+            MODERN_BR_SCENE_LOG("SCEN::_FPlaySev AddActr FAIL FGotoFrame actor=%p arid=%ld frame=%ld",
+                                pactr, (long)pactr->Arid(), (long)_nfrmCur);
             _pglpactr->FPop(&pactr);
             return (fFalse);
         }
 
+        MODERN_BR_SCENE_LOG("SCEN::_FPlaySev AddActr OK actor=%p arid=%ld body=%p onstage=%d scene_roll_after=%ld",
+                            pactr, (long)pactr->Arid(), pactr->Pbody(), (int)pactr->FOnStage(),
+                            (long)_pglpactr->IvMac());
         break;
 
     case sevtPause:
@@ -1462,15 +1759,15 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
     case sevtAddTbox:
 
         //
-        // Add the text box to the scene
+        // 3DMMv1.0: Add the text box to the scene
         //
         ptbox = *(PTBOX *)qvVar;
 
         AssertPo(ptbox, 0);
 
         //
-        // Insert at the end, because tbox ordering is important
-        // since the client uses itbox to find text boxes.
+        // 3DMMv1.0: Insert at the end, because tbox ordering is important
+        // 3DMMv1.0: since the client uses itbox to find text boxes.
         //
         if (!_pglptbox->FInsert(_pglptbox->IvMac(), &ptbox))
         {
@@ -1478,7 +1775,7 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
         }
 
         //
-        // Plop them into this frame
+        // 3DMMv1.0: Plop them into this frame
         //
         if (!ptbox->FGotoFrame(_nfrmCur))
         {
@@ -1501,6 +1798,10 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
         }
         break;
 
+    case sevtBlankFrame:
+        // Visibility is applied after actors and text boxes reach the frame.
+        break;
+
     default:
 
         Bug("Unhandled sevt");
@@ -1510,7 +1811,7 @@ bool SCEN::_FPlaySev(PSEV psev, void *qvVar, uint32_t grfscen)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine undoes a single event.
  *
@@ -1536,7 +1837,7 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
     {
     case sevtPlaySnd:
         //
-        // Go backwards and find previous background sound.
+        // 3DMMv1.0: Go backwards and find previous background sound.
         //
         for (isev = _isevFrmLim - 1; isev >= 0; isev--)
         {
@@ -1545,13 +1846,13 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
             if ((qsevTmp->sevt == sevtPlaySnd) && (qsevTmp->nfrm < _nfrmCur))
             {
                 sev = *qsevTmp;
-                _FPlaySev(&sev, _pggsevFrm->QvGet(isev), _grfscen | fscenSounds); // Ignore failure.
+                _FPlaySev(&sev, _pggsevFrm->QvGet(isev), _grfscen | fscenSounds); // 3DMMv1.0: Ignore failure.
                 return (fTrue);
             }
         }
 
         //
-        // Not found -- clear variables.
+        // 3DMMv1.0: Not found -- clear variables.
         //
         ReleasePpsse(&_psseBkgd);
         break;
@@ -1559,6 +1860,7 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
     case sevtAddActr:
     case sevtAddTbox:
     case sevtPause:
+    case sevtBlankFrame:
         break;
 
     case sevtChngCamera:
@@ -1566,7 +1868,7 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
         Assert(_pbkgd != pvNil, "No background in scene");
 
         //
-        // Go backwards and find previous camera position.
+        // 3DMMv1.0: Go backwards and find previous camera position.
         //
         for (isev = _isevFrmLim - 1; isev >= 0; isev--)
         {
@@ -1581,7 +1883,7 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
         }
 
         //
-        // Not found -- use starting camera, which is always camera 0.
+        // 3DMMv1.0: Not found -- use starting camera, which is always camera 0.
         //
         sev.sevt = sevtChngCamera;
         isev = 0;
@@ -1598,7 +1900,7 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine moves back stuff that is currently
  * in the first frame of the movie to the given frame.
@@ -1610,6 +1912,18 @@ bool SCEN::_FUnPlaySev(PSEV psev, void *qvVar)
  *	None.
  *
  ****************************************************/
+void SCEN::PreserveFirstFrameBoundary(int32_t nfrmFirst)
+{
+    AssertThis(0);
+    if (nfrmFirst < _nfrmFirst)
+        _MoveBackFirstFrame(nfrmFirst);
+}
+
+/***************************************************************************
+    PreserveFirstFrameBoundary intentionally funnels through the native
+    first-frame extension path so persistent first-frame camera events move
+    with the restored scene boundary.
+***************************************************************************/
 void SCEN::_MoveBackFirstFrame(int32_t nfrm)
 {
     AssertThis(0);
@@ -1619,8 +1933,8 @@ void SCEN::_MoveBackFirstFrame(int32_t nfrm)
     SEV sev;
 
     //
-    // Move back all events that must persist in the
-    // first frame.
+    // 3DMMv1.0: Move back all events that must persist in the
+    // 3DMMv1.0: first frame.
     //
     for (isev = 0; isev < _pggsevFrm->IvMac(); isev++)
     {
@@ -1635,7 +1949,7 @@ void SCEN::_MoveBackFirstFrame(int32_t nfrm)
         {
 
             //
-            // Move this back
+            // 3DMMv1.0: Move this back
             //
             sev.nfrm = nfrm;
             _pggsevFrm->PutFixed(isev, &sev);
@@ -1644,12 +1958,12 @@ void SCEN::_MoveBackFirstFrame(int32_t nfrm)
     }
 
     //
-    // Set new first frame
+    // 3DMMv1.0: Set new first frame
     //
     _nfrmFirst = nfrm;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds a sound to the event list for this frame.
  *
@@ -1685,7 +1999,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
     int32_t itag, itagBase;
 
     //
-    // Find any other sevtPlaySnd events in this frame with the same sty
+    // 3DMMv1.0: Find any other sevtPlaySnd events in this frame with the same sty
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -1697,7 +2011,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
             psseOld = (PSSE)_pggsevFrm->QvGet(isev);
             if (psseOld->sty == sty)
             {
-                // Found a match, which we will either add to or replace
+                // 3DMMv1.0: Found a match, which we will either add to or replace
                 isevSnd = isev;
                 break;
             }
@@ -1706,7 +2020,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
 
     if (isevSnd == ivNil)
     {
-        fQueue = fFalse; // nothing to queue to
+        fQueue = fFalse; // 3DMMv1.0: nothing to queue to
     }
 
     sev.nfrm = _nfrmCur;
@@ -1736,7 +2050,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
                 TrashVar(&prgtagc[itagc].chid);
             }
         }
-        // Create new event, replace any old event of same sty
+        // 3DMMv1.0: Create new event, replace any old event of same sty
         itagBase = 0;
         psseNew = SSE::PsseNew(vlm, sty, fLoop, ctag, prgtagc);
         FreePpv((void **)&prgtagc);
@@ -1751,7 +2065,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
         }
         if (isevSnd != ivNil)
         {
-            // Delete old event, if any
+            // 3DMMv1.0: Delete old event, if any
             PSSE psse;
             int32_t itagc;
             psse = (PSSE)_pggsevFrm->QvGet(isevSnd);
@@ -1763,15 +2077,15 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
             _isevFrmLim--;
         }
     }
-    else // we're queueing
+    else // 3DMMv1.0: we're queueing
     {
-        // Add this sound to isevSnd
+        // 3DMMv1.0: Add this sound to isevSnd
         psseOld = SSE::PsseDupFromGg(_pggsevFrm, isevSnd);
         if (pvNil == psseOld)
         {
             return fFalse;
         }
-        // ctag == 1
+        // 3DMMv1.0: ctag == 1
         if (prgtag[0].sid == ksidUseCrf)
         {
             if (!_pmvie->FChidFromUserSndCno(prgtag[0].cno, &chid))
@@ -1800,7 +2114,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
     }
 
     //
-    // Play only these sounds
+    // 3DMMv1.0: Play only these sounds
     //
     for (itag = 0; itag < ctag; itag++)
     {
@@ -1815,7 +2129,7 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
         if (pvNil == pmsnd)
             continue;
 
-        // Only queue if it's not the first sound.
+        // 3DMMv1.0: Only queue if it's not the first sound.
         Pmvie()->Pmsq()->FEnqueue(pmsnd, 0, fLoop, (itag != 0), vlm, pmsnd->Spr(fLoop ? toolLooper : toolSounder),
                                   fFalse, 0);
 
@@ -1824,16 +2138,16 @@ bool SCEN::FAddSndCore(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, int32_
 
     if (!_FPlaySev(&sev, psseNew, _grfscen | fscenSounds))
     {
-        // non-fatal error...ignore it
+        // 3DMMv1.0: non-fatal error...ignore it
     }
-    FreePpv((void **)&psseNew); // don't ReleasePpsse because GG got the tags
+    FreePpv((void **)&psseNew); // 3DMMv1.0: don't ReleasePpsse because GG got the tags
 
     _MarkMovieDirty();
     Pmvie()->Pmcc()->SetSndFrame(fTrue);
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds a sound to the event list for this frame.
  * Note: The chid's in the tagc are current
@@ -1866,7 +2180,7 @@ bool SCEN::FAddSndCoreTagc(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, in
     int32_t isevSnd = ivNil;
 
     //
-    // Find any other sevtPlaySnd events in this frame with the same sty
+    // 3DMMv1.0: Find any other sevtPlaySnd events in this frame with the same sty
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -1878,7 +2192,7 @@ bool SCEN::FAddSndCoreTagc(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, in
             psseOld = (PSSE)_pggsevFrm->QvGet(isev);
             if (psseOld->sty == sty)
             {
-                // Found a match, which we will either add to or replace
+                // 3DMMv1.0: Found a match, which we will either add to or replace
                 isevSnd = isev;
                 break;
             }
@@ -1887,7 +2201,7 @@ bool SCEN::FAddSndCoreTagc(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, in
 
     if (isevSnd == ivNil)
     {
-        fQueue = fFalse; // nothing to queue to
+        fQueue = fFalse; // 3DMMv1.0: nothing to queue to
     }
 
     sev.nfrm = _nfrmCur;
@@ -1895,7 +2209,7 @@ bool SCEN::FAddSndCoreTagc(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, in
 
     if (!fQueue)
     {
-        // Create new event, replace any old event of same sty
+        // 3DMMv1.0: Create new event, replace any old event of same sty
         psseNew = SSE::PsseNew(vlm, sty, fLoop, ctagc, prgtagc);
         if (pvNil == psseNew)
             return fFalse;
@@ -1906,7 +2220,7 @@ bool SCEN::FAddSndCoreTagc(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, in
         }
         if (isevSnd != ivNil)
         {
-            // Delete old event, if any
+            // 3DMMv1.0: Delete old event, if any
             PSSE psse;
             int32_t itagc;
             psse = (PSSE)_pggsevFrm->QvGet(isevSnd);
@@ -1918,23 +2232,23 @@ bool SCEN::FAddSndCoreTagc(bool fLoop, bool fQueue, int32_t vlm, int32_t sty, in
             _isevFrmLim--;
         }
     }
-    else // we're queueing
+    else // 3DMMv1.0: we're queueing
     {
         Bug("Should never queue when undoing");
     }
 
     if (!_FPlaySev(&sev, psseNew, _grfscen))
     {
-        // non-fatal error...ignore it
+        // 3DMMv1.0: non-fatal error...ignore it
     }
 
-    FreePpv((void **)&psseNew); // don't ReleasePpsse because GG got the tags
+    FreePpv((void **)&psseNew); // 3DMMv1.0: don't ReleasePpsse because GG got the tags
     _MarkMovieDirty();
     Pmvie()->Pmcc()->SetSndFrame(fTrue);
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds a sound to the event list for this frame
  * and creates an undo object for the action.
@@ -1961,7 +2275,7 @@ bool SCEN::FAddSnd(PTAG ptag, bool fLoop, bool fQueue, int32_t vlm, int32_t sty)
     PSSE psse;
     bool fFound;
 
-    // Create a SUNS with nil _psse
+    // 3DMMv1.0: Create a SUNS with nil _psse
     psuns = SUNS::PsunsNew();
 
     if (psuns == pvNil)
@@ -1970,7 +2284,7 @@ bool SCEN::FAddSnd(PTAG ptag, bool fLoop, bool fQueue, int32_t vlm, int32_t sty)
     }
     psuns->SetSty(sty);
 
-    // grab sound before edit, if any
+    // 3DMMv1.0: grab sound before edit, if any
     if (!FGetSnd(sty, &fFound, &psse))
     {
         ReleasePpo(&psuns);
@@ -2004,7 +2318,7 @@ bool SCEN::FAddSnd(PTAG ptag, bool fLoop, bool fQueue, int32_t vlm, int32_t sty)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes a sound from the event list for this frame.
  *
@@ -2025,7 +2339,7 @@ void SCEN::RemSndCore(int32_t sty)
     int32_t isev;
 
     //
-    // Find the sound
+    // 3DMMv1.0: Find the sound
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -2040,7 +2354,7 @@ void SCEN::RemSndCore(int32_t sty)
         if ((qsev->sevt == sevtPlaySnd) && ((PSSE)_pggsevFrm->QvGet(isev))->sty == sty)
         {
             //
-            // Remove it
+            // 3DMMv1.0: Remove it
             //
             PSSE psse;
             int32_t itagc;
@@ -2067,7 +2381,7 @@ void SCEN::RemSndCore(int32_t sty)
     Bug("No such sound");
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes a sound from the event list for this frame
  * and creates an undo object for the action.
@@ -2098,7 +2412,7 @@ bool SCEN::FRemSnd(int32_t sty)
     }
 
     //
-    // Find the sound
+    // 3DMMv1.0: Find the sound
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -2139,7 +2453,7 @@ bool SCEN::FRemSnd(int32_t sty)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine finds a specific sound in the current frame.
  *
@@ -2163,7 +2477,7 @@ bool SCEN::FGetSnd(int32_t sty, bool *pfFound, PSSE *ppsse)
 
     *pfFound = fFalse;
     //
-    // Check event list.
+    // 3DMMv1.0: Check event list.
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -2171,7 +2485,7 @@ bool SCEN::FGetSnd(int32_t sty, bool *pfFound, PSSE *ppsse)
 
         if (qsev->nfrm != _nfrmCur)
         {
-            break; // sound not found
+            break; // 3DMMv1.0: sound not found
         }
 
         if (qsev->sevt == sevtPlaySnd)
@@ -2181,7 +2495,7 @@ bool SCEN::FGetSnd(int32_t sty, bool *pfFound, PSSE *ppsse)
                 *ppsse = SSE::PsseDupFromGg(_pggsevFrm, isev);
                 if (*ppsse == pvNil)
                 {
-                    return fFalse; // memory error
+                    return fFalse; // 3DMMv1.0: memory error
                 }
                 *pfFound = fTrue;
                 return fTrue;
@@ -2190,12 +2504,12 @@ bool SCEN::FGetSnd(int32_t sty, bool *pfFound, PSSE *ppsse)
     }
 
     //
-    // End of list...sound not found
+    // 3DMMv1.0: End of list...sound not found
     //
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine plays the background sound, if any.
  * If the sound really started at an earlier frame,
@@ -2225,7 +2539,7 @@ void SCEN::PlayBkgdSnd(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine queries what sounds are attched to the
  * scene at the current frame
@@ -2252,11 +2566,11 @@ bool SCEN::FQuerySnd(int32_t sty, PGL *ppgltagSnd, int32_t *pvlm, bool *pfLoop)
 
     if (!FGetSnd(sty, &fFound, &psse))
     {
-        return fFalse; // error
+        return fFalse; // 3DMMv1.0: error
     }
     if (!fFound)
     {
-        return fTrue; // no sounds (*ppglTagSnd is nil)
+        return fTrue; // 3DMMv1.0: no sounds (*ppglTagSnd is nil)
     }
     *ppgltagSnd = GL::PglNew(SIZEOF(TAG), psse->ctagc);
     if (pvNil == *ppgltagSnd)
@@ -2276,7 +2590,7 @@ bool SCEN::FQuerySnd(int32_t sty, PGL *ppgltagSnd, int32_t *pvlm, bool *pfLoop)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine changes the volume of the sound of
  * type sty at the current frame to vlmNew
@@ -2300,7 +2614,7 @@ void SCEN::SetSndVlmCore(int32_t sty, int32_t vlmNew)
     PSSE psse;
 
     //
-    // Check event list.
+    // 3DMMv1.0: Check event list.
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -2309,7 +2623,7 @@ void SCEN::SetSndVlmCore(int32_t sty, int32_t vlmNew)
         if (qsev->nfrm != _nfrmCur)
         {
             Bug("No such sound");
-            break; // sound not found
+            break; // 3DMMv1.0: sound not found
         }
 
         if (qsev->sevt == sevtPlaySnd)
@@ -2325,12 +2639,12 @@ void SCEN::SetSndVlmCore(int32_t sty, int32_t vlmNew)
     }
 
     //
-    // End of list...sound not found
+    // 3DMMv1.0: End of list...sound not found
     //
     Bug("No such sound");
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     UpdateSndFrame
         Enumerates all scene events for the current frame, and asks all actors
         to enumerate all of their actor events for the current frame, looking
@@ -2377,7 +2691,7 @@ LDone:
     Pmvie()->Pmcc()->SetSndFrame(fSoundInFrame);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds an event to the current frame of the current scene.
  *
@@ -2399,7 +2713,7 @@ bool SCEN::_FAddSev(PSEV psev, int32_t cbVar, void *pvVar)
     bool fRetValue;
 
     //
-    // Add the event to the scene
+    // 3DMMv1.0: Add the event to the scene
     //
     _MarkMovieDirty();
 
@@ -2413,7 +2727,7 @@ bool SCEN::_FAddSev(PSEV psev, int32_t cbVar, void *pvVar)
     return (fRetValue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine sets the selected actor to the given one.
  *
@@ -2430,36 +2744,231 @@ void SCEN::SelectActr(ACTR *pactr)
     AssertThis(0);
     AssertNilOrPo(pactr, 0);
 
-    PMVU pmvu;
+    MODERN_BR_SCENE_LOG("SCEN::SelectActr BEGIN scene=%p incoming=%p current=%p count=%ld tbox=%p",
+                        this, pactr, _pactrSelected, (long)CactrSelected(), _ptboxSelected);
 
-    pmvu = (PMVU)Pmvie()->PddgGet(0);
+    // A designated light attachment is not viewport-pickable while hidden.
+    // Therefore, if one of those actors arrives here as a selection it came
+    // from a list/browser. Reveal all designated attachments before selecting
+    // it, exactly as the CTRL+ALT+L mode contract specifies.
+    if (pactr != pvNil && Pmvie()->FIsLightAttachmentHidden(pactr->Arid()))
+        Pmvie()->FSetSceneHideLightObjects(Pmvie()->Iscen(), fFalse, fTrue);
+
+    PMVU pmvu = (PMVU)Pmvie()->PddgGet(0);
     AssertNilOrPo(pmvu, 0);
 
     if ((pmvu != pvNil) && !pmvu->FTextMode())
     {
-        if (pvNil != _pactrSelected)
+        if (_pglaridSelected != pvNil)
         {
-            _pactrSelected->Unhilite();
+            for (int32_t iactr = 0; iactr < _pglaridSelected->IvMac(); iactr++)
+            {
+                int32_t arid;
+                _pglaridSelected->Get(iactr, &arid);
+                PACTR pactrOld = PactrFromArid(arid);
+                if (pactrOld != pvNil && pactrOld != pactr)
+                {
+                    MODERN_BR_SCENE_LOG("SCEN::SelectActr unhilite actor=%p arid=%ld",
+                                        pactrOld, (long)arid);
+                    pactrOld->Unhilite();
+                }
+            }
         }
 
-        if (pvNil != pactr)
-        {
+        if (pactr != pvNil)
             pactr->Hilite();
-        }
 
         if (_ptboxSelected != pvNil)
-        {
             _ptboxSelected->Select(fFalse);
+    }
+
+    if (_pglaridSelected != pvNil)
+    {
+        _pglaridSelected->FSetIvMac(0);
+        if (pactr != pvNil)
+        {
+            int32_t arid = pactr->Arid();
+            AssertDo(_pglaridSelected->FAdd(&arid), "Could not store selected actor ARID");
+        }
+    }
+
+    _pactrSelected = pactr;
+    _pactrSelected2 = pvNil;
+    _pmvie->InvalViews();
+    MVIE::LightEditorLog(_pmvie, "scene_select actor_ptr=%p arid=%ld count=%ld",
+                         (void *)pactr, pactr != pvNil ? (long)pactr->Arid() : (long)aridNil,
+                         (long)CactrSelected());
+    _pmvie->BuildActionMenu();
+    MODERN_BR_SCENE_LOG("SCEN::SelectActr END scene=%p selected=%p count=%ld incoming_body=%p incoming_arid=%ld",
+                        this, _pactrSelected, (long)CactrSelected(),
+                        pactr != pvNil ? pactr->Pbody() : pvNil,
+                        pactr != pvNil ? (long)pactr->Arid() : (long)aridNil);
+    REFRESH_4DMM_OBJECT_GROUP_SELECTION_UI();
+}
+
+/****************************************************
+ * Shift-add another scene object to the current -multi selection.
+ * Actors, props and 3D Words intentionally share the same ACTR/ARID
+ * selection list so mixed object groups are possible.
+ ****************************************************/
+void SCEN::SelectActrAdd(ACTR *pactr)
+{
+    AssertThis(0);
+    AssertNilOrPo(pactr, 0);
+
+    if (pactr == pvNil)
+        return;
+
+    if (_pactrSelected == pvNil || _pglaridSelected == pvNil || _pglaridSelected->IvMac() == 0)
+    {
+        SelectActr(pactr);
+        return;
+    }
+
+    if (FActrSelected(pactr->Arid()))
+    {
+        // Keep the full multi-selection, but make the object the user actually
+        // clicked the primary actor for the hand/reposition drag and mouse-up
+        // cursor return. v97 left the first selected object primary forever,
+        // which made every later Shift-click snap back to object #1.
+        _pactrSelected = pactr;
+        _pactrSelected2 = pvNil;
+        for (int32_t iactr = 0; iactr < CactrSelected(); iactr++)
+        {
+            PACTR pactrT = PactrSelectedAt(iactr);
+            if (pactrT != pvNil && pactrT != _pactrSelected)
+            {
+                _pactrSelected2 = pactrT;
+                break;
+            }
+        }
+        _pmvie->BuildActionMenu();
+        REFRESH_4DMM_OBJECT_GROUP_SELECTION_UI();
+        return;
+    }
+
+    if (Pmvie()->FIsLightAttachmentHidden(pactr->Arid()))
+        Pmvie()->FSetSceneHideLightObjects(Pmvie()->Iscen(), fFalse, fTrue);
+
+    int32_t arid = pactr->Arid();
+    if (!_pglaridSelected->FAdd(&arid))
+        return;
+
+    PMVU pmvu = (PMVU)Pmvie()->PddgGet(0);
+    AssertNilOrPo(pmvu, 0);
+    if ((pmvu != pvNil) && !pmvu->FTextMode())
+    {
+        pactr->Hilite();
+        if (_ptboxSelected != pvNil)
+            _ptboxSelected->Select(fFalse);
+    }
+
+    // Selection-list order remains stable for grouping, while the clicked
+    // object becomes the primary edit target. This preserves the original
+    // one-object hand/reposition semantics inside an unlimited selection.
+    _pactrSelected = pactr;
+    _pactrSelected2 = pvNil;
+    for (int32_t iactr = 0; iactr < CactrSelected(); iactr++)
+    {
+        PACTR pactrT = PactrSelectedAt(iactr);
+        if (pactrT != pvNil && pactrT != _pactrSelected)
+        {
+            _pactrSelected2 = pactrT;
+            break;
+        }
+    }
+    _pmvie->InvalViews();
+    _pmvie->BuildActionMenu();
+    MODERN_BR_SCENE_LOG("SCEN::SelectActrAdd scene=%p actor=%p arid=%ld count=%ld",
+                        this, pactr, (long)arid, (long)CactrSelected());
+    REFRESH_4DMM_OBJECT_GROUP_SELECTION_UI();
+}
+
+/****************************************************
+ * Remove one actor/prop/3D Word from the current -multi selection.
+ * Remaining selected objects stay highlighted.
+ ****************************************************/
+void SCEN::SelectActrRemove(ACTR *pactr)
+{
+    AssertThis(0);
+    AssertNilOrPo(pactr, 0);
+
+    if (pactr == pvNil || _pglaridSelected == pvNil)
+        return;
+
+    const int32_t aridRemove = pactr->Arid();
+    int32_t iactrRemove = ivNil;
+    for (int32_t iactr = 0; iactr < _pglaridSelected->IvMac(); iactr++)
+    {
+        int32_t arid;
+        _pglaridSelected->Get(iactr, &arid);
+        if (arid == aridRemove)
+        {
+            iactrRemove = iactr;
+            break;
+        }
+    }
+    if (iactrRemove == ivNil)
+        return;
+
+    PMVU pmvu = (PMVU)Pmvie()->PddgGet(0);
+    AssertNilOrPo(pmvu, 0);
+    if ((pmvu != pvNil) && !pmvu->FTextMode())
+        pactr->Unhilite();
+
+    _pglaridSelected->Delete(iactrRemove);
+    const int32_t cSelected = _pglaridSelected->IvMac();
+    _pactrSelected = cSelected > 0 ? PactrSelectedAt(cSelected - 1) : pvNil;
+    _pactrSelected2 = pvNil;
+    for (int32_t iactr = 0; iactr < cSelected; iactr++)
+    {
+        PACTR pactrT = PactrSelectedAt(iactr);
+        if (pactrT != pvNil && pactrT != _pactrSelected)
+        {
+            _pactrSelected2 = pactrT;
+            break;
         }
     }
 
     _pmvie->InvalViews();
-    _pactrSelected = pactr;
-
     _pmvie->BuildActionMenu();
+    MODERN_BR_SCENE_LOG("SCEN::SelectActrRemove scene=%p actor=%p arid=%ld count=%ld primary=%p",
+                        this, pactr, (long)aridRemove, (long)cSelected, _pactrSelected);
+    REFRESH_4DMM_OBJECT_GROUP_SELECTION_UI();
 }
 
-/****************************************************
+int32_t SCEN::CactrSelected(void)
+{
+    AssertThis(0);
+    return _pglaridSelected == pvNil ? 0 : _pglaridSelected->IvMac();
+}
+
+PACTR SCEN::PactrSelectedAt(int32_t iactr)
+{
+    AssertThis(0);
+    if (_pglaridSelected == pvNil || !FIn(iactr, 0, _pglaridSelected->IvMac()))
+        return pvNil;
+    int32_t arid;
+    _pglaridSelected->Get(iactr, &arid);
+    return PactrFromArid(arid);
+}
+
+bool SCEN::FActrSelected(int32_t arid)
+{
+    AssertThis(0);
+    if (_pglaridSelected == pvNil)
+        return fFalse;
+    for (int32_t iactr = 0; iactr < _pglaridSelected->IvMac(); iactr++)
+    {
+        int32_t aridT;
+        _pglaridSelected->Get(iactr, &aridT);
+        if (aridT == arid)
+            return fTrue;
+    }
+    return fFalse;
+}
+
+/** 3DMMv1.0: **************************************************
  *
  * This routine sets the selected text box to the given one.
  *
@@ -2486,11 +2995,21 @@ void SCEN::SelectTbox(PTBOX ptbox)
     if ((pmvu != pvNil) && pmvu->FTextMode())
     {
 
-        if (pvNil != _pactrSelected)
+        if (_pglaridSelected != pvNil)
         {
-            _pactrSelected->Unhilite();
-            _pmvie->BuildActionMenu();
+            for (int32_t iactr = 0; iactr < _pglaridSelected->IvMac(); iactr++)
+            {
+                int32_t arid;
+                _pglaridSelected->Get(iactr, &arid);
+                PACTR pactrOld = PactrFromArid(arid);
+                if (pactrOld != pvNil)
+                    pactrOld->Unhilite();
+            }
+            _pglaridSelected->FSetIvMac(0);
         }
+        _pactrSelected = pvNil;
+        _pactrSelected2 = pvNil;
+        _pmvie->BuildActionMenu();
 
         if ((ptbox == _ptboxSelected) && ((ptbox == pvNil) || ptbox->FSelected()))
         {
@@ -2512,7 +3031,7 @@ void SCEN::SelectTbox(PTBOX ptbox)
     _pmvie->Pmcc()->TboxSelected();
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds an actor to the scene at the current frame,
  * if the arid is aridNil, else it replaces the actor in the
@@ -2539,8 +3058,13 @@ bool SCEN::FAddActrCore(ACTR *pactr)
     PACTR pactrOld;
     bool fRetValue;
 
+    MODERN_BR_SCENE_LOG("SCEN::FAddActrCore BEGIN scene=%p actor=%p arid=%ld body=%p frame=%ld start_events=%ld scene_roll=%ld selected=%p selected2=%p",
+                        this, pactr, (long)pactr->Arid(), pactr->Pbody(), (long)_nfrmCur,
+                        (long)_pggsevStart->IvMac(), (long)_pglpactr->IvMac(),
+                        _pactrSelected, _pactrSelected2);
+
     //
-    // Check if actor is in Scene already.
+    // 3DMMv1.0: Check if actor is in Scene already.
     //
     for (isev = 0; isev < _pggsevStart->IvMac(); isev++)
     {
@@ -2558,8 +3082,11 @@ bool SCEN::FAddActrCore(ACTR *pactr)
             continue;
         }
 
+        MODERN_BR_SCENE_LOG("SCEN::FAddActrCore replacement candidate event=%ld incoming=%p old=%p arid=%ld",
+                            (long)isev, pactr, pactrOld, (long)pactr->Arid());
+
         //
-        // Replace actor in scene roll call
+        // 3DMMv1.0: Replace actor in scene roll call
         //
         for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
         {
@@ -2570,9 +3097,23 @@ bool SCEN::FAddActrCore(ACTR *pactr)
 
                 pactr->AddRef();
                 pactr->SetPscen(this);
+                if (pactr->Pbody() == pvNil)
+                {
+                    TAG tagTmpl;
+                    pactr->GetTagTmpl(&tagTmpl);
+                    MODERN_BR_SCENE_LOG("SCEN::FAddActrCore replacement FAIL create_body actor=%p arid=%ld sid=%ld ctg=0x%08lX cno=%ld",
+                                        pactr, (long)pactr->Arid(), (long)tagTmpl.sid,
+                                        (unsigned long)tagTmpl.ctg, (long)tagTmpl.cno);
+                    MVIE::MultiLog(_pmvie,
+                        "actor_insert FAIL stage=create_body_replace arid=%ld sid=%ld ctg=0x%08lX cno=%ld",
+                        (long)pactr->Arid(), (long)tagTmpl.sid,
+                        (unsigned long)tagTmpl.ctg, (long)tagTmpl.cno);
+                    ReleasePpo(&pactr);
+                    return fFalse;
+                }
 
                 //
-                // Plop them into this frame
+                // 3DMMv1.0: Plop them into this frame
                 //
                 if (!pactr->FGotoFrame(_nfrmCur))
                 {
@@ -2581,14 +3122,52 @@ bool SCEN::FAddActrCore(ACTR *pactr)
                 }
 
                 //
-                // Replace starting actor
+                // 3DMMv1.0: Replace starting actor
                 //
+                const bool fLightAttachmentWasHidden = _pmvie->FIsLightAttachmentHidden(pactr->Arid());
                 _pggsevStart->Put(isev, &pactr);
                 _pglpactr->Put(ipactr, &pactr);
 
-                SelectActr(pactr);
+                // SelectActr() unhilites the previous selection before installing
+                // the replacement.  If that selection is pactrOld, releasing it
+                // first leaves _pactrSelected pointing at freed storage.  The next
+                // SelectActr() then reaches ACTR::Unhilite() through a stale actor
+                // and can call BODY::Unhilite() with a null body.  Clear that
+                // ownership while the old actor is still alive.
+                const bool fOldWasSelected = (_pactrSelected == pactrOld);
+                const bool fOldWasSelected2 = (_pactrSelected2 == pactrOld);
+                if (fOldWasSelected || fOldWasSelected2)
+                {
+                    MODERN_BR_SCENE_LOG("SCEN::FAddActrCore replacement clearing old selection old=%p body=%p primary=%d secondary=%d",
+                                        pactrOld, pactrOld->Pbody(), (int)fOldWasSelected,
+                                        (int)fOldWasSelected2);
+                    if (pactrOld->Pbody() != pvNil)
+                        pactrOld->Unhilite();
+                    else
+                        MODERN_BR_SCENE_LOG("SCEN::FAddActrCore replacement old selected actor has NULL body old=%p",
+                                            pactrOld);
+                    if (fOldWasSelected)
+                        _pactrSelected = pvNil;
+                    if (fOldWasSelected2)
+                        _pactrSelected2 = pvNil;
+                }
+
+                // Rebind light/hide ownership before selecting the replacement.
+                // Otherwise SelectActr() can interpret an internal undo swap of
+                // a hidden light attachment as a user list selection and reveal
+                // every hidden light object as a side effect.
+                MODERN_BR_SCENE_LOG("SCEN::FAddActrCore replacement releasing old=%p incoming=%p arid=%ld",
+                                    pactrOld, pactr, (long)pactr->Arid());
                 pactrOld->Hide();
                 ReleasePpo(&pactrOld);
+                _pmvie->ActorBodyReplaced(pactr->Arid());
+                if (!fLightAttachmentWasHidden)
+                    SelectActr(pactr);
+                else
+                    SelectActr(pvNil);
+                MODERN_BR_SCENE_LOG("SCEN::FAddActrCore replacement OK incoming=%p arid=%ld scene_roll=%ld selected=%p",
+                                    pactr, (long)pactr->Arid(), (long)_pglpactr->IvMac(),
+                                    _pactrSelected);
                 InvalFrmRange();
                 _MarkMovieDirty();
                 UpdateSndFrame();
@@ -2600,24 +3179,32 @@ bool SCEN::FAddActrCore(ACTR *pactr)
     }
 
     //
-    // Add actor to inital list of events to do.
+    // 3DMMv1.0: Add actor to inital list of events to do.
     //
     sev.sevt = sevtAddActr;
     fRetValue = _pggsevStart->FInsert(0, SIZEOF(PACTR), &pactr, &sev);
+    MODERN_BR_SCENE_LOG("SCEN::FAddActrCore new FInsert result=%d actor=%p arid=%ld start_events=%ld",
+                        (int)fRetValue, pactr, (long)pactr->Arid(), (long)_pggsevStart->IvMac());
 
     if (fRetValue)
     {
         pactr->AddRef();
 
         pactr->Ptmpl()->GetName(&stn);
-        if (!_pmvie->FAddToRollCall(pactr, &stn))
+        const bool fMovieRollCall = _pmvie->FAddToRollCall(pactr, &stn);
+        MODERN_BR_SCENE_LOG("SCEN::FAddActrCore movie rollcall result=%d actor=%p arid=%ld",
+                            (int)fMovieRollCall, pactr, (long)pactr->Arid());
+        if (!fMovieRollCall)
         {
             _pggsevStart->Delete(0);
             ReleasePpo(&pactr);
+            MODERN_BR_SCENE_LOG("SCEN::FAddActrCore FAIL movie rollcall");
             return (fFalse);
         }
 
         fRetValue = _FPlaySev(&sev, &pactr, _grfscen);
+        MODERN_BR_SCENE_LOG("SCEN::FAddActrCore _FPlaySev result=%d actor=%p arid=%ld scene_roll=%ld",
+                            (int)fRetValue, pactr, (long)pactr->Arid(), (long)_pglpactr->IvMac());
 
         if (!fRetValue)
         {
@@ -2633,10 +3220,14 @@ bool SCEN::FAddActrCore(ACTR *pactr)
         }
     }
 
+    MODERN_BR_SCENE_LOG("SCEN::FAddActrCore END result=%d actor=%p arid=%ld start_events=%ld scene_roll=%ld",
+                        (int)fRetValue, pactr,
+                        pactr != pvNil ? (long)pactr->Arid() : (long)aridNil,
+                        (long)_pggsevStart->IvMac(), (long)_pglpactr->IvMac());
     return (fRetValue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds an actor to the scene at the current frame.
  * This auto magically selects the actor and places them on stage.
@@ -2654,27 +3245,42 @@ bool SCEN::FAddActr(ACTR *pactr)
     AssertThis(0);
     AssertPo(pactr, 0);
 
+    MODERN_BR_SCENE_LOG("SCEN::FAddActr BEGIN scene=%p actor=%p arid=%ld body=%p frame=%ld",
+                        this, pactr, (long)pactr->Arid(), pactr->Pbody(), (long)_nfrmCur);
+
     if (!FAddActrCore(pactr))
     {
+        MODERN_BR_SCENE_LOG("SCEN::FAddActr FAIL FAddActrCore actor=%p arid=%ld",
+                            pactr, (long)pactr->Arid());
         return (fFalse);
     }
 
-    if (!pactr->FAddOnStageCore())
+    MODERN_BR_SCENE_LOG("SCEN::FAddActr FAddOnStageCore BEGIN actor=%p arid=%ld body=%p",
+                        pactr, (long)pactr->Arid(), pactr->Pbody());
+    const bool fOnStageAdded = pactr->FAddOnStageCore();
+    MODERN_BR_SCENE_LOG("SCEN::FAddActr FAddOnStageCore result=%d actor=%p arid=%ld body=%p onstage=%d",
+                        (int)fOnStageAdded, pactr, (long)pactr->Arid(), pactr->Pbody(),
+                        (int)pactr->FOnStage());
+    if (!fOnStageAdded)
     {
         RemActrCore(pactr->Arid());
+        MODERN_BR_SCENE_LOG("SCEN::FAddActr FAIL removed actor after FAddOnStageCore failure actor=%p",
+                            pactr);
         return (fFalse);
     }
 
     SelectActr(pactr);
+    MODERN_BR_SCENE_LOG("SCEN::FAddActr SUCCESS actor=%p arid=%ld selected=%p scene_roll=%ld",
+                        pactr, (long)pactr->Arid(), _pactrSelected, (long)_pglpactr->IvMac());
 
     //
-    // The MVU creates the undo object for this because of the mouse
-    // placement.
+    // 3DMMv1.0: The MVU creates the undo object for this because of the mouse
+    // 3DMMv1.0: placement.
     //
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes an actor from the scene.
  *
@@ -2695,7 +3301,7 @@ void SCEN::RemActrCore(int32_t arid)
     int32_t isev;
 
     //
-    // Check if actor is in Scene already.
+    // 3DMMv1.0: Check if actor is in Scene already.
     //
     for (isev = 0; isev < _pggsevStart->IvMac(); isev++)
     {
@@ -2713,12 +3319,12 @@ void SCEN::RemActrCore(int32_t arid)
         }
 
         //
-        // Remove actor from inital list of events to do.
+        // 3DMMv1.0: Remove actor from inital list of events to do.
         //
         _pggsevStart->Delete(isev);
 
         //
-        // Remove actor from the scene roll call
+        // 3DMMv1.0: Remove actor from the scene roll call
         //
         for (isev = 0; isev < _pglpactr->IvMac(); isev++)
         {
@@ -2732,22 +3338,19 @@ void SCEN::RemActrCore(int32_t arid)
             _pglpactr->Delete(isev);
 
             //
-            // Remove actor as the currently selected actor
+            // 3DMMv1.0: Remove actor as the currently selected actor
             //
-            if (_pactrSelected == pactrTmp)
+            if (FActrSelected(pactrTmp->Arid()))
             {
                 PMVU pmvu;
-
-                _pactrSelected = pvNil;
+                SelectActr(pvNil);
                 pmvu = (PMVU)_pmvie->PddgGet(0);
                 if (pmvu != pvNil)
-                {
                     pmvu->EndPlaceActor();
-                }
             }
 
             //
-            // Remove actor from the movie roll call
+            // 3DMMv1.0: Remove actor from the movie roll call
             //
             _pmvie->RemFromRollCall(pactrTmp);
 
@@ -2768,7 +3371,7 @@ void SCEN::RemActrCore(int32_t arid)
     Bug("Actor does not exist in scene");
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes an actor from the scene, and
  * creates an undo object for the action.
@@ -2791,7 +3394,7 @@ bool SCEN::FRemActr(int32_t arid)
     PACTR pactr;
 
     //
-    // Find the actor for undo purposes
+    // 3DMMv1.0: Find the actor for undo purposes
     //
     for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
     {
@@ -2828,7 +3431,25 @@ bool SCEN::FRemActr(int32_t arid)
     return (fTrue);
 }
 
-/****************************************************
+static bool _F4DMMBodySelectableForScenePick(PBODY pbody, void *pvContext)
+{
+    PSCEN pscen = (PSCEN)pvContext;
+    if (pscen == pvNil || pbody == pvNil)
+        return fTrue;
+    PGL pglpactr = pscen->PglRollCall();
+    if (pglpactr == pvNil)
+        return fTrue;
+    for (int32_t iactr = 0; iactr < pglpactr->IvMac(); ++iactr)
+    {
+        PACTR pactr = pvNil;
+        pglpactr->Get(iactr, &pactr);
+        if (pactr != pvNil && pactr->FIsMyBody(pbody))
+            return pscen->Pmvie()->FObjectSelectable(pactr->Arid());
+    }
+    return fTrue;
+}
+
+/** 3DMMv1.0: **************************************************
  *
  * This routine returns the actor pointed at by the mouse.
  *
@@ -2850,14 +3471,71 @@ ACTR *SCEN::PactrFromPt(int32_t xp, int32_t yp, int32_t *pibset)
     BODY *pbody;
     int32_t ipactr;
 
-    pbody = BODY::PbodyClicked(xp, yp, Pmvie()->Pbwld(), pibset);
+    pbody = BODY::PbodyClicked(xp, yp, Pmvie()->Pbwld(), pibset,
+                               _F4DMMBodySelectableForScenePick, this);
     if (pvNil == pbody)
     {
+        // 4DMM: BrScenePick2D can lose actors scaled beyond the original 10x
+        // ceiling.  Only after the normal precise picker reports no hit, use
+        // the last rendered 2D bounds of oversized actors as a fallback.
+        // Prefer the currently selected oversized actor (so Hired Props
+        // selection remains draggable), otherwise choose the smallest matching
+        // screen footprint when several giant objects overlap.
+        PACTR pactrBest = pvNil;
+        int64_t areaBest = INT64_MAX;
+
+        if (_pactrSelected != pvNil && Pmvie()->FObjectSelectable(_pactrSelected->Arid()) &&
+            (_pactrSelected->FUsesLargeScalePickFallback() || _pactrSelected->FIsTdt()) &&
+            _pactrSelected->FIsInView())
+        {
+            RC rcSelected;
+            _pactrSelected->GetRcBounds(&rcSelected);
+            if (rcSelected.FPtIn(xp, yp))
+            {
+                *pibset = ivNil;
+                return _pactrSelected;
+            }
+        }
+
+        for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
+        {
+            RC rc;
+            int64_t dxp;
+            int64_t dyp;
+            int64_t area;
+
+            _pglpactr->Get(ipactr, &pactr);
+            if (!Pmvie()->FObjectSelectable(pactr->Arid()) ||
+                !(pactr->FUsesLargeScalePickFallback() || pactr->FIsTdt()) || !pactr->FIsInView())
+                continue;
+
+            pactr->GetRcBounds(&rc);
+            if (!rc.FPtIn(xp, yp))
+                continue;
+
+            dxp = (int64_t)rc.xpRight - (int64_t)rc.xpLeft;
+            dyp = (int64_t)rc.ypBottom - (int64_t)rc.ypTop;
+            if (dxp <= 0 || dyp <= 0)
+                continue;
+            area = dxp * dyp;
+            if (pactrBest == pvNil || area < areaBest)
+            {
+                pactrBest = pactr;
+                areaBest = area;
+            }
+        }
+
+        if (pactrBest != pvNil)
+        {
+            *pibset = ivNil;
+            return pactrBest;
+        }
+
         return pvNil;
     }
 
     //
-    // loop through actors, call FIsMyBody()
+    // 3DMMv1.0: loop through actors, call FIsMyBody()
     //
     for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
     {
@@ -2873,7 +3551,7 @@ ACTR *SCEN::PactrFromPt(int32_t xp, int32_t yp, int32_t *pibset)
     return pvNil;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds a text box to the scene at the current frame
  *
@@ -2899,7 +3577,7 @@ bool SCEN::FAddTboxCore(PTBOX ptbox)
     int32_t isev;
 
     //
-    // Search for duplicate tbox
+    // 3DMMv1.0: Search for duplicate tbox
     //
     for (isev = 0; isev < _pggsevStart->IvMac(); isev++)
     {
@@ -2913,7 +3591,7 @@ bool SCEN::FAddTboxCore(PTBOX ptbox)
 #endif
 
     //
-    // Add text box to event list.
+    // 3DMMv1.0: Add text box to event list.
     //
     sev.sevt = sevtAddTbox;
     ptbox->SetScen(this);
@@ -2937,7 +3615,7 @@ bool SCEN::FAddTboxCore(PTBOX ptbox)
     return (fRetValue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds a text box to the scene at the current frame
  * creates an undo object for the action.
@@ -2971,7 +3649,7 @@ bool SCEN::FAddTbox(PTBOX ptbox)
 
     ptbox->AddRef();
     ptbox->FGetLifetime(&nfrmFirst, &nfrmLast);
-    psunx->SetTbox(ptbox); // transfers the reference count to the undo object
+    psunx->SetTbox(ptbox); // 3DMMv1.0: transfers the reference count to the undo object
     psunx->SetNfrmFirst(nfrmFirst);
     psunx->SetNfrmLast((nfrmLast == _nfrmLast) ? klwMax : nfrmLast);
 
@@ -2999,7 +3677,7 @@ bool SCEN::FAddTbox(PTBOX ptbox)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes a text box from the scene.
  *
@@ -3022,7 +3700,7 @@ bool SCEN::FRemTboxCore(PTBOX ptbox)
     int32_t nfrmStart, nfrmLast;
 
     //
-    // Check if currently selected tbox.
+    // 3DMMv1.0: Check if currently selected tbox.
     //
     if (ptbox == _ptboxSelected)
     {
@@ -3035,7 +3713,7 @@ bool SCEN::FRemTboxCore(PTBOX ptbox)
     }
 
     //
-    // Find the text box
+    // 3DMMv1.0: Find the text box
     //
     for (isev = 0; isev < _pggsevStart->IvMac(); isev++)
     {
@@ -3045,13 +3723,13 @@ bool SCEN::FRemTboxCore(PTBOX ptbox)
         {
 
             //
-            // Remove it.  Do not ReleasePpo() here as reference count
-            // gets transfered to callee.
+            // 3DMMv1.0: Remove it.  Do not ReleasePpo() here as reference count
+            // 3DMMv1.0: gets transfered to callee.
             //
             _pggsevStart->Delete(isev);
 
             //
-            // Find it in the _pglptbox
+            // 3DMMv1.0: Find it in the _pglptbox
             //
             for (itbox = 0; itbox < _pglptbox->IvMac(); itbox++)
             {
@@ -3067,8 +3745,8 @@ bool SCEN::FRemTboxCore(PTBOX ptbox)
                     if (ptbox->FGetLifetime(&nfrmStart, &nfrmLast))
                     {
                         //
-                        // This will guarantee that the tbox doesn't leave
-                        // any display on the rendering area.
+                        // 3DMMv1.0: This will guarantee that the tbox doesn't leave
+                        // 3DMMv1.0: any display on the rendering area.
                         //
                         AssertDo(ptbox->FGotoFrame(nfrmStart - 1), "Could not remove a text box");
                     }
@@ -3087,7 +3765,7 @@ bool SCEN::FRemTboxCore(PTBOX ptbox)
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes a text box from the scene,
  * creates an undo object for the action.
@@ -3117,7 +3795,7 @@ bool SCEN::FRemTbox(PTBOX ptbox)
 
     ptbox->AddRef();
     ptbox->FGetLifetime(&nfrmFirst, &nfrmLast);
-    psunx->SetTbox(ptbox); // transfers the reference count to the undo object
+    psunx->SetTbox(ptbox); // 3DMMv1.0: transfers the reference count to the undo object
     psunx->SetAdd(fFalse);
     psunx->SetNfrmFirst(nfrmFirst);
     psunx->SetNfrmLast((nfrmLast == _nfrmLast) ? klwMax : nfrmLast);
@@ -3139,7 +3817,7 @@ bool SCEN::FRemTbox(PTBOX ptbox)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine gets the ith text box.
  *
@@ -3178,7 +3856,7 @@ TBOX *SCEN::PtboxFromItbox(int32_t itbox)
     return (ptbox);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds/removes a pause to the scene at the current frame.
  *
@@ -3205,7 +3883,7 @@ bool SCEN::FPauseCore(WIT *pwit, int32_t *pdts)
     int32_t dtsOld;
 
     //
-    // Start at the first event of this frame.
+    // 3DMMv1.0: Start at the first event of this frame.
     //
     for (isev = _isevFrmLim - 1; isev >= 0; isev--)
     {
@@ -3217,13 +3895,13 @@ bool SCEN::FPauseCore(WIT *pwit, int32_t *pdts)
         }
 
         //
-        // Find a pause
+        // 3DMMv1.0: Find a pause
         //
         if (qsev->sevt == sevtPause)
         {
 
             //
-            // Replace the event
+            // 3DMMv1.0: Replace the event
             //
             _pggsevFrm->Get(isev, &sevp);
             witOld = sevp.wit;
@@ -3248,7 +3926,7 @@ bool SCEN::FPauseCore(WIT *pwit, int32_t *pdts)
     }
 
     //
-    // Add pause to event list.
+    // 3DMMv1.0: Add pause to event list.
     //
     sev.nfrm = _nfrmCur;
     sev.sevt = sevtPause;
@@ -3264,7 +3942,7 @@ bool SCEN::FPauseCore(WIT *pwit, int32_t *pdts)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds/removes a pause to the scene at the current frame
  * and creates an undo object for the action.
@@ -3310,7 +3988,7 @@ bool SCEN::FPause(WIT wit, int32_t dts)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine sets the background for the scene.
  *
@@ -3339,7 +4017,7 @@ bool SCEN::FSetBkgdCore(PTAG ptag, PTAG ptagOld)
     if (_pbkgd != pvNil)
     {
         //
-        // Replace background
+        // 3DMMv1.0: Replace background
         //
 
         for (isev = 0; isev < _pggsevStart->IvMac(); isev++)
@@ -3378,7 +4056,7 @@ bool SCEN::FSetBkgdCore(PTAG ptag, PTAG ptagOld)
     TrashVar(ptagOld);
 
     //
-    // Add set background event and play it.
+    // 3DMMv1.0: Add set background event and play it.
     //
     sev.sevt = sevtSetBkgd;
 
@@ -3402,22 +4080,23 @@ LSuccess:
     while (_pggsevFrm->IvMac() != 0)
     {
         //
-        // Remove stale scene events
+        // 3DMMv1.0: Remove stale scene events
         //
         _pggsevFrm->Delete(_pggsevFrm->IvMac() - 1);
     }
 
     _isevFrmLim = 0;
 
-    // Add the default sound for the new background, if any
+    // 4DMM defaults new scenes to silence.  The old background "serving
+    // suggestion" music is optional per movie through Settings.
     _pbkgd->GetDefaultSound(&tag, &vlm, &fLoop);
-    if (tag.sid != ksidInvalid) // new background sound
+    if (_pmvie->FDefaultMusicForNewScenes() && tag.sid != ksidInvalid) // optional new background sound
     {
-        // Note: since FSetBkgdCore is only called at edit time,
-        // it's okay to call FCacheTag.  The background default
-        // sound is not an intrinsic part of the BKGD...it's more
-        // of a "serving suggestion" that the user can remove
-        // once the background is added.
+        // 3DMMv1.0: Note: since FSetBkgdCore is only called at edit time,
+        // 3DMMv1.0: it's okay to call FCacheTag.  The background default
+        // 3DMMv1.0: sound is not an intrinsic part of the BKGD...it's more
+        // 3DMMv1.0: of a "serving suggestion" that the user can remove
+        // 3DMMv1.0: once the background is added.
         Assert(!_pmvie->FPlaying(), "Shouldn't cache tags if movie is playing!");
         if (vptagm->FCacheTagToHD(&tag))
         {
@@ -3426,12 +4105,14 @@ LSuccess:
             {
                 sty = pmsnd->Sty();
                 ReleasePpo(&pmsnd);
-                // non-destructive if we fail
+                // 3DMMv1.0: non-destructive if we fail
                 FAddSndCore(fLoop, fFalse, vlm, sty, 1, &tag);
             }
         }
     }
 
+    if (_pmvie->Pscen() == this)
+        _pmvie->RefreshTestLight();
     _pmvie->Pmcc()->SceneChange();
 
     if (vpcex != pvNil)
@@ -3442,7 +4123,7 @@ LSuccess:
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine sets the background for the scene.
  *
@@ -3513,7 +4194,7 @@ bool SCEN::FSetBkgd(PTAG ptag)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine returns if a scene is currently empty
  *
@@ -3550,7 +4231,7 @@ bool SCEN::FIsEmpty(void)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine changes the camera view point at this frame.
  *
@@ -3573,7 +4254,7 @@ bool SCEN::FChangeCamCore(int32_t icam, int32_t *picamOld)
     int32_t isev, isevCam;
 
     //
-    // Check for a current camera change.
+    // 3DMMv1.0: Check for a current camera change.
     //
     *picamOld = 0;
 
@@ -3588,8 +4269,8 @@ bool SCEN::FChangeCamCore(int32_t icam, int32_t *picamOld)
             {
 
                 //
-                // Check if this new camera matches the previous
-                // camera
+                // 3DMMv1.0: Check if this new camera matches the previous
+                // 3DMMv1.0: camera
                 //
                 for (isevCam = isev - 1; isevCam >= 0; isevCam--)
                 {
@@ -3603,8 +4284,8 @@ bool SCEN::FChangeCamCore(int32_t icam, int32_t *picamOld)
                 }
 
                 //
-                // If they are equal, then change camera to
-                // previous camera and remove this change event.
+                // 3DMMv1.0: If they are equal, then change camera to
+                // 3DMMv1.0: previous camera and remove this change event.
                 //
                 if (*picamOld == icam)
                 {
@@ -3621,7 +4302,7 @@ bool SCEN::FChangeCamCore(int32_t icam, int32_t *picamOld)
                 }
 
                 //
-                // Change it
+                // 3DMMv1.0: Change it
                 //
                 _pggsevFrm->Get(isev, picamOld);
                 _pggsevFrm->Put(isev, &icam);
@@ -3646,7 +4327,7 @@ bool SCEN::FChangeCamCore(int32_t icam, int32_t *picamOld)
     }
 
     //
-    // Add camera change to event list.
+    // 3DMMv1.0: Add camera change to event list.
     //
     sev.nfrm = _nfrmCur;
     sev.sevt = sevtChngCamera;
@@ -3668,7 +4349,7 @@ bool SCEN::FChangeCamCore(int32_t icam, int32_t *picamOld)
 LSuccess:
 
     //
-    // Check for later camera change
+    // 3DMMv1.0: Check for later camera change
     //
     for (isev = _isevFrmLim; isev < _pggsevFrm->IvMac(); isev++)
     {
@@ -3689,7 +4370,7 @@ LSuccess:
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine changes the camera view point at this frame
  * and creates an undo object for the action.
@@ -3754,7 +4435,7 @@ bool SCEN::FChangeCam(int32_t icam)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Deserialize start events from on-disk format
 ***************************************************************************/
 PGG DeserializeStartEVs(int16_t bo, PGG pggsevStart)
@@ -3777,7 +4458,7 @@ PGG DeserializeStartEVs(int16_t bo, PGG pggsevStart)
         sev = *(SEV *)_pggsevStart->QvFixedGet(isevStart);
 
         //
-        // Swap byte ordering of entry
+        // 3DMMv1.0: Swap byte ordering of entry
         //
         if (bo == kboOther)
         {
@@ -3823,7 +4504,7 @@ PGG DeserializeStartEVs(int16_t bo, PGG pggsevStart)
     return _pggsevStart;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Serialize start events to on-disk format
 ***************************************************************************/
 PGG SerializeStartEVs(PGG pggsevStart)
@@ -3857,7 +4538,7 @@ PGG SerializeStartEVs(PGG pggsevStart)
     return _pggsevStart;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Deserialize frame events from on-disk format
 ***************************************************************************/
 PGG DeserializeFrameEVs(int16_t bo, PGG pggsevFrm)
@@ -3883,7 +4564,7 @@ PGG DeserializeFrameEVs(int16_t bo, PGG pggsevFrm)
         sev = *(SEV *)_pggsevFrm->QvFixedGet(isevFrm);
 
         //
-        // Swap byte ordering of entry
+        // 3DMMv1.0: Swap byte ordering of entry
         //
         if (bo == kboOther)
         {
@@ -3894,7 +4575,7 @@ PGG DeserializeFrameEVs(int16_t bo, PGG pggsevFrm)
         switch (sev.sevt)
         {
         case sevtPlaySnd:
-            // Deserialize GG using TAGCF to SSE with TAGC
+            // 3DMMEx: Deserialize GG using TAGCF to SSE with TAGC
             if (!FAllocPv((void **)&psseOld, pggsevFrm->Cb(isevFrm), fmemClear, mprNormal))
                 goto LFail;
             _pggsevFrm->Get(isevFrm, psseOld);
@@ -3950,7 +4631,7 @@ LFail:
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Serialize frame events to on-disk format
 ***************************************************************************/
 PGG SerializeFrameEVs(PGG pggsevFrm)
@@ -3978,7 +4659,7 @@ PGG SerializeFrameEVs(PGG pggsevFrm)
         switch (sev.sevt)
         {
         case sevtPlaySnd:
-            // Serialize GG using TAGC to SSE with TAGCF
+            // 3DMMEx: Serialize GG using TAGC to SSE with TAGCF
             if (!FAllocPv((void **)&psseOld, pggsevFrm->Cb(isevFrm), fmemClear, mprNormal))
                 return pvNil;
             _pggsevFrm->Get(isevFrm, psseOld);
@@ -4013,7 +4694,7 @@ PGG SerializeFrameEVs(PGG pggsevFrm)
     return _pggsevFrm;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine reads in a scene from a chunky file.
  *
@@ -4049,7 +4730,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     pcfl = pcrf->Pcfl();
 
     //
-    // Find the chunk and read in the header.
+    // 3DMMv1.0: Find the chunk and read in the header.
     //
     if (!pcfl->FFind(kctgScen, cno, &blck) || !blck.FUnpackData() || (blck.Cb() != SIZEOF(SCENH)) ||
         !blck.FReadRgb(&scenh, SIZEOF(SCENH), 0))
@@ -4058,7 +4739,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Check header for byte swapping
+    // 3DMMv1.0: Check header for byte swapping
     //
     if (scenh.bo == kboOther)
     {
@@ -4070,7 +4751,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Create our scene object.
+    // 3DMMv1.0: Create our scene object.
     //
     pscen = NewObj SCEN(pmvie);
 
@@ -4082,7 +4763,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     pscen->_isevFrmLim = 0;
 
     //
-    // Initialize roll call	for actors
+    // 3DMMv1.0: Initialize roll call	for actors
     //
     pscen->_pglpactr = GL::PglNew(SIZEOF(PACTR), 0);
     if (pscen->_pglpactr == pvNil)
@@ -4090,8 +4771,14 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
         goto LFail0;
     }
 
+    pscen->_pglaridSelected = GL::PglNew(SIZEOF(int32_t), 0);
+    if (pscen->_pglaridSelected == pvNil)
+    {
+        goto LFail0;
+    }
+
     //
-    // Initialize roll call	for text boxes
+    // 3DMMv1.0: Initialize roll call	for text boxes
     //
     pscen->_pglptbox = GL::PglNew(SIZEOF(PTBOX), 0);
     if (pscen->_pglptbox == pvNil)
@@ -4100,7 +4787,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Read Frame information
+    // 3DMMv1.0: Read Frame information
     //
     pscen->_nfrmLast = scenh.nfrmLast;
     pscen->_nfrmFirst = scenh.nfrmFirst;
@@ -4108,7 +4795,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     pscen->_nfrmCur = pscen->_nfrmFirst - 1;
 
     //
-    // Read in thumbnail
+    // 3DMMv1.0: Read in thumbnail
     //
     if (pcfl->FGetKidChidCtg(kctgScen, cno, 0, kctgThumbMbmp, &kid) && pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck))
     {
@@ -4116,7 +4803,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Read in GG of Frame events
+    // 3DMMv1.0: Read in GG of Frame events
     //
     if (!pcfl->FGetKidChidCtg(kctgScen, cno, 0, kctgFrmGg, &kid) || !pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck))
     {
@@ -4139,14 +4826,14 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Convert all open tags to pointers.
+    // 3DMMv1.0: Convert all open tags to pointers.
     //
     for (; isevFrm < pscen->_pggsevFrm->IvMac(); isevFrm++)
     {
         qsev = (PSEV)pscen->_pggsevFrm->QvFixedGet(isevFrm);
 
         //
-        // Open all tags
+        // 3DMMv1.0: Open all tags
         //
         switch (qsev->sevt)
         {
@@ -4170,17 +4857,18 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
                 {
                     while (itag-- > 0)
                         TAGM::CloseTag(psse->Ptag(itag));
-                    FreePpv((void **)&psse); // don't ReleasePpsse...tags are already closed
+                    FreePpv((void **)&psse); // 3DMMv1.0: don't ReleasePpsse...tags are already closed
                     goto LFail1;
                 }
             }
-            // Put SSE with opened tags back in GG
+            // 3DMMv1.0: Put SSE with opened tags back in GG
             pscen->_pggsevFrm->Put(isevFrm, psse);
-            FreePpv((void **)&psse); // don't ReleasePpsse because GG keeps the tags
+            FreePpv((void **)&psse); // 3DMMv1.0: don't ReleasePpsse because GG keeps the tags
             break;
 
         case sevtChngCamera:
         case sevtPause:
+        case sevtBlankFrame:
             break;
 
         case sevtAddActr:
@@ -4193,7 +4881,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Read starting events
+    // 3DMMv1.0: Read starting events
     //
     ReleasePpo(&pscen->_pggsevStart);
 
@@ -4219,14 +4907,14 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Convert all open tags to pointers.
+    // 3DMMv1.0: Convert all open tags to pointers.
     //
     for (; isevStart < pscen->_pggsevStart->IvMac(); isevStart++)
     {
         qsev = (PSEV)pscen->_pggsevStart->QvFixedGet(isevStart);
 
         //
-        // Convert CHIDs to pointers
+        // 3DMMv1.0: Convert CHIDs to pointers
         //
         switch (qsev->sevt)
         {
@@ -4283,7 +4971,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
     }
 
     //
-    // Read Name
+    // 3DMMv1.0: Read Name
     //
     pcfl->FGetName(kctgScen, cno, &pscen->_stnName);
 
@@ -4294,7 +4982,7 @@ SCEN *SCEN::PscenRead(PMVIE pmvie, PCRF pcrf, CNO cno)
 LFail1:
 
     //
-    // Destroy all created objects
+    // 3DMMv1.0: Destroy all created objects
     //
     while (isevStart--)
     {
@@ -4319,7 +5007,7 @@ LFail1:
     ReleasePpo(&pscen->_pggsevStart);
 
     //
-    // Destroy all created objects
+    // 3DMMv1.0: Destroy all created objects
     //
     while (isevFrm--)
     {
@@ -4342,7 +5030,7 @@ LFail1:
                 continue;
             }
 
-            /* Close all tags; retrieve qsse each time...in theory, nothing
+            /* 3DMMv1.0: Close all tags; retrieve qsse each time...in theory, nothing
                 that happens during CloseTag should cause mem to move, but this
                 is a failure case, so it's okay to be slow, especially when we
                 can be safe-not-sorry.  */
@@ -4356,6 +5044,7 @@ LFail1:
         case sevtSetBkgd:
         case sevtChngCamera:
         case sevtPause:
+        case sevtBlankFrame:
             break;
         }
     }
@@ -4366,7 +5055,7 @@ LFail0:
     return (pvNil);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine plays all the starting events for a scene.
  *
@@ -4384,7 +5073,7 @@ bool SCEN::FPlayStartEvents(bool fActorsOnly)
     int32_t isev;
 
     //
-    // This needs to play all the events in _pggsevStart
+    // 3DMMv1.0: This needs to play all the events in _pggsevStart
     //
     for (isev = 0; isev < _pggsevStart->IvMac(); isev++)
     {
@@ -4403,7 +5092,7 @@ bool SCEN::FPlayStartEvents(bool fActorsOnly)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine returns the bkgd tag in *ptag
  *
@@ -4428,7 +5117,7 @@ bool SCEN::FGetTagBkgd(PTAG ptag)
     return fFalse;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine writes a scene into a chunky file.
  *
@@ -4458,24 +5147,37 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     int32_t cb;
     BLCK blck;
     PCFL pcfl;
+    PCSZ pszFailStage = PszLit("begin");
+    int32_t aridWrite = aridNil;
+    CNO cnoTmplWrite = cnoNil;
 
     chidActr = chidTbox = 0;
 
     pcfl = pcrf->Pcfl();
 
+    MVIE::MultiLog(Pmvie(),
+        "scene_write begin scene=%ld frame=%ld first=%ld last=%ld start_events=%ld frame_events=%ld actors=%ld",
+        Pmvie() != pvNil ? (long)Pmvie()->Iscen() : -1L, (long)Nfrm(),
+        (long)_nfrmFirst, (long)_nfrmLast,
+        _pggsevStart != pvNil ? (long)_pggsevStart->IvMac() : -1L,
+        _pggsevFrm != pvNil ? (long)_pggsevFrm->IvMac() : -1L,
+        _pglpactr != pvNil ? (long)_pglpactr->IvMac() : -1L);
+
     *pcno = cnoNil;
 
     //
-    // Get a new CNO for this chunk
+    // 3DMMv1.0: Get a new CNO for this chunk
     //
+    pszFailStage = PszLit("scene_chunk_add");
     if (!pcfl->FAdd(0, kctgScen, pcno))
     {
         goto LFail;
     }
 
     //
-    // Copy frame event GG to temporary GG
+    // 3DMMv1.0: Copy frame event GG to temporary GG
     //
+    pszFailStage = PszLit("frame_event_temp_alloc");
     pggFrmTemp = GG::PggNew(SIZEOF(SEV));
 
     if (pggFrmTemp == pvNil)
@@ -4488,7 +5190,7 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
         sev = *(PSEV)_pggsevFrm->QvFixedGet(isevFrm);
 
         //
-        // Convert pointers in the GG to CHIDs
+        // 3DMMv1.0: Convert pointers in the GG to CHIDs
         //
         switch (sev.sevt)
         {
@@ -4505,21 +5207,21 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
             }
             for (itag = 0; itag < psse->ctagc; itag++)
             {
-                // For user sounds, the tag's cno must already be correct.
-                // Note: FResolveSndTag can't succeed if the msnd chunk is
-                // not yet a child of the scene.
+                // 3DMMv1.0: For user sounds, the tag's cno must already be correct.
+                // 3DMMv1.0: Note: FResolveSndTag can't succeed if the msnd chunk is
+                // 3DMMv1.0: not yet a child of the scene.
                 if (psse->Ptagc(itag)->tag.sid != ksidUseCrf)
-                    continue; // tag will be closed by ReleasePpsse
+                    continue; // 3DMMv1.0: tag will be closed by ReleasePpsse
 
-                // If the msnd chunk already exists as this chid of this scene, continue
+                // 3DMMv1.0: If the msnd chunk already exists as this chid of this scene, continue
                 if (pcfl->FGetKidChidCtg(kctgScen, *pcno, *psse->Pchid(itag), kctgMsnd, &kid))
-                    continue; // tag will be closed by ReleasePpsse
+                    continue; // 3DMMv1.0: tag will be closed by ReleasePpsse
 
-                // If the msnd does not exist in this file, it exists in the main movie
+                // 3DMMv1.0: If the msnd does not exist in this file, it exists in the main movie
                 if (!pcfl->FFind(kctgMsnd, psse->Ptag(itag)->cno))
-                    continue; // tag will be closed by ReleasePpsse
+                    continue; // 3DMMv1.0: tag will be closed by ReleasePpsse
 
-                // The msnd chunk has not been adopted into the scene as the specified chid
+                // 3DMMv1.0: The msnd chunk has not been adopted into the scene as the specified chid
                 if (!pcfl->FAdoptChild(kctgScen, *pcno, kctgMsnd, psse->Ptag(itag)->cno, *psse->Pchid(itag)))
                 {
                     goto LEndPlaySnd;
@@ -4554,6 +5256,11 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
 
             break;
 
+        case sevtBlankFrame:
+            if (!pggFrmTemp->FInsert(isevFrm, 0, pvNil, &sev))
+                goto LFail;
+            break;
+
         case sevtAddActr:
         case sevtSetBkgd:
         case sevtAddTbox:
@@ -4563,8 +5270,9 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
 
     //
-    // Copy start event GG to temporary GG
+    // 3DMMv1.0: Copy start event GG to temporary GG
     //
+    pszFailStage = PszLit("start_event_temp_alloc");
     pggStartTemp = GG::PggNew(SIZEOF(SEV));
 
     if (pggStartTemp == pvNil)
@@ -4576,29 +5284,58 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     {
         sev = *(PSEV)_pggsevStart->QvFixedGet(isevStart);
         //
-        // Convert pointers in the GG to CHIDs
+        // 3DMMv1.0: Convert pointers in the GG to CHIDs
         //
         switch (sev.sevt)
         {
-        case sevtAddActr:
+        case sevtAddActr: {
+            PACTR pactrWrite = *(PACTR *)_pggsevStart->QvGet(isevStart);
+            TAG tagTmplWrite;
+            ClearPb(&tagTmplWrite, SIZEOF(tagTmplWrite));
+            aridWrite = pactrWrite != pvNil ? pactrWrite->Arid() : aridNil;
+            if (pactrWrite != pvNil)
+                pactrWrite->GetTagTmpl(&tagTmplWrite);
+            cnoTmplWrite = tagTmplWrite.cno;
+            const int32_t fLocalTmplExists =
+                pactrWrite != pvNil && tagTmplWrite.sid == ksidUseCrf ?
+                    (int)pcfl->FFind(tagTmplWrite.ctg, tagTmplWrite.cno) : -1;
+            MVIE::MultiLog(Pmvie(),
+                "scene_write actor begin start_event=%ld chid=%ld arid=%ld sid=%ld ctg=0x%08lX tmpl_cno=%ld local_tmpl_exists=%ld onstage=%d",
+                (long)isevStart, (long)chidActr, (long)aridWrite,
+                (long)tagTmplWrite.sid, (unsigned long)tagTmplWrite.ctg,
+                (long)tagTmplWrite.cno, (long)fLocalTmplExists,
+                pactrWrite != pvNil ? (int)pactrWrite->FOnStage() : -1);
 
+            pszFailStage = PszLit("actor_chunk_add");
             if (!pcfl->FAddChild(kctgScen, *pcno, chidActr, 0, kctgActr, &cnoChild))
             {
                 goto LFail;
             }
 
-            if (!(*(PACTR *)_pggsevStart->QvGet(isevStart))->FWrite(pcfl, cnoChild, *pcno))
+            pszFailStage = PszLit("actor_write");
+            if (pactrWrite == pvNil || !pactrWrite->FWrite(pcfl, cnoChild, *pcno))
             {
+                MVIE::MultiLog(Pmvie(),
+                    "scene_write actor FAIL chid=%ld arid=%ld tmpl_cno=%ld actor_cno=%ld el=%ld",
+                    (long)chidActr, (long)aridWrite, (long)cnoTmplWrite,
+                    (long)cnoChild, (long)pcfl->ElError());
                 goto LFail;
             }
 
+            pszFailStage = PszLit("actor_start_event_insert");
             if (!pggStartTemp->FInsert(isevStart, SIZEOF(CHID), &chidActr, &sev))
             {
                 goto LFail;
             }
 
+            MVIE::MultiLog(Pmvie(),
+                "scene_write actor ok chid=%ld arid=%ld tmpl_cno=%ld actor_cno=%ld",
+                (long)chidActr, (long)aridWrite, (long)cnoTmplWrite, (long)cnoChild);
             chidActr++;
+            aridWrite = aridNil;
+            cnoTmplWrite = cnoNil;
             break;
+        }
 
         case sevtSetBkgd:
             if (!TAGM::FSaveTag((PTAG)_pggsevStart->QvGet(isevStart), pcrf, fFalse))
@@ -4647,8 +5384,9 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
 
     //
-    // Save info into scene chunk
+    // 3DMMv1.0: Save info into scene chunk
     //
+    pszFailStage = PszLit("serialize_frame_events");
     pggFrm = SerializeFrameEVs(pggFrmTemp);
     if (pggFrm == pvNil)
     {
@@ -4656,11 +5394,13 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
 
     cb = pggFrm->CbOnFile();
+    pszFailStage = PszLit("frame_event_chunk_add");
     if (!pcfl->FAdd(cb, kctgFrmGg, &cnoFrmEvent, &blck))
     {
         goto LFail;
     }
 
+    pszFailStage = PszLit("frame_event_write");
     if (!pggFrm->FWrite(&blck))
     {
         pcfl->Delete(kctgFrmGg, cnoFrmEvent);
@@ -4668,6 +5408,7 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
     ReleasePpo(&pggFrm);
 
+    pszFailStage = PszLit("frame_event_adopt");
     if (!pcfl->FAdoptChild(kctgScen, *pcno, kctgFrmGg, cnoFrmEvent, 0))
     {
         pcfl->Delete(kctgFrmGg, cnoFrmEvent);
@@ -4675,6 +5416,7 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
     pcfl->SetLoner(kctgFrmGg, cnoFrmEvent, fFalse);
 
+    pszFailStage = PszLit("serialize_start_events");
     pggStart = SerializeStartEVs(pggStartTemp);
     if (pggStart == pvNil)
     {
@@ -4682,12 +5424,14 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
 
     cb = pggStart->CbOnFile();
+    pszFailStage = PszLit("start_event_chunk_add");
     if (!pcfl->FAdd(cb, kctgStartGg, &cnoStartEvent, &blck))
     {
         ReleasePpo(&pggStart);
         goto LFail;
     }
 
+    pszFailStage = PszLit("start_event_write");
     if (!pggStart->FWrite(&blck))
     {
         pcfl->Delete(kctgStartGg, cnoStartEvent);
@@ -4696,6 +5440,7 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
     ReleasePpo(&pggStart);
 
+    pszFailStage = PszLit("start_event_adopt");
     if (!pcfl->FAdoptChild(kctgScen, *pcno, kctgStartGg, cnoStartEvent, 1))
     {
         pcfl->Delete(kctgStartGg, cnoStartEvent);
@@ -4704,24 +5449,27 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     pcfl->SetLoner(kctgStartGg, cnoStartEvent, fFalse);
 
     //
-    // Save thumbnail, if there is one.
+    // 3DMMv1.0: Save thumbnail, if there is one.
     //
     _UpdateThumbnail();
 
     if (_pmbmp != pvNil)
     {
         cb = _pmbmp->CbOnFile();
+        pszFailStage = PszLit("thumbnail_chunk_add");
         if (!pcfl->FAdd(cb, kctgThumbMbmp, &cnoChild, &blck))
         {
             goto LFail;
         }
 
+        pszFailStage = PszLit("thumbnail_write");
         if (!_pmbmp->FWrite(&blck))
         {
             pcfl->Delete(kctgThumbMbmp, cnoChild);
             goto LFail;
         }
 
+        pszFailStage = PszLit("thumbnail_adopt");
         if (!pcfl->FAdoptChild(kctgScen, *pcno, kctgThumbMbmp, cnoChild, 0))
         {
             pcfl->Delete(kctgThumbMbmp, cnoChild);
@@ -4731,7 +5479,7 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     }
 
     //
-    // Create header buffer for scene chunk
+    // 3DMMv1.0: Create header buffer for scene chunk
     //
     scenh.bo = kboCur;
     scenh.osk = koskCur;
@@ -4740,13 +5488,15 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     scenh.trans = _trans;
 
     //
-    // Write scene chunk
+    // 3DMMv1.0: Write scene chunk
     //
+    pszFailStage = PszLit("scene_set_name");
     if (!pcfl->FSetName(kctgScen, *pcno, &_stnName))
     {
         goto LFail;
     }
 
+    pszFailStage = PszLit("scene_header_write");
     if (!pcfl->FPutPv((void *)&scenh, SIZEOF(SCENH), kctgScen, *pcno))
     {
         goto LFail;
@@ -4755,12 +5505,22 @@ bool SCEN::FWrite(PCRF pcrf, CNO *pcno)
     ReleasePpo(&pggFrmTemp);
     ReleasePpo(&pggStartTemp);
 
+    MVIE::MultiLog(Pmvie(),
+        "scene_write ok scene=%ld cno=%ld actors=%ld tboxes=%ld",
+        Pmvie() != pvNil ? (long)Pmvie()->Iscen() : -1L,
+        (long)*pcno, (long)chidActr, (long)chidTbox);
     return (fTrue);
 
 LFail:
+    MVIE::MultiLog(Pmvie(),
+        "scene_write FAIL stage=%s scene=%ld frame=%ld cno=%ld isev_frame=%ld isev_start=%ld chid_actor=%ld arid=%ld tmpl_cno=%ld el=%ld",
+        pszFailStage != pvNil ? pszFailStage : "unknown",
+        Pmvie() != pvNil ? (long)Pmvie()->Iscen() : -1L, (long)Nfrm(),
+        (long)*pcno, (long)isevFrm, (long)isevStart, (long)chidActr,
+        (long)aridWrite, (long)cnoTmplWrite, (long)pcfl->ElError());
 
     //
-    // Delete chunks createdk.
+    // 3DMMv1.0: Delete chunks createdk.
     //
     if (*pcno != cnoNil)
     {
@@ -4773,7 +5533,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine resolves all sound tags
  *
@@ -4832,7 +5592,7 @@ LFail:
     return fSuccess;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine removes all actors from movie's roll call.
  *
@@ -4858,7 +5618,7 @@ void SCEN::RemActrsFromRollCall(bool fDelIfOnlyRef)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine adds all actors to movie's roll call.
  *
@@ -4882,6 +5642,30 @@ bool SCEN::FAddActrsToRollCall(void)
 
         _pglpactr->Get(ipactr, &pactr);
         AssertPo(pactr, 0);
+
+        // A stock Actor/Prop that has been promoted by Actor Studio remains
+        // stock in older serialized scene ACTR chunks.  Resolve that logical
+        // stock identity to the movie-local replacement as each scene is
+        // brought back into memory, before FAddToRollCall() can overwrite the
+        // movie roll-call entry with the stale stock tag.
+        TAG tagSource;
+        TAG tagReplacement;
+        pactr->GetTagTmpl(&tagSource);
+        if (Pmvie()->FResolve4DMMReplacementTemplateTag(&tagSource, &tagReplacement))
+        {
+            if (Pmvie()->FOpen4DMMOwnedTemplateTag(tagReplacement.cno, &tagReplacement))
+            {
+                if (pactr->FChangeTagTmpl(&tagReplacement))
+                {
+                    MVIE::MultiLog(Pmvie(),
+                        "actor_studio_template_scene_resolve arid=%ld source_sid=%ld source_ctg=%lu source_cno=%ld replacement=%ld",
+                        (long)pactr->Arid(), (long)tagSource.sid, (unsigned long)tagSource.ctg,
+                        (long)tagSource.cno, (long)tagReplacement.cno);
+                }
+                TAGM::CloseTag(&tagReplacement);
+            }
+        }
+
         pactr->GetName(&stn);
 
         if (!Pmvie()->FAddToRollCall(pactr, &stn))
@@ -4901,7 +5685,7 @@ bool SCEN::FAddActrsToRollCall(void)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine returns the scene's thumbnail.
  *
@@ -4920,7 +5704,7 @@ PMBMP SCEN::PmbmpThumbnail(void)
     return (_pmbmp);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine updates the mbmp associated with the
  * thumbnail for the scene.
@@ -5041,7 +5825,7 @@ LEnd:
     return;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine marks the movie as dirty.
  *
@@ -5061,7 +5845,7 @@ void SCEN::MarkDirty(bool fDirty)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine pastes an actor into the current scene
  *
@@ -5072,21 +5856,21 @@ void SCEN::MarkDirty(bool fDirty)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
-bool SCEN::FPasteActrCore(PACTR pactr)
+bool SCEN::FPasteActrCore(PACTR pactr, bool fInPlace)
 {
     AssertThis(0);
     AssertPo(pactr, 0);
 
     //
-    // Paste the actor.
+    // 3DMMv1.0: Paste the actor.
     //
-    if (!pactr->FPaste(_nfrmCur, this))
+    if (!pactr->FPaste(_nfrmCur, this, fInPlace))
     {
         return (fFalse);
     }
 
     //
-    // Add the actor
+    // 3DMMv1.0: Add the actor
     //
     if (!FAddActrCore(pactr))
     {
@@ -5107,7 +5891,7 @@ bool SCEN::FPasteActrCore(PACTR pactr)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine pastes an actor into the current scene
  * and creates an undo object for the action.
@@ -5123,12 +5907,12 @@ bool SCEN::FPasteActrCore(PACTR pactr)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
-bool SCEN::FPasteActr(PACTR pactr)
+bool SCEN::FPasteActr(PACTR pactr, bool fInPlace)
 {
     AssertThis(0);
     AssertPo(pactr, 0);
 
-    if (!FPasteActrCore(pactr))
+    if (!FPasteActrCore(pactr, fInPlace))
     {
         return (fFalse);
     }
@@ -5136,7 +5920,7 @@ bool SCEN::FPasteActr(PACTR pactr)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine makes all actors go to a specific frame.
  *
@@ -5159,17 +5943,23 @@ bool SCEN::_FForceActorsToFrm(int32_t nfrm, bool *pfSoundInFrame)
     {
         _pglpactr->Get(iactr, &pactr);
         AssertPo(pactr, 0);
+        MVIE::DiagLog("SCEN::_FForceActorsToFrm scene=%ld frame=%ld actor_index=%ld actor=%p arid=%ld before FGotoFrame",
+                      (long)Pmvie()->Iscen(), (long)nfrm, (long)iactr, pactr, (long)pactr->Arid());
 
         if (!pactr->FGotoFrame(nfrm, pfSoundInFrame))
         {
+            MVIE::DiagLog("SCEN::_FForceActorsToFrm FAILED scene=%ld frame=%ld actor_index=%ld actor=%p arid=%ld",
+                          (long)Pmvie()->Iscen(), (long)nfrm, (long)iactr, pactr, (long)pactr->Arid());
             return (fFalse);
         }
+        MVIE::DiagLog("SCEN::_FForceActorsToFrm scene=%ld frame=%ld actor_index=%ld actor=%p arid=%ld after FGotoFrame",
+                      (long)Pmvie()->Iscen(), (long)nfrm, (long)iactr, pactr, (long)pactr->Arid());
     }
 
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine makes all text boxes go to a specific frame.
  *
@@ -5202,7 +5992,7 @@ bool SCEN::_FForceTboxesToFrm(int32_t nfrm)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Hides all text boxes in this scene
  *
@@ -5232,7 +6022,7 @@ void SCEN::HideTboxes(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Hides all actors in this scene
  *
@@ -5257,7 +6047,7 @@ void SCEN::HideActors(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Shows all actors in this scene
  *
@@ -5282,7 +6072,7 @@ void SCEN::ShowActors(void)
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine marks the movie dirty.
  *
@@ -5303,7 +6093,7 @@ void SCEN::_MarkMovieDirty()
     }
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine sets the scene to the given movie
  *
@@ -5322,7 +6112,7 @@ void SCEN::SetMvie(PMVIE pmvie)
     _pmvie = pmvie;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine reads from a chunky file and creates
  * a list of all the tags in the scene.
@@ -5359,7 +6149,7 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
     tagBkgd.sid = ksidInvalid;
 
     //
-    // Read starting events
+    // 3DMMv1.0: Read starting events
     //
     if (!pcfl->FGetKidChidCtg(kctgScen, cno, 1, kctgStartGg, &kid))
     {
@@ -5388,14 +6178,14 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
     }
 
     //
-    // Find all tags in starting events
+    // 3DMMv1.0: Find all tags in starting events
     //
     for (isev = 0; isev < pggsevStart->IvMac(); isev++)
     {
         qsev = (PSEV)pggsevStart->QvFixedGet(isev);
 
         //
-        // Find appropriate event types
+        // 3DMMv1.0: Find appropriate event types
         //
         switch (qsev->sevt)
         {
@@ -5466,7 +6256,7 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
     ReleasePpo(&pggsevStart);
 
     //
-    // Read in GG of Frame events
+    // 3DMMv1.0: Read in GG of Frame events
     //
     if (!pcfl->FGetKidChidCtg(kctgScen, cno, 0, kctgFrmGg, &kid))
     {
@@ -5495,14 +6285,14 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
     }
 
     //
-    // Look in all events for tags
+    // 3DMMv1.0: Look in all events for tags
     //
     for (isev = 0; isev < pggsevFrm->IvMac(); isev++)
     {
         qsev = (PSEV)pggsevFrm->QvFixedGet(isev);
 
         //
-        // Find appropriate event types
+        // 3DMMv1.0: Find appropriate event types
         //
         switch (qsev->sevt)
         {
@@ -5522,6 +6312,7 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
             break;
 
         case sevtPause:
+        case sevtBlankFrame:
             break;
 
         case sevtPlaySnd:
@@ -5541,7 +6332,7 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
             }
 
             //
-            // Insert the tags in order
+            // 3DMMv1.0: Insert the tags in order
             //
             for (itag = 0; itag < psse->ctagc; itag++)
             {
@@ -5569,7 +6360,7 @@ bool SCEN::FAddTagsToTagl(PCFL pcfl, CNO cno, PTAGL ptagl)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This returns the actor in the current scene with
  * the given arid.
@@ -5590,7 +6381,7 @@ PACTR SCEN::PactrFromArid(int32_t arid)
     PACTR pactr;
 
     //
-    // Search current scene for the actor.
+    // 3DMMv1.0: Search current scene for the actor.
     //
     for (iactr = 0; iactr < _pglpactr->IvMac(); iactr++)
     {
@@ -5605,7 +6396,7 @@ PACTR SCEN::PactrFromArid(int32_t arid)
     return (pvNil);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine chops off the rest of the scene.
  *
@@ -5632,7 +6423,7 @@ bool SCEN::FChopCore()
     }
 
     //
-    // Chop all actors off
+    // 3DMMv1.0: Chop all actors off
     //
     for (ipo = 0; ipo < _pglpactr->IvMac();)
     {
@@ -5651,7 +6442,7 @@ bool SCEN::FChopCore()
     }
 
     //
-    // Chop all text boxes off
+    // 3DMMv1.0: Chop all text boxes off
     //
     for (ipo = 0; ipo < _pglptbox->IvMac();)
     {
@@ -5661,7 +6452,7 @@ bool SCEN::FChopCore()
         if (ptbox->FGetLifetime(&nfrmStart, &nfrmLast) && (nfrmStart > _nfrmCur))
         {
             //
-            // Ok if this fails.
+            // 3DMMv1.0: Ok if this fails.
             //
             FRemTboxCore(ptbox);
         }
@@ -5671,9 +6462,9 @@ bool SCEN::FChopCore()
             {
 
                 //
-                // Here we extend the lifetime of the text box to
-                // infinite, cuz we removed the frame with the
-                // Hide().
+                // 3DMMv1.0: Here we extend the lifetime of the text box to
+                // 3DMMv1.0: infinite, cuz we removed the frame with the
+                // 3DMMv1.0: Hide().
                 //
                 if (ptbox->FGotoFrame(klwMax - 1))
                 {
@@ -5687,7 +6478,7 @@ bool SCEN::FChopCore()
     }
 
     //
-    // Remove all scene events from here forward
+    // 3DMMv1.0: Remove all scene events from here forward
     //
     for (; _isevFrmLim < _pggsevFrm->IvMac();)
     {
@@ -5695,10 +6486,14 @@ bool SCEN::FChopCore()
     }
 
     //
-    // Set new limit
+    // 3DMMv1.0: Set new limit
     //
     if (_nfrmLast != _nfrmCur)
     {
+        // .3ct frame numbers are one-based within the visible scene.  Remove
+        // camera samples beyond the new end and, when a tween is cut in the
+        // middle, synthesize the mathematically equivalent endpoint here.
+        Pmvie()->TrimCameraTrackAfter(Pmvie()->Iscen(), _nfrmCur - _nfrmFirst + 1);
         _nfrmLast = _nfrmCur;
         Pmvie()->SetDirty();
     }
@@ -5706,7 +6501,7 @@ bool SCEN::FChopCore()
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine chops off the rest of the scene and
  * creates an undo object as well.
@@ -5720,42 +6515,50 @@ bool SCEN::FChopCore()
  ****************************************************/
 bool SCEN::FChop()
 {
-    PSUNC psunc;
-    bool fValid;
+    MVIE::MultiLog(Pmvie(),
+        "scene_chop_after begin scene=%ld current=%ld first=%ld last=%ld camera_input=%d manual_frame=%d",
+        (long)Pmvie()->Iscen(), (long)_nfrmCur, (long)_nfrmFirst, (long)_nfrmLast,
+        (int)Pmvie()->FCameraInputActive(), (int)Pmvie()->FManualCameraFrameActive());
 
     if (_nfrmCur == _nfrmLast)
     {
+        MVIE::MultiLog(Pmvie(), "scene_chop_after noop already_last scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
         return (fTrue);
     }
 
-    psunc = SUNC::PsuncNew();
-    if (psunc != pvNil)
+    if (!FAddSnapshotUndo(PszLit("Delete Everything After")))
     {
-        fValid = psunc->FSave(this);
-    }
-    else
-    {
-        fValid = fFalse;
-    }
-
-    if (!fValid || !Pmvie()->FAddUndo(psunc))
-    {
-        ReleasePpo(&psunc);
+        MVIE::MultiLog(Pmvie(), "scene_chop_after FAILED stage=undo scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
         return (fFalse);
     }
 
-    ReleasePpo(&psunc);
-
+    const int32_t nfrmCutVisible = _nfrmCur - _nfrmFirst + 1;
     if (!FChopCore())
     {
         Pmvie()->ClearUndo();
+        MVIE::MultiLog(Pmvie(), "scene_chop_after FAILED stage=core scene=%ld cut_visible=%ld",
+                       (long)Pmvie()->Iscen(), (long)nfrmCutVisible);
         return (fFalse);
     }
 
+    // Scene bounds and the .3ct camera sidecar changed together. Refresh the
+    // camera, timeline controls, and movie view immediately after the armed
+    // Scene-tab tool receives its viewport click.
+    Pmvie()->ApplyCameraTrack();
+    Pmvie()->MarkViews();
+    Pmvie()->Pmcc()->UpdateScrollbars();
+    Pmvie()->InvalViewsAndScb();
+
+    MVIE::MultiLog(Pmvie(),
+        "scene_chop_after ok scene=%ld cut_visible=%ld new_current=%ld new_first=%ld new_last=%ld",
+        (long)Pmvie()->Iscen(), (long)nfrmCutVisible, (long)_nfrmCur,
+        (long)_nfrmFirst, (long)_nfrmLast);
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine chops off the rest of the scene, backwards
  *
@@ -5784,7 +6587,7 @@ bool SCEN::FChopBackCore()
     }
 
     //
-    // Chop all actors off
+    // 3DMMv1.0: Chop all actors off
     //
     for (ipo = 0; ipo < _pglpactr->IvMac();)
     {
@@ -5803,7 +6606,7 @@ bool SCEN::FChopBackCore()
     }
 
     //
-    // Chop all text boxes off
+    // 3DMMv1.0: Chop all text boxes off
     //
     for (ipo = 0; ipo < _pglptbox->IvMac();)
     {
@@ -5813,7 +6616,7 @@ bool SCEN::FChopBackCore()
         if (ptbox->FGetLifetime(&nfrmStart, &nfrmLast) && (nfrmLast < _nfrmCur))
         {
             //
-            // Ok if this fails.
+            // 3DMMv1.0: Ok if this fails.
             //
             FRemTboxCore(ptbox);
         }
@@ -5830,8 +6633,8 @@ bool SCEN::FChopBackCore()
     }
 
     //
-    // Remove all scene events from here backward, except camera
-    // changes, keep the most recent camera change.
+    // 3DMMv1.0: Remove all scene events from here backward, except camera
+    // 3DMMv1.0: changes, keep the most recent camera change.
     //
     fCopyCam = fTrue;
     for (; _isevFrmLim > 0;)
@@ -5871,16 +6674,20 @@ bool SCEN::FChopBackCore()
     }
 
     //
-    // Set new limit
+    // 3DMMv1.0: Set new limit
     //
     if (_nfrmFirst != _nfrmCur)
     {
+        // Preserve the camera exactly at the cut point, discard earlier
+        // samples, and renumber all surviving .3ct frames so the old current
+        // frame becomes the new visible frame 1.
+        Pmvie()->TrimCameraTrackBefore(Pmvie()->Iscen(), _nfrmCur - _nfrmFirst + 1);
         _nfrmFirst = _nfrmCur;
         Pmvie()->SetDirty();
     }
 
     //
-    // If _psseBkgd got chopped, get rid of it
+    // 3DMMv1.0: If _psseBkgd got chopped, get rid of it
     //
     if (_psseBkgd != pvNil && _nfrmSseBkgd < _nfrmFirst)
     {
@@ -5891,7 +6698,7 @@ bool SCEN::FChopBackCore()
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine chops off the rest of the scene, backwards,
  * and creates an undo object as well.
@@ -5905,42 +6712,452 @@ bool SCEN::FChopBackCore()
  ****************************************************/
 bool SCEN::FChopBack()
 {
-    PSUNC psunc;
-    bool fValid;
+    MVIE::MultiLog(Pmvie(),
+        "scene_chop_before begin scene=%ld current=%ld first=%ld last=%ld camera_input=%d manual_frame=%d",
+        (long)Pmvie()->Iscen(), (long)_nfrmCur, (long)_nfrmFirst, (long)_nfrmLast,
+        (int)Pmvie()->FCameraInputActive(), (int)Pmvie()->FManualCameraFrameActive());
 
     if (_nfrmCur == _nfrmFirst)
     {
+        MVIE::MultiLog(Pmvie(), "scene_chop_before noop already_first scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
         return (fTrue);
     }
 
-    psunc = SUNC::PsuncNew();
-    if (psunc != pvNil)
+    if (!FAddSnapshotUndo(PszLit("Delete Everything Before")))
     {
-        fValid = psunc->FSave(this);
-    }
-    else
-    {
-        fValid = fFalse;
-    }
-
-    if (!fValid || !Pmvie()->FAddUndo(psunc))
-    {
-        ReleasePpo(&psunc);
+        MVIE::MultiLog(Pmvie(), "scene_chop_before FAILED stage=undo scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
         return (fFalse);
     }
 
-    ReleasePpo(&psunc);
-
+    const int32_t nfrmCutVisible = _nfrmCur - _nfrmFirst + 1;
     if (!FChopBackCore())
     {
         Pmvie()->ClearUndo();
+        MVIE::MultiLog(Pmvie(), "scene_chop_before FAILED stage=core scene=%ld cut_visible=%ld",
+                       (long)Pmvie()->Iscen(), (long)nfrmCutVisible);
         return (fFalse);
     }
 
+    Pmvie()->ApplyCameraTrack();
+    Pmvie()->MarkViews();
+    Pmvie()->Pmcc()->UpdateScrollbars();
+    Pmvie()->InvalViewsAndScb();
+
+    MVIE::MultiLog(Pmvie(),
+        "scene_chop_before ok scene=%ld cut_visible=%ld new_current=%ld new_first=%ld new_last=%ld",
+        (long)Pmvie()->Iscen(), (long)nfrmCutVisible, (long)_nfrmCur,
+        (long)_nfrmFirst, (long)_nfrmLast);
     return (fTrue);
 }
 
 /****************************************************
+ *
+ * Add a complete current-scene undo snapshot, including the camera-track
+ * sidecar state which SCEN::FWrite cannot serialize.
+ *
+ ****************************************************/
+bool SCEN::FAddSnapshotUndo(const achar *pszUndoName)
+{
+    AssertThis(0);
+    AssertSz(pszUndoName);
+
+    PSUNC psunc = SUNC::PsuncNew();
+    if (psunc == pvNil)
+    {
+        MVIE::MultiLog(Pmvie(), "scene_trim_snapshot FAILED stage=alloc scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
+        return fFalse;
+    }
+
+    psunc->SetUndoName(pszUndoName);
+    if (!psunc->FSave(this))
+    {
+        MVIE::MultiLog(Pmvie(), "scene_trim_snapshot FAILED stage=save scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
+        ReleasePpo(&psunc);
+        return fFalse;
+    }
+
+    if (!Pmvie()->FAddUndo(psunc))
+    {
+        MVIE::MultiLog(Pmvie(), "scene_trim_snapshot FAILED stage=add_undo scene=%ld frame=%ld",
+                       (long)Pmvie()->Iscen(), (long)_nfrmCur);
+        ReleasePpo(&psunc);
+        return fFalse;
+    }
+
+    MVIE::MultiLog(Pmvie(), "scene_trim_snapshot ok scene=%ld frame=%ld",
+                   (long)Pmvie()->Iscen(), (long)_nfrmCur);
+    ReleasePpo(&psunc);
+    return fTrue;
+}
+
+/***************************************************************************
+    FAddNativeFrameUndo
+
+    Add a lightweight undo record for the two original edge-extension paths.
+    These operations do not edit actor routes, so a full serialized scene copy
+    would add most of the cost we are specifically preserving the native path
+    to avoid.
+***************************************************************************/
+bool SCEN::FAddNativeFrameUndo(bool fBefore, bool fBlank, int32_t cfrm)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 1, klwMax);
+
+    PSUNF psunf = SUNF::PsunfNew();
+    if (psunf == pvNil)
+        return fFalse;
+
+    bool fValid = psunf->FSave(this, fBefore, fBlank, cfrm);
+    if (!fValid || !Pmvie()->FAddUndo(psunf))
+    {
+        ReleasePpo(&psunf);
+        return fFalse;
+    }
+
+    ReleasePpo(&psunf);
+    return fTrue;
+}
+
+/***************************************************************************
+    FFrameBlank
+***************************************************************************/
+bool SCEN::FFrameBlank(int32_t nfrm) const
+{
+    SEV sev;
+    for (int32_t isev = 0; isev < _pggsevFrm->IvMac(); isev++)
+    {
+        _pggsevFrm->GetFixed(isev, &sev);
+        if (sev.nfrm > nfrm)
+            break;
+        if (sev.nfrm == nfrm && sev.sevt == sevtBlankFrame)
+            return fTrue;
+    }
+    return fFalse;
+}
+
+/***************************************************************************
+    FNativeAppendFramesCore
+
+    This is the original Ctrl+Next-at-end operation: FGotoFrm(current + 1).
+    The optional blank flag only adds the scene-local blank marker before that
+    same native seek; the nonblank path is otherwise unchanged.
+***************************************************************************/
+bool SCEN::FNativeAppendFramesCore(int32_t cfrm, bool fBlank)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 0, klwMax);
+
+    if (cfrm <= 0)
+        return fTrue;
+    if (_nfrmCur != _nfrmLast || _nfrmCur > klwMax - cfrm)
+        return fFalse;
+
+    for (int32_t ifrm = 0; ifrm < cfrm; ifrm++)
+    {
+        int32_t nfrmNew = _nfrmCur + 1;
+        if (fBlank)
+        {
+            SEV sev;
+            sev.nfrm = nfrmNew;
+            sev.sevt = sevtBlankFrame;
+            int32_t isevIns = _pggsevFrm->IvMac();
+            if (!_pggsevFrm->FInsert(isevIns, 0, pvNil, &sev))
+                return fFalse;
+        }
+
+        // Exact original frame creation operation.
+        if (!FGotoFrm(nfrmNew))
+            return fFalse;
+    }
+
+    return fTrue;
+}
+
+/***************************************************************************
+    FNativePrependBlankFramesCore
+
+    This is the original Ctrl+Previous-at-first-frame operation repeated.
+***************************************************************************/
+bool SCEN::FNativePrependBlankFramesCore(int32_t cfrm)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 0, klwMax);
+
+    if (cfrm <= 0)
+        return fTrue;
+    if (_nfrmCur != _nfrmFirst || _nfrmCur < klwMin + cfrm)
+        return fFalse;
+
+    for (int32_t ifrm = 0; ifrm < cfrm; ifrm++)
+    {
+        // Exact original blank-prepend operation.
+        if (!FGotoFrm(_nfrmCur - 1))
+            return fFalse;
+    }
+    return fTrue;
+}
+
+/***************************************************************************
+    FNativeRemoveEndFramesCore
+
+    Undo only the empty timeline extension made by FNativeAppendFramesCore.
+    Any later edit would be above this operation in the undo stack, so there
+    are no actor-route edits to remove here.
+***************************************************************************/
+bool SCEN::FNativeRemoveEndFramesCore(int32_t cfrm)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 0, klwMax);
+
+    if (cfrm <= 0)
+        return fTrue;
+    if (_nfrmLast - _nfrmFirst + 1 <= cfrm)
+        return fFalse;
+
+    int32_t nfrmLastNew = _nfrmLast - cfrm;
+    if (_nfrmCur > nfrmLastNew && !FGotoFrm(nfrmLastNew))
+        return fFalse;
+
+    for (int32_t isev = _pggsevFrm->IvMac() - 1; isev >= 0; isev--)
+    {
+        SEV sev;
+        _pggsevFrm->GetFixed(isev, &sev);
+        if (sev.nfrm <= nfrmLastNew)
+            break;
+        _pggsevFrm->Delete(isev);
+    }
+
+    _nfrmLast = nfrmLastNew;
+    _MarkMovieDirty();
+    return fTrue;
+}
+
+/***************************************************************************
+    FNativeRemoveStartFramesCore
+
+    Reverse the original blank-prepend operation.  Actors and text boxes were
+    never moved by that operation; only the scene first bound and persistent
+    first-frame camera event need to move forward again.
+***************************************************************************/
+bool SCEN::FNativeRemoveStartFramesCore(int32_t cfrm)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 0, klwMax);
+
+    if (cfrm <= 0)
+        return fTrue;
+    if (_nfrmLast - _nfrmFirst + 1 <= cfrm)
+        return fFalse;
+
+    int32_t nfrmFirstOld = _nfrmFirst;
+    int32_t nfrmFirstNew = _nfrmFirst + cfrm;
+    if (_nfrmCur < nfrmFirstNew && !FGotoFrm(nfrmFirstNew))
+        return fFalse;
+
+    for (int32_t isev = _pggsevFrm->IvMac() - 1; isev >= 0; isev--)
+    {
+        SEV sev;
+        _pggsevFrm->GetFixed(isev, &sev);
+        if (sev.nfrm < nfrmFirstOld)
+        {
+            _pggsevFrm->Delete(isev);
+            continue;
+        }
+        if (sev.nfrm == nfrmFirstOld && sev.sevt == sevtChngCamera)
+        {
+            sev.nfrm = nfrmFirstNew;
+            _pggsevFrm->PutFixed(isev, &sev);
+        }
+        else if (sev.nfrm < nfrmFirstNew)
+        {
+            _pggsevFrm->Delete(isev);
+        }
+    }
+
+    _nfrmFirst = nfrmFirstNew;
+    _isevFrmLim = 0;
+    while (_isevFrmLim < _pggsevFrm->IvMac())
+    {
+        SEV sev;
+        _pggsevFrm->GetFixed(_isevFrmLim, &sev);
+        if (sev.nfrm > _nfrmCur)
+            break;
+        _isevFrmLim++;
+    }
+    _MarkMovieDirty();
+    return fTrue;
+}
+
+/***************************************************************************
+    FInsertFramesAtCurrent
+
+    Insert held copies adjacent to the current frame.  After holds the current
+    frame and inserts immediately following it.  Interior Before holds the
+    preceding frame and inserts immediately before the selected frame, moving
+    that selected old frame and every later frame forward by cfrm.
+***************************************************************************/
+bool SCEN::FInsertFramesAtCurrent(int32_t cfrm, bool fBefore, bool fBlank,
+                                  bool fAddUndo)
+{
+    AssertThis(0);
+    AssertIn(cfrm, 0, klwMax);
+
+    if (cfrm <= 0)
+        return fTrue;
+    if (_pmvie == pvNil || _pmvie->FPlaying() || _nfrmCur > klwMax - cfrm)
+        return fFalse;
+
+    int32_t nfrmInsert = _nfrmCur;
+    int32_t nfrmLastOld = _nfrmLast;
+    int32_t nfrmTrack = nfrmInsert - _nfrmFirst + 1;
+
+    // A true Before insertion is the gap immediately before the selected
+    // frame.  For an interior frame, that is exactly the same timeline
+    // boundary as an After insertion on the preceding frame: preserve the
+    // preceding frame, insert held time after it, and move the selected old
+    // frame (plus everything later) forward by cfrm.
+    bool fInteriorBefore = fBefore && nfrmInsert > _nfrmFirst;
+    int32_t nfrmHold = fInteriorBefore ? nfrmInsert - 1 : nfrmInsert;
+    int32_t nfrmTrackHold = fInteriorBefore ? nfrmTrack - 1 : nfrmTrack;
+
+    PACTR pactr;
+    PTBOX ptbox;
+    SEV sev;
+    bool fHoldBlank = fFalse;
+    for (int32_t isev = 0; isev < _pggsevFrm->IvMac(); isev++)
+    {
+        _pggsevFrm->GetFixed(isev, &sev);
+        if (sev.nfrm > nfrmHold)
+            break;
+        if (sev.nfrm == nfrmHold && sev.sevt == sevtBlankFrame)
+        {
+            fHoldBlank = fTrue;
+            break;
+        }
+    }
+
+    if (fAddUndo && !FAddSnapshotUndo(cfrm == 1 ? PszLit("Insert Frame")
+                                                : PszLit("Insert Frames")))
+        return fFalse;
+
+    // Move later camera controls without manufacturing an exact manual-camera
+    // sample on the inserted frame.  A tween crossing the gap gets a held
+    // section so its old frames retain their old camera positions.
+    bool fCameraShifted;
+    if (fInteriorBefore)
+        fCameraShifted = _pmvie->FInsertCameraTrackFramesAfter(_pmvie->Iscen(), nfrmTrackHold, cfrm);
+    else if (fBefore)
+        fCameraShifted = _pmvie->FInsertCameraTrackFramesBefore(_pmvie->Iscen(), nfrmTrack, cfrm);
+    else
+        fCameraShifted = _pmvie->FInsertCameraTrackFramesAfter(_pmvie->Iscen(), nfrmTrack, cfrm);
+    if (!fCameraShifted)
+    {
+        // The snapshot at the top of the undo stack is also our atomic
+        // rollback.  Never leave half-shifted camera or actor event streams.
+        _pmvie->FUndo();
+        _pmvie->ClearUndo();
+        return fFalse;
+    }
+
+    for (int32_t iactr = 0; iactr < _pglpactr->IvMac(); iactr++)
+    {
+        _pglpactr->Get(iactr, &pactr);
+        if (!pactr->FInsertHeldFramesAfter(nfrmHold, cfrm))
+        {
+            _pmvie->FUndo();
+            _pmvie->ClearUndo();
+            return fFalse;
+        }
+    }
+
+    for (int32_t itbox = 0; itbox < _pglptbox->IvMac(); itbox++)
+    {
+        _pglptbox->Get(itbox, &ptbox);
+        ptbox->InsertDuplicateFramesAfter(nfrmHold, cfrm);
+    }
+
+    // Shift ordinary frame events after the insertion point.  Events on the
+    // copied frame remain on the first copy and their state persists through
+    // the inserted hold frames.
+    for (int32_t isev = 0; isev < _pggsevFrm->IvMac(); isev++)
+    {
+        _pggsevFrm->GetFixed(isev, &sev);
+        if (sev.nfrm > nfrmHold)
+        {
+            sev.nfrm += cfrm;
+            _pggsevFrm->PutFixed(isev, &sev);
+        }
+    }
+
+    _nfrmLast = nfrmLastOld + cfrm;
+
+    if (fBlank || fHoldBlank)
+    {
+        // A normal Shift insertion blanks only the newly inserted frames.  If
+        // the held boundary frame was already blank, ordinary duplicate
+        // insertion must preserve that visible state too.
+        int32_t nfrmBlankFirst;
+        // The inserted range always starts immediately after the held
+        // boundary.  For interior Before this is the selected frame number;
+        // for After it is selected+1.
+        nfrmBlankFirst = nfrmHold + 1;
+        for (int32_t ifrm = 0; ifrm < cfrm; ifrm++)
+        {
+            int32_t nfrmBlank = nfrmBlankFirst + ifrm;
+            sev.nfrm = nfrmBlank;
+            sev.sevt = sevtBlankFrame;
+            int32_t isevIns = 0;
+            for (; isevIns < _pggsevFrm->IvMac(); isevIns++)
+            {
+                SEV sevT;
+                _pggsevFrm->GetFixed(isevIns, &sevT);
+                if (sevT.nfrm > nfrmBlank)
+                    break;
+            }
+            if (!_pggsevFrm->FInsert(isevIns, 0, pvNil, &sev))
+            {
+                _pmvie->FUndo();
+                _pmvie->ClearUndo();
+                return fFalse;
+            }
+        }
+    }
+
+    // Recompute the scene event cursor after shifting/inserting entries.
+    _isevFrmLim = 0;
+    while (_isevFrmLim < _pggsevFrm->IvMac())
+    {
+        _pggsevFrm->GetFixed(_isevFrmLim, &sev);
+        if (sev.nfrm > _nfrmCur)
+            break;
+        _isevFrmLim++;
+    }
+
+    _MarkMovieDirty();
+    // Before inserts duplicate time ahead of the old current frame, so follow
+    // that original frame forward. After leaves the original current frame in
+    // place and inserts the duplicate time following it.
+    int32_t nfrmDest = fBefore ? nfrmInsert + cfrm : nfrmInsert;
+    if (!FGotoFrm(nfrmDest))
+    {
+        // The snapshot at the top of the undo stack is also our atomic
+        // rollback.  Never leave half-shifted camera or actor event streams.
+        _pmvie->FUndo();
+        _pmvie->ClearUndo();
+        return fFalse;
+    }
+
+    _pmvie->ApplyCameraTrack();
+    _pmvie->Pbwld()->Render();
+    _pmvie->InvalViewsAndScb();
+    return fTrue;
+}
+
+/** 3DMMv1.0: **************************************************
  *
  * This routine does any startup for playback
  *
@@ -5962,9 +7179,9 @@ bool SCEN::FStartPlaying()
     int32_t nfrmFirst, nfrmLast;
 
     //
-    // Make sure all actors have state variables updated
-    // (they might not be in the theater right after
-    // loading the movie)
+    // 3DMMv1.0: Make sure all actors have state variables updated
+    // 3DMMv1.0: (they might not be in the theater right after
+    // 3DMMv1.0: loading the movie)
     //
     for (ipactr = 0; ipactr < _pglpactr->IvMac(); ipactr++)
     {
@@ -5985,14 +7202,14 @@ bool SCEN::FStartPlaying()
     }
 
     //
-    // Start prerendering at this frame, even if there's
-    // no camera view change.
+    // 3DMMv1.0: Start prerendering at this frame, even if there's
+    // 3DMMv1.0: no camera view change.
     //
     _DoPrerenderingWork(fTrue);
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This routine cleans up after a playback has stopped.
  *
@@ -6010,7 +7227,7 @@ void SCEN::StopPlaying()
     int32_t itbox;
     PTBOX ptbox;
 
-    _EndPrerendering(); // Stop prerendering
+    _EndPrerendering(); // 3DMMv1.0: Stop prerendering
 
     for (itbox = 0; itbox < _pglptbox->IvMac(); itbox++)
     {
@@ -6020,7 +7237,7 @@ void SCEN::StopPlaying()
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FTransOnFile
         For a given SCEN chunk on a given CRF, get the scene transition
         state for the scene.
@@ -6054,7 +7271,7 @@ LFail:
     return fFalse;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FSetTransOnFile
         For a given SCEN chunk on a given CRF, set the scene transition
         state for the scene.
@@ -6095,12 +7312,12 @@ LFail:
 //
 //
 //
-// UNDO STUFF
+// 3DMMv1.0: UNDO STUFF
 //
 //
 //
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for name
  * related commands.
@@ -6119,7 +7336,7 @@ PSUNT SUNT::PsuntNew()
     return (psunt);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene naming undo objects
  *
@@ -6129,7 +7346,7 @@ SUNT::~SUNT(void)
     AssertBaseThis(0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -6140,6 +7357,15 @@ SUNT::~SUNT(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void SUNT::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Rename Scene"));
+}
+
 bool SUNT::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -6162,7 +7388,7 @@ bool SUNT::FDo(PDOCB pdocb)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -6181,7 +7407,7 @@ bool SUNT::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNT
  *
  * Parameters:
@@ -6197,7 +7423,7 @@ void SUNT::MarkMem(void)
     SUNT_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNT.
 ***************************************************************************/
 void SUNT::AssertValid(uint32_t grf)
@@ -6205,7 +7431,7 @@ void SUNT::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for sound
  * related commands.
@@ -6224,7 +7450,7 @@ PSUNS SUNS::PsunsNew()
     return (psuns);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene sound undo objects
  *
@@ -6235,7 +7461,7 @@ SUNS::~SUNS(void)
     ReleasePpsse(&_psse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -6246,6 +7472,15 @@ SUNS::~SUNS(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void SUNS::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Edit Scene Sound"));
+}
+
 bool SUNS::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -6269,7 +7504,7 @@ bool SUNS::FDo(PDOCB pdocb)
 
     _pmvie->Pmsq()->FlushMsq();
 
-    // swap the event in the event list (if any) with _psse (if any)
+    // 3DMMv1.0: swap the event in the event list (if any) with _psse (if any)
 
     if (!_pmvie->Pscen()->FGetSnd(_sty, &fFound, &psseOld))
     {
@@ -6293,7 +7528,7 @@ bool SUNS::FDo(PDOCB pdocb)
             _psse = psseOld;
             _sty = psseOld->sty;
         }
-        else // no sse to replace, just add this one
+        else // 3DMMv1.0: no sse to replace, just add this one
         {
             if (!_pmvie->Pscen()->FAddSndCoreTagc(_psse->fLoop, fFalse, _psse->vlm, _psse->sty, _psse->ctagc,
                                                   _psse->Ptagc(0)))
@@ -6304,7 +7539,7 @@ bool SUNS::FDo(PDOCB pdocb)
             ReleasePpsse(&_psse);
         }
     }
-    else // _psse is pvNil...remember what's there then nuke the event
+    else // 3DMMv1.0: _psse is pvNil...remember what's there then nuke the event
     {
         if (!fFound)
         {
@@ -6328,7 +7563,7 @@ bool SUNS::FDo(PDOCB pdocb)
     return (fTrue);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -6348,7 +7583,7 @@ bool SUNS::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNS
  *
  * Parameters:
@@ -6366,7 +7601,7 @@ void SUNS::MarkMem(void)
         MarkPv(_psse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNS.
 ***************************************************************************/
 void SUNS::AssertValid(uint32_t grf)
@@ -6381,7 +7616,7 @@ void SUNS::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for actor
  * related commands.
@@ -6400,7 +7635,7 @@ PSUNA SUNA::PsunaNew()
     return (psuna);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene actor undo objects
  *
@@ -6411,7 +7646,7 @@ SUNA::~SUNA(void)
     ReleasePpo(&_pactr);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -6422,11 +7657,37 @@ SUNA::~SUNA(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name for actor insertion/removal.
+***************************************************************************/
+void SUNA::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    switch (_ut)
+    {
+    case utAdd:
+        pstn->SetSz(PszLit("Add Actor"));
+        break;
+    case utDel:
+        pstn->SetSz(PszLit("Delete Actor"));
+        break;
+    case utRep:
+        pstn->SetSz(PszLit("Replace Actor"));
+        break;
+    default:
+        pstn->SetSz(PszLit("Edit Actor"));
+        break;
+    }
+}
+
 bool SUNA::FDo(PDOCB pdocb)
 {
     AssertThis(0);
 
     PACTR pactr, pactrDup;
+    MVIE::LightEditorLog(_pmvie, "actor_undo redo begin ut=%ld arid=%ld target_scene=%ld target_frame=%ld stored_ptr=%p",
+                         (long)_ut, _pactr != pvNil ? (long)_pactr->Arid() : (long)aridNil,
+                         (long)_iscen, (long)_nfrm, (void *)_pactr);
 
     if (!_pmvie->FSwitchScen(_iscen))
     {
@@ -6444,6 +7705,36 @@ bool SUNA::FDo(PDOCB pdocb)
         if (!_pmvie->Pscen()->FAddActrCore(_pactr))
         {
             goto LFail;
+        }
+
+        if (_fHasLightLab)
+        {
+            LIGHTLAB light;
+            ClearPb(&light, SIZEOF(light));
+            light.iscen = _iscen;
+            light.arid = _pactr->Arid();
+            light.fEnabled = _fLightEnabled;
+            light.fGenerateShadows = _fLightGenerateShadows;
+            light.fAttachmentHideable = _fLightAttachmentHideable;
+            light.intensity = _lightIntensity;
+            light.edgeGradient = _lightEdgeGradient;
+            light.diameter = _lightDiameter;
+            light.range = _lightRange;
+            CopyPb(_szLightShape, light.szShape, SIZEOF(light.szShape));
+            if (!_pmvie->FRestoreLightLabConfigCore(&light))
+                goto LFail;
+        }
+
+        if (_fHasObjectProperties)
+        {
+            OBJECTPROPERTIES prop;
+            ClearPb(&prop, SIZEOF(prop));
+            prop.iscen = _iscen;
+            prop.arid = _pactr->Arid();
+            prop.fFlushOverlap = _fObjectFlushOverlap;
+            prop.fCastShadows = _fObjectCastShadows;
+            if (!_pmvie->FSetObjectProperties(&prop, fFalse))
+                goto LFail;
         }
 
         _pmvie->Pscen()->SelectActr(_pactr);
@@ -6467,6 +7758,11 @@ bool SUNA::FDo(PDOCB pdocb)
         Assert(_ut == utRep, "Bad Grf");
 
         pactr = _pmvie->Pscen()->PactrFromArid(_pactr->Arid());
+        if (pactr == pvNil)
+        {
+            MVIE::LightEditorLog(_pmvie, "actor_undo redo missing_live_actor arid=%ld", (long)_pactr->Arid());
+            goto LFail;
+        }
         if (!pactr->FDup(&pactrDup, fTrue))
         {
             goto LFail;
@@ -6486,16 +7782,19 @@ bool SUNA::FDo(PDOCB pdocb)
 
     _pmvie->Pmsq()->FlushMsq();
     _pmvie->Pmcc()->UpdateRollCall();
+    _pmvie->UpdateTestLightAttachment();
+    MVIE::LightEditorLog(_pmvie, "actor_undo redo success ut=%ld", (long)_ut);
 
     return (fTrue);
 
 LFail:
+    MVIE::LightEditorLog(_pmvie, "actor_undo redo FAILED ut=%ld", (long)_ut);
     _pmvie->Pmsq()->FlushMsq();
     _pmvie->ClearUndo();
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -6511,6 +7810,9 @@ bool SUNA::FUndo(PDOCB pdocb)
     AssertThis(0);
 
     PACTR pactr, pactrDup;
+    MVIE::LightEditorLog(_pmvie, "actor_undo undo begin ut=%ld arid=%ld target_scene=%ld target_frame=%ld stored_ptr=%p",
+                         (long)_ut, _pactr != pvNil ? (long)_pactr->Arid() : (long)aridNil,
+                         (long)_iscen, (long)_nfrm, (void *)_pactr);
 
     if (!_pmvie->FSwitchScen(_iscen))
     {
@@ -6524,7 +7826,19 @@ bool SUNA::FUndo(PDOCB pdocb)
 
     if (_ut == utAdd)
     {
-
+        if (_fHasLightLab)
+            _pmvie->FRemoveLightLabConfigCore(_iscen, _pactr->Arid());
+        if (_fHasObjectProperties)
+        {
+            OBJECTPROPERTIES prop;
+            ClearPb(&prop, SIZEOF(prop));
+            prop.iscen = _iscen;
+            prop.arid = _pactr->Arid();
+            prop.fFlushOverlap = fFalse;
+            prop.fCastShadows = fTrue;
+            if (!_pmvie->FSetObjectProperties(&prop, fFalse))
+                goto LFail;
+        }
         _pmvie->Pscen()->RemActrCore(_pactr->Arid());
     }
     else if (_ut == utDel)
@@ -6552,6 +7866,11 @@ bool SUNA::FUndo(PDOCB pdocb)
         Assert(_ut == utRep, "Bad Grf");
 
         pactr = _pmvie->Pscen()->PactrFromArid(_pactr->Arid());
+        if (pactr == pvNil)
+        {
+            MVIE::LightEditorLog(_pmvie, "actor_undo undo missing_live_actor arid=%ld", (long)_pactr->Arid());
+            goto LFail;
+        }
         if (!pactr->FDup(&pactrDup, fTrue))
         {
             goto LFail;
@@ -6571,17 +7890,20 @@ bool SUNA::FUndo(PDOCB pdocb)
 
     _pmvie->Pmsq()->FlushMsq();
     _pmvie->Pmcc()->UpdateRollCall();
+    _pmvie->UpdateTestLightAttachment();
+    MVIE::LightEditorLog(_pmvie, "actor_undo undo success ut=%ld", (long)_ut);
 
     return (fTrue);
 
 LFail:
+    MVIE::LightEditorLog(_pmvie, "actor_undo undo FAILED ut=%ld", (long)_ut);
     _pmvie->Pmsq()->FlushMsq();
     _pmvie->ClearUndo();
     return (fFalse);
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNA
  *
  * Parameters:
@@ -6598,7 +7920,7 @@ void SUNA::MarkMem(void)
     MarkMemObj(_pactr);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNA.
 ***************************************************************************/
 void SUNA::AssertValid(uint32_t grf)
@@ -6607,7 +7929,7 @@ void SUNA::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for text box
  * related commands.
@@ -6626,7 +7948,7 @@ PSUNX SUNX::PsunxNew()
     return (psunx);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene text box undo objects
  *
@@ -6637,7 +7959,7 @@ SUNX::~SUNX(void)
     ReleasePpo(&_ptbox);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -6648,6 +7970,15 @@ SUNX::~SUNX(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name for text box insertion/removal.
+***************************************************************************/
+void SUNX::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(_fAdd ? PszLit("Add Text Box") : PszLit("Delete Text Box"));
+}
+
 bool SUNX::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -6685,7 +8016,7 @@ bool SUNX::FDo(PDOCB pdocb)
         {
 
             //
-            // Find the new itbox for this tbox.
+            // 3DMMv1.0: Find the new itbox for this tbox.
             //
             for (_itbox = 0;; _itbox++)
             {
@@ -6709,8 +8040,8 @@ bool SUNX::FDo(PDOCB pdocb)
         }
 
         //
-        // NOTE: ptbox may be different than _ptbox since
-        // we may have switched away from the scene.
+        // 3DMMv1.0: NOTE: ptbox may be different than _ptbox since
+        // 3DMMv1.0: we may have switched away from the scene.
         //
         ptbox = _pmvie->Pscen()->PtboxFromItbox(_itbox);
         if (!_pmvie->Pscen()->FRemTboxCore(ptbox))
@@ -6729,7 +8060,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -6760,8 +8091,8 @@ bool SUNX::FUndo(PDOCB pdocb)
         }
 
         //
-        // NOTE: ptbox may be different than _ptbox since
-        // we may have switched away from the scene.
+        // 3DMMv1.0: NOTE: ptbox may be different than _ptbox since
+        // 3DMMv1.0: we may have switched away from the scene.
         //
         ptbox = _pmvie->Pscen()->PtboxFromItbox(_itbox);
         if (!_pmvie->Pscen()->FRemTboxCore(ptbox))
@@ -6794,7 +8125,7 @@ bool SUNX::FUndo(PDOCB pdocb)
         {
 
             //
-            // Find the new itbox for this tbox.
+            // 3DMMv1.0: Find the new itbox for this tbox.
             //
             for (_itbox = 0;; _itbox++)
             {
@@ -6820,7 +8151,7 @@ LFail:
     return (fFalse);
 }
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNX
  *
  * Parameters:
@@ -6837,7 +8168,7 @@ void SUNX::MarkMem(void)
     MarkMemObj(_ptbox);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNX.
 ***************************************************************************/
 void SUNX::AssertValid(uint32_t grf)
@@ -6846,7 +8177,7 @@ void SUNX::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for transition
  * related commands.
@@ -6865,7 +8196,7 @@ PSUNR SUNR::PsunrNew()
     return (psunr);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene transition undo objects
  *
@@ -6875,7 +8206,7 @@ SUNR::~SUNR(void)
     AssertBaseThis(0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -6886,6 +8217,15 @@ SUNR::~SUNR(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void SUNR::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Change Scene Transition"));
+}
+
 bool SUNR::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -6916,7 +8256,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -6934,7 +8274,7 @@ bool SUNR::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNR
  *
  * Parameters:
@@ -6950,7 +8290,7 @@ void SUNR::MarkMem(void)
     SUNR_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNR.
 ***************************************************************************/
 void SUNR::AssertValid(uint32_t grf)
@@ -6958,7 +8298,7 @@ void SUNR::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for pause
  * related commands.
@@ -6977,7 +8317,7 @@ PSUNP SUNP::PsunpNew()
     return (psunp);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene pause undo objects
  *
@@ -6987,7 +8327,7 @@ SUNP::~SUNP(void)
     AssertBaseThis(0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -6998,6 +8338,15 @@ SUNP::~SUNP(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name for pauses.
+***************************************************************************/
+void SUNP::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(_fAdd ? PszLit("Add Pause") : PszLit("Edit Pause"));
+}
+
 bool SUNP::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -7030,7 +8379,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -7047,7 +8396,7 @@ bool SUNP::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNP
  *
  * Parameters:
@@ -7063,7 +8412,7 @@ void SUNP::MarkMem(void)
     SUNP_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNP.
 ***************************************************************************/
 void SUNP::AssertValid(uint32_t grf)
@@ -7071,7 +8420,7 @@ void SUNP::AssertValid(uint32_t grf)
 }
 #endif
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for background
  * related commands.
@@ -7090,7 +8439,7 @@ PSUNK SUNK::PsunkNew()
     return (psunk);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene background undo objects
  *
@@ -7100,7 +8449,7 @@ SUNK::~SUNK(void)
     AssertBaseThis(0);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -7111,6 +8460,15 @@ SUNK::~SUNK(void)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name for background/camera edits.
+***************************************************************************/
+void SUNK::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(_fSetBkgd ? PszLit("Change Background") : PszLit("Change Camera"));
+}
+
 bool SUNK::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -7170,7 +8528,7 @@ LFail:
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -7188,7 +8546,7 @@ bool SUNK::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNK
  *
  * Parameters:
@@ -7204,7 +8562,7 @@ void SUNK::MarkMem(void)
     SUNK_PAR::MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNK.
 ***************************************************************************/
 void SUNK::AssertValid(uint32_t grf)
@@ -7213,6 +8571,117 @@ void SUNK::AssertValid(uint32_t grf)
 #endif
 
 /****************************************************
+ * Lightweight native-frame undo object.
+ ****************************************************/
+PSUNF SUNF::PsunfNew(void)
+{
+    return NewObj SUNF();
+}
+
+SUNF::~SUNF(void)
+{
+    AssertBaseThis(0);
+    FreePpv((void **)&_pctstate);
+}
+
+bool SUNF::FSave(PSCEN pscen, bool fBefore, bool fBlank, int32_t cfrm)
+{
+    AssertPo(pscen, 0);
+    AssertIn(cfrm, 1, klwMax);
+
+    // Appending at the end never mutates .3ct data; camera state simply holds
+    // forward.  Avoid the 140 KB camera snapshot on that original instant path.
+    // Prepending does renumber camera controls and therefore needs the snapshot.
+    if (fBefore)
+    {
+        if (!FAllocPv((void **)&_pctstate, SIZEOF(CTSTATE), fmemClear,
+                      mprNormal))
+        {
+            return fFalse;
+        }
+        if (!pscen->Pmvie()->FGetCameraTrackState(_pctstate))
+            return fFalse;
+        _fHasCameraState = fTrue;
+    }
+
+    _fBefore = fBefore;
+    _fBlank = fBlank;
+    _cfrm = cfrm;
+    _fInserted = fTrue;
+    return fTrue;
+}
+
+void SUNF::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    if (_fBefore || _fBlank)
+        pstn->SetSz(_cfrm == 1 ? PszLit("Insert Empty Frame")
+                               : PszLit("Insert Empty Frames"));
+    else
+        pstn->SetSz(_cfrm == 1 ? PszLit("Insert Frame")
+                               : PszLit("Insert Frames"));
+}
+
+bool SUNF::FDo(PDOCB pdocb)
+{
+    AssertThis(0);
+
+    PSCEN pscen = pvNil;
+    bool fRet = fFalse;
+    if (!_pmvie->FSwitchScen(_iscen))
+        goto LFail;
+
+    pscen = _pmvie->Pscen();
+    if (_fInserted)
+    {
+        fRet = _fBefore ? pscen->FNativeRemoveStartFramesCore(_cfrm)
+                        : pscen->FNativeRemoveEndFramesCore(_cfrm);
+    }
+    else
+    {
+        fRet = _fBefore ? pscen->FNativePrependBlankFramesCore(_cfrm)
+                        : pscen->FNativeAppendFramesCore(_cfrm, _fBlank);
+    }
+    if (!fRet)
+        goto LFail;
+
+    if (_fHasCameraState)
+        _pmvie->SwapCameraTrackState(_pctstate);
+    _fInserted = !_fInserted;
+    _pmvie->SetDirty();
+    _pmvie->ApplyCameraTrack();
+    _pmvie->InvalViewsAndScb();
+    _pmvie->Pmsq()->FlushMsq();
+    return fTrue;
+
+LFail:
+    _pmvie->Pmsq()->FlushMsq();
+    _pmvie->ClearUndo();
+    return fFalse;
+}
+
+bool SUNF::FUndo(PDOCB pdocb)
+{
+    return FDo(pdocb);
+}
+
+#ifdef DEBUG
+void SUNF::MarkMem(void)
+{
+    AssertThis(0);
+    SUNF_PAR::MarkMem();
+    if (_pctstate != pvNil)
+        MarkPv(_pctstate);
+}
+
+void SUNF::AssertValid(uint32_t grf)
+{
+    SUNF_PAR::AssertValid(grf);
+    AssertIn(_cfrm, 1, klwMax);
+}
+#endif // DEBUG
+
+/** 3DMMv1.0: **************************************************
  *
  * Public constructor for scene undo objects for background
  * chop commands.
@@ -7231,7 +8700,7 @@ PSUNC SUNC::PsuncNew()
     return (psunc);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Destructor for scene pause undo objects
  *
@@ -7239,10 +8708,20 @@ PSUNC SUNC::PsuncNew()
 SUNC::~SUNC(void)
 {
     AssertBaseThis(0);
+    // The undo snapshot is deliberately an orphan SCEN in the movie's normal
+    // autosave CRF.  Remove it when the undo record leaves history so these
+    // private snapshots do not accumulate for the rest of the editing session.
+    if (_pcrf != pvNil && _cno != cnoNil && _pcrf->Pcfl() != pvNil &&
+        _pcrf->Pcfl()->FFind(kctgScen, _cno))
+    {
+        _pcrf->Pcfl()->Delete(kctgScen, _cno);
+    }
+    _cno = cnoNil;
     ReleasePpo(&_pcrf);
+    FreePpv((void **)&_pctstate);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * This function saves away a copy of the scene.
  *
@@ -7255,31 +8734,48 @@ SUNC::~SUNC(void)
  ****************************************************/
 bool SUNC::FSave(PSCEN pscen)
 {
-    PCFL pcfl;
-    bool fRet;
+    AssertPo(pscen, 0);
+    PMVIE pmvie = pscen->Pmvie();
+    PCRF pcrfAuto = pvNil;
 
-    pcfl = CFL::PcflCreateTemp();
-    if (pcfl == pvNil)
+    MVIE::MultiLog(pmvie, "scene_trim_snapshot save begin scene=%ld frame=%ld",
+                   (long)pmvie->Iscen(), (long)pscen->Nfrm());
+
+    if (!FAllocPv((void **)&_pctstate, SIZEOF(CTSTATE), fmemClear, mprNormal))
     {
-        return (fFalse);
+        MVIE::MultiLog(pmvie, "scene_trim_snapshot save FAILED stage=camera_alloc");
+        return fFalse;
+    }
+    if (!pmvie->FGetCameraTrackState(_pctstate))
+    {
+        MVIE::MultiLog(pmvie, "scene_trim_snapshot save FAILED stage=camera_state");
+        return fFalse;
     }
 
-    _pcrf = CRF::PcrfNew(pcfl, 0);
-    if (_pcrf == pvNil)
+    // The patch-248 runtime reaches this snapshot path but never reaches
+    // FAddUndo.  Its one unusual boundary was writing SCEN::FWrite into a
+    // brand-new empty CRF, while normal scene save/insert writes into the
+    // movie's authoritative autosave CRF.  Keep the snapshot as a private
+    // loner SCEN there so it uses the same proven resource/tag universe.
+    if (!pmvie->FEnsureAutosave(&pcrfAuto) || pcrfAuto == pvNil)
     {
-        ReleasePpo(&pcfl);
-        return (fFalse);
+        MVIE::MultiLog(pmvie, "scene_trim_snapshot save FAILED stage=autosave");
+        return fFalse;
     }
-    ReleasePpo(&pcfl);
+    pcrfAuto->AddRef();
+    _pcrf = pcrfAuto;
 
     vpappb->BeginLongOp();
-    fRet = pscen->FWrite(_pcrf, &_cno);
+    _cno = cnoNil;
+    const bool fRet = pscen->FWrite(_pcrf, &_cno);
     vpappb->EndLongOp();
 
-    return (fRet);
+    MVIE::MultiLog(pmvie, "scene_trim_snapshot save %s cno=%ld",
+                   fRet ? "ok" : "FAILED", (long)_cno);
+    return fRet;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Does a command stored in an undo object.
  *
@@ -7290,6 +8786,18 @@ bool SUNC::FSave(PSCEN pscen)
  *  fTrue if successful, else fFalse.
  *
  ****************************************************/
+/***************************************************************************
+    Plain-English history name.
+***************************************************************************/
+void SUNC::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    if (_stnUndoName.Cch() > 0)
+        *pstn = _stnUndoName;
+    else
+        pstn->SetSz(PszLit("Chop Scene"));
+}
+
 bool SUNC::FDo(PDOCB pdocb)
 {
     AssertThis(0);
@@ -7297,6 +8805,8 @@ bool SUNC::FDo(PDOCB pdocb)
     PSCEN pscen;
     PSCEN pscenSave;
 
+    MVIE::MultiLog(_pmvie, "scene_trim_undo_swap begin scene=%ld frame=%ld snapshot_cno=%ld",
+                   (long)_iscen, (long)_nfrm, (long)_cno);
     vpappb->BeginLongOp();
 
     pscen = SCEN::PscenRead(_pmvie, _pcrf, _cno);
@@ -7331,6 +8841,7 @@ bool SUNC::FDo(PDOCB pdocb)
     SCEN::Close(&pscen);
 
     _pcrf->Pcfl()->Delete(kctgScen, _cno);
+    _cno = cnoNil;
     pscenSave->SetNfrmCur(pscenSave->NfrmFirst() - 1);
     if (!pscenSave->FWrite(_pcrf, &_cno))
     {
@@ -7346,27 +8857,39 @@ bool SUNC::FDo(PDOCB pdocb)
         goto LFail;
     }
 
+    // The SCEN chunk does not contain .3ct data.  Swap the camera-track
+    // snapshot alongside the scene so the same object supports both undo and
+    // redo without a second special-case history system.
+    _pmvie->SwapCameraTrackState(_pctstate);
+    _pmvie->SetDirty();
+
     //
-    // We don't care if we can't switch, everything was restored.
+    // 3DMMv1.0: We don't care if we can't switch, everything was restored.
     //
     if (_pmvie->FSwitchScen(_iscen))
     {
         _pmvie->Pscen()->FGotoFrm(_nfrm);
+        _pmvie->ApplyCameraTrack();
+        _pmvie->MarkViews();
+        _pmvie->Pmcc()->UpdateScrollbars();
         _pmvie->InvalViewsAndScb();
     }
 
     vpappb->EndLongOp();
-
+    MVIE::MultiLog(_pmvie, "scene_trim_undo_swap ok scene=%ld frame=%ld snapshot_cno=%ld",
+                   (long)_iscen, (long)_nfrm, (long)_cno);
     return (fTrue);
 
 LFail:
+    MVIE::MultiLog(_pmvie, "scene_trim_undo_swap FAILED scene=%ld frame=%ld snapshot_cno=%ld",
+                   (long)_iscen, (long)_nfrm, (long)_cno);
     _pmvie->Pmsq()->FlushMsq();
     _pmvie->ClearUndo();
     vpappb->EndLongOp();
     return (fFalse);
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  *
  * Undoes a command stored in an undo object.
  *
@@ -7384,7 +8907,7 @@ bool SUNC::FUndo(PDOCB pdocb)
 }
 
 #ifdef DEBUG
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the SUNC
  *
  * Parameters:
@@ -7399,9 +8922,10 @@ void SUNC::MarkMem(void)
     AssertThis(0);
     SUNC_PAR::MarkMem();
     MarkMemObj(_pcrf);
+    MarkPv(_pctstate);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SUNC.
 ***************************************************************************/
 void SUNC::AssertValid(uint32_t grf)
@@ -7410,7 +8934,7 @@ void SUNC::AssertValid(uint32_t grf)
 }
 #endif
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static function to allocate a SSE with room for ctag TAGs.
 ***************************************************************************/
 PSSE SSE::PsseNew(int32_t ctag)
@@ -7424,7 +8948,7 @@ PSSE SSE::PsseNew(int32_t ctag)
     return psse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Creates a new SSE
 ***************************************************************************/
 PSSE SSE::PsseNew(int32_t vlm, int32_t sty, bool fLoop, int32_t ctagc, TAGC *prgtagc)
@@ -7449,7 +8973,7 @@ PSSE SSE::PsseNew(int32_t vlm, int32_t sty, bool fLoop, int32_t ctagc, TAGC *prg
     return psse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Properly cleans up and frees a SSE
 ***************************************************************************/
 void ReleasePpsse(PSSE *ppsse)
@@ -7462,7 +8986,7 @@ void ReleasePpsse(PSSE *ppsse)
     PSSE psse = *ppsse;
     int32_t itagc;
 
-    AssertIn(psse->ctagc, 0, 1000); // sanity check on ctagc
+    AssertIn(psse->ctagc, 0, 1000); // 3DMMv1.0: sanity check on ctagc
     AssertIn(psse->sty, styNil, styLim);
 
     for (itagc = 0; itagc < psse->ctagc; itagc++)
@@ -7474,7 +8998,7 @@ void ReleasePpsse(PSSE *ppsse)
     FreePpv((void **)ppsse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static function to allocate and read a SSE from a GG.  This is tricky
     because I can't do a pgg->Get() since the SSE is variable-sized, and
     I need to do QvGet twice since I'm allocating memory in this function.
@@ -7506,7 +9030,7 @@ PSSE SSE::PsseDupFromGg(PGG pgg, int32_t iv, bool fDupTags)
         }
         else
         {
-            // Clear the crf on read, since the caller isn't having us dupe the tag
+            // 3DMMv1.0: Clear the crf on read, since the caller isn't having us dupe the tag
             psse->Ptag(itagc)->pcrf = pvNil;
         }
     }
@@ -7514,7 +9038,7 @@ PSSE SSE::PsseDupFromGg(PGG pgg, int32_t iv, bool fDupTags)
     return psse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns a PSSE just like this SSE except with ptag & chid added
 ***************************************************************************/
 PSSE SSE::PsseAddTagChid(PTAG ptag, int32_t chid)
@@ -7538,7 +9062,7 @@ PSSE SSE::PsseAddTagChid(PTAG ptag, int32_t chid)
     return psseNew;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return a duplicate of this SSE
 ***************************************************************************/
 PSSE SSE::PsseDup(void)
@@ -7556,7 +9080,7 @@ PSSE SSE::PsseDup(void)
     return psse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play all sounds in this SSE	-> Enqueue the sounds in the SSE
 ***************************************************************************/
 void SSE::PlayAllSounds(PMVIE pmvie, uint32_t dtsStart)
@@ -7576,7 +9100,7 @@ void SSE::PlayAllSounds(PMVIE pmvie, uint32_t dtsStart)
         if (pvNil == pmsnd)
             return;
 
-        // Only queue if it's not the first sound; only start at dtsStart for first sound
+        // 3DMMv1.0: Only queue if it's not the first sound; only start at dtsStart for first sound
         pmvie->Pmsq()->FEnqueue(pmsnd, 0, fLoop, (itag != 0), vlm, pmsnd->Spr(tool), fFalse,
                                 (itag == 0 ? dtsStart : 0));
 

@@ -1,0 +1,22 @@
+diff --git a/core/fw/fwsetup.c b/core/fw/fwsetup.c
+index 130fc34..8e79579 100644
+--- a/core/fw/fwsetup.c
++++ b/core/fw/fwsetup.c
+@@ -39,6 +39,17 @@ static br_resource_class resourceClasses[] = {
+ 
+     {0, "RESOURCE_CLASS",    BR_MEMORY_RESOURCE_CLASS,    NULL,          0 },
+     {0, "SCRATCH,",          BR_MEMORY_SCRATCH,           NULL,          16},
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * BRender 1.1/3DMM registered these in the framework resource table.
++     * Modern BRender kept the numeric IDs, but removed their classes. The
++     * 3DMM model ABI still allocates all three, so restore the classes only
++     * for the compatibility build.
++     */
++    {0, "GROUPS",             BR_MEMORY_GROUPS,             NULL,          0 },
++    {0, "PREPARED_VERTICES",  BR_MEMORY_PREPARED_VERTICES,  NULL,          0 },
++    {0, "PREPARED_FACES",     BR_MEMORY_PREPARED_FACES,     NULL,          0 },
++#endif
+     {0, "STRING",            BR_MEMORY_STRING,            NULL,          1 },
+     {0, "FILE",              BR_MEMORY_FILE,              _BrFileFree,   0 },
+     {0, "POOL",              BR_MEMORY_POOL,              NULL,          16},

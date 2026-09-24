@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Studio Stuff
 
@@ -37,12 +37,25 @@
 
 typedef class SMCC *PSMCC;
 
-const int32_t kcmhlStudio = 0x10000; // nice medium level for the Studio
+const int32_t kcmhlStudio = 0x10000; // 3DMMv1.0: nice medium level for the Studio
 
 extern APP vapp;
 
+#if defined(KAUAI_WIN32)
+// External modern content browsers: actor, prop, combined object and 3D-word
+// material browser windows.
+bool FShowExternalContentBrowser(int32_t exbrk);
+void CloseExternalContentBrowser(int32_t exbrk);
+bool FExternalContentBrowsersCombined(void);
+void SetExternalContentBrowsersCombined(bool fCombine);
+void CancelExternalBrowserCameraFollowForFreeCam(void);
+bool F4DMMConfirmWithDontAsk(const achar *pszText, bool *pfDontAsk);
+void MarkExternalContentBrowserMem(void);
+void SyncExternalContentBrowserSelection(void);
+#endif
+
 //
-// Studio class
+// 3DMMv1.0: Studio class
 //
 #define STDIO_PAR GOB
 #define kclsSTDIO KLCONST4('s', 't', 'i', 'o')
@@ -62,9 +75,9 @@ class STDIO : public STDIO_PAR
     int32_t _aridSelected;
     PBRWR _pbrwrActr;
     PBRWR _pbrwrProp;
-    PGL _pglcmg;        // Cno map tmpl->gokd for rollcall
-    PGL _pglclr;        // Color table for common palette
-    bool _fDisplayCast; // Display movie's cast
+    PGL _pglcmg;        // 3DMMv1.0: Cno map tmpl->gokd for rollcall
+    PGL _pglclr;        // 3DMMv1.0: Color table for common palette
+    bool _fDisplayCast; // 3DMMv1.0: Display movie's cast
 
     CMD _cmd;
     int32_t _dtimToolTipDelay;
@@ -79,18 +92,18 @@ class STDIO : public STDIO_PAR
     PBRCN _PbrcnFromBrwdid(int32_t brwdid);
 #ifdef BUG1959
     bool _FLoadMovie(PFNI pfni, CNO cno, bool *pfClosedOld);
-#endif // BUG1959
+#endif // 3DMMv1.0: BUG1959
 
   public:
     //
-    // Create and destroy functions
+    // 3DMMv1.0: Create and destroy functions
     //
     static PSTDIO PstdioNew(int32_t hid, PCRM pcrmStudio, PFNI pfniUserDoc = pvNil, bool fFailIfDocOpenFailed = fTrue);
     void ReleaseBrcn(void);
     ~STDIO(void);
 
     //
-    // Command functions for getting from scripts to here.
+    // 3DMMv1.0: Command functions for getting from scripts to here.
     //
     bool FCmdXYAxis(PCMD pcmd);
     bool FCmdXZAxis(PCMD pcmd);
@@ -123,13 +136,17 @@ class STDIO : public STDIO_PAR
     bool FCmdCreateTbox(PCMD pcmd);
     bool FCmdActorEaselOpen(PCMD pcmd);
     bool FCmdListenerEaselOpen(PCMD pcmd);
+    bool FCmdCameraTrackAlign(PCMD pcmd);
+    bool FCmdContinueInPlace(PCMD pcmd);
+    bool FCmdDepthMotionTween(PCMD pcmd);
+    bool FCmdManualCamera(PCMD pcmd);
 
 #ifdef DEBUG
     bool FCmdWriteBmps(PCMD pcmd);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     //
-    // Call back functions
+    // 3DMMv1.0: Call back functions
     //
     void PlayStopped(void);
     void ChangeTool(int32_t tool);
@@ -180,15 +197,15 @@ class STDIO : public STDIO_PAR
 
     bool FShutdown(bool fClearCache = fTrue);
 
-    // Stop and restart the action button's animation
+    // 3DMMv1.0: Stop and restart the action button's animation
     static void PauseActionButton(void);
     static void ResumeActionButton(void);
 
-    // Misc Studio strings
+    // 3DMMv1.0: Misc Studio strings
     void GetStnMisc(int32_t ids, PSTN pstn);
 
     //
-    // Movie changing
+    // 3DMMv1.0: Movie changing
     //
     bool FLoadMovie(PFNI pfni = pvNil, CNO cno = cnoNil);
     bool FSetMovie(PMVIE pmvie);
@@ -251,10 +268,23 @@ class SMCC : public SMCC_PAR
     {
         _pstdio->SetAridSelected(arid);
         UpdateRollCall();
+#if defined(KAUAI_WIN32)
+        // Selection changes already converge here for viewport clicks and the
+        // built-in hired lists. Drive the external browsers directly rather
+        // than waiting for their polling timer to notice.
+        SyncExternalContentBrowserSelection();
+#endif
+        PMVIE pmvie = _pstdio->Pmvie();
+        if (pmvie != pvNil)
+        {
+            MVIE::LightEditorLog(pmvie, "selection arid=%ld has_light=%d",
+                                 (long)arid,
+                                 arid != aridNil ? (int)pmvie->FActorHasLight(pmvie->Iscen(), arid) : 0);
+        }
     }
     virtual void UpdateAction(void) override
     {
-    } // Update selected action
+    } // 3DMMv1.0: Update selected action
     virtual void UpdateRollCall(void) override;
     virtual void UpdateScrollbars(void) override
     {
@@ -384,4 +414,4 @@ class SMCC : public SMCC_PAR
     virtual bool FQueryPurgeSounds(void) override;
 };
 
-#endif // STUDIO_H
+#endif // 3DMMv1.0: STUDIO_H

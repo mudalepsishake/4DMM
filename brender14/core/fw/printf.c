@@ -1,0 +1,65 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: printf.c 1.1 1997/12/10 16:41:09 jon Exp $
+ * $Locker: $
+ *
+ * Various printf's that are exported
+ */
+#include <stdarg.h>
+
+#include "fw.h"
+
+br_int_32 BR_RESIDENT_ENTRY BrSprintf(char *buf, const char *fmt, ...)
+{
+    int     n;
+    va_list args;
+
+    va_start(args, fmt);
+    n = BrVSprintf(buf, fmt, args);
+    va_end(args);
+
+    return n;
+}
+
+br_int_32 BR_RESIDENT_ENTRY BrSprintfN(char *buf, br_size_t buf_size, const char *fmt, ...)
+{
+    int     n;
+    va_list args;
+
+    va_start(args, fmt);
+    n = BrVSprintf(buf, fmt, args);
+    va_end(args);
+
+    return n;
+#if 0
+	unsigned int n;
+	char tmp[512];
+	va_list args;
+
+	va_start(args, fmt);
+	n = BrVSprintf(tmp, fmt, args);
+	va_end(args);
+
+	if(n > buf_size-1) {
+		n = buf_size-1;
+	}
+
+	BrStrNCpy(buf, tmp, n);
+	buf[n] = '\0';
+
+	return n;
+#endif
+}
+
+br_int_32 BR_RESIDENT_ENTRY BrSScanf(const char *str, const char *fmt, ...)
+{
+    int     n;
+    va_list args;
+
+    va_start(args, fmt);
+    n = BrVSScanf(str, fmt, args);
+    va_end(args);
+
+    return n;
+}

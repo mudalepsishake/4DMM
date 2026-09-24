@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@ ASSERTNAME
 
 PGOB GOB::_pgobScreen;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the screen gob.  If fgobEnsureHwnd is set, ensures that the
     screen gob has an OS window associated with it.
 ***************************************************************************/
@@ -43,7 +43,7 @@ bool GOB::FInitScreen(uint32_t grfgob, int32_t ginDef)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the GOB a wrapper for the given system window.
 ***************************************************************************/
 bool GOB::FAttachHwnd(KWND hwnd)
@@ -51,7 +51,7 @@ bool GOB::FAttachHwnd(KWND hwnd)
     if (_hwnd != kwndNil)
     {
         ReleasePpo(&_pgpt);
-        // don't destroy the hwnd - the caller must do that
+        // 3DMMv1.0: don't destroy the hwnd - the caller must do that
         _hwnd = kwndNil;
     }
     if (hwnd != kwndNil)
@@ -64,13 +64,13 @@ bool GOB::FAttachHwnd(KWND hwnd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the GOB associated with the given hwnd (if there is one).
 ***************************************************************************/
 PGOB GOB::PgobFromHwnd(KWND hwnd)
 {
-    // NOTE: we used to use SetProp and GetProp for this, but profiling
-    // indicated that GetProp is very slow.
+    // 3DMMv1.0: NOTE: we used to use SetProp and GetProp for this, but profiling
+    // 3DMMv1.0: indicated that GetProp is very slow.
     Assert(hwnd != hNil, "nil hwnd");
     GTE gte;
     uint32_t grfgte;
@@ -85,7 +85,7 @@ PGOB GOB::PgobFromHwnd(KWND hwnd)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the active MDI window.
 ***************************************************************************/
 KWND GOB::HwndMdiActive(void)
@@ -96,7 +96,7 @@ KWND GOB::HwndMdiActive(void)
     return (KWND)((HWND)SendMessage(vwig.hwndClient, WM_MDIGETACTIVE, 0, 0));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Creates a new MDI window and returns it.  This is normally then
     attached to a gob.
 ***************************************************************************/
@@ -108,7 +108,7 @@ KWND GOB::_HwndNewMdi(PSTN pstnTitle)
 
     if (vwig.hwndClient == kwndNil)
     {
-        // create the client first
+        // 3DMMv1.0: create the client first
         CLIENTCREATESTRUCT ccs;
         RECT rcs;
 
@@ -135,7 +135,7 @@ KWND GOB::_HwndNewMdi(PSTN pstnTitle)
     return hwnd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destroy an hwnd.
 ***************************************************************************/
 void GOB::_DestroyHwnd(KWND hwnd)
@@ -155,7 +155,7 @@ void GOB::_DestroyHwnd(KWND hwnd)
         DestroyWindow(hwnd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Gets the current mouse location in this gob's coordinates (if ppt is
     not nil) and determines if the mouse button is down (if pfDown is
     not nil).
@@ -176,6 +176,42 @@ void GOB::GetPtMouse(PT *ppt, bool *pfDown)
             yp += pgob->_rcCur.ypTop;
         }
         GetCursorPos(&pts);
+#ifdef WIN
+        // v60: idle hover/tooltip detection does not consume WM_MOUSEMOVE.
+        // APPB::FCmdIdle asks the screen GOB for the physical cursor position
+        // and then hit-tests the 640x480 Kauai tree. In -resolution 4x the
+        // cursor is physically over the 2560x1920 presentation, so feeding
+        // those 4x coordinates directly to the source GOB makes roll-on,
+        // roll-off and tooltip ownership miss even though click forwarding is
+        // correct. Map the presentation cursor back into the original source
+        // HWND before the existing GOB-local transform. This is the same
+        // coordinate contract already used by APPB::TrackMouse, but it fixes
+        // the non-tracking idle path without touching click/drag dispatch.
+        if (vwig.hwndApp != hNil && IsWindow(vwig.hwndApp) &&
+            GetPropA(vwig.hwndApp, "4DMMUiScaleSuspended") == pvNil)
+        {
+            HWND hwndScale = (HWND)GetPropA(vwig.hwndApp, "4DMMUiScaleWindow");
+            const int32_t scaleNum =
+                (int32_t)(INT_PTR)GetPropA(vwig.hwndApp, "4DMMUiScaleNumerator");
+            const int32_t scaleDen =
+                (int32_t)(INT_PTR)GetPropA(vwig.hwndApp, "4DMMUiScaleDenominator");
+            if (hwndScale != hNil && IsWindow(hwndScale) && scaleNum > scaleDen && scaleDen > 0)
+            {
+                POINT ptScale = pts;
+                RECT rcScale;
+                if (ScreenToClient(hwndScale, &ptScale) && GetClientRect(hwndScale, &rcScale) &&
+                    ptScale.x >= rcScale.left && ptScale.y >= rcScale.top &&
+                    ptScale.x < rcScale.right && ptScale.y < rcScale.bottom)
+                {
+                    POINT ptSource;
+                    ptSource.x = (ptScale.x * scaleDen) / scaleNum;
+                    ptSource.y = (ptScale.y * scaleDen) / scaleNum;
+                    if (ClientToScreen(vwig.hwndApp, &ptSource))
+                        pts = ptSource;
+                }
+            }
+        }
+#endif // WIN
         if (pgob != pvNil)
             ScreenToClient(pgob->_hwnd, &pts);
         *ppt = PT(pts);
@@ -186,7 +222,7 @@ void GOB::GetPtMouse(PT *ppt, bool *pfDown)
         *pfDown = GetAsyncKeyState(VK_LBUTTON) < 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Makes sure the GOB is clean (no update is pending).
 ***************************************************************************/
 void GOB::Clean(void)
@@ -206,7 +242,7 @@ void GOB::Clean(void)
         UpdateWindow(hwnd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the window name.
 ***************************************************************************/
 void GOB::SetHwndName(PSTN pstn)
@@ -223,7 +259,7 @@ void GOB::SetHwndName(PSTN pstn)
     SetWindowText(_hwnd, pstn->Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this is one of our MDI windows, make it the active MDI window.
 ***************************************************************************/
 void GOB::MakeHwndActive(KWND hwnd)
@@ -232,7 +268,7 @@ void GOB::MakeHwndActive(KWND hwnd)
         SendMessage(vwig.hwndClient, WM_MDIACTIVATE, (WPARAM)(HWND)hwnd, 0);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new MDI window and attach it to the gob.
 ***************************************************************************/
 bool GOB::FCreateAndAttachMdi(PSTN pstnTitle)

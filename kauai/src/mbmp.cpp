@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(MBMP)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a masked bitmap.
 ***************************************************************************/
 MBMP::~MBMP(void)
@@ -24,7 +24,7 @@ MBMP::~MBMP(void)
     FreePhq(&_hqrgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new MBMP based on the given prgbPixels with
     extracting rectangle *prc and transparent color bTransparent.  prgbPixels
     should be a two-dimensional matrix of 8-bit pixels with width cbRow and
@@ -50,7 +50,7 @@ PMBMP MBMP::PmbmpNew(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, i
     return pmbmp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the MBMP based on the given pixels.
 ***************************************************************************/
 bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int32_t xpRef, int32_t ypRef,
@@ -71,7 +71,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
     int32_t xpMin, xpLim, ypLim, xp, yp;
     RC rc = *prc;
 
-    // allocate enough space for the rgcb
+    // 3DMMv1.0: allocate enough space for the rgcb
     if (!FAllocHq(&_hqrgb, SIZEOF(MBMPH) + LwMul(rc.Dyp(), SIZEOF(int16_t)), fmemNil, mprNormal))
     {
         return fFalse;
@@ -81,7 +81,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
     _Qmbmph()->bFill = bDefault;
     dibRow = (grfmbmp & fmbmpUpsideDown) ? -cbRow : cbRow;
 
-    // crop the bitmap and get an upper bound on the size of the pixel data
+    // 3DMMv1.0: crop the bitmap and get an upper bound on the size of the pixel data
     pbRow = prgbPixels + LwMul(cbRow, ((grfmbmp & fmbmpUpsideDown) ? dyp - rc.ypTop - 1 : rc.ypTop));
     qrgcb = _Qrgcb();
     xpMin = rc.xpRight;
@@ -97,8 +97,8 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
         fTrans = fTrue;
         for (;;)
         {
-            // check for overflow or change in transparent status, or the
-            // end of the row
+            // 3DMMv1.0: check for overflow or change in transparent status, or the
+            // 3DMMv1.0: end of the row
             if (pb == pbLimRow || fTrans != (*pb == bTransparent) || cbRun == kbMax)
             {
                 if (fTrans && pb == pbLimRow)
@@ -122,7 +122,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
             }
             else
             {
-                // Increment pixel count and go on to next pixel.
+                // 3DMMv1.0: Increment pixel count and go on to next pixel.
                 cbRun++;
                 pb++;
             }
@@ -130,7 +130,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
 
         if (0 == cbOpaque)
         {
-            // nothing in this row but transparent pixels
+            // 3DMMv1.0: nothing in this row but transparent pixels
             if (yp == rc.ypTop)
                 rc.ypTop++;
             else
@@ -139,7 +139,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
         }
         else
         {
-            // set the row length in the rgcb.
+            // 3DMMv1.0: set the row length in the rgcb.
             AssertIn(cbPixelData - cbPrev, 2 + !fMask, kswMax + 1);
             qrgcb[yp - rc.ypTop] = (int16_t)(cbPixelData - cbPrev);
             ypLim = yp + 1;
@@ -154,7 +154,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
         rc.Zero();
     }
 
-    // reallocate the _hqrgb to the size actually needed
+    // 3DMMv1.0: reallocate the _hqrgb to the size actually needed
     AssertIn(LwMul(rc.Dyp(), SIZEOF(int16_t)), 0, CbOfHq(_hqrgb) - SIZEOF(MBMPH) + 1);
 
     _cbRgcb = LwMul(rc.Dyp(), SIZEOF(int16_t));
@@ -163,7 +163,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
         return fFalse;
     }
 
-    // now actually construct the pixel data
+    // 3DMMv1.0: now actually construct the pixel data
     qrgcb = _Qrgcb();
     qbDst = (uint8_t *)PvAddBv(qrgcb, _cbRgcb);
     pbRow = prgbPixels + LwMul(cbRow, ((grfmbmp & fmbmpUpsideDown) ? dyp - rc.ypTop - 1 : rc.ypTop));
@@ -171,7 +171,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
     {
         if (qrgcb[yp - rc.ypTop] == 0)
         {
-            // empty row, no need to scan it
+            // 3DMMv1.0: empty row, no need to scan it
             AssertIn(yp, rc.ypTop + 1, rc.ypBottom);
             continue;
         }
@@ -183,8 +183,8 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
         fTrans = fTrue;
         for (;;)
         {
-            // check for overflow or change in transparent status, or the
-            // end of the row
+            // 3DMMv1.0: check for overflow or change in transparent status, or the
+            // 3DMMv1.0: end of the row
             if (pb == pbLimRow || fTrans != (*pb == bTransparent) || cbRun == kbMax)
             {
                 if (fTrans && pb == pbLimRow)
@@ -205,24 +205,24 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
             }
             else
             {
-                // Increment pixel count and go on to next pixel.
+                // 3DMMv1.0: Increment pixel count and go on to next pixel.
                 cbRun++;
                 pb++;
             }
         }
 
-        // Set the row length in the rgcb.
+        // 3DMMv1.0: Set the row length in the rgcb.
         cbRun = qbDst - qbDstPrev;
         AssertIn(cbRun, 2 + !fMask, qrgcb[yp - rc.ypTop] + 1);
         qrgcb[yp - rc.ypTop] = (int16_t)cbRun;
     }
 
-    // shrink _hqrgb to the actual size needed
+    // 3DMMv1.0: shrink _hqrgb to the actual size needed
     cbRun = BvSubPvs(qbDst, QvFromHq(_hqrgb));
     AssertIn(cbRun, 0, CbOfHq(_hqrgb) + 1);
     AssertDo(FResizePhq(&_hqrgb, cbRun, fmemNil, mprNormal), "shrinking failed!");
 
-    // set the bounding rectangle of the MBMP
+    // 3DMMv1.0: set the bounding rectangle of the MBMP
     rc.Offset(-xpRef, -ypRef);
     _Qmbmph()->rc = rc;
 
@@ -230,7 +230,7 @@ bool MBMP::_FInit(uint8_t *prgbPixels, int32_t cbRow, int32_t dyp, RC *prc, int3
     return fTrue;
 }
 
-/****************************************************************************
+/** 3DMMv1.0: **************************************************************************
     This function will read in a bitmap file and return a PMBMP made from it.
     (xp, yp) will be the reference point of the mbmp [(0,0) is uppper-left].
     All pixels with the same value as bTransparent will be read in as
@@ -257,7 +257,7 @@ PMBMP MBMP::PmbmpReadNative(FNI *pfni, uint8_t bTransparent, int32_t xp, int32_t
     return pmbmp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a masked bitmap from a block.  May free the block or modify it.
 ***************************************************************************/
 PMBMP MBMP::PmbmpRead(PBLCK pblck)
@@ -313,12 +313,12 @@ PMBMP MBMP::PmbmpRead(PBLCK pblck)
 
     if (fSwap)
     {
-        // swap bytes in the rgcb
+        // 3DMMv1.0: swap bytes in the rgcb
         SwapBytesRgsw(pmbmp->_Qrgcb(), rc.Dyp());
     }
 
 #ifdef DEBUG
-    // verify the rgcb and rgb
+    // 3DMMv1.0: verify the rgcb and rgb
     int32_t ccb, cb, dxp;
     uint8_t *qb;
     bool fMask = pmbmp->_Qmbmph()->fMask;
@@ -355,13 +355,13 @@ PMBMP MBMP::PmbmpRead(PBLCK pblck)
         Bug("Attempted to read bad MBMP");
         ReleasePpo(&pmbmp);
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     AssertNilOrPo(pmbmp, 0);
     return pmbmp;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the total size on file.
 ***************************************************************************/
 int32_t MBMP::CbOnFile(void)
@@ -370,7 +370,7 @@ int32_t MBMP::CbOnFile(void)
     return CbOfHq(_hqrgb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the masked bitmap (and its header) to the given block.
 ***************************************************************************/
 bool MBMP::FWrite(PBLCK pblck)
@@ -397,7 +397,7 @@ bool MBMP::FWrite(PBLCK pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the natural rectangle for the mbmp.
 ***************************************************************************/
 void MBMP::GetRc(RC *prc)
@@ -406,7 +406,7 @@ void MBMP::GetRc(RC *prc)
     *prc = _Qmbmph()->rc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the given (xp, yp) is in a non-transparent pixel of
     the MBMP.  (xp, yp) should be given in MBMP coordinates.
 ***************************************************************************/
@@ -443,7 +443,7 @@ bool MBMP::FPtIn(int32_t xp, int32_t yp)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MBMP.
 ***************************************************************************/
 void MBMP::AssertValid(uint32_t grf)
@@ -469,7 +469,7 @@ void MBMP::AssertValid(uint32_t grf)
     Assert(cbTot + _cbRgcb + SIZEOF(MBMPH) == CbOfHq(_hqrgb), "_hqrgb wrong size");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MBMP.
 ***************************************************************************/
 void MBMP::MarkMem(void)
@@ -478,9 +478,9 @@ void MBMP::MarkMem(void)
     MBMP_PAR::MarkMem();
     MarkHq(_hqrgb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A PFNRPO to read an MBMP.
 ***************************************************************************/
 bool MBMP::FReadMbmp(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -510,7 +510,7 @@ bool MBMP::FReadMbmp(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Given an FNI refering to a bitmap file, returns the interesting parts of
     the header and the pixel data and palette.  Fails if the bitmap is not
     8 bits, uncompressed.  Any or all of the output pointers may be nil.
@@ -539,7 +539,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
     AssertNilOrVarMem(pfUpsideDown);
 
 #ifndef WIN
-#pragma pack(2) // the stupid bmfh is an odd number of shorts
+#pragma pack(2) // 3DMMv1.0: the stupid bmfh is an odd number of shorts
     typedef struct BITMAPFILEHEADER
     {
         uint16_t bfType;
@@ -570,7 +570,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
 
 #endif
 #ifndef MAC
-#pragma pack(2) // the stupid bmfh is an odd number of shorts
+#pragma pack(2) // 3DMMv1.0: the stupid bmfh is an odd number of shorts
     struct BMH
     {
         BITMAPFILEHEADER bmfh;
@@ -637,7 +637,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
 
     if (pvNil != ppglclr)
     {
-        // get the palette
+        // 3DMMv1.0: get the palette
         if (bmh.bmih.biClrUsed != 0 && bmh.bmih.biClrUsed != 256)
         {
             Warn("palette is wrong size");
@@ -664,7 +664,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
         int32_t xp, cbT;
         int32_t cbRowDst = CbRoundToLong(rc.xpRight);
 
-        // get the source
+        // 3DMMv1.0: get the source
         if (!FAllocPv((void **)&prgbSrc, cbSrc, fmemNil, mprNormal))
             goto LFail;
 
@@ -695,12 +695,12 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
                 continue;
             }
 
-            // escaped
+            // 3DMMv1.0: escaped
             bT = *pbSrc++;
             switch (bT)
             {
             case 0:
-                // end of line
+                // 3DMMv1.0: end of line
                 if (cbRowDst > xp)
                     FillPb(pbDst, cbRowDst - xp, bTransparent);
                 pbDst += cbRowDst - xp;
@@ -708,13 +708,13 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
                 break;
 
             case 1:
-                // end of bitmap
+                // 3DMMv1.0: end of bitmap
                 if (pbLimDst > pbDst)
                     FillPb(pbDst, pbLimDst - pbDst, bTransparent);
                 goto LRleDone;
 
             case 2:
-                // delta
+                // 3DMMv1.0: delta
                 if (2 > pbLimSrc - pbSrc)
                     goto LBad;
                 cbT = pbSrc[0] + cbRowDst * pbSrc[1];
@@ -727,7 +727,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
                 break;
 
             default:
-                // literal run
+                // 3DMMv1.0: literal run
                 cbT = LwRoundAway(bT, 2);
                 if (cbT > pbLimSrc - pbSrc || bT > pbLimDst - pbDst || bT > cbRowDst - xp)
                 {
@@ -741,7 +741,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
             }
         }
     LBad:
-        // rle encoding is bad
+        // 3DMMv1.0: rle encoding is bad
         FreePpv((void **)&prgbSrc);
         Warn("compressed bitmap is bad");
         goto LFail;
@@ -751,7 +751,7 @@ bool FReadBitmap(FNI *pfni, uint8_t **pprgb, PGL *ppglclr, int32_t *pdxp, int32_
     }
     else
     {
-        // non-rle: get the bits
+        // 3DMMv1.0: non-rle: get the bits
         if (!FAllocPv((void **)pprgb, cbBitmap, fmemNil, mprNormal))
             goto LFail;
 
@@ -781,7 +781,7 @@ LDone:
         *pfUpsideDown = bmh.bmih.biHeight < 0;
     ReleasePpo(&pfil);
     return fTrue;
-#endif // !MAC
+#endif // 3DMMEx: !MAC
 #ifdef MAC
     if (pvNil != pprgb)
         *pprgb = pvNil;
@@ -791,12 +791,12 @@ LDone:
     TrashVar(pdxp);
     TrashVar(pdyp);
     TrashVar(pfUpsideDown);
-    RawRtn(); // REVIEW peted: Mac FReadBitmap NYI
+    RawRtn(); // 3DMMv1.0: REVIEW peted: Mac FReadBitmap NYI
     return fFalse;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Writes a given bitmap to a given file.
 
     Arguments:
@@ -821,7 +821,7 @@ bool FWriteBitmap(FNI *pfni, uint8_t *prgb, PGL pglclr, int32_t dxp, int32_t dyp
 #ifdef WIN
     Assert(pglclr->CbEntry() == SIZEOF(RGBQUAD), "Palette has different format from Windows");
 
-#pragma pack(2) // the stupid bmfh is an odd number of shorts
+#pragma pack(2) // 3DMMv1.0: the stupid bmfh is an odd number of shorts
     struct BMH
     {
         BITMAPFILEHEADER bmfh;
@@ -837,7 +837,7 @@ bool FWriteBitmap(FNI *pfni, uint8_t *prgb, PGL pglclr, int32_t dxp, int32_t dyp
 
     cbSrc = CbRoundToLong(dxp) * dyp;
 
-    /* Fill in the header */
+    /* 3DMMv1.0: Fill in the header */
     bmh.bmfh.bfType = KLCONST2('M', 'B');
     bmh.bmfh.bfSize = SIZEOF(bmh) + LwMul(SIZEOF(RGBQUAD), 256) + cbSrc;
     bmh.bmfh.bfOffBits = SIZEOF(bmh) + LwMul(SIZEOF(RGBQUAD), 256);
@@ -855,13 +855,13 @@ bool FWriteBitmap(FNI *pfni, uint8_t *prgb, PGL pglclr, int32_t dxp, int32_t dyp
     bmh.bmih.biClrUsed = 256;
     bmh.bmih.biClrImportant = 256;
 
-    /* Write the header */
+    /* 3DMMv1.0: Write the header */
     if (pvNil == (pfil = FIL::PfilCreate(pfni)))
         goto LFail;
     if (!pfil->FWriteRgbSeq(&bmh, SIZEOF(BMH), &fpCur))
         goto LFail;
 
-    /* Write the palette */
+    /* 3DMMv1.0: Write the palette */
     if (!pfil->FWriteRgbSeq(pglclr->PvLock(0), LwMul(SIZEOF(CLR), 256), &fpCur))
     {
         pglclr->Unlock();
@@ -869,7 +869,7 @@ bool FWriteBitmap(FNI *pfni, uint8_t *prgb, PGL pglclr, int32_t dxp, int32_t dyp
     }
     pglclr->Unlock();
 
-    /* Write the bits */
+    /* 3DMMv1.0: Write the bits */
     Assert((uint32_t)fpCur == bmh.bmfh.bfOffBits, "Current file pos is wrong");
     if (fUpsideDown)
     {
@@ -895,9 +895,9 @@ LFail:
         ReleasePpo(&pfil);
     }
     return fRet;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 #ifdef MAC
-    RawRtn(); // REVIEW peted: Mac FWriteBitmap NYI
+    RawRtn(); // 3DMMv1.0: REVIEW peted: Mac FWriteBitmap NYI
     return fFalse;
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 }

@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -27,23 +27,23 @@
 
 #include <cstdarg>
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     OS kind for string translation - these should always have their high
     and low bytes equal.
 ***************************************************************************/
-const int16_t oskNil = 0; // signifies unknown
+const int16_t oskNil = 0; // 3DMMv1.0: signifies unknown
 const int16_t koskSbMac = 0x0202;
 const int16_t koskSbWin = 0x0303;
-const int16_t koskUniMac = 0x0404; // big endian unicode
-const int16_t koskUniWin = 0x0505; // little endian unicode
+const int16_t koskUniMac = 0x0404; // 3DMMv1.0: big endian unicode
+const int16_t koskUniWin = 0x0505; // 3DMMv1.0: little endian unicode
 
 #ifdef UNICODE
 const int16_t koskMac = koskUniMac;
 const int16_t koskWin = koskUniWin;
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
 const int16_t koskMac = koskSbMac;
 const int16_t koskWin = koskSbWin;
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 
 #ifdef MAC
 const int16_t koskCur = koskMac;
@@ -57,11 +57,11 @@ const int16_t koskUni = koskUniWin;
 
 #ifdef DEBUG
 void AssertOsk(int16_t osk);
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define AssertOsk(osk)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of bytes a character occupies in the given osk.
 ***************************************************************************/
 inline int32_t CbCharOsk(int16_t osk)
@@ -81,7 +81,7 @@ inline int32_t CbCharOsk(int16_t osk)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constants
 ***************************************************************************/
 const achar chNil = ChLit('\x0');
@@ -113,7 +113,7 @@ enum
     fstnIgnoreCase,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     String types
 ***************************************************************************/
 typedef achar *PSZ;
@@ -129,7 +129,7 @@ typedef schar SZS[kcchTotSz];
 typedef char *PU8SZ;
 typedef char U8SZ[kcchTotUtf8Sz];
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     String related asserts
 ***************************************************************************/
 #ifdef DEBUG
@@ -146,13 +146,13 @@ void AssertNilOrSz(PSZ psz);
 #define AssertNilOrSz(psz)
 #endif
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Testing validity of an stz or st
 ***************************************************************************/
 bool FValidStz(PSTZ pstz);
 bool FValidSt(PST pst);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Cch means the number of characters (not including prefix and termination
     bytes) and CchTot means the total number of characters including
     overhead.
@@ -192,7 +192,7 @@ inline PSZ PszStz(PSTZ pstz)
     return pstz + 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Byte-wise comparison and sorting.
     WARNING: these don't do normal UI level compares they do byte-wise
     comparison, including any length and/or terminating bytes and should
@@ -201,7 +201,7 @@ inline PSZ PszStz(PSTZ pstz)
 bool FEqualRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t cch2);
 uint32_t FcmpCompareRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t cch2);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     User level (case insensitive, locale aware) comparison and sorting.
 ***************************************************************************/
 bool FEqualUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t cch2,
@@ -209,7 +209,7 @@ bool FEqualUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int3
 uint32_t FcmpCompareUserRgch(const achar *prgch1, int32_t cch1, const achar *prgch2, int32_t cch2,
                              uint32_t grfstn = fstnIgnoreCase);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Upper and lower case utilies
 ***************************************************************************/
 void UpperRgchs(schar *prgchs, int32_t cchs);
@@ -256,7 +256,7 @@ inline achar ChLower(achar ch)
     LowerRgchw(&ch, 1);
     return ch;
 }
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
 inline void UpperRgch(achar *prgch, int32_t cch)
 {
     UpperRgchs(prgch, cch);
@@ -275,15 +275,15 @@ inline achar ChLower(achar ch)
     LowerRgchs(&ch, 1);
     return ch;
 }
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translation from one OS to another (eg, Win to Mac, single byte to
     unicode, etc).
 ***************************************************************************/
 int32_t CchTranslateRgb(const void *pvSrc, int32_t cbSrc, int16_t oskSrc, achar *prgchDst, int32_t cchMaxDst);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     These APIs assert if osk specifies a different sized character than
     koskCur uses.
 ***************************************************************************/
@@ -301,40 +301,40 @@ inline void TranslateSz(PSZ psz, int16_t osk, bool fToCur = fTrue)
     TranslateRgch(psz, CchSz(psz), osk, fToCur);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Testing for type of character.
 ***************************************************************************/
 enum
 {
     fchNil = 0x00,
 
-    // can overhang the end of a line and doesn't need to be draw
+    // 3DMMv1.0: can overhang the end of a line and doesn't need to be draw
     fchWhiteOverhang = 0x01,
 
-    // should break a line
+    // 3DMMv1.0: should break a line
     fchBreak = 0x02,
 
-    // may break a line
+    // 3DMMv1.0: may break a line
     fchMayBreak = 0x04,
 
-    // should be totally ignored (and not draw)
+    // 3DMMv1.0: should be totally ignored (and not draw)
     fchIgnore = 0x08,
 
-    // some sort of control character
+    // 3DMMv1.0: some sort of control character
     fchControl = 0x10,
 
-    // a tab character
+    // 3DMMv1.0: a tab character
     fchTab = 0x20,
 };
 
 uint32_t GrfchFromCh(achar ch);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The hexadecimal digits 0 - 9, A - F.
 ***************************************************************************/
 extern const achar vrgchHex[];
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     General string class.
 ***************************************************************************/
 typedef class STN *PSTN;
@@ -354,7 +354,7 @@ class STN
     STN(STN &stnSrc);
     STN(PCSZ pszSrc);
 
-    // pointers to the data - these should be considered readonly!
+    // 3DMMv1.0: pointers to the data - these should be considered readonly!
     const achar *Prgch(void)
     {
         AssertThis(0);
@@ -381,7 +381,7 @@ class STN
         return (uchar)_rgch[0];
     }
 
-    // setting the string
+    // 3DMMv1.0: setting the string
     void SetNil(void)
     {
         AssertThis(0);
@@ -403,7 +403,7 @@ class STN
     void SetSzs(PSZS pszsSrc);
     void SetUtf8Sz(PU8SZ pu8szSrc);
 
-    // assignment operators
+    // 3DMMv1.0: assignment operators
     STN &operator=(STN &stnSrc);
     STN &operator=(PCSZ pszSrc)
     {
@@ -411,7 +411,7 @@ class STN
         return *this;
     }
 
-    // getting the string into a buffer
+    // 3DMMv1.0: getting the string into a buffer
     void GetRgch(achar *prgchDst)
     {
         AssertThis(0);
@@ -435,7 +435,7 @@ class STN
     void GetSzs(PSZS pszs);
     void GetUtf8Sz(U8SZ pszutf8);
 
-    // modifying the string
+    // 3DMMv1.0: modifying the string
     void Delete(int32_t ich, int32_t cch = kcchMaxStn);
     bool FAppendRgch(const achar *prgchSrc, int32_t cch);
     bool FAppendCh(achar chSrc)
@@ -460,7 +460,7 @@ class STN
         return FInsertRgch(ich, pstnSrc->Prgch(), pstnSrc->Cch());
     }
 
-    // for testing equality
+    // 3DMMv1.0: for testing equality
     bool FEqualRgch(const achar *prgch, int32_t cch);
     bool FEqualSz(const PCSZ psz)
     {
@@ -480,7 +480,7 @@ class STN
         return FEqualUserRgch(pstn->Prgch(), pstn->Cch(), grfstn);
     }
 
-    // for sorting
+    // 3DMMv1.0: for sorting
     uint32_t FcmpCompare(PSTN pstn)
     {
         return ::FcmpCompareRgch(Prgch(), Cch(), pstn->Prgch(), pstn->Cch());
@@ -490,7 +490,7 @@ class STN
         return ::FcmpCompareUserRgch(Prgch(), Cch(), pstn->Prgch(), pstn->Cch(), grfstn);
     }
 
-    // storing and retrieving strings to other buffers (or file).
+    // 3DMMv1.0: storing and retrieving strings to other buffers (or file).
     int32_t CbData(void);
     void GetData(void *pv);
     bool FSetData(void *pv, int32_t cbMax, int32_t *pcbRead = pvNil);
@@ -504,4 +504,4 @@ class STN
     bool FExpandControls(void);
 };
 
-#endif // UTILSTR_H
+#endif // 3DMMv1.0: UTILSTR_H

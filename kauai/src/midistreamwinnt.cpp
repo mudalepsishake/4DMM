@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -18,21 +18,21 @@ RTCLASS(OMS)
 
 const int32_t kdtsMinSlip = kdtsSecond / 30;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Constructor for our own midi stream api implementation.
 ***************************************************************************/
 OMS::OMS(PFNMIDI pfn, uintptr_t luUser) : WMSB(pfn, luUser)
 {
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for our midi stream.
 ***************************************************************************/
 OMS::~OMS(void)
 {
     if (hNil != _hth)
     {
-        // tell the thread to end and wait for it to finish
+        // 3DMMEx: tell the thread to end and wait for it to finish
         _fDone = fTrue;
         SetEvent(_hevt);
         WaitForSingleObject(_hth, INFINITE);
@@ -50,7 +50,7 @@ OMS::~OMS(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new OMS.
 ***************************************************************************/
 POMS OMS::PomsNew(PFNMIDI pfn, uintptr_t luUser)
@@ -66,7 +66,7 @@ POMS OMS::PomsNew(PFNMIDI pfn, uintptr_t luUser)
     return poms;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Initialize the OMS.
 ***************************************************************************/
 bool OMS::_FInit(void)
@@ -81,7 +81,7 @@ bool OMS::_FInit(void)
     if (hNil == (_hevt = CreateEvent(pvNil, fFalse, fFalse, pvNil)))
         return fFalse;
 
-    // create the thread in a suspended state
+    // 3DMMEx: create the thread in a suspended state
     if (hNil == (_hth = CreateThread(pvNil, 1024, OMS::_ThreadProc, this, CREATE_SUSPENDED, &luThread)))
     {
         return fFalse;
@@ -89,14 +89,14 @@ bool OMS::_FInit(void)
 
     SetThreadPriority(_hth, THREAD_PRIORITY_TIME_CRITICAL);
 
-    // start the thread
+    // 3DMMEx: start the thread
     ResumeThread(_hth);
 
     return fTrue;
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of a OMS.
 ***************************************************************************/
 void OMS::AssertValid(uint32_t grf)
@@ -110,7 +110,7 @@ void OMS::AssertValid(uint32_t grf)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory for the OMS.
 ***************************************************************************/
 void OMS::MarkMem(void)
@@ -122,9 +122,9 @@ void OMS::MarkMem(void)
     MarkMemObj(_pglmsb);
     _mutx.Leave();
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Open the stream.
 ***************************************************************************/
 bool OMS::_FOpen(void)
@@ -144,10 +144,10 @@ bool OMS::_FOpen(void)
         return fFalse;
     }
 
-    // get the system volume level
+    // 3DMMEx: get the system volume level
     _GetSysVol();
 
-    // set our volume level
+    // 3DMMEx: set our volume level
     _SetSysVlm();
 
 LDone:
@@ -156,7 +156,7 @@ LDone:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Close the stream.
 ***************************************************************************/
 bool OMS::_FClose(void)
@@ -178,10 +178,10 @@ bool OMS::_FClose(void)
         return fFalse;
     }
 
-    // reset the device
+    // 3DMMEx: reset the device
     _Reset();
 
-    // restore the volume level
+    // 3DMMEx: restore the volume level
     _SetSysVol(_luVolSys);
 
     midiOutClose(_hms);
@@ -192,7 +192,7 @@ bool OMS::_FClose(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Queue a buffer to the midi stream.
 ***************************************************************************/
 bool OMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPlay, uintptr_t luData)
@@ -225,7 +225,7 @@ bool OMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPl
 
     if (1 == _pglmsb->IvMac())
     {
-        // Start the buffer
+        // 3DMMEx: Start the buffer
         SetEvent(_hevt);
         _fChanged = fTrue;
     }
@@ -235,7 +235,7 @@ bool OMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPl
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Stop the stream and release all buffers. The buffer notifies are
     asynchronous.
 ***************************************************************************/
@@ -255,7 +255,7 @@ void OMS::StopPlaying(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: Static method. Thread function for the midi stream object.
 ***************************************************************************/
 DWORD __stdcall OMS::_ThreadProc(void *pv)
@@ -267,14 +267,14 @@ DWORD __stdcall OMS::_ThreadProc(void *pv)
     return poms->_LuThread();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: The midi stream playback thread.
 ***************************************************************************/
 DWORD OMS::_LuThread(void)
 {
     AssertThis(0);
     MSB msb;
-    bool fChanged; // whether the event went off
+    bool fChanged; // 3DMMEx: whether the event went off
     uint32_t tsCur;
     const int32_t klwInfinite = klwMax;
     int32_t dtsWait = klwInfinite;
@@ -290,7 +290,7 @@ DWORD OMS::_LuThread(void)
         _mutx.Enter();
         if (_fChanged && !fChanged)
         {
-            // the event went off before we got the mutx.
+            // 3DMMEx: the event went off before we got the mutx.
             dtsWait = klwInfinite;
             goto LLoop;
         }
@@ -298,7 +298,7 @@ DWORD OMS::_LuThread(void)
         _fChanged = fFalse;
         if (!fChanged)
         {
-            // play the event
+            // 3DMMEx: play the event
             if (_pmev < _pmevLim)
             {
                 if (MEVT_SHORTMSG == (_pmev->dwEvent >> 24))
@@ -322,8 +322,8 @@ DWORD OMS::_LuThread(void)
                 goto LLoop;
             }
 
-            // ran out of events in the current buffer - see if we should
-            // repeat it
+            // 3DMMEx: ran out of events in the current buffer - see if we should
+            // 3DMMEx: repeat it
             _pglmsb->Get(0, &msb);
             if (msb.cactPlay == 1)
             {
@@ -332,7 +332,7 @@ DWORD OMS::_LuThread(void)
             }
             else
             {
-                // repeat the current buffer
+                // 3DMMEx: repeat the current buffer
                 if (msb.cactPlay > 0)
                     msb.cactPlay--;
                 msb.ibStart = 0;
@@ -341,7 +341,7 @@ DWORD OMS::_LuThread(void)
         }
         else if (_fStop)
         {
-            // release all buffers
+            // 3DMMEx: release all buffers
             _fStop = fFalse;
             _imsbCur = _pglmsb->IvMac();
             _ReleaseBuffers();
@@ -349,12 +349,12 @@ DWORD OMS::_LuThread(void)
 
         if (0 == _pglmsb->IvMac())
         {
-            // no buffers to play
+            // 3DMMEx: no buffers to play
             dtsWait = klwInfinite;
         }
         else
         {
-            // start playing the new buffers
+            // 3DMMEx: start playing the new buffers
             _pglmsb->Get(0, &msb);
             _pmev = (PMEV)PvAddBv(msb.pvData, msb.ibStart);
             _pmevLim = (PMEV)PvAddBv(msb.pvData, msb.cb);
@@ -371,7 +371,7 @@ DWORD OMS::_LuThread(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Release all buffers up to _imsbCur. Assumes that we have the mutx
     checked out exactly once.
 ***************************************************************************/
@@ -390,7 +390,7 @@ void OMS::_ReleaseBuffers(void)
 
         _mutx.Leave();
 
-        // call the notify proc
+        // 3DMMEx: call the notify proc
         (*_pfnCall)(_luUser, msb.pvData, msb.luData);
 
         _mutx.Enter();

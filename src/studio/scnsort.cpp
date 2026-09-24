@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Author: ******
     Project: Socrates
     Review Status: Reviewed
@@ -38,7 +38,7 @@ void SCRT::AssertValid(uint32_t grf)
         Assert(_iscenCur == 0, "Non-zero _iscenCur for empty movie");
     AssertIn(_iscenTop, 0, _iscenMac + 1);
 
-    /* The CMVI has loose rules about the format of its data structures, but
+    /* 3DMMv1.0: The CMVI has loose rules about the format of its data structures, but
         it's important to the SCRT that we keep things in the right order. */
     if (_cmvi.pglscend != pvNil)
     {
@@ -66,7 +66,7 @@ void SCRT::MarkMem(void)
     MarkMemObj(_pmvie);
     _cmvi.MarkMem();
 }
-#endif /* DEBUG */
+#endif /* 3DMMv1.0: DEBUG */
 
 SCRT::SCRT(PGCB pgcb) : SCRT_PAR(pgcb)
 {
@@ -83,25 +83,25 @@ SCRT::~SCRT(void)
 {
     PGOB pgob;
 
-    /* We might get released on Quit without exiting the Scene Sorter. */
+    /* 3DMMv1.0: We might get released on Quit without exiting the Scene Sorter. */
     if (_cmvi.pglscend != pvNil || _cmvi.pglmvied != pvNil)
         _cmvi.Empty();
     if (_pmvie != pvNil)
         ReleasePpo(&_pmvie);
 
-    /* Kill the glass GOB (it's not a child of me) */
+    /* 3DMMv1.0: Kill the glass GOB (it's not a child of me) */
     pgob = vpapp->Pkwa()->PgobFromHid(kidGenericDisableGlass);
     ReleasePpo(&pgob);
 
     if (_fInited)
         vpapp->EnableAccel();
 
-    /* Report generic error */
+    /* 3DMMv1.0: Report generic error */
     if (_fError)
         PushErc(ercSocSceneSortError);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     PscrtNew
         Allocates and initializes a brand new SCRT.  If any necessary
         initialization fails, cleans up and returns a nil pointer.
@@ -160,23 +160,23 @@ LFail:
     return pscrt;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _ErrorExit
         Handle an error.  Destroys the easel and enqueues our cancel cid.
 
 ************************************************************ PETED ***********/
 void SCRT::_ErrorExit(void)
 {
-    /* If someone's already reported an error, don't do any more work */
+    /* 3DMMv1.0: If someone's already reported an error, don't do any more work */
     if (_fError)
         return;
     _fError = fTrue;
 
-    /* Notify myself that we're exiting */
+    /* 3DMMv1.0: Notify myself that we're exiting */
     vpcex->EnqueueCid(cidSceneSortCancel, this);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdInit
         Initializes the Scene Sorter with the information about the easel
         in kidspace.
@@ -198,7 +198,7 @@ bool SCRT::FCmdInit(PCMD pcmd)
     int32_t kidCur, kidThumb;
     PGOK pgokFrame;
 
-    /* If I'm already inited, this must be for some other scene sorter */
+    /* 3DMMv1.0: If I'm already inited, this must be for some other scene sorter */
     if (_fInited)
         return fFalse;
 
@@ -242,7 +242,7 @@ LFail:
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdSelect
         Selects the scene corresponding to the given thumbnail frame.
 
@@ -266,7 +266,7 @@ bool SCRT::FCmdSelect(PCMD pcmd)
     {
         _iscenCur = iscen;
 
-        /* Fill in thumbnail for selection GOB */
+        /* 3DMMv1.0: Fill in thumbnail for selection GOB */
         if (_FResetThumbnails(fFalse))
             _SetSelectionVis(fTrue);
         else
@@ -276,7 +276,7 @@ bool SCRT::FCmdSelect(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdInsert
         Inserts the currently selected scene before the scene that
         corresponds to the given thumbnail frame.  If the given thumbnail
@@ -307,14 +307,14 @@ bool SCRT::FCmdInsert(PCMD pcmd)
         _iscenCur = iscenTo;
     }
 
-    /* Refill the thumbnails */
+    /* 3DMMv1.0: Refill the thumbnails */
     if (!_FResetThumbnails(fFalse))
         _ErrorExit();
 
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdScroll
         Scrolls the thumbnails by the given number of frames.  The sign of
         the number of frames indicates whether to scroll forward (positive)
@@ -343,7 +343,7 @@ bool SCRT::FCmdScroll(PCMD pcmd)
         _iscenTop = iscenT;
     }
 
-    /* Refill the thumbnails */
+    /* 3DMMv1.0: Refill the thumbnails */
     if (!_FResetThumbnails(fHideSel))
         _ErrorExit();
 
@@ -352,7 +352,7 @@ bool SCRT::FCmdScroll(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _EnableScroll
         Enables or disables the scrolling buttons, as appropriate.
 
@@ -361,7 +361,7 @@ void SCRT::_EnableScroll(void)
 {
     PGOK pgok;
 
-    /* Enable or disable scroll up */
+    /* 3DMMv1.0: Enable or disable scroll up */
     pgok = (PGOK)vapp.Pkwa()->PgobFromHid(_kidScbtnsMin);
     if (pgok != pvNil)
     {
@@ -375,7 +375,7 @@ void SCRT::_EnableScroll(void)
     else
         Bug("Can't find scroll up button");
 
-    /* Enable or disable scroll down */
+    /* 3DMMv1.0: Enable or disable scroll down */
     pgok = (PGOK)vapp.Pkwa()->PgobFromHid(_kidScbtnsMin + 1);
     if (pgok != pvNil)
     {
@@ -390,7 +390,7 @@ void SCRT::_EnableScroll(void)
         Bug("Can't find scroll down button");
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdNuke
         Deletes the currently selected scene from the movie.  Makes the
         following scene the currently selected scene, unless there is no
@@ -419,14 +419,14 @@ bool SCRT::FCmdNuke(PCMD pcmd)
     if (_iscenMac > 0 && _iscenMac == _iscenCur)
         _iscenCur--;
 
-    /* Refill the thumbnails */
+    /* 3DMMv1.0: Refill the thumbnails */
     if (!_FResetThumbnails(fFalse))
         _ErrorExit();
 
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdDismiss
         Alerts the Scene Sorter that the easel is about to go away.  If the
         easel was not cancelled, the changes made in the easel are applied
@@ -458,13 +458,13 @@ bool SCRT::FCmdDismiss(PCMD pcmd)
         vapp.EndLongOp();
     }
 
-    /* Change to the tool for scenes */
+    /* 3DMMv1.0: Change to the tool for scenes */
     pmvu = (PMVU)(_pmvie->PddgActive());
     AssertPo(pmvu, 0);
     pmvu->SetTool(toolDefault);
     _pstdio->ChangeTool(toolDefault);
 
-    /* Clean up the internal data structures */
+    /* 3DMMv1.0: Clean up the internal data structures */
     _cmvi.Empty();
     ReleasePpo(&_pmvie);
 
@@ -473,7 +473,7 @@ bool SCRT::FCmdDismiss(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdPortfolio
         Brings up the portfolio so that the user can append movies from file.
 
@@ -494,7 +494,7 @@ bool SCRT::FCmdPortfolio(PCMD pcmd)
     if (!_pstdio->FGetFniMovieOpen(&fni))
         goto LFail;
 
-    /* Specific reasons for failures are reported by lower-level routines.
+    /* 3DMMv1.0: Specific reasons for failures are reported by lower-level routines.
         There should be no reason to display an error here. */
     pmvie = MVIE::PmvieNew(vpapp->FSlowCPU(), &mcc, &fni, cnoNil);
     if (pmvie == pvNil)
@@ -503,7 +503,7 @@ bool SCRT::FCmdPortfolio(PCMD pcmd)
     if (!pmvie->FAddToCmvi(&_cmvi, &_iscenMac))
         goto LFail;
 
-    /* Refill the thumbnails */
+    /* 3DMMv1.0: Refill the thumbnails */
     if (!_FResetThumbnails(fFalse))
         _ErrorExit();
 
@@ -512,7 +512,7 @@ LFail:
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdTransition
         Sets the transition for the scene corresponding to the given frame.
 
@@ -551,7 +551,7 @@ bool SCRT::FCmdTransition(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _SetSelectionVis
         Shows or hides the current selection.
 
@@ -583,7 +583,7 @@ void SCRT::_SetSelectionVis(bool fShow, bool fHideSel)
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FResetThumbnails
         Refills the thumbnails for the scenes frames.  If the thumbnail
         actually changed, force a redraw.
@@ -652,7 +652,7 @@ bool SCRT::_FResetThumbnails(bool fHideSel)
         kidFrameCur += _cgokFrame;
     }
 
-    /* Fill in selection frame; do this outside of the above loop, since the
+    /* 3DMMv1.0: Fill in selection frame; do this outside of the above loop, since the
         selection is not always actually within the range of displayed scene
         frames. */
     if (_iscenMac > 0)
@@ -683,7 +683,7 @@ const TRANS SCRT::_mplwtrans[] = {
 };
 #define kctrans (SIZEOF(_mplwtrans) / SIZEOF(_mplwtrans[0]))
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FResetTransition
         Updates the transition buttons for a given scene frame.
 
@@ -722,7 +722,7 @@ bool SCRT::_FResetTransition(PGOK pgokPar, TRANS trans)
     return fRedrawTrans;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _TransFromLw
         Map a long word to a transition
 
@@ -739,7 +739,7 @@ TRANS SCRT::_TransFromLw(int32_t lwTrans)
     return _mplwtrans[lwTrans];
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _LwFromTrans
         Map a transition to the scene sorter long word
 
@@ -763,7 +763,7 @@ int32_t SCRT::_LwFromTrans(TRANS trans)
         Bug("Invalid trans");
         lw = 0;
     }
-#endif /* DEBUG */
+#endif /* 3DMMv1.0: DEBUG */
 
     return lw;
 }
@@ -784,9 +784,9 @@ void GOMP::MarkMem(void)
     GOMP_PAR::MarkMem();
     MarkMemObj(_pmbmp);
 }
-#endif /* DEBUG */
+#endif /* 3DMMv1.0: DEBUG */
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     GOMP
         Constructor for the GOMP class.
 
@@ -801,7 +801,7 @@ GOMP::GOMP(PGCB pgcb) : GOB(pgcb)
     AssertThis(0);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     PgompNew
         Creates a GOMP as a child of the given parent.  The new GOMP will
         be exactly the same size as the parent, and will have the given hid.
@@ -840,7 +840,7 @@ PGOMP GOMP::PgompNew(PGOB pgobPar, int32_t hid)
     return pgomp;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Draw
         Draws the given GOMP
 
@@ -865,7 +865,7 @@ void GOMP::Draw(PGNV pgnv, RC *prcClip)
     pgnv->DrawMbmp(_pmbmp, &rc);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FSetMbmp
         Replaces the MBMP for this GOMP with the given MBMP.
 
@@ -889,7 +889,7 @@ bool GOMP::FSetMbmp(PMBMP pmbmp)
     return fRedraw;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     PgompFromHidScr
         Given an HID, return the GOMP with that hid
 

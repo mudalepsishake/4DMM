@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai test app
     Reviewed:
@@ -18,12 +18,12 @@ void TestUtil(void);
 void CheckForLostMem(void);
 bool FFindPrime(int32_t lwMax, int32_t lwMaxRoot, int32_t *plwPrime, int32_t *plwRoot);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Call test routines.
 ***************************************************************************/
 int __cdecl main(int cpszs, char **prgpszs)
 {
-#ifdef REVIEW // shonk: for counting lines
+#ifdef REVIEW // 3DMMv1.0: shonk: for counting lines
     FNE fne;
     FNI fniDir, fni;
     FTG rgftg[2];
@@ -71,9 +71,9 @@ int __cdecl main(int cpszs, char **prgpszs)
     }
 
     printf("Total bytes: %d;  Total lines: %d\n", cbTot, clnTot);
-#endif // REVIEW
+#endif // 3DMMv1.0: REVIEW
 
-#ifndef REVIEW // shonk: for finding a prime and a primitive root for the prime
+#ifndef REVIEW // 3DMMv1.0: shonk: for finding a prime and a primitive root for the prime
     int32_t lwPrime, lwRoot, lw;
     STN stn;
 
@@ -94,9 +94,9 @@ int __cdecl main(int cpszs, char **prgpszs)
 
     if (FFindPrime(lwPrime, lwRoot, &lwPrime, &lwRoot))
         printf("prime = %d, primitive root = %d\n", lwPrime, lwRoot);
-#endif // REVIEW
+#endif // 3DMMv1.0: REVIEW
 
-#ifdef REVIEW // shonk: general testing stuff
+#ifdef REVIEW // 3DMMv1.0: shonk: general testing stuff
     CheckForLostMem();
     TestUtil();
     CheckForLostMem();
@@ -104,7 +104,7 @@ int __cdecl main(int cpszs, char **prgpszs)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returning true breaks into the debugger.
 ***************************************************************************/
 bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t cb)
@@ -146,7 +146,7 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t 
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Callback from util for warnings.
 ***************************************************************************/
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg)
@@ -157,9 +157,9 @@ void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg)
     printf("   File: %s\n\r", pszsFile);
     printf("   Line: %d\n\r", lwLine);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unmarks all hqs, marks all hqs known to be in use, then asserts
     on all unmarked hqs.
 ***************************************************************************/
@@ -168,13 +168,13 @@ void CheckForLostMem(void)
     UnmarkAllMem();
     UnmarkAllObjs();
 
-    MarkUtilMem(); // marks all util memory
+    MarkUtilMem(); // 3DMMv1.0: marks all util memory
 
     AssertUnmarkedMem();
     AssertUnmarkedObjs();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the largest prime that is less than lwMax and find a primitive root
     for it.
 ***************************************************************************/
@@ -187,7 +187,7 @@ bool FFindPrime(int32_t lwMax, int32_t lwMaxRoot, int32_t *plwPrime, int32_t *pl
     int32_t cb;
     int32_t lw, ibit, lwT, clwHit;
 
-    // make sure lwMax is even.
+    // 3DMMv1.0: make sure lwMax is even.
     lwMax = (lwMax + 1) & ~1;
 
     cb = LwDivAway(lwMax, 16);

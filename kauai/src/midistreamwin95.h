@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,8 +15,8 @@
 
 #include "midistreamwin.h"
 
-// This corresponds to the Win95 MIDIHDR structure.
-// We're using the older headers, so need to define our own.
+// 3DMMEx: This corresponds to the Win95 MIDIHDR structure.
+// 3DMMEx: We're using the older headers, so need to define our own.
 struct MH
 {
     uint8_t *lpData;
@@ -33,7 +33,7 @@ typedef MH *PMH;
 
 typedef MIDIHDR *PMHO;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     The midiStreamStop API has a bug in it where it doesn't reset the
     current "buffer position" so that after calling midiStreamStop, then
     midiStreamOut and midiStreamRestart, the new buffer isn't played
@@ -44,7 +44,7 @@ typedef MIDIHDR *PMHO;
 ***************************************************************************/
 #define STREAM_BUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     The real midi stream interface.
 ***************************************************************************/
 typedef class WMS *PWMS;
@@ -77,14 +77,14 @@ class WMS : public WMS_PAR
     int32_t _ipmsirCur;
     int32_t _cmhOut;
 
-    HN _hevt; // event to wake up the thread
-    HN _hth;  // thread to do callbacks and cleanup after a notify
+    HN _hevt; // 3DMMEx: event to wake up the thread
+    HN _hth;  // 3DMMEx: thread to do callbacks and cleanup after a notify
 
 #ifdef STREAM_BUG
     std::atomic<bool> _fActive;
-#endif // STREAM_BUG
+#endif // 3DMMEx: STREAM_BUG
 
-    std::atomic<bool> _fDone; // tells the aux thread to terminate
+    std::atomic<bool> _fDone; // 3DMMEx: tells the aux thread to terminate
 
     MMRESULT(WINAPI *_pfnOpen)
     (HMS *phms, LPUINT puDeviceID, DWORD cMidi, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD fdwOpen);
@@ -107,7 +107,7 @@ class WMS : public WMS_PAR
     int32_t _CmhSubmitBuffers(void);
     void _ResetStream(void);
 
-    // MidiOutProc callback function
+    // 3DMMEx: MidiOutProc callback function
     static void __stdcall _MidiProc(HMS hms, UINT msg, DWORD_PTR luUser, DWORD_PTR lu1, DWORD_PTR lu2);
     void _Notify(HMS hms, PMH pmh);
 
@@ -121,10 +121,10 @@ class WMS : public WMS_PAR
 #ifdef STREAM_BUG
     virtual bool FActive(void) override;
     virtual bool FActivate(bool fActivate) override;
-#endif // STREAM_BUG
+#endif // 3DMMEx: STREAM_BUG
 
     virtual bool FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPlay, uintptr_t luData) override;
     virtual void StopPlaying(void) override;
 };
 
-#endif //! MIDISTREAMWIN95_H
+#endif //! 3DMMEx: MIDISTREAMWIN95_H

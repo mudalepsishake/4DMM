@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Chunky editor main header file
 
@@ -15,7 +15,7 @@
 #include "kidframe.h"
 #include "chedres.h"
 
-// creator type for the chunky editor
+// 3DMMv1.0: creator type for the chunky editor
 #define kctgChed KLCONST4('C', 'H', 'E', 'D')
 
 #include "chdoc.h"
@@ -38,4 +38,4 @@ class APP : public APP_PAR
     virtual bool FCmdOpen(PCMD pcmd);
 };
 
-#endif //! CHED_H
+#endif //! 3DMMv1.0: CHED_H

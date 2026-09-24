@@ -1,0 +1,93 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: renderer.h 1.1 1997/12/10 16:52:30 jon Exp $
+ * $Locker: $
+ *
+ * Private renderer structure
+ */
+#ifndef _RENDERER_H_
+#define _RENDERER_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* BRender:
+ * Renderer - must be compatible with br_renderer_state
+ */
+typedef struct br_renderer {
+    /* BRender:
+     * Dispatch table
+     */
+    struct br_renderer_dispatch *dispatch;
+
+    /* BRender:
+     * Standard object identifier
+     */
+    char *identifier;
+
+    /* BRender:
+     * Pointer to owning device
+     */
+    struct br_device *device;
+
+    /* BRender:
+     * List of objects associated with this renderer
+     */
+    void *object_list;
+
+    /* BRenderModern:
+     * Object query templates.
+     */
+    br_tv_template *templates;
+
+    /* BRenderModern:
+     * Parts templates
+     */
+    br_tv_template *partCullTemplate;
+    br_tv_template *partSurfaceTemplate;
+    br_tv_template *partMatrixTemplate;
+    br_tv_template *partEnableTemplate;
+    br_tv_template *partHiddenSurfaceTemplate;
+    br_tv_template *partBoundsTemplate;
+    br_tv_template *partLightTemplate;
+    br_tv_template *partClipTemplate;
+
+    /* BRender:
+     * State of renderer
+     */
+    state_all state;
+
+    /* BRender:
+     * Default state of renderer
+     */
+    state_all *default_state;
+
+    /* BRender:
+     * last restored state
+     */
+    struct br_renderer_state_stored *last_restored;
+
+    /* BRender:
+     * Output primitives
+     */
+    br_primitive_library *plib;
+
+    /* BRender:
+     * Stack of saved states (XXX should allocate on the fly)
+     */
+    state_all  state_stack[MAX_STATE_STACK];
+    br_uint_32 stack_top;
+
+    /* BRender:
+     * Type of renderer
+     */
+    br_renderer_facility *renderer_facility;
+
+} br_renderer;
+
+#ifdef __cplusplus
+};
+#endif
+#endif

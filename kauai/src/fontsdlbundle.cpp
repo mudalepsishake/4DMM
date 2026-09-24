@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -12,7 +12,7 @@ ASSERTNAME
 #include "gfx.h"
 #include "fontsdl.h"
 
-// Get the first TrueType font file in the font folder
+// 3DMMEx: Get the first TrueType font file in the font folder
 static bool FGetFirstFont(PFNI pfniFontDir, PFNI pfniDefaultFont)
 {
     AssertPo(pfniFontDir, 0);
@@ -21,7 +21,7 @@ static bool FGetFirstFont(PFNI pfniFontDir, PFNI pfniDefaultFont)
     FTG ftgTtf = kftgTtf;
     FNE fne;
 
-    // Return the first TrueType font file in the font directory
+    // 3DMMEx: Return the first TrueType font file in the font directory
     if (!fne.FInit(pfniFontDir, &ftgTtf, 1, 0))
         return fFalse;
 
@@ -37,7 +37,7 @@ bool NTL::_FLoadFontTable()
     PGL pglsdlfont = pvNil;
     FNI fniFontDir, fniDefaultFont;
 
-    // Fonts are loaded from the 'fonts' subdirectory in the resources directory.
+    // 3DMMEx: Fonts are loaded from the 'fonts' subdirectory in the resources directory.
     AssertDo(fniFontDir.FGetResourcesDir(), "Could not find resources directory");
     STN stnFontDir = PszLit("fonts");
     if (!fniFontDir.FDownDir(&stnFontDir, ffniMoveToDir))
@@ -52,13 +52,13 @@ bool NTL::_FLoadFontTable()
         goto LFail;
     }
 
-    // Ensure we have at least one font
+    // 3DMMEx: Ensure we have at least one font
     if (_pgst->IvMac() == 0)
     {
         goto LFail;
     }
 
-    // Add a default font
+    // 3DMMEx: Add a default font
     if (FGetFirstFont(&fniFontDir, &fniDefaultFont))
     {
         int32_t onnSystem = 0;

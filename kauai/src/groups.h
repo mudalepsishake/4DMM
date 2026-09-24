@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -34,7 +34,7 @@ enum
     fgrpShrink = 1,
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     GRPB is a virtual class supporting
     all group classes
 ****************************************/
@@ -104,13 +104,13 @@ class GRPB : public GRPB_PAR
     virtual bool FFree(int32_t iv) = 0;
     virtual void Delete(int32_t iv) = 0;
 
-    // writing
+    // 3DMMv1.0: writing
     virtual bool FWriteFlo(PFLO pflo, int16_t bo = kboCur, int16_t osk = koskCur);
     virtual bool FWrite(PBLCK pblck, int16_t bo = kboCur, int16_t osk = koskCur) = 0;
     virtual int32_t CbOnFile(void) = 0;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     GLB is a virtual class supporting
     GL and AL
 ****************************************/
@@ -140,7 +140,7 @@ class GLB : public GLB_PAR
     virtual bool FAdd(void *pv, int32_t *piv = pvNil) = 0;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     GL is the basic dynamic array
 ****************************************/
 #define GL_PAR GLB
@@ -154,22 +154,22 @@ class GL : public GL_PAR
     bool _FRead(PBLCK pblck, int16_t *pbo, int16_t *posk);
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PGL PglNew(int32_t cb, int32_t cvInit = 0);
     static PGL PglRead(PBLCK pblck, int16_t *pbo = pvNil, int16_t *posk = pvNil);
     static PGL PglRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo = pvNil, int16_t *posk = pvNil);
 
-    // duplication
+    // 3DMMv1.0: duplication
     PGL PglDup(void);
 
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FAdd(void *pv, int32_t *piv = pvNil) override;
     virtual void Delete(int32_t iv) override;
     virtual bool FWrite(PBLCK pblck, int16_t bo = kboCur, int16_t osk = koskCur) override;
     virtual int32_t CbOnFile(void) override;
     virtual bool FFree(int32_t iv) override;
 
-    // new methods
+    // 3DMMv1.0: new methods
     void Delete(int32_t iv, int32_t cv);
     bool FInsert(int32_t iv, void *pv = pvNil, int32_t cv = 1);
     bool FSetIvMac(int32_t ivMacNew);
@@ -190,7 +190,7 @@ class GL : public GL_PAR
     }
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Allocated (fixed index) list class
 ****************************************/
 #define AL_PAR GLB
@@ -204,7 +204,7 @@ class AL : public AL_PAR
     int32_t _cvFree;
 
   private:
-    // section 2 of the data contains a bit array
+    // 3DMMv1.0: section 2 of the data contains a bit array
     uint8_t *_Qgrfbit(int32_t iv)
     {
         return _Qb2(IbFromIbit(iv));
@@ -215,27 +215,27 @@ class AL : public AL_PAR
     bool _FRead(PBLCK pblck, int16_t *pbo, int16_t *posk);
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PAL PalNew(int32_t cb, int32_t cvInit = 0);
     static PAL PalRead(PBLCK pblck, int16_t *pbo = pvNil, int16_t *posk = pvNil);
     static PAL PalRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo = pvNil, int16_t *posk = pvNil);
 
-    // duplication
+    // 3DMMv1.0: duplication
     PAL PalDup(void);
 
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FAdd(void *pv, int32_t *piv = pvNil) override;
     virtual void Delete(int32_t iv) override;
     virtual bool FWrite(PBLCK pblck, int16_t bo = kboCur, int16_t osk = koskCur) override;
     virtual int32_t CbOnFile(void) override;
     virtual bool FFree(int32_t iv) override;
 
-    // new methods
+    // 3DMMv1.0: new methods
     bool FEnsureSpace(int32_t cvAdd, uint32_t grfgrp = fgrpNil);
     void DeleteAll(void);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     GGB is a virtual class supporting
     GG and AG
 ****************************************/
@@ -272,7 +272,7 @@ class GGB : public GGB_PAR
     bool _FDup(PGGB pggbDst);
 
   public:
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FWrite(PBLCK pblck, int16_t bo = kboCur, int16_t osk = koskCur) override;
     virtual int32_t CbOnFile(void) override;
     virtual bool FFree(int32_t iv) override;
@@ -282,7 +282,7 @@ class GGB : public GGB_PAR
 
     virtual bool FAdd(int32_t cb, int32_t *piv = pvNil, const void *pv = pvNil, void *pvFixed = pvNil) = 0;
 
-    // access to the fixed portion
+    // 3DMMv1.0: access to the fixed portion
     int32_t CbFixed(void)
     {
         return _cbFixed;
@@ -292,7 +292,7 @@ class GGB : public GGB_PAR
     void GetFixed(int32_t iv, void *pv);
     void PutFixed(int32_t iv, void *pv);
 
-    // access to the variable portion
+    // 3DMMv1.0: access to the variable portion
     int32_t Cb(int32_t iv);
     void *QvGet(int32_t iv, int32_t *pcb = pvNil);
     void *PvLock(int32_t iv, int32_t *pcb = pvNil);
@@ -307,7 +307,7 @@ class GGB : public GGB_PAR
     void Merge(int32_t ivSrc, int32_t ivDst);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     General Group - based on GGB
 ****************************************/
 #define GG_PAR GGB
@@ -323,26 +323,26 @@ class GG : public GG_PAR
     }
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PGG PggNew(int32_t cbFixed = 0, int32_t cvInit = 0, int32_t cbInit = 0);
     static PGG PggRead(PBLCK pblck, int16_t *pbo = pvNil, int16_t *posk = pvNil);
     static PGG PggRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo = pvNil, int16_t *posk = pvNil);
 
-    // duplication
+    // 3DMMv1.0: duplication
     PGG PggDup(void);
 
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FAdd(int32_t cb, int32_t *piv = pvNil, const void *pv = pvNil, void *pvFixed = pvNil) override;
     virtual void Delete(int32_t iv) override;
 
-    // new methods
+    // 3DMMv1.0: new methods
     bool FInsert(int32_t iv, int32_t cb, const void *pv = pvNil, const void *pvFixed = pvNil);
     bool FCopyEntries(PGG pggSrc, int32_t ivSrc, int32_t ivDst, int32_t cv);
     void Move(int32_t ivSrc, int32_t ivTarget);
     void Swap(int32_t iv1, int32_t iv2);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Allocated Group - based on GGB
 ****************************************/
 #define AG_PAR GGB
@@ -358,20 +358,20 @@ class AG : public AG_PAR
     }
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PAG PagNew(int32_t cbFixed = 0, int32_t cvInit = 0, int32_t cbInit = 0);
     static PAG PagRead(PBLCK pblck, int16_t *pbo = pvNil, int16_t *posk = pvNil);
     static PAG PagRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo = pvNil, int16_t *posk = pvNil);
 
-    // duplication
+    // 3DMMv1.0: duplication
     PAG PagDup(void);
 
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FAdd(int32_t cb, int32_t *piv = pvNil, const void *pv = pvNil, void *pvFixed = pvNil) override;
     virtual void Delete(int32_t iv) override;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     String table classes
 ****************************************/
 enum
@@ -384,7 +384,7 @@ enum
 
 const int32_t kcchMaxGst = kcchMaxStn;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     GSTB is a virtual class supporting
     GST and AST.
 ****************************************/
@@ -398,7 +398,7 @@ class GSTB : public GSTB_PAR
   protected:
     int32_t _cbEntry;
     int32_t _bstMac;
-    int32_t _cbstFree; // this is cvNil for non-allocated GSTBs
+    int32_t _cbstFree; // 3DMMv1.0: this is cvNil for non-allocated GSTBs
 
   protected:
     GSTB(int32_t cbExtra, uint32_t grfgst);
@@ -422,7 +422,7 @@ class GSTB : public GSTB_PAR
     bool _FDup(PGSTB pgstbDst);
 
   public:
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FWrite(PBLCK pblck, int16_t bo = kboCur, int16_t osk = koskCur) override;
     virtual int32_t CbOnFile(void) override;
     virtual bool FFree(int32_t istn) override;
@@ -454,7 +454,7 @@ class GSTB : public GSTB_PAR
     bool FFindExtra(const void *prgbFind, PSTN pstn = pvNil, int32_t *pistn = pvNil);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     String table
 ****************************************/
 #define GST_PAR GSTB
@@ -470,27 +470,27 @@ class GST : public GST_PAR
     }
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PGST PgstNew(int32_t cbExtra = 0, int32_t cstnInit = 0, int32_t cchInit = 0);
     static PGST PgstRead(PBLCK pblck, int16_t *pbo = pvNil, int16_t *posk = pvNil);
     static PGST PgstRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo = pvNil, int16_t *posk = pvNil);
 
-    // duplication
+    // 3DMMv1.0: duplication
     PGST PgstDup(void);
 
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra = pvNil,
                           int32_t *pistn = pvNil) override;
     virtual bool FFindRgch(const achar *prgch, int32_t cch, int32_t *pistn, uint32_t grfgst = fgstNil) override;
     virtual void Delete(int32_t istn) override;
 
-    // new methods
+    // 3DMMv1.0: new methods
     bool FInsertRgch(int32_t istn, const achar *prgch, int32_t cch, const void *pvExtra = pvNil);
     bool FInsertStn(int32_t istn, PSTN pstn, const void *pvExtra = pvNil);
     void Move(int32_t istnSrc, int32_t istnDst);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Allocated string table
 ****************************************/
 #define AST_PAR GSTB
@@ -506,18 +506,18 @@ class AST : public AST_PAR
     }
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PAST PastNew(int32_t cbExtra = 0, int32_t cstnInit = 0, int32_t cchInit = 0);
     static PAST PastRead(PBLCK pblck, int16_t *pbo = pvNil, int16_t *posk = pvNil);
     static PAST PastRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo = pvNil, int16_t *posk = pvNil);
 
-    // duplication
+    // 3DMMv1.0: duplication
     PAST PastDup(void);
 
-    // methods required by parent class
+    // 3DMMv1.0: methods required by parent class
     virtual bool FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra = pvNil,
                           int32_t *pistn = pvNil) override;
     virtual void Delete(int32_t istn) override;
 };
 
-#endif //! GROUPS_H
+#endif //! 3DMMv1.0: GROUPS_H

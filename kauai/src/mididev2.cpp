@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -19,8 +19,8 @@ ASSERTNAME
 #elif defined(KAUAI_SDL)
 #ifdef KAUAI_MIDI_FLUIDSYNTH
 #include "midistreamfluidsynth.h"
-#endif // KAUAI_MIDI_FLUIDSYNTH
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_MIDI_FLUIDSYNTH
+#endif // 3DMMEx: KAUAI_WIN32
 
 RTCLASS(MDWS)
 RTCLASS(MSQUE)
@@ -28,14 +28,14 @@ RTCLASS(MDPS)
 RTCLASS(MSMIX)
 RTCLASS(MISI)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the midi stream device.
 ***************************************************************************/
 MDPS::MDPS(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the midi stream device.
 ***************************************************************************/
 MDPS::~MDPS(void)
@@ -45,7 +45,7 @@ MDPS::~MDPS(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MDPS.
 ***************************************************************************/
 void MDPS::AssertValid(uint32_t grf)
@@ -54,7 +54,7 @@ void MDPS::AssertValid(uint32_t grf)
     AssertPo(_pmsmix, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MDPS.
 ***************************************************************************/
 void MDPS::MarkMem(void)
@@ -63,9 +63,9 @@ void MDPS::MarkMem(void)
     MDPS_PAR::MarkMem();
     MarkMemObj(_pmsmix);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create the midi stream device.
 ***************************************************************************/
 PMDPS MDPS::PmdpsNew(void)
@@ -82,7 +82,7 @@ PMDPS MDPS::PmdpsNew(void)
     return pmdps;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the midi stream device.
 ***************************************************************************/
 bool MDPS::_FInit(void)
@@ -92,7 +92,7 @@ bool MDPS::_FInit(void)
     if (!MDPS_PAR::_FInit())
         return fFalse;
 
-    // Create the midi stream output scheduler
+    // 3DMMv1.0: Create the midi stream output scheduler
     if (pvNil == (_pmsmix = MSMIX::PmsmixNew()))
         return fFalse;
 
@@ -102,7 +102,7 @@ bool MDPS::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new midi stream queue.
 ***************************************************************************/
 PSNQUE MDPS::_PsnqueNew(void)
@@ -112,7 +112,7 @@ PSNQUE MDPS::_PsnqueNew(void)
     return MSQUE::PmsqueNew(_pmsmix);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Activate or deactivate the midi stream device.
 ***************************************************************************/
 void MDPS::_Suspend(bool fSuspend)
@@ -122,7 +122,7 @@ void MDPS::_Suspend(bool fSuspend)
     _pmsmix->Suspend(fSuspend);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the volume.
 ***************************************************************************/
 void MDPS::SetVlm(int32_t vlm)
@@ -132,7 +132,7 @@ void MDPS::SetVlm(int32_t vlm)
     _pmsmix->SetVlm(vlm);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current volume.
 ***************************************************************************/
 int32_t MDPS::VlmCur(void)
@@ -142,14 +142,14 @@ int32_t MDPS::VlmCur(void)
     return _pmsmix->VlmCur();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a midi stream object.
 ***************************************************************************/
 MDWS::MDWS(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a Win95 midi stream object.
 ***************************************************************************/
 MDWS::~MDWS(void)
@@ -158,7 +158,7 @@ MDWS::~MDWS(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MDWS.
 ***************************************************************************/
 void MDWS::AssertValid(uint32_t grf)
@@ -167,7 +167,7 @@ void MDWS::AssertValid(uint32_t grf)
     AssertPo(_pglmev, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MDWS.
 ***************************************************************************/
 void MDWS::MarkMem(void)
@@ -176,9 +176,9 @@ void MDWS::MarkMem(void)
     MDWS_PAR::MarkMem();
     MarkMemObj(_pglmev);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A baco reader for a midi stream.
 ***************************************************************************/
 bool MDWS::FReadMdws(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -209,7 +209,7 @@ bool MDWS::FReadMdws(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a midi stream from the given block.
 ***************************************************************************/
 PMDWS MDWS::PmdwsRead(PBLCK pblck)
@@ -231,7 +231,7 @@ PMDWS MDWS::PmdwsRead(PBLCK pblck)
     return pmdws;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the MDWS with the midi data in *pmids.
 ***************************************************************************/
 bool MDWS::_FInit(PMIDS pmids)
@@ -254,9 +254,9 @@ bool MDWS::_FInit(PMIDS pmids)
     pmev = rgmev;
     pmevLim = rgmev + CvFromRgv(rgmev);
 
-    // use 1 second per quarter. We'll use 1000 ticks per quarter when
-    // setting up the stream. The net result is that milliseconds correspond
-    // to ticks, so no conversion is necessary here.
+    // 3DMMv1.0: use 1 second per quarter. We'll use 1000 ticks per quarter when
+    // 3DMMv1.0: setting up the stream. The net result is that milliseconds correspond
+    // 3DMMv1.0: to ticks, so no conversion is necessary here.
     pmev->dwEvent = ((uint32_t)MEVT_TEMPO << 24) | 1000000;
     pmev++;
 
@@ -267,7 +267,7 @@ bool MDWS::_FInit(PMIDS pmids)
         fEvt = mstp.FGetEvent(&midev);
         if (pmev >= pmevLim || !fEvt)
         {
-            // append the MEVs in rgmev to the _pglmev
+            // 3DMMv1.0: append the MEVs in rgmev to the _pglmev
             int32_t imev, cmev;
 
             imev = _pglmev->IvMac();
@@ -277,8 +277,8 @@ bool MDWS::_FInit(PMIDS pmids)
             CopyPb(rgmev, _pglmev->QvGet(imev), LwMul(cmev, SIZEOF(MEV)));
             if (!fEvt)
             {
-                // Add a final NOP so when we seek and there's only one
-                // event left, it's not an important one.
+                // 3DMMv1.0: Add a final NOP so when we seek and there's only one
+                // 3DMMv1.0: event left, it's not an important one.
                 rgmev[0].dwDeltaTime = 0;
                 rgmev[0].dwStreamID = 0;
                 rgmev[0].dwEvent = (uint32_t)MEVT_NOP << 24;
@@ -304,7 +304,7 @@ bool MDWS::_FInit(PMIDS pmids)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return a locked pointer to the data.
 ***************************************************************************/
 void *MDWS::PvLockData(int32_t *pcb)
@@ -316,7 +316,7 @@ void *MDWS::PvLockData(int32_t *pcb)
     return _pglmev->PvLock(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Balance a call to PvLockData.
 ***************************************************************************/
 void MDWS::UnlockData(void)
@@ -326,14 +326,14 @@ void MDWS::UnlockData(void)
     _pglmev->Unlock();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a midi stream queue.
 ***************************************************************************/
 MSQUE::MSQUE(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a midi stream queue.
 ***************************************************************************/
 MSQUE::~MSQUE(void)
@@ -346,7 +346,7 @@ MSQUE::~MSQUE(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MSQUE.
 ***************************************************************************/
 void MSQUE::AssertValid(uint32_t grf)
@@ -355,7 +355,7 @@ void MSQUE::AssertValid(uint32_t grf)
     AssertPo(_pmsmix, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MSQUE.
 ***************************************************************************/
 void MSQUE::MarkMem(void)
@@ -364,9 +364,9 @@ void MSQUE::MarkMem(void)
     MSQUE_PAR::MarkMem();
     MarkMemObj(_pmsmix);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new midi stream queue.
 ***************************************************************************/
 PMSQUE MSQUE::PmsqueNew(PMSMIX pmsmix)
@@ -384,7 +384,7 @@ PMSQUE MSQUE::PmsqueNew(PMSMIX pmsmix)
     return pmsque;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the midi stream queue.
 ***************************************************************************/
 bool MSQUE::_FInit(PMSMIX pmsmix)
@@ -402,7 +402,7 @@ bool MSQUE::_FInit(PMSMIX pmsmix)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enter the critical section protecting member variables.
 ***************************************************************************/
 void MSQUE::_Enter(void)
@@ -410,7 +410,7 @@ void MSQUE::_Enter(void)
     _mutx.Enter();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Leave the critical section protecting member variables.
 ***************************************************************************/
 void MSQUE::_Leave(void)
@@ -418,7 +418,7 @@ void MSQUE::_Leave(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the given sound chunk as an MDWS.
 ***************************************************************************/
 PBACO MSQUE::_PbacoFetch(PRCA prca, CTG ctg, CNO cno)
@@ -429,7 +429,7 @@ PBACO MSQUE::_PbacoFetch(PRCA prca, CTG ctg, CNO cno)
     return prca->PbacoFetch(ctg, cno, &MDWS::FReadMdws);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     An item was added to or deleted from the queue.
 ***************************************************************************/
 void MSQUE::_Queue(int32_t isndinMin)
@@ -462,7 +462,7 @@ LDone:
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     One or more items in the queue were paused.
 ***************************************************************************/
 void MSQUE::_PauseQueue(int32_t isndinMin)
@@ -484,7 +484,7 @@ void MSQUE::_PauseQueue(int32_t isndinMin)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     One or more items in the queue were resumed.
 ***************************************************************************/
 void MSQUE::_ResumeQueue(int32_t isndinMin)
@@ -494,7 +494,7 @@ void MSQUE::_ResumeQueue(int32_t isndinMin)
     _Queue(isndinMin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Called by the MSMIX to tell us that the indicated sound is done.
     WARNING: this is called in an auxillary thread.
 ***************************************************************************/
@@ -518,7 +518,7 @@ void MSQUE::Notify(PMDWS pmdws)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the midi stream output object.
 ***************************************************************************/
 MSMIX::MSMIX(void)
@@ -527,7 +527,7 @@ MSMIX::MSMIX(void)
     _vlmSound = kvlmFull;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the midi stream output object.
 ***************************************************************************/
 MSMIX::~MSMIX(void)
@@ -536,7 +536,7 @@ MSMIX::~MSMIX(void)
 
     if (_thrdCleanup.joinable())
     {
-        // tell the thread to end and wait for it to finish
+        // 3DMMv1.0: tell the thread to end and wait for it to finish
         _fDone = fTrue;
         _sgnlChanged.Set();
         _thrdCleanup.join();
@@ -551,7 +551,7 @@ MSMIX::~MSMIX(void)
     ReleasePpo(&_pglmevKey);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new MSMIX.
 ***************************************************************************/
 PMSMIX MSMIX::PmsmixNew(void)
@@ -568,7 +568,7 @@ PMSMIX MSMIX::PmsmixNew(void)
     return pmsmix;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the MSMIX - allocate the pglmsos and the midi stream api
     object.
 ***************************************************************************/
@@ -596,7 +596,7 @@ bool MSMIX::_FInit(void)
 #else
     Warn("No MIDI player available");
     return fFalse;
-#endif // KAUAI_MIDI_FLUIDSYNTH
+#endif // 3DMMEx: KAUAI_MIDI_FLUIDSYNTH
 
 #endif
 
@@ -606,14 +606,14 @@ bool MSMIX::_FInit(void)
         return fFalse;
     }
 
-    // create the thread
+    // 3DMMv1.0: create the thread
     _thrdCleanup = std::thread([this] { return this->_LuThread(); });
 
     return fTrue;
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MSMIX.
 ***************************************************************************/
 void MSMIX::AssertValid(uint32_t grf)
@@ -626,7 +626,7 @@ void MSMIX::AssertValid(uint32_t grf)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the MSMIX.
 ***************************************************************************/
 void MSMIX::MarkMem(void)
@@ -641,9 +641,9 @@ void MSMIX::MarkMem(void)
     MarkMemObj(_pglmevKey);
     _mutx.Leave();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Suspend or resume the midi stream mixer.
 ***************************************************************************/
 void MSMIX::Suspend(bool fSuspend)
@@ -661,7 +661,7 @@ void MSMIX::Suspend(bool fSuspend)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If we're currently playing a midi stream stop it. Assumes the mutx is
     already checked out exactly once.
 ***************************************************************************/
@@ -672,13 +672,13 @@ void MSMIX::_StopStream(void)
     if (!_fPlaying)
         return;
 
-    // set _fPlaying to false first so the call back knows that we're
-    // aborting the current stream - so it doesn't notify us.
+    // 3DMMv1.0: set _fPlaying to false first so the call back knows that we're
+    // 3DMMv1.0: aborting the current stream - so it doesn't notify us.
     _fPlaying = fFalse;
 
     _pmisi->StopPlaying();
 
-    // Wait for the buffers to be returned
+    // 3DMMv1.0: Wait for the buffers to be returned
     _fWaiting = fTrue;
     _mutx.Leave();
 
@@ -689,7 +689,7 @@ void MSMIX::_StopStream(void)
     _fWaiting = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the volume for the midi stream output device.
 ***************************************************************************/
 void MSMIX::SetVlm(int32_t vlm)
@@ -706,7 +706,7 @@ void MSMIX::SetVlm(int32_t vlm)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current volume.
 ***************************************************************************/
 int32_t MSMIX::VlmCur(void)
@@ -716,7 +716,7 @@ int32_t MSMIX::VlmCur(void)
     return _vlmBase;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play the given midi stream from the indicated queue.
 ***************************************************************************/
 bool MSMIX::FPlay(PMSQUE pmsque, PMDWS pmdws, int32_t sii, int32_t spr, int32_t cactPlay, uint32_t dtsStart,
@@ -735,7 +735,7 @@ bool MSMIX::FPlay(PMSQUE pmsque, PMDWS pmdws, int32_t sii, int32_t spr, int32_t 
 
     _mutx.Enter();
 
-    // stop any current midi stream on this msque
+    // 3DMMv1.0: stop any current midi stream on this msque
     for (imsos = _pglmsos->IvMac(); imsos-- > 0;)
     {
         _pglmsos->Get(imsos, &msos);
@@ -749,16 +749,16 @@ bool MSMIX::FPlay(PMSQUE pmsque, PMDWS pmdws, int32_t sii, int32_t spr, int32_t 
         }
     }
 
-    // start up the new midi stream
+    // 3DMMv1.0: start up the new midi stream
     if (pvNil != pmdws)
     {
-        // find the position to insert the new one
+        // 3DMMv1.0: find the position to insert the new one
         for (imsos = 0; imsos < _pglmsos->IvMac(); imsos++)
         {
             _pglmsos->Get(imsos, &msos);
             if (msos.spr < spr || msos.spr == spr && msos.sii < sii)
             {
-                // insert before the current one
+                // 3DMMv1.0: insert before the current one
                 break;
             }
         }
@@ -793,7 +793,7 @@ bool MSMIX::FPlay(PMSQUE pmsque, PMDWS pmdws, int32_t sii, int32_t spr, int32_t 
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The sound list changed so make sure we're playing the first tune.
     Assumes the mutx is already checked out.
 ***************************************************************************/
@@ -803,7 +803,7 @@ void MSMIX::_Restart(bool fNew)
 
     if (_pmisi->FActive() && !_fPlaying && _pglmsos->IvMac() > 0)
     {
-        // start playing the first MSOS
+        // 3DMMv1.0: start playing the first MSOS
         MSOS msos;
         uint32_t tsCur = TsCurrentSystem();
 
@@ -816,11 +816,11 @@ void MSMIX::_Restart(bool fNew)
         _SubmitBuffers(tsCur);
     }
 
-    // signal the aux thread that the list changed
+    // 3DMMv1.0: signal the aux thread that the list changed
     _sgnlChanged.Set();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Submit the buffer(s) for the current MSOS. Assumes the mutx is already
     checked out.
 ***************************************************************************/
@@ -842,7 +842,7 @@ void MSMIX::_SubmitBuffers(uint32_t tsCur)
         {
             uint32_t dtsSeek;
 
-            // we need to skip at least one loop of this sound
+            // 3DMMv1.0: we need to skip at least one loop of this sound
             if (msos.cactPlay > 0 && (msos.cactPlay -= cactSkip) <= 0)
                 goto LTryNext;
 
@@ -851,14 +851,14 @@ void MSMIX::_SubmitBuffers(uint32_t tsCur)
             _pglmsos->Put(imsos, &msos);
         }
 
-        // Calling SetVlm causes us to tell the MISI about the new volume
+        // 3DMMv1.0: Calling SetVlm causes us to tell the MISI about the new volume
         _vlmSound = msos.vlm;
         SetVlm(_vlmBase);
 
         cbSkip = 0;
         if (tsCur != msos.tsStart)
         {
-            // have to seek into the stream
+            // 3DMMv1.0: have to seek into the stream
             if (!_FGetKeyEvents(msos.pmdws, tsCur - msos.tsStart, &cbSkip))
                 goto LTryNext;
 
@@ -868,7 +868,7 @@ void MSMIX::_SubmitBuffers(uint32_t tsCur)
                 pvData = _pglmevKey->PvLock(0);
                 if (!_pmisi->FQueueBuffer(pvData, cb, 0, 1, 0))
                 {
-                    // streaming the key events failed
+                    // 3DMMv1.0: streaming the key events failed
                     _pglmevKey->Unlock();
                     goto LTryNext;
                 }
@@ -882,23 +882,23 @@ void MSMIX::_SubmitBuffers(uint32_t tsCur)
         pvData = msos.pmdws->PvLockData(&cb);
         if (_pmisi->FQueueBuffer(pvData, cb, cbSkip, msos.cactPlay, (uintptr_t)msos.pmdws))
         {
-            // it worked!
+            // 3DMMv1.0: it worked!
             _fPlaying = fTrue;
             break;
         }
 
-        // submitting the buffer failed
+        // 3DMMv1.0: submitting the buffer failed
         msos.pmdws->UnlockData();
         _cpvOut--;
 
     LTryNext:
-        // make this one disappear
-        // stop the seek buffer from playing
+        // 3DMMv1.0: make this one disappear
+        // 3DMMv1.0: stop the seek buffer from playing
         _StopStream();
 
-        // make this MSOS have lowest possible priority and 0 time
-        // remaining to play - we'll move it to the end of _pglmsos
-        // in the code below.
+        // 3DMMv1.0: make this MSOS have lowest possible priority and 0 time
+        // 3DMMv1.0: remaining to play - we'll move it to the end of _pglmsos
+        // 3DMMv1.0: in the code below.
         msos.tsStart = tsCur - msos.dtsStart;
         msos.cactPlay = 1;
         msos.sii = klwMin;
@@ -908,7 +908,7 @@ void MSMIX::_SubmitBuffers(uint32_t tsCur)
 
     if (_fPlaying && imsos > 0)
     {
-        // move the skipped ones to the end of the list
+        // 3DMMv1.0: move the skipped ones to the end of the list
         int32_t cmsos = _pglmsos->IvMac();
 
         AssertIn(imsos, 1, cmsos);
@@ -916,7 +916,7 @@ void MSMIX::_SubmitBuffers(uint32_t tsCur)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Seek into the pmdws the given amount of time, and accumulate key events
     in _pglmevKey.
 ***************************************************************************/
@@ -925,9 +925,9 @@ bool MSMIX::_FGetKeyEvents(PMDWS pmdws, uint32_t dtsSeek, int32_t *pcbSkip)
     AssertPo(pmdws, 0);
     AssertVarMem(pcbSkip);
 
-    // This keeps track of which events we've seen (so we only record the
-    // most recent one. We record tempo changes, program changes and
-    // controller changes.
+    // 3DMMv1.0: This keeps track of which events we've seen (so we only record the
+    // 3DMMv1.0: most recent one. We record tempo changes, program changes and
+    // 3DMMv1.0: controller changes.
     struct MKEY
     {
         uint16_t grfbitProgram;
@@ -975,15 +975,15 @@ bool MSMIX::_FGetKeyEvents(PMDWS pmdws, uint32_t dtsSeek, int32_t *pcbSkip)
 
     if (pmev + 1 >= pmevLim)
     {
-        // dtsSeek goes past the end!
+        // 3DMMv1.0: dtsSeek goes past the end!
         goto LFail;
     }
 
-    // get the destination pointer - this walks backwards
+    // 3DMMv1.0: get the destination pointer - this walks backwards
     pmevLimDst = rgmev + CvFromRgv(rgmev);
     pmevDst = pmevLimDst;
 
-    // put the first event in the key frame list with a smaller time
+    // 3DMMv1.0: put the first event in the key frame list with a smaller time
     --pmevDst;
     pmevDst->dwDeltaTime = dts - dtsSeek;
     pmevDst->dwEvent = pmev->dwEvent;
@@ -993,7 +993,7 @@ bool MSMIX::_FGetKeyEvents(PMDWS pmdws, uint32_t dtsSeek, int32_t *pcbSkip)
     {
         if (pmevDst <= rgmev || pmev <= pmevMin)
         {
-            // destination buffer is full - write it out
+            // 3DMMv1.0: destination buffer is full - write it out
             int32_t cmev, cmevNew;
             PMEV qrgmev;
 
@@ -1025,32 +1025,32 @@ bool MSMIX::_FGetKeyEvents(PMDWS pmdws, uint32_t dtsSeek, int32_t *pcbSkip)
         case MEVT_SHORTMSG:
             bT = (uint8_t)pmev->dwEvent;
 
-            // The high nibble of bT is the status value
-            // The low nibble is the channel
+            // 3DMMv1.0: The high nibble of bT is the status value
+            // 3DMMv1.0: The low nibble is the channel
             switch (bT & 0xF0)
             {
-            case 0xB0: // control change
+            case 0xB0: // 3DMMv1.0: control change
                 igrfbit = BHigh(SuLow(pmev->dwEvent));
                 if (!FIn(igrfbit, 0, CvFromRgv(mkey.rggrfbitControl)))
                     break;
                 pgrfbit = &mkey.rggrfbitControl[igrfbit];
                 goto LTest;
 
-            case 0xC0: // program change
+            case 0xC0: // 3DMMv1.0: program change
                 pgrfbit = &mkey.grfbitProgram;
                 goto LTest;
 
-            case 0xD0: // channel pressure
+            case 0xD0: // 3DMMv1.0: channel pressure
                 pgrfbit = &mkey.grfbitChannelPressure;
                 goto LTest;
 
-            case 0xE0: // pitch wheel
+            case 0xE0: // 3DMMv1.0: pitch wheel
                 pgrfbit = &mkey.grfbitPitchWheel;
             LTest:
                 fbit = 1 << (bT & 0x0F);
                 if (!(*pgrfbit & fbit))
                 {
-                    // first time we've seen this event on this channel
+                    // 3DMMv1.0: first time we've seen this event on this channel
                     *pgrfbit |= fbit;
                     goto LCopy;
                 }
@@ -1076,7 +1076,7 @@ bool MSMIX::_FGetKeyEvents(PMDWS pmdws, uint32_t dtsSeek, int32_t *pcbSkip)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Call back from the midi stream stuff.
 ***************************************************************************/
 void MSMIX::_MidiProc(uintptr_t luUser, void *pvData, uintptr_t luData)
@@ -1092,7 +1092,7 @@ void MSMIX::_MidiProc(uintptr_t luUser, void *pvData, uintptr_t luData)
     pmsmix->_Notify(pvData, pmdws);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The midi stream is done with the given header.
 ***************************************************************************/
 void MSMIX::_Notify(void *pvData, PMDWS pmdws)
@@ -1118,15 +1118,15 @@ void MSMIX::_Notify(void *pvData, PMDWS pmdws)
 
     if (!_fPlaying)
     {
-        // we don't need to notify or start the next sound.
+        // 3DMMv1.0: we don't need to notify or start the next sound.
         _mutx.Leave();
         return;
     }
 
     if (_fPlaying && _cpvOut == 0)
     {
-        // all headers are in and we're supposed to be playing - so notify the
-        // previous pmdws and start up the next one.
+        // 3DMMv1.0: all headers are in and we're supposed to be playing - so notify the
+        // 3DMMv1.0: previous pmdws and start up the next one.
         _fPlaying = fFalse;
         if (0 < _pglmsos->IvMac())
         {
@@ -1135,7 +1135,7 @@ void MSMIX::_Notify(void *pvData, PMDWS pmdws)
 
             _mutx.Leave();
 
-            // do the notify
+            // 3DMMv1.0: do the notify
             msos.pmsque->Notify(msos.pmdws);
 
             _mutx.Enter();
@@ -1148,7 +1148,7 @@ void MSMIX::_Notify(void *pvData, PMDWS pmdws)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     AT: This thread just sleeps until the next sound is due to expire, then
     wakes up and nukes any expired sounds.
 ***************************************************************************/
@@ -1172,13 +1172,13 @@ uint32_t MSMIX::_LuThread(void)
 
         if (_fWaiting)
         {
-            // we're waiting for buffers to be returned, so don't touch
-            // anything!
+            // 3DMMv1.0: we're waiting for buffers to be returned, so don't touch
+            // 3DMMv1.0: anything!
             dtsNextStop = 1;
         }
         else
         {
-            // See if any sounds have expired...
+            // 3DMMv1.0: See if any sounds have expired...
             tsCur = TsCurrentSystem();
             dtsNextStop = kluMax;
             for (imsos = _pglmsos->IvMac(); imsos-- > 0;)
@@ -1194,11 +1194,11 @@ uint32_t MSMIX::_LuThread(void)
 
                     if (msos.cactPlay > 0 && (msos.cactPlay -= cactSkip) <= 0)
                     {
-                        // this sound is done
+                        // 3DMMv1.0: this sound is done
                         _pglmsos->Delete(imsos);
                         _mutx.Leave();
 
-                        // do the notify
+                        // 3DMMv1.0: do the notify
                         msos.pmsque->Notify(msos.pmdws);
 
                         _mutx.Enter();
@@ -1206,7 +1206,7 @@ uint32_t MSMIX::_LuThread(void)
                         break;
                     }
 
-                    // adjust the values in the MSOS
+                    // 3DMMv1.0: adjust the values in the MSOS
                     dtsSeek = (tsCur - msos.tsStart) % msos.dts;
                     msos.tsStart = tsCur - dtsSeek;
                     _pglmsos->Put(imsos, &msos);

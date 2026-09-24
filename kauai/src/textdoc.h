@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,7 +18,7 @@
 #ifndef TEXTDOC_H
 #define TEXTDOC_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Text document.  A doc wrapper for a BSF.
 ***************************************************************************/
 typedef class TXDC *PTXDC;
@@ -51,7 +51,7 @@ class TXDC : public TXDC_PAR
     virtual bool FSaveToFni(FNI *pfni, bool fSetFni) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Text document display GOB - DDG for a TXDC.
 ***************************************************************************/
 const int32_t kcchMaxLine = 512;
@@ -72,7 +72,7 @@ class TXDD : public TXDD_PAR
     int32_t _clnDispWhole;
     PGL _pglichStarts;
 
-    // the selection
+    // 3DMMv1.0: the selection
     int32_t _ichAnchor;
     int32_t _ichOther;
     bool _fSelOn : 1;
@@ -80,14 +80,14 @@ class TXDD : public TXDD_PAR
     int32_t _xpSel;
     bool _fXpValid;
 
-    // the font
+    // 3DMMv1.0: the font
     int32_t _onn;
     uint32_t _grfont;
     int32_t _dypFont;
     int32_t _dypLine;
     int32_t _dxpTab;
 
-    // the cache
+    // 3DMMv1.0: the cache
     achar _rgchCache[kcchMaxLine];
     int32_t _ichMinCache;
     int32_t _ichLimCache;
@@ -129,11 +129,11 @@ class TXDD : public TXDD_PAR
     void _InvalAllTxdd(int32_t ich, int32_t cchIns, int32_t cchDel);
     void _InvalIch(int32_t ich, int32_t cchIns, int32_t cchDel);
 
-    // scrolling support
+    // 3DMMv1.0: scrolling support
     virtual int32_t _ScvMax(bool fVert) override;
     virtual void _Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz = 0, int32_t scvVert = 0) override;
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
     virtual void _ClearSel(void) override;
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid) override;
@@ -151,4 +151,4 @@ class TXDD : public TXDD_PAR
     bool FReplace(achar *prgch, int32_t cch, int32_t ich1, int32_t ich2, bool fDraw);
 };
 
-#endif //! TEXTDOC_H
+#endif //! 3DMMv1.0: TEXTDOC_H

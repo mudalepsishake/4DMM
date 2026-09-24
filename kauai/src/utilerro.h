@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -18,7 +18,7 @@
 
 const int32_t kcerdMax = 20;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Error stack class
 ***************************************************************************/
 #define ERS_PAR BASE
@@ -35,7 +35,7 @@ class ERS : public ERS_PAR
 #ifdef DEBUG
         PSZS pszsFile;
         int32_t lwLine;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     };
 
     MUTX _mutx;
@@ -47,9 +47,9 @@ class ERS : public ERS_PAR
 
 #ifdef DEBUG
     virtual void Push(int32_t erc, schar *pszsFile, int32_t lwLine);
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
     virtual void Push(int32_t erc);
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
     virtual bool FPop(int32_t *perc = pvNil);
     virtual bool FIn(int32_t erc);
     virtual int32_t Cerc(void);
@@ -62,8 +62,8 @@ extern ERS *vpers;
 
 #ifdef DEBUG
 #define PushErc(erc) vpers->Push(erc, __szsFile, __LINE__)
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define PushErc(erc) vpers->Push(erc)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-#endif //! UTILERROR_H
+#endif //! 3DMMv1.0: UTILERROR_H

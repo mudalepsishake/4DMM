@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -10,7 +10,7 @@
 #include <climits>
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Number of milliseconds after playing a new sound that pause will be
     ignored.
     This is a hack to work around a difference in behaviour in AudioMan.
@@ -26,7 +26,7 @@ const int32_t kdtsDebounce = 100;
 #include "sndma.h"
 #include "sndmapri.h"
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Read callback for ma_decoder that reads from a BLCK
 ***************************************************************************/
 static ma_result BlockRead(ma_decoder *pdecoder, void *pvBufferOut, size_t cbRead, size_t *pcbBytesRead)
@@ -53,15 +53,15 @@ static ma_result BlockRead(ma_decoder *pdecoder, void *pvBufferOut, size_t cbRea
         return MA_SUCCESS;
     }
 
-    // Limit read size to remaining data in the block
+    // 3DMMEx: Limit read size to remaining data in the block
     int32_t cbRemaining = pcontext->cb - pcontext->ib;
     cbRead = LwMin(cbRead, cbRemaining);
 
-    // Check if we need to fill the cache
+    // 3DMMEx: Check if we need to fill the cache
     if (pcontext->cbCache == 0 ||
         (pcontext->ib < pcontext->ibCache || pcontext->ib >= (pcontext->ibCache + pcontext->cbCache)))
     {
-        // Read a chunk of the sound into the cache
+        // 3DMMEx: Read a chunk of the sound into the cache
         int32_t ibToCache = pcontext->ib;
         int32_t cbToCache = LwMax(cbRead, pcontext->cb - pcontext->ib);
         cbToCache = LwMin(cbToCache, SIZEOF(pcontext->rgbCache));
@@ -91,7 +91,7 @@ static ma_result BlockRead(ma_decoder *pdecoder, void *pvBufferOut, size_t cbRea
     return result;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Seek callback for ma_decoder that reads from a BLCK
 ***************************************************************************/
 static ma_result BlockSeek(ma_decoder *pdecoder, ma_int64 ib, ma_seek_origin origin)
@@ -127,7 +127,7 @@ static ma_result BlockSeek(ma_decoder *pdecoder, ma_int64 ib, ma_seek_origin ori
     return MA_SUCCESS;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Sound completion callback
 ***************************************************************************/
 void SoundEndProc(void *pUserData, ma_sound *pSound)
@@ -203,7 +203,7 @@ MiniaudioDevice::~MiniaudioDevice()
 {
     if (_fInitialised)
     {
-        // Stop and free all sounds
+        // 3DMMEx: Stop and free all sounds
         for (int32_t isndin = 0; isndin < CvFromRgv(_rgsndin); isndin++)
         {
             _rgsndin[isndin].cactPlay = 0;
@@ -245,18 +245,18 @@ bool MiniaudioDevice::FLoadSoundFromBlock(PBLCK pblck, BLCKReadContext *preadctx
 
     ma_result result;
 
-    // Initialise block reader context structure
+    // 3DMMEx: Initialise block reader context structure
     ClearPb(preadctx, SIZEOF(*preadctx));
     preadctx->pblck = pblck;
     preadctx->cb = pblck->Cb();
 
-    // Initialise the decoder.
-    // The decoder reads the sound data from a block.
+    // 3DMMEx: Initialise the decoder.
+    // 3DMMEx: The decoder reads the sound data from a block.
     result = ma_decoder_init(BlockRead, BlockSeek, preadctx, pvNil, pdecoder);
     AssertMaSuccess(result, "ma_decoder_init failed");
     if (result == MA_SUCCESS)
     {
-        // Initialise the sound that reads from the decoder
+        // 3DMMEx: Initialise the sound that reads from the decoder
         result = ma_sound_init_from_data_source(_pmanager->Pengine(), pdecoder, 0, &_soundgroup, psound);
         AssertMaSuccess(result, "ma_sound_init_from_data_source failed");
 
@@ -371,7 +371,7 @@ int32_t MiniaudioDevice::SiiPlay(PRCA prca, CTG ctg, CNO cno, int32_t sqn, int32
 
     Lock();
 
-    // Allocate a channel
+    // 3DMMEx: Allocate a channel
     for (int32_t cact = 0; cact < CvFromRgv(_rgsndin); cact++)
     {
         isndin = _csndinCur;
@@ -391,7 +391,7 @@ int32_t MiniaudioDevice::SiiPlay(PRCA prca, CTG ctg, CNO cno, int32_t sqn, int32
         return 0;
     }
 
-    // Load the sound data from the resource cache
+    // 3DMMEx: Load the sound data from the resource cache
     pmacs = (PMiniaudioCachedSound)prca->PbacoFetch(ctg, cno, &MiniaudioCachedSound::FReadMiniaudioCachedSound);
     if (pmacs == pvNil)
     {
@@ -406,7 +406,7 @@ int32_t MiniaudioDevice::SiiPlay(PRCA prca, CTG ctg, CNO cno, int32_t sqn, int32
     sndin.pbaco = pmacs;
     sndin.pbaco->AddRef();
 
-    // Add the instance to the list
+    // 3DMMEx: Add the instance to the list
     *psndin = sndin;
 
     if (FLoadSoundFromBlock(pmacs->Pblck(), &psndin->readctx, &psndin->decoder, &psndin->sound))
@@ -429,7 +429,7 @@ int32_t MiniaudioDevice::SiiPlay(PRCA prca, CTG ctg, CNO cno, int32_t sqn, int32
             AssertMaSuccess(result, "ma_sound_seek_to_second failed");
         }
 
-        // FUTURE: Support repeating a number of times to match existing behaviour
+        // 3DMMEx: FUTURE: Support repeating a number of times to match existing behaviour
         if (sndin.cactPlay != 1)
         {
             ma_sound_set_looping(pmasound, fTrue);
@@ -440,8 +440,8 @@ int32_t MiniaudioDevice::SiiPlay(PRCA prca, CTG ctg, CNO cno, int32_t sqn, int32
     }
     else
     {
-        // Failed to load the sound
-        // Set the sound's cactPlay to 0 so it is freed in Flush()
+        // 3DMMEx: Failed to load the sound
+        // 3DMMEx: Set the sound's cactPlay to 0 so it is freed in Flush()
         psndin->cactPlay = 0;
     }
 
@@ -637,7 +637,7 @@ bool MiniaudioDevice::FPlayingAll(int32_t sqn, int32_t scl)
 
     Lock();
 
-    // Returns fTrue if any sound is playing
+    // 3DMMEx: Returns fTrue if any sound is playing
     for (int32_t isndin = 0; isndin < CvFromRgv(_rgsndin); isndin++)
     {
         if (_rgsndin[isndin].sii == 0 || !_rgsndin[isndin].fLoaded)
@@ -693,11 +693,11 @@ void MiniaudioDevice::MarkMem()
         MarkMemObj(_rgsndin[isndin].pbaco);
     }
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 float ScaleVlm(int32_t vlm)
 {
-    // The volume control in the studio can be set to a maximum value of 2*kvlmFull
+    // 3DMMEx: The volume control in the studio can be set to a maximum value of 2*kvlmFull
     const int32_t kvlmMac = (kvlmFull * 2) + 1;
     AssertIn(vlm, 0, kvlmMac);
     return ((float)vlm) / (float)kvlmFull;

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -16,7 +16,7 @@
 #include "chelpexp.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main routine.  Returns non-zero iff there's an error.
 ***************************************************************************/
 int __cdecl main(int cpszs, char *prgpszs[])
@@ -31,9 +31,9 @@ int __cdecl main(int cpszs, char *prgpszs[])
 #ifdef UNICODE
     fprintf(stderr,
             "\nMicrosoft (R) Chunky Help Dump Utility (Unicode; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#else  //! UNICODE
+#else  //! 3DMMv1.0: UNICODE
     fprintf(stderr, "\nMicrosoft (R) Chunky Help Dump Utility (Ansi; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
     fprintf(stderr, "Copyright (C) Microsoft Corp 1995. All rights reserved.\n\n");
 
     for (prgpszs++; --cpszs > 0; prgpszs++)
@@ -41,12 +41,12 @@ int __cdecl main(int cpszs, char *prgpszs[])
         chs = (*prgpszs)[0];
         if (chs == '/' || chs == '-')
         {
-            // no command line switches
+            // 3DMMv1.0: no command line switches
             goto LUsage;
         }
         else if (pvNil == pcflSrc)
         {
-            // this is the first file name
+            // 3DMMv1.0: this is the first file name
             stn.SetSzs(*prgpszs);
             if (!fni.FBuildFromPath(&stn))
             {
@@ -62,7 +62,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
         }
         else if (fni.Ftg() == ftgNil)
         {
-            // get the destination file name
+            // 3DMMv1.0: get the destination file name
             stn.SetSzs(*prgpszs);
             if (!fni.FBuildFromPath(&stn))
             {
@@ -98,7 +98,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
         goto LFail;
     }
 
-    // do the export
+    // 3DMMv1.0: do the export
     if (!FExportHelpText(pcflSrc, pmsnk))
     {
         fprintf(stderr, "Dump failed");
@@ -109,7 +109,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
     return 0;
 
 LUsage:
-    // print usage
+    // 3DMMv1.0: print usage
     fprintf(stderr, "%s", "Usage:  chelpdmp <srcFile> [<dstFile>]\n\n");
 
 LFail:
@@ -122,7 +122,7 @@ LFail:
 #ifdef DEBUG
 bool _fEnableWarnings = fTrue;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Warning proc called by Warn() macro
 ***************************************************************************/
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
@@ -138,7 +138,7 @@ void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returning true breaks into the debugger.
 ***************************************************************************/
 bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int32_t cb)
@@ -179,4 +179,4 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMessage, void *pv, int3
 
     return fFalse;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

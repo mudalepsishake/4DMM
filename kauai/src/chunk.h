@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,13 +16,13 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     These must be unsigned longs!  We sort on them and assume in the code
     that they are unsinged.
 ***************************************************************************/
-typedef uint32_t CTG;  // chunk tag/type
-typedef uint32_t CNO;  // chunk number
-typedef uint32_t CHID; // child chunk id
+typedef uint32_t CTG;  // 3DMMv1.0: chunk tag/type
+typedef uint32_t CNO;  // 3DMMv1.0: chunk number
+typedef uint32_t CHID; // 3DMMv1.0: child chunk id
 
 enum
 {
@@ -32,20 +32,20 @@ enum
     fcflMark = 0x0004,
     fcflAddToExtra = 0x0008,
 
-    // This flag indicates that when data is read, it should first be
-    // copied to the extra file (if it's not already there). This is
-    // for chunky files that are on a CD for which we want to cache data
-    // to the hard drive.
+    // 3DMMv1.0: This flag indicates that when data is read, it should first be
+    // 3DMMv1.0: copied to the extra file (if it's not already there). This is
+    // 3DMMv1.0: for chunky files that are on a CD for which we want to cache data
+    // 3DMMv1.0: to the hard drive.
     fcflReadFromExtra = 0x0010,
 
 #ifdef DEBUG
-    // for AssertValid
-    fcflGraph = 0x4000, // check the graph structure for cycles
+    // 3DMMv1.0: for AssertValid
+    fcflGraph = 0x4000, // 3DMMv1.0: check the graph structure for cycles
     fcflFull = fobjAssertFull,
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 };
 
-// chunk identification
+// 3DMMv1.0: chunk identification
 struct CKI
 {
     CTG ctg;
@@ -54,7 +54,7 @@ struct CKI
 VERIFY_STRUCT_SIZE(CKI, 8);
 const BOM kbomCki = 0xF0000000;
 
-// child chunk identification
+// 3DMMv1.0: child chunk identification
 struct KID
 {
     CKI cki;
@@ -63,7 +63,7 @@ struct KID
 VERIFY_STRUCT_SIZE(KID, 12);
 const BOM kbomKid = 0xFC000000;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky file class.
 ***************************************************************************/
 typedef class CFL *PCFL;
@@ -77,17 +77,17 @@ class CFL : public CFL_PAR
     MARKMEM
 
   private:
-    // chunk storage
+    // 3DMMv1.0: chunk storage
     struct CSTO
     {
-        PFIL pfil;  // the file
-        FP fpMac;   // logical end of file (for writing new chunks)
-        PGL pglfsm; // free space map
+        PFIL pfil;  // 3DMMv1.0: the file
+        FP fpMac;   // 3DMMv1.0: logical end of file (for writing new chunks)
+        PGL pglfsm; // 3DMMv1.0: free space map
     };
 
-    PGG _pggcrp;     // the index
-    CSTO _csto;      // the main file
-    CSTO _cstoExtra; // the scratch file
+    PGG _pggcrp;     // 3DMMv1.0: the index
+    CSTO _csto;      // 3DMMv1.0: the main file
+    CSTO _cstoExtra; // 3DMMv1.0: the scratch file
 
     bool _fAddToExtra : 1;
     bool _fMark : 1;
@@ -95,7 +95,7 @@ class CFL : public CFL_PAR
     bool _fReadFromExtra : 1;
     bool _fInvalidMainFile : 1;
 
-    // for deferred reading of the free map
+    // 3DMMv1.0: for deferred reading of the free map
     FP _fpFreeMap;
     int32_t _cbFreeMap;
 
@@ -110,14 +110,14 @@ class CFL : public CFL_PAR
     PGL _pglrtie;
 
     bool _FFindRtie(CTG ctg, CNO cno, RTIE *prtie = pvNil, int32_t *pirtie = pvNil);
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 
-    // static member variables
+    // 3DMMv1.0: static member variables
     static int32_t _rtiLast;
     static PCFL _pcflFirst;
 
   private:
-    // private methods
+    // 3DMMv1.0: private methods
     CFL(void);
     ~CFL(void);
 
@@ -152,7 +152,7 @@ class CFL : public CFL_PAR
     bool _FSetRti(CTG ctg, CNO cno, int32_t rti);
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static PCFL PcflFirst(void)
     {
         return _pcflFirst;
@@ -166,7 +166,7 @@ class CFL : public CFL_PAR
     static void CloseUnmarked(void);
 #ifdef CHUNK_STATS
     static void DumpStn(PSTN pstn, PFIL pfil = pvNil);
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
 
     virtual void Release(void) override;
     bool FSetGrfcfl(uint32_t grfcfl, uint32_t grfcflMask = (uint32_t)~0);
@@ -194,7 +194,7 @@ class CFL : public CFL_PAR
     void ResetEl(int32_t el = elNil);
     bool FReopen(void);
 
-    // finding and reading chunks
+    // 3DMMv1.0: finding and reading chunks
     bool FOnExtra(CTG ctg, CNO cno);
     bool FEnsureOnExtra(CTG ctg, CNO cno);
     bool FFind(CTG ctg, CNO cno, BLCK *pblck = pvNil);
@@ -205,7 +205,7 @@ class CFL : public CFL_PAR
     bool FUnpackData(CTG ctg, CNO cno);
     bool FPackData(CTG ctg, CNO cno);
 
-    // creating and replacing chunks
+    // 3DMMv1.0: creating and replacing chunks
     bool FAdd(int32_t cb, CTG ctg, CNO *pcno, PBLCK pblck = pvNil);
     bool FAddPv(const void *pv, int32_t cb, CTG ctg, CNO *pcno);
     bool FAddHq(HQ hq, CTG ctg, CNO *pcno);
@@ -220,63 +220,63 @@ class CFL : public CFL_PAR
     void SwapChildren(CTG ctg1, CNO cno1, CTG ctg2, CNO cno2);
     void Move(CTG ctg, CNO cno, CTG ctgNew, CNO cnoNew);
 
-    // creating child chunks
+    // 3DMMv1.0: creating child chunks
     bool FAddChild(CTG ctgPar, CNO cnoPar, CHID chid, int32_t cb, CTG ctg, CNO *pcno, PBLCK pblck = pvNil);
     bool FAddChildPv(CTG ctgPar, CNO cnoPar, CHID chid, void *pv, int32_t cb, CTG ctg, CNO *pcno);
     bool FAddChildHq(CTG ctgPar, CNO cnoPar, CHID chid, HQ hq, CTG ctg, CNO *pcno);
 
-    // deleting chunks
+    // 3DMMv1.0: deleting chunks
     void Delete(CTG ctg, CNO cno);
     void SetLoner(CTG ctg, CNO cno, bool fLoner);
     bool FLoner(CTG ctg, CNO cno);
 
-    // chunk naming
+    // 3DMMv1.0: chunk naming
     bool FSetName(CTG ctg, CNO cno, PSTN pstn);
     bool FGetName(CTG ctg, CNO cno, PSTN pstn);
 
-    // graph structure
+    // 3DMMv1.0: graph structure
     bool FAdoptChild(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID chid = 0, bool fClearLoner = fTrue);
     void DeleteChild(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID chid = 0);
     int32_t CckiRef(CTG ctg, CNO cno);
     tribool TIsDescendent(CTG ctg, CNO cno, CTG ctgSub, CNO cnoSub);
     void ChangeChid(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID chidOld, CHID chidNew);
 
-    // enumerating chunks
+    // 3DMMv1.0: enumerating chunks
     int32_t Ccki(void);
     bool FGetCki(int32_t icki, CKI *pcki, int32_t *pckid = pvNil, PBLCK pblck = pvNil);
     bool FGetIcki(CTG ctg, CNO cno, int32_t *picki);
     int32_t CckiCtg(CTG ctg);
     bool FGetCkiCtg(CTG ctg, int32_t icki, CKI *pcki, int32_t *pckid = pvNil, PBLCK pblck = pvNil);
 
-    // enumerating child chunks
+    // 3DMMv1.0: enumerating child chunks
     int32_t Ckid(CTG ctgPar, CNO cnoPar);
     bool FGetKid(CTG ctgPar, CNO cnoPar, int32_t ikid, KID *pkid);
     bool FGetKidChid(CTG ctgPar, CNO cnoPar, CHID chid, KID *pkid);
     bool FGetKidChidCtg(CTG ctgPar, CNO cnoPar, CHID chid, CTG ctg, KID *pkid);
     bool FGetIkid(CTG ctgPar, CNO cnoPar, CTG ctg, CNO cno, CHID chid, int32_t *pikid);
 
-    // Serialized chunk forests
+    // 3DMMv1.0: Serialized chunk forests
     bool FWriteChunkTree(CTG ctg, CNO cno, PFIL pfilDst, FP fpDst, int32_t *pcb);
     static PCFL PcflReadForestFromFlo(PFLO pflo, bool fCopyData);
     bool FForest(CTG ctg, CNO cno);
     void SetForest(CTG ctg, CNO cno, bool fForest = fTrue);
     PCFL PcflReadForest(CTG ctg, CNO cno, bool fCopyData);
 
-    // writing
+    // 3DMMv1.0: writing
     bool FSave(CTG ctgCreator, FNI *pfni = pvNil);
     bool FSaveACopy(CTG ctgCreator, FNI *pfni);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunk graph enumerator
 ***************************************************************************/
 enum
 {
-    // inputs
+    // 3DMMv1.0: inputs
     fcgeNil = 0x0000,
     fcgeSkipToSib = 0x0001,
 
-    // outputs
+    // 3DMMv1.0: outputs
     fcgePre = 0x0010,
     fcgePost = 0x0020,
     fcgeRoot = 0x0040,
@@ -293,26 +293,26 @@ class CGE : public CGE_PAR
     NOCOPY(CGE)
 
   private:
-    // data enumeration push state
+    // 3DMMv1.0: data enumeration push state
     struct DPS
     {
         KID kid;
         int32_t ikid;
     };
 
-    // enumeration states
+    // 3DMMv1.0: enumeration states
     enum
     {
-        esStart,    // waiting to start the enumeration
-        esGo,       // go to the next node
-        esGoNoSkip, // there are no children to skip, so ignore fcgeSkipToSib
-        esDone      // we're done with the enumeration
+        esStart,    // 3DMMv1.0: waiting to start the enumeration
+        esGo,       // 3DMMv1.0: go to the next node
+        esGoNoSkip, // 3DMMv1.0: there are no children to skip, so ignore fcgeSkipToSib
+        esDone      // 3DMMv1.0: we're done with the enumeration
     };
 
-    int32_t _es; // current state
-    PCFL _pcfl;  // the chunky file
-    PGL _pgldps; // our stack of DPSs
-    DPS _dps;    // the current DPS
+    int32_t _es; // 3DMMv1.0: current state
+    PCFL _pcfl;  // 3DMMv1.0: the chunky file
+    PGL _pgldps; // 3DMMv1.0: our stack of DPSs
+    DPS _dps;    // 3DMMv1.0: the current DPS
 
   public:
     CGE(void);
@@ -324,6 +324,6 @@ class CGE : public CGE_PAR
 
 #ifdef CHUNK_STATS
 extern bool vfDumpChunkRequests;
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
 
-#endif //! CHUNK_H
+#endif //! 3DMMv1.0: CHUNK_H

@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef KIDHELP_H
 #define KIDHELP_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help topic construction information.
 ***************************************************************************/
 struct HTOP
@@ -33,7 +33,7 @@ VERIFY_STRUCT_SIZE(HTOP, 32);
 typedef HTOP *PHTOP;
 const BOM kbomHtop = 0xFFF00000;
 
-// help topic on file
+// 3DMMv1.0: help topic on file
 struct HTOPF
 {
     int16_t bo;
@@ -41,14 +41,14 @@ struct HTOPF
     HTOP htop;
 };
 
-// edit control object
+// 3DMMv1.0: edit control object
 struct ECOS
 {
-    CTG ctg;     // kctgEditControl
-    int32_t dxp; // width
+    CTG ctg;     // 3DMMv1.0: kctgEditControl
+    int32_t dxp; // 3DMMv1.0: width
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help text document
 ***************************************************************************/
 enum
@@ -70,12 +70,12 @@ class TXHD : public TXHD_PAR
   protected:
     enum
     {
-        sprmGroup = 64, // grouped (hot) text - uses the AG
+        sprmGroup = 64, // 3DMMv1.0: grouped (hot) text - uses the AG
     };
 
-    PRCA _prca;         // source of pictures and buttons
-    HTOP _htop;         // our gob creation information
-    bool _fHideButtons; // whether to draw buttons
+    PRCA _prca;         // 3DMMv1.0: source of pictures and buttons
+    HTOP _htop;         // 3DMMv1.0: our gob creation information
+    bool _fHideButtons; // 3DMMv1.0: whether to draw buttons
 
     TXHD(PRCA prca, PDOCB pdocb = pvNil, uint32_t grfdoc = fdocNil);
     ~TXHD(void);
@@ -112,7 +112,7 @@ class TXHD : public TXHD_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A runtime DDG for a help topic.
 ***************************************************************************/
 typedef class TXHG *PTXHG;
@@ -151,7 +151,7 @@ class TXHG : public TXHG_PAR
     virtual void SetCursor(uint32_t grfcust);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help balloon.
 ***************************************************************************/
 typedef class HBAL *PHBAL;
@@ -176,7 +176,7 @@ class HBAL : public HBAL_PAR
     virtual bool FSetTopic(PTXHD ptxhd, PHTOP phtop, PRCA prca);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help balloon button.
 ***************************************************************************/
 typedef class HBTN *PHBTN;
@@ -200,4 +200,4 @@ class HBTN : public HBTN_PAR
     virtual bool FCmdClicked(PCMD_MOUSE pcmd) override;
 };
 
-#endif //! KIDHELP_H
+#endif //! 3DMMv1.0: KIDHELP_H

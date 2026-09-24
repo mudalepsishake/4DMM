@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -13,7 +13,7 @@
 #include "frame.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a picture.
 ***************************************************************************/
 PIC::PIC(void)
@@ -22,7 +22,7 @@ PIC::PIC(void)
     _rc.Zero();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a picture.
 ***************************************************************************/
 PIC::~PIC(void)
@@ -32,7 +32,7 @@ PIC::~PIC(void)
         DeleteEnhMetaFile(_hpic);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a picture from a chunky file.  This routine only reads or converts
     OS specific representations with the given chid value.
 ***************************************************************************/
@@ -49,11 +49,11 @@ PPIC PIC::PpicFetch(PCFL pcfl, CTG ctg, CNO cno, CHID chid)
         return PpicRead(&blck);
     }
 
-    // REVIEW shonk: convert another type to a MetaFile...
+    // 3DMMv1.0: REVIEW shonk: convert another type to a MetaFile...
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a picture from a chunky file.  This routine only reads a system
     specific pict (Mac PICT or Windows MetaFile) and its header.
 ***************************************************************************/
@@ -100,7 +100,7 @@ PPIC PIC::PpicRead(PBLCK pblck)
     return ppic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the total size on file.
 ***************************************************************************/
 int32_t PIC::CbOnFile(void)
@@ -109,7 +109,7 @@ int32_t PIC::CbOnFile(void)
     return GetEnhMetaFileBits(_hpic, 0, pvNil) + SIZEOF(PICH);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the meta file (and its header) to the given BLCK.
 ***************************************************************************/
 bool PIC::FWrite(PBLCK pblck)
@@ -133,7 +133,7 @@ bool PIC::FWrite(PBLCK pblck)
     return fT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read the file as a native picture (EMF or WMF file).
 ***************************************************************************/
 PPIC PIC::PpicReadNative(FNI *pfni)
@@ -179,10 +179,10 @@ PPIC PIC::PpicReadNative(FNI *pfni)
     return ppic;
 }
 
-/* placeable metafile data definitions */
+/* 3DMMv1.0: placeable metafile data definitions */
 #define lwMEFH 0x9AC6CDD7
 
-/* placeable metafile header */
+/* 3DMMv1.0: placeable metafile header */
 typedef struct _MEFH
 {
     DWORD lwKey;
@@ -196,7 +196,7 @@ typedef struct _MEFH
     WORD w3;
 } MEFH;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read an old style WMF file.
 ***************************************************************************/
 HPIC PIC::_HpicReadWmf(FNI *pfni)
@@ -217,19 +217,19 @@ HPIC PIC::_HpicReadWmf(FNI *pfni)
     if (pvNil == (pfil = FIL::PfilOpen(pfni)))
         return hNil;
 
-    // check for type of meta file
+    // 3DMMv1.0: check for type of meta file
     if (!pfil->FReadRgb(&lw, SIZEOF(int32_t), 0))
         goto LFail;
 
-    // read placeable meta file header - NOTE: we can't just use SIZEOF(MEFH) for
-    // the cb because the MEFH is padded to a long boundary by the compiler
+    // 3DMMEx: read placeable meta file header - NOTE: we can't just use SIZEOF(MEFH) for
+    // 3DMMv1.0: the cb because the MEFH is padded to a long boundary by the compiler
     fp = 0;
     if (lw == lwMEFH && !pfil->FReadRgbSeq(&mefh, kcbMefh, &fp))
         goto LFail;
 
-    // read METAHEADER structure - NOTE: we can't just use SIZEOF(METAHEADER) for
-    // the cb because the METAHEADER is padded to a long boundary by the
-    // compiler
+    // 3DMMEx: read METAHEADER structure - NOTE: we can't just use SIZEOF(METAHEADER) for
+    // 3DMMv1.0: the cb because the METAHEADER is padded to a long boundary by the
+    // 3DMMv1.0: compiler
     if (!pfil->FReadRgbSeq(&mh, kcbMetaHeader, &fp) || mh.mtVersion < 0x0300 || 2 * mh.mtHeaderSize != kcbMetaHeader ||
         !FIn(cb = 2 * mh.mtSize, kcbMetaHeader + 1, kcbMax))
     {
@@ -253,7 +253,7 @@ HPIC PIC::_HpicReadWmf(FNI *pfni)
         return hNil;
     }
 
-    // convert the old style metafile to an enhanced metafile
+    // 3DMMv1.0: convert the old style metafile to an enhanced metafile
     hpic = SetWinMetaFileBits(cb, (uint8_t *)pv, hNil, pvNil);
     FreePpv(&pv);
 

@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
 
@@ -16,7 +16,7 @@
 
 #define kwndNil nullptr
 
-// Window handle class
+// 3DMMEx: Window handle class
 class KWND
 {
   public:
@@ -38,7 +38,7 @@ class KWND
 
 #ifdef KAUAI_SDL
 
-    // Create a KWND from an SDL Window handle
+    // 3DMMEx: Create a KWND from an SDL Window handle
     explicit KWND(SDL_Window *wnd)
     {
         _wnd = wnd;
@@ -47,7 +47,7 @@ class KWND
 #endif
     }
 
-    // Get SDL Window handle
+    // 3DMMEx: Get SDL Window handle
 #ifdef WIN
     explicit operator SDL_Window *() const
 #else
@@ -57,7 +57,7 @@ class KWND
         return _wnd;
     }
 
-    // Set the KWND to an SDL window handle
+    // 3DMMEx: Set the KWND to an SDL window handle
     KWND &operator=(SDL_Window *wnd)
     {
         _wnd = wnd;
@@ -67,10 +67,10 @@ class KWND
         return *this;
     }
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
 #ifdef WIN
-    // Get Win32 HWND
+    // 3DMMEx: Get Win32 HWND
     operator HWND() const
     {
         return _hwnd;
@@ -107,7 +107,7 @@ class KWND
     {
         return _wnd != nullptr;
     }
-#endif // !WIN
+#endif // 3DMMEx: !WIN
 
   private:
 #ifdef WIN
@@ -131,9 +131,9 @@ class KWND
             return nullptr;
         }
     }
-#endif // WIN
+#endif // 3DMMEx: WIN
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 };
 
-#endif // KAUAI_KWND_H
+#endif // 3DMMEx: KAUAI_KWND_H

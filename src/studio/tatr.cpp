@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tatr.cpp: Theater class
 
@@ -26,7 +26,7 @@ ON_CID_GEN(cidTheaterStop, &TATR::FCmdStop, pvNil)
 ON_CID_GEN(cidTheaterRewind, &TATR::FCmdRewind, pvNil)
 END_CMD_MAP_NIL()
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new TATR
 ***************************************************************************/
 PTATR TATR::PtatrNew(int32_t kidParent)
@@ -45,7 +45,7 @@ PTATR TATR::PtatrNew(int32_t kidParent)
     return ptatr;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the TATR
 ***************************************************************************/
 bool TATR::_FInit(int32_t kidParent)
@@ -60,7 +60,7 @@ bool TATR::_FInit(int32_t kidParent)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clean up and delete this theater
 ***************************************************************************/
 TATR::~TATR(void)
@@ -68,13 +68,13 @@ TATR::~TATR(void)
     AssertBaseThis(0);
     ReleasePpo(&_pmvie);
 #ifdef BUG1907
-    vptagm->ClearCache(sidNil, ftagmFile); // Clear content out of HD cache
-                                           // Note: could clear out the RAM cache too, but I'm keeping this change
-                                           // as small as possible.
-#endif                                     // BUG1907
+    vptagm->ClearCache(sidNil, ftagmFile); // 3DMMv1.0: Clear content out of HD cache
+                                           // 3DMMv1.0: Note: could clear out the RAM cache too, but I'm keeping this change
+                                           // 3DMMv1.0: as small as possible.
+#endif                                     // 3DMMv1.0: BUG1907
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load a new movie into the theater
 ***************************************************************************/
 bool TATR::FCmdLoad(PCMD pcmd)
@@ -93,6 +93,14 @@ bool TATR::FCmdLoad(PCMD pcmd)
         goto LFail;
 
     vpapp->GetPortfolioDoc(&fni);
+    if (F4DMMFniIsVmm(&fni))
+    {
+        FNI fniResolved;
+        if (!vapp.FResolveVmmMovie(&fni, &fniResolved))
+            goto LFail;
+        fni = fniResolved;
+        vapp.SetPortfolioDoc(&fni);
+    }
     if (fni.Ftg() != kftg3mm)
     {
         Bug("Portfolio's FNI has bad FTG in theater");
@@ -101,24 +109,24 @@ bool TATR::FCmdLoad(PCMD pcmd)
 
     vpappb->BeginLongOp();
 #ifdef BUG1907
-    // Close up the previous movie, if any
+    // 3DMMv1.0: Close up the previous movie, if any
     if (_pmvie != pvNil)
     {
         if (!_pmvie->PmvuCur()->FCloseDoc(fFalse))
             goto LFail;
         ReleasePpo(&_pmvie);
     }
-    vptagm->ClearCache(sidNil, ftagmFile); // Clear content out of HD cache
-                                           // Note: could clear out the RAM cache too, but I'm keeping this change
-                                           // as small as possible.
-#endif                                     // BUG1907
+    vptagm->ClearCache(sidNil, ftagmFile); // 3DMMv1.0: Clear content out of HD cache
+                                           // 3DMMv1.0: Note: could clear out the RAM cache too, but I'm keeping this change
+                                           // 3DMMv1.0: as small as possible.
+#endif                                     // 3DMMv1.0: BUG1907
     pmvie = MVIE::PmvieNew(vpapp->FSlowCPU(), pmcc, &fni, cnoNil);
     if (pmvie == pvNil)
         goto LFail;
     ReleasePpo(&pmcc);
 
-    // Create a new MVU (with PddgNew()) as a child GOB of _kidParent.
-    // Make it invisible until we get a play command
+    // 3DMMv1.0: Create a new MVU (with PddgNew()) as a child GOB of _kidParent.
+    // 3DMMv1.0: Make it invisible until we get a play command
     pgob = vpapp->Pkwa()->PgobFromHid(_kidParent);
     if (pvNil == pgob)
     {
@@ -136,14 +144,14 @@ bool TATR::FCmdLoad(PCMD pcmd)
     }
 
 #ifndef BUG1907
-    // Close up the previous movie, if any
+    // 3DMMv1.0: Close up the previous movie, if any
     if (_pmvie != pvNil)
     {
         if (!_pmvie->PmvuCur()->FCloseDoc(fFalse))
             goto LFail;
         ReleasePpo(&_pmvie);
     }
-#endif //! BUG1907
+#endif //! 3DMMv1.0: BUG1907
     _pmvie = pmvie;
 
     vpcex->EnqueueCid(cidTheaterLoadCompleted, pvNil, pvNil, fTrue);
@@ -155,20 +163,20 @@ LFail:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play the current movie.  Also makes the MVU visible, if it was hidden.
 ***************************************************************************/
 bool TATR::FCmdPlay(PCMD pcmd)
 {
-    AssertThis(ftatrMvie); // make sure we have a movie
+    AssertThis(ftatrMvie); // 3DMMv1.0: make sure we have a movie
     AssertVarMem(pcmd);
 
     PMVU pmvu;
     RC rcAbs;
     RC rcRel;
 
-    if (pvNil == _pmvie) // Prevent crash if _pmvie is pvNil (although it
-        return fTrue;    // shouldn't ever be if this function is called)
+    if (pvNil == _pmvie) // 3DMMv1.0: Prevent crash if _pmvie is pvNil (although it
+        return fTrue;    // 3DMMv1.0: shouldn't ever be if this function is called)
 
     pmvu = _pmvie->PmvuCur();
     pmvu->GetPos(&rcAbs, &rcRel);
@@ -181,33 +189,33 @@ bool TATR::FCmdPlay(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop the current movie
 ***************************************************************************/
 bool TATR::FCmdStop(PCMD pcmd)
 {
-    AssertThis(ftatrMvie); // make sure we have a movie
+    AssertThis(ftatrMvie); // 3DMMv1.0: make sure we have a movie
     AssertVarMem(pcmd);
 
-    if (pvNil == _pmvie) // Prevent crash if _pmvie is pvNil (although it
-        return fTrue;    // shouldn't ever be if this function is called)
+    if (pvNil == _pmvie) // 3DMMv1.0: Prevent crash if _pmvie is pvNil (although it
+        return fTrue;    // 3DMMv1.0: shouldn't ever be if this function is called)
 
     if (_pmvie->FPlaying())
-        _pmvie->Play(); // Play() stops the movie if it's currently playing
+        _pmvie->Play(); // 3DMMv1.0: Play() stops the movie if it's currently playing
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rewind the current movie
 ***************************************************************************/
 bool TATR::FCmdRewind(PCMD pcmd)
 {
-    AssertThis(ftatrMvie); // make sure we have a movie
+    AssertThis(ftatrMvie); // 3DMMv1.0: make sure we have a movie
     AssertVarMem(pcmd);
 
-    if (pvNil == _pmvie) // Prevent crash if _pmvie is pvNil (although it
-        return fTrue;    // shouldn't ever be if this function is called)
+    if (pvNil == _pmvie) // 3DMMv1.0: Prevent crash if _pmvie is pvNil (although it
+        return fTrue;    // 3DMMv1.0: shouldn't ever be if this function is called)
 
     if (_pmvie->Cscen() > 0)
     {
@@ -219,7 +227,7 @@ bool TATR::FCmdRewind(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the TATR.
 ***************************************************************************/
 void TATR::AssertValid(uint32_t grf)
@@ -229,7 +237,7 @@ void TATR::AssertValid(uint32_t grf)
         AssertPo(_pmvie, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the TATR
 ***************************************************************************/
 void TATR::MarkMem(void)
@@ -238,4 +246,4 @@ void TATR::MarkMem(void)
     TATR_PAR::MarkMem();
     MarkMemObj(_pmvie);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

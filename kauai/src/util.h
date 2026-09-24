@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -28,10 +28,10 @@
 #ifdef UNICODE
 #ifndef _UNICODE
 #define _UNICODE
-#endif // _UNICODE
-#endif // UNICODE
+#endif // 3DMMEx: _UNICODE
+#endif // 3DMMv1.0: UNICODE
 
-// windef.h typedef's PSZ to char *, this fools it into using PSZS instead
+// 3DMMv1.0: windef.h typedef's PSZ to char *, this fools it into using PSZS instead
 #define PSZ PSZS
 #include <windows.h>
 #include <windowsx.h>
@@ -43,11 +43,11 @@ typedef HBITMAP HBMP;
 typedef HENHMETAFILE HPIC;
 typedef HPALETTE HPAL;
 typedef HCURSOR HCRS;
-#define hBadWin INVALID_HANDLE_VALUE // some windows APIs return this
+#define hBadWin INVALID_HANDLE_VALUE // 3DMMv1.0: some windows APIs return this
 
-#else // WIN
+#else // 3DMMv1.0: WIN
 
-// Unused
+// 3DMMEx: Unused
 typedef void *HPIC;
 
 #endif
@@ -57,7 +57,7 @@ typedef void *HPIC;
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <SDL_ttf.h>
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
 #define SIZEOF(foo) ((int32_t)sizeof(foo))
 #define offset(FOO, field) ((ptrdiff_t) & ((FOO *)0)->field)
@@ -66,45 +66,45 @@ typedef void *HPIC;
 
 #ifdef DEBUG
 #define kpriv
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define kpriv static
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-// standard scalar types
+// 3DMMv1.0: standard scalar types
 const uint8_t kbMax = 0xFF;
 const uint8_t kbMin = 0;
 
 const int16_t kswMax = (int16_t)0x7FFF;
-const int16_t kswMin = -kswMax; // so -kswMin is positive
+const int16_t kswMin = -kswMax; // 3DMMv1.0: so -kswMin is positive
 const uint16_t ksuMax = 0xFFFF;
 const uint16_t ksuMin = 0;
 
 const int32_t klwMax = 0x7FFFFFFF;
-const int32_t klwMin = -klwMax; // so -klwMin is positive
+const int32_t klwMin = -klwMax; // 3DMMv1.0: so -klwMin is positive
 const uint32_t kluMax = 0xFFFFFFFF;
 const uint32_t kluMin = 0;
 
-// typedef int bool;
+// 3DMMEx: typedef int bool;
 
-// standard character types:
-// schar - short (skinny) character (1 byte)
-// wchar - wide character (unicode)
-// achar - application character
+// 3DMMv1.0: standard character types:
+// 3DMMv1.0: schar - short (skinny) character (1 byte)
+// 3DMMv1.0: wchar - wide character (unicode)
+// 3DMMv1.0: achar - application character
 #ifdef MAC
 typedef byte schar;
 const schar kschMax = (schar)0xFF;
 const schar kschMin = (schar)0;
-#else  //! MAC
+#else  //! 3DMMv1.0: MAC
 typedef char schar;
 const schar kschMax = (schar)0x7F;
 const schar kschMin = (schar)0x80;
-#endif //! MAC
+#endif //! 3DMMv1.0: MAC
 
 #ifdef WIN32
 typedef wchar_t wchar;
-#else  // !WIN32
+#else  // 3DMMEx: !WIN32
 typedef uint16_t wchar;
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 
 const wchar kwchMax = ksuMax;
 const wchar kwchMin = ksuMin;
@@ -115,14 +115,14 @@ const achar kchMax = kwchMax;
 const achar kchMin = kwchMin;
 #define PszLit(sz) L##sz
 #define ChLit(ch) L##ch
-#else //! UNICODE
+#else //! 3DMMv1.0: UNICODE
 typedef schar achar;
 typedef unsigned char uchar;
 const achar kchMax = kschMax;
 const achar kchMin = kschMin;
 #define PszLit(sz) sz
 #define ChLit(ch) ch
-#endif //! UNICODE
+#endif //! 3DMMv1.0: UNICODE
 
 typedef class GRPB *PGRPB;
 typedef class GLB *PGLB;
@@ -153,7 +153,7 @@ typedef class BLCK *PBLCK;
 #include "crf.h"
 #include "codec.h"
 
-// optional
+// 3DMMv1.0: optional
 #include "stream.h"
 #include "lex.h"
 #include "scrcom.h"
@@ -163,4 +163,4 @@ typedef class BLCK *PBLCK;
 
 #include "utilglob.h"
 
-#endif //! UTIL_H
+#endif //! 3DMMv1.0: UTIL_H

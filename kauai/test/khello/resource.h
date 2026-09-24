@@ -1,10 +1,10 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by khello.rc
+// 3DMMEx: {{NO_DEPENDENCIES}}
+// 3DMMEx: Microsoft Visual C++ generated include file.
+// 3DMMEx: Used by khello.rc
 //
 #define IDR_MENU1 128
 
-// Next default values for new objects
+// 3DMMEx: Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

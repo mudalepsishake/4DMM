@@ -1,16 +1,16 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-// defines for the help book
+// 3DMMv1.0: defines for the help book
 
 #ifndef HELPBOOK_H
 #define HELPBOOK_H
 
-// cursors
+// 3DMMv1.0: cursors
 #define crsArrow1 0x00001001
 #define crsHand1 0x00001002
 
-// waves
+// 3DMMv1.0: waves
 #define wavBingo 0x00001003
 
 #define kidResPal 0x00001004
@@ -19,7 +19,7 @@
 #define kcnoHelpNextWav 0x00001011
 #define kcnoHelpBackWav 0x00001012
 
-// objects
+// 3DMMv1.0: objects
 #define kgobHelpBookPersistent 0x00003001
 #define kgobHelpBookParent 0x00003002
 #define kgobHelpBookGizmo 0x00003003
@@ -77,11 +77,11 @@
 #define ktpcQueryPurgeSounds 0x2000016E
 #define kgobQueryPurgeSounds 0x2000016F
 
-// string ids
+// 3DMMv1.0: string ids
 #define stidMaxPage 2
 #define stidCurrPage 1
 
-// positions of help book controls
+// 3DMMv1.0: positions of help book controls
 #define kxpHelpBookCancel 479
 #define kypHelpBookCancel 403
 #define kxpregHelpBookCancel 25
@@ -116,15 +116,15 @@
 #define kxpPageNumRight 360
 #define kypPageNumBot 443
 
-// fill width inside help book
+// 3DMMv1.0: fill width inside help book
 #define kFillLeft 70
 #define kFillTop 79
 #define kFillRight 571
 #define kFillBot 420
 
-// page positions inside help book fill
+// 3DMMv1.0: page positions inside help book fill
 #define kLeftPageL 100
-#define kLeftPageL2 178 // when the how to section is present
+#define kLeftPageL2 178 // 3DMMv1.0: when the how to section is present
 #define kLeftPageR 546
 #define kTopPage 130
 #define kBottomPage 390
@@ -138,4 +138,4 @@
 #define kTitleRight 240
 #define kTitleBottom 60
 
-#endif // !HELPBOOK_H
+#endif // 3DMMv1.0: !HELPBOOK_H

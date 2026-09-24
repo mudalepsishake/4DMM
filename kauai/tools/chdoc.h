@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     CHED document class
 
@@ -33,7 +33,7 @@ bool FGetCtgFromStn(CTG *pctg, PSTN pstn);
 
 #define lnNil (-1L)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Various document classes. DOC is the chunky file based document.
     DOCE is a virtual class for documents that represent an individual
@@ -42,7 +42,7 @@ bool FGetCtgFromStn(CTG *pctg, PSTN pstn);
 
 ***************************************************************************/
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     chunky file doc
 ***************************************************************************/
 #define DOC_PAR DOCB
@@ -53,7 +53,7 @@ class DOC : public DOC_PAR
     ASSERT
 
   protected:
-    PCFL _pcfl; // the chunky file
+    PCFL _pcfl; // 3DMMv1.0: the chunky file
 
     DOC(void);
     ~DOC(void);
@@ -71,7 +71,7 @@ class DOC : public DOC_PAR
     virtual bool FSaveToFni(FNI *pfni, bool fSetFni) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky editing doc - abstract class for editing a single chunk in a
     Chunky file. An instance of this class is a child doc of a DOC. Many
     document classes below are all derived from this.
@@ -84,7 +84,7 @@ class DOCE : public DOCE_PAR
     ASSERT
 
   protected:
-    PCFL _pcfl; // which chunk is being edited
+    PCFL _pcfl; // 3DMMv1.0: which chunk is being edited
     CTG _ctg;
     CNO _cno;
 
@@ -104,7 +104,7 @@ class DOCE : public DOCE_PAR
     virtual bool FSave(int32_t cid) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hex editor document - for editing any chunk as a hex stream.
 ***************************************************************************/
 #define DOCH_PAR DOCE
@@ -116,7 +116,7 @@ class DOCH : public DOCH_PAR
     MARKMEM
 
   protected:
-    BSF _bsf; // the byte stream
+    BSF _bsf; // 3DMMv1.0: the byte stream
 
     DOCH(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno);
     virtual bool _FWrite(PBLCK pblck, bool fRedirect) override;
@@ -128,7 +128,7 @@ class DOCH : public DOCH_PAR
     virtual PDDG PddgNew(PGCB pgcb) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Group editor document - for editing GL, AL, GG, AG, GST, and AST.
 ***************************************************************************/
 #define DOCG_PAR DOCE
@@ -141,7 +141,7 @@ class DOCG : public DOCG_PAR
 
   protected:
     PGRPB _pgrpb;
-    int32_t _cls; // which class the group belongs to
+    int32_t _cls; // 3DMMv1.0: which class the group belongs to
     short _bo;
     short _osk;
 
@@ -163,7 +163,7 @@ class DOCG : public DOCG_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Item hex editor document - for editing an item in a GRPB. An instance
     of this class is normally a child doc of a DOCG (but doesn't have to be).
 ***************************************************************************/
@@ -176,12 +176,12 @@ class DOCI : public DOCI_PAR
     MARKMEM
 
   protected:
-    PGRPB _pgrpb; // the group the data came from and gets written to.
+    PGRPB _pgrpb; // 3DMMv1.0: the group the data came from and gets written to.
     int32_t _cls;
-    int32_t _iv; // which item is being edited
+    int32_t _iv; // 3DMMv1.0: which item is being edited
     int32_t _dln;
-    bool _fFixed; // indicates if the data is fixed length
-    BSF _bsf;     // the byte stream we're editing
+    bool _fFixed; // 3DMMv1.0: indicates if the data is fixed length
+    BSF _bsf;     // 3DMMv1.0: the byte stream we're editing
 
     DOCI(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t iv, int32_t dln);
     bool _FInit(void);
@@ -207,7 +207,7 @@ class DOCI : public DOCI_PAR
     virtual bool FSave(int32_t cid) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Picture display document.
 ***************************************************************************/
 #define DOCPIC_PAR DOCE
@@ -238,7 +238,7 @@ class DOCPIC : public DOCPIC_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     MBMP display document.
 ***************************************************************************/
 #define DOCMBMP_PAR DOCE
@@ -269,14 +269,14 @@ class DOCMBMP : public DOCMBMP_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Document editing window classes follow. These are all DDG's.
     Most are also DCLB's (the first class defined below).  DCLB is
     an abstract class that handles a line based editing window.
     The DCD class is for displaying a DOC (chunky file document).
 ***************************************************************************/
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     abstract class for line based document windows
 ***************************************************************************/
 #define DCLB_PAR DDG
@@ -287,10 +287,10 @@ class DCLB : public DCLB_PAR
     ASSERT
 
   protected:
-    int32_t _onn;       // fixed width font to use
-    int32_t _dypHeader; // height of the header
-    int32_t _dypLine;   // height of one line
-    int32_t _dxpChar;   // width of a character
+    int32_t _onn;       // 3DMMv1.0: fixed width font to use
+    int32_t _dypHeader; // 3DMMv1.0: height of the header
+    int32_t _dypLine;   // 3DMMv1.0: height of one line
+    int32_t _dxpChar;   // 3DMMv1.0: width of a character
 
     DCLB(PDOCB pdocb, PGCB pgcb);
     virtual void _Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz = 0, int32_t scvVert = 0) override;
@@ -310,7 +310,7 @@ class DCLB : public DCLB_PAR
     void _GetContent(RC *prc);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     SEL: used to track a selection in a chunky file doc
 ***************************************************************************/
 enum
@@ -335,10 +335,10 @@ class SEL : public SEL_PAR
     CKI _cki;
     KID _kid;
     int32_t _ln;
-    int32_t _lnLim;      // this is lnNil if we haven't yet calculated the lim
-    PGL _pglctg;         // the ctgs to filter on
-    bool _fHideList : 1; // whether to hide the ctgs in the list or show them
-    bool _fHideKids : 1; // whether to hide the kids
+    int32_t _lnLim;      // 3DMMv1.0: this is lnNil if we haven't yet calculated the lim
+    PGL _pglctg;         // 3DMMv1.0: the ctgs to filter on
+    bool _fHideList : 1; // 3DMMv1.0: whether to hide the ctgs in the list or show them
+    bool _fHideKids : 1; // 3DMMv1.0: whether to hide the kids
 
     void _SetNil(void);
     bool _FFilter(CTG ctg, CNO cno);
@@ -391,7 +391,7 @@ class SEL : public SEL_PAR
     bool FAddCtgFilter(CTG ctg);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display for chunky document - displays a DOC.
 ***************************************************************************/
 #define DCD_PAR DCLB
@@ -404,9 +404,9 @@ class DCD : public DCD_PAR
     MARKMEM
 
   protected:
-    int32_t _dypBorder; // height of border (included in _dypLine)
-    PCFL _pcfl;         // the chunky file
-    SEL _sel;           // the current selection
+    int32_t _dypBorder; // 3DMMv1.0: height of border (included in _dypLine)
+    PCFL _pcfl;         // 3DMMv1.0: the chunky file
+    SEL _sel;           // 3DMMv1.0: the current selection
 
     DCD(PDOCB pdocb, PCFL pcfl, PGCB pgcb);
     void _DrawSel(PGNV pgnv);
@@ -425,7 +425,7 @@ class DCD : public DCD_PAR
 
     void _InvalCkiKid(CKI *pcki = pvNil, KID *pkid = pvNil);
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
     virtual void _ClearSel(void) override;
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid) override;
@@ -464,7 +464,7 @@ class DCD : public DCD_PAR
     bool FPlayWave(CTG ctg, CNO cno);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display chunk in hex - displays a BSF (byte stream), but
     doesn't necessarily display a DOCH.
 ***************************************************************************/
@@ -477,18 +477,18 @@ class DCH : public DCH_PAR
     MARKMEM
 
   protected:
-    PBSF _pbsf;      // the byte stream
-    int32_t _cbLine; // number of bytes per line
+    PBSF _pbsf;      // 3DMMv1.0: the byte stream
+    int32_t _cbLine; // 3DMMv1.0: number of bytes per line
 
-    // the selection
+    // 3DMMv1.0: the selection
     int32_t _ibAnchor;
     int32_t _ibOther;
 
-    bool _fSelOn : 1;    // selection is showing
-    bool _fRightSel : 1; // selection if on a line boundary is at the right edge
-    bool _fHalfSel : 1;  // second half of hex character is selected
-    bool _fHexSel : 1;   // hex area active
-    bool _fFixed : 1;    // indicates if the data is fixed length
+    bool _fSelOn : 1;    // 3DMMv1.0: selection is showing
+    bool _fRightSel : 1; // 3DMMv1.0: selection if on a line boundary is at the right edge
+    bool _fHalfSel : 1;  // 3DMMv1.0: second half of hex character is selected
+    bool _fHexSel : 1;   // 3DMMv1.0: hex area active
+    bool _fFixed : 1;    // 3DMMv1.0: indicates if the data is fixed length
 
     DCH(PDOCB pdocb, PBSF pbsf, bool fFixed, PGCB pgcb);
 
@@ -515,7 +515,7 @@ class DCH : public DCH_PAR
 
     void _DrawHeader(PGNV pgnv);
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
     virtual void _ClearSel(void) override;
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid) override;
@@ -528,7 +528,7 @@ class DCH : public DCH_PAR
     virtual bool FCmdKey(PCMD_KEY pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Virtual class that supports displaying a group chunk - displays a GRPB.
     Usually displays a DOCG, but doesn't have to.
 ***************************************************************************/
@@ -542,13 +542,13 @@ class DCGB : public DCGB_PAR
     MARKMEM
 
   protected:
-    int32_t _dypBorder; // height of border (included in _dypLine)
-    int32_t _clnItem;   // number of lines for each item
-    int32_t _ivCur;     // which item is selected
-    int32_t _dlnCur;    // which line in the item is selected
-    PGRPB _pgrpb;       // the group we're displaying
-    int32_t _cls;       // the class of the group
-    bool _fAllocated;   // whether the class is allocated or general
+    int32_t _dypBorder; // 3DMMv1.0: height of border (included in _dypLine)
+    int32_t _clnItem;   // 3DMMv1.0: number of lines for each item
+    int32_t _ivCur;     // 3DMMv1.0: which item is selected
+    int32_t _dlnCur;    // 3DMMv1.0: which line in the item is selected
+    PGRPB _pgrpb;       // 3DMMv1.0: the group we're displaying
+    int32_t _cls;       // 3DMMv1.0: the class of the group
+    bool _fAllocated;   // 3DMMv1.0: whether the class is allocated or general
 
     DCGB(PDOCB pdocb, PGRPB pgrpb, int32_t cls, int32_t clnItem, PGCB pgcb);
 
@@ -584,7 +584,7 @@ class DCGB : public DCGB_PAR
     virtual bool FCmdAddItem(PCMD pcmd) = 0;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display GL or AL chunk.
 ***************************************************************************/
 #define DCGL_PAR DCGB
@@ -603,7 +603,7 @@ class DCGL : public DCGL_PAR
     virtual bool FCmdAddItem(PCMD pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display GG or AG chunk.
 ***************************************************************************/
 #define DCGG_PAR DCGB
@@ -622,7 +622,7 @@ class DCGG : public DCGG_PAR
     virtual bool FCmdAddItem(PCMD pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display GST or AST chunk.
 ***************************************************************************/
 #define DCST_PAR DCGB
@@ -641,7 +641,7 @@ class DCST : public DCST_PAR
     virtual bool FCmdAddItem(PCMD pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display a picture chunk.
 ***************************************************************************/
 #define DCPIC_PAR DDG
@@ -664,7 +664,7 @@ class DCPIC : public DCPIC_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Display a MBMP chunk.
 ***************************************************************************/
 #define DCMBMP_PAR DDG
@@ -687,7 +687,7 @@ class DCMBMP : public DCMBMP_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Main Kidspace world for testing a script.
 ***************************************************************************/
 typedef class TSCG *PTSCG;
@@ -706,7 +706,7 @@ class TSCG : public TSCG_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Text doc for the chunky editor.
 ***************************************************************************/
 typedef class CHTXD *PCHTXD;
@@ -724,7 +724,7 @@ class CHTXD : public CHTXD_PAR
     virtual PDDG PddgNew(PGCB pgcb) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Text display gob for the chunky editor.
 ***************************************************************************/
 typedef class CHTDD *PCHTDD;
@@ -746,4 +746,4 @@ class CHTDD : public CHTDD_PAR
 
 void OpenSinkDoc(PMSFIL pmsfil);
 
-#endif //! CHDOC_H
+#endif //! 3DMMv1.0: CHDOC_H

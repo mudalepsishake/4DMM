@@ -1,0 +1,225 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: v1db.h 1.1 1997/12/10 16:41:33 jon Exp $
+ * $Locker: $
+ *
+ * Internal structures for V1 database
+ */
+#ifndef _V1DB_H_
+#define _V1DB_H_
+
+/* BRender:
+ * Pull in all the framework definitions/declarations
+ */
+#ifndef _BRDDI_H_
+#include "brddi.h"
+#endif
+
+/* BRender:
+ * Structure for maintaining enabled actors
+ */
+typedef struct br_v1db_enable {
+    br_int_32  max;
+    br_int_32  count;
+    br_int_32  type;
+    char      *name;
+    br_actor **enabled;
+} br_v1db_enable;
+
+/* BRender:
+ * Private state of database
+ */
+typedef struct br_v1db_state {
+    /* BRender:
+     * Flag to indicate that database is set up
+     */
+    br_boolean active;
+
+    /* BRender:
+     * Flags for old renderer types being active
+     */
+    br_boolean zs_active;
+    br_boolean zb_active;
+
+    /* BRender:
+     * Flag that is !0 if rendering is going on
+     */
+    br_int_32 rendering;
+
+    /* BRender:
+     * Renderer being used
+     */
+    struct br_renderer *renderer;
+
+    /* BRender:
+     * Renderer being queried
+     */
+    struct br_renderer *query_renderer;
+
+    /* BRender:
+     * Geometry formats
+     */
+    struct br_geometry          *format_model;
+    struct br_geometry          *format_buckets;
+    struct br_geometry_lighting *format_lighting;
+
+    /* BRender:
+     * Copies of transforms for use by callbacks
+     */
+    br_matrix4  model_to_screen;
+    br_matrix34 model_to_view;
+    br_boolean  model_to_screen_valid;
+
+    /* BRender:
+     * Combined transform type for initial model_to_view
+     */
+    br_uint_32 ttype;
+
+    /* BRender:
+     * Current rendering root
+     */
+    br_actor *render_root;
+
+    /* BRender:
+     * List of transforms from camera to root with associated actor address
+     */
+    struct {
+        br_matrix34 m;
+        br_actor   *a;
+        br_uint_8   transform_type;
+    } camera_path[MAX_CAMERA_DEPTH];
+
+    /* BRender:
+     * Table of pointers to enabled actors of various sorts
+     */
+    br_v1db_enable enabled_lights;
+    br_v1db_enable enabled_clip_planes;
+    br_v1db_enable enabled_horizon_planes;
+
+    /* BRender:
+     * Number of renderer parts used
+     */
+    br_int_32 max_light;
+    br_int_32 max_clip;
+
+    /* BRender:
+     * A pointer to the current environment - if NULL, then the model's
+     * local frame will be used
+     */
+    br_actor *enabled_environment;
+
+    /* BRender:
+     * Various lists of registered items
+     */
+    br_registry reg_models;
+    br_registry reg_materials;
+    br_registry reg_textures;
+    br_registry reg_tables;
+
+    /* BRender:
+     * Base resource of which everything else is
+     * a descendant
+     */
+    void *res;
+
+    /* BRender:
+     * Default model
+     */
+    br_model *default_model;
+
+    /* BRender:
+     * Default material
+     */
+    br_material *default_material;
+
+    /* BRender:
+     * Default render data
+     */
+    void *default_render_data;
+
+    /* BRender:
+     * Default order table
+     */
+    br_order_table *default_order_table;
+
+    /* BRender:
+     * Primary order table
+     */
+    br_order_table *primary_order_table;
+
+    /* BRender:
+     * Pointer to linked list of order tables
+     */
+    br_order_table *order_table_list;
+
+    /* BRender:
+     * Primitive heap
+     */
+    br_primitive_heap heap;
+
+    /* BRender:
+     * Primitive calback fr Z Sort
+     */
+    br_primitive_cbfn *primitive_call;
+
+    /* BRender:
+     * Callback for visible actors
+     */
+    br_renderbounds_cbfn *bounds_call;
+
+    /* BRender:
+     * Position in view of origin as a fraction of viewport size
+     */
+    br_vector2 origin;
+
+    /* BRender:
+     * Local copies of viewport centre and size
+     */
+    br_scalar vp_ox, vp_oy, vp_width, vp_height;
+
+    /* BRender:
+     * Local copy of colour_buffer pointer
+     */
+    br_pixelmap *colour_buffer;
+
+} br_v1db_state;
+
+/* BRender:
+ * Values for v1db.rendering
+ */
+enum {
+    RENDERING_NONE = 0,
+    RENDERING_ZB,
+    RENDERING_ZS
+};
+/* BRender:
+ * Global renderer state
+ */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern br_v1db_state BR_ASM_DATA v1db;
+
+#ifdef __cplusplus
+};
+#endif
+
+/* BRender:
+ * Private model flag to indicate when model is using default material
+ */
+#define MODF_USES_DEFAULT 0x8000
+
+/* BRender:
+ * Pull in private prototypes
+ */
+#ifndef _NO_PROTOTYPES
+
+#ifndef _V1DB_IP_H_
+#include "v1db_ip.h"
+#endif
+
+#endif
+
+#endif

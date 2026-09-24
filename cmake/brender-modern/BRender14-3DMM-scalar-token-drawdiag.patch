@@ -1,0 +1,301 @@
+diff --git a/core/fw/ddi/brddi_p.h b/core/fw/ddi/brddi_p.h
+index 4e50aa9..01f0bff 100644
+--- a/core/fw/ddi/brddi_p.h
++++ b/core/fw/ddi/brddi_p.h
+@@ -107,11 +107,12 @@ br_int_32 BR_RESIDENT_ENTRY BrParseVectorFixed(struct br_lexer *l, br_fixed_ls *
+ br_int_32 BR_RESIDENT_ENTRY BrParseMatrixFloat(struct br_lexer *l, br_float *m, br_int_32 width, br_int_32 max_h);
+ br_int_32 BR_RESIDENT_ENTRY BrParseMatrixFixed(struct br_lexer *l, br_fixed_ls *m, br_int_32 width, br_int_32 max_h);
+ 
+-#define BrParseScalar BrParseFloat
+ #if BASED_FIXED
++#define BrParseScalar BrParseFixed
+ #define BrParseVector BrParseVectorFixed
+ #define BrParseMatrix BrParseMatrixFixed
+ #else
++#define BrParseScalar BrParseFloat
+ #define BrParseVector BrParseVectorFloat
+ #define BrParseMatrix BrParseMatrixFloat
+ #endif
+diff --git a/core/inc/token.h b/core/inc/token.h
+index b7819c1..1a4c13d 100644
+--- a/core/inc/token.h
++++ b/core/inc/token.h
+@@ -40,6 +40,17 @@ typedef br_uint_32 br_token;
+  * Make some macros for setting token types in terms of scalar
+  */
+ 
++#if BASED_FIXED
++#define BRT_AS_SCALAR(tok)          BRT_AS_FIXED(tok)
++
++#define BRT_AS_MATRIX23_SCALAR(tok) BRT_AS_MATRIX23_FIXED(tok)
++#define BRT_AS_MATRIX34_SCALAR(tok) BRT_AS_MATRIX34_FIXED(tok)
++#define BRT_AS_MATRIX4_SCALAR(tok)  BRT_AS_MATRIX4_FIXED(tok)
++
++#define BRT_AS_VECTOR2_SCALAR(tok)  BRT_AS_VECTOR2_FIXED(tok)
++#define BRT_AS_VECTOR3_SCALAR(tok)  BRT_AS_VECTOR3_FIXED(tok)
++#define BRT_AS_VECTOR4_SCALAR(tok)  BRT_AS_VECTOR4_FIXED(tok)
++#else
+ #define BRT_AS_SCALAR(tok)          BRT_AS_FLOAT(tok)
+ 
+ #define BRT_AS_MATRIX23_SCALAR(tok) BRT_AS_MATRIX23_FLOAT(tok)
+@@ -49,6 +60,7 @@ typedef br_uint_32 br_token;
+ #define BRT_AS_VECTOR2_SCALAR(tok)  BRT_AS_VECTOR2_FLOAT(tok)
+ #define BRT_AS_VECTOR3_SCALAR(tok)  BRT_AS_VECTOR3_FLOAT(tok)
+ #define BRT_AS_VECTOR4_SCALAR(tok)  BRT_AS_VECTOR4_FLOAT(tok)
++#endif
+ 
+ typedef union br_value_tag {
+     void                  *p;
+diff --git a/drivers/glrend/gstored.c b/drivers/glrend/gstored.c
+index f8fed21..2165662 100644
+--- a/drivers/glrend/gstored.c
++++ b/drivers/glrend/gstored.c
+@@ -239,29 +239,60 @@ enum {
+ 
+ static int get_render_mode(const state_stack *state)
+ {
++    int         mode   = RM_OPAQUE;
++    const char *reason = "opaque";
++
+     if(state->valid & MASK_STATE_SURFACE) {
+-        if(state->surface.force_back)
+-            return RM_FORCE_BACK;
++        if(state->surface.force_back) {
++            mode   = RM_FORCE_BACK;
++            reason = "force_back";
++            goto done;
++        }
+ 
+-        if(state->surface.force_front)
+-            return RM_FORCE_FRONT;
++        if(state->surface.force_front) {
++            mode   = RM_FORCE_FRONT;
++            reason = "force_front";
++            goto done;
++        }
+ 
+         /* Transparent? Defer. */
+-        if(state->surface.opacity < BR_SCALAR(1.0f))
+-            return RM_TRANS;
++        if(state->surface.opacity < BR_SCALAR(1.0f)) {
++            mode   = RM_TRANS;
++            reason = "opacity";
++            goto done;
++        }
+     }
+ 
+     if(state->valid & MASK_STATE_PRIMITIVE) {
+         /* Blend flags set? Defer.*/
+-        if(state->prim.flags & PRIMF_BLEND)
+-            return RM_TRANS;
++        if(state->prim.flags & PRIMF_BLEND) {
++            mode   = RM_TRANS;
++            reason = "blend_flag";
++            goto done;
++        }
+ 
+         /* Has a blend table? Defer. */
+-        if(state->prim.index_blend != NULL)
+-            return RM_TRANS;
++        if(state->prim.index_blend != NULL) {
++            mode   = RM_TRANS;
++            reason = "index_blend";
++        }
+     }
+ 
+-    return RM_OPAQUE;
++done:
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    {
++        static br_uint_32 diag_mode_count;
++        if(diag_mode_count < 256) {
++            BrWarning("3DMM glrend render-mode valid=0x%08X mode=%d reason=%s opacity_raw=0x%08X opacity=%g force_back=%d force_front=%d prim_flags=0x%08X blend=%d index_blend=%p",
++                      (unsigned)state->valid, mode, reason, (unsigned)(br_uint_32)state->surface.opacity,
++                      (double)BrScalarToFloat(state->surface.opacity), (int)state->surface.force_back,
++                      (int)state->surface.force_front, (unsigned)state->prim.flags,
++                      (state->prim.flags & PRIMF_BLEND) != 0, (void *)state->prim.index_blend);
++            ++diag_mode_count;
++        }
++    }
++#endif
++    return mode;
+ }
+ 
+ /*
+@@ -490,6 +521,19 @@ static br_error V1Model_RenderStored(br_geometry_stored *self, br_renderer *rend
+ 
+         render_mode = get_render_mode(&state);
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++        {
++            static br_uint_32 diag_group_count;
++            if(diag_group_count < 256) {
++                BrWarning("3DMM glrend stored-group geom=%p group=%d verts=%u faces=%u stored=%p defer=%d z_sort=%d mode=%d hidden_type=%u divert=%u ot=%p heap=%p",
++                          (void *)self, i, (unsigned)group->nvertices, (unsigned)group->nfaces, (void *)stored,
++                          (int)defer, (int)z_sorting, render_mode, (unsigned)state.hidden.type,
++                          (unsigned)state.hidden.divert, (void *)state.hidden.order_table, (void *)state.hidden.heap);
++                ++diag_group_count;
++            }
++        }
++#endif
++
+         if(!defer) {
+             RendererGLRenderGroup(renderer, self, groupinfo);
+             continue;
+diff --git a/drivers/glrend/gv1buckt.c b/drivers/glrend/gv1buckt.c
+index ac072ef..a1de95b 100644
+--- a/drivers/glrend/gv1buckt.c
++++ b/drivers/glrend/gv1buckt.c
+@@ -92,6 +92,33 @@ static br_error BR_CMETHOD_DECL(br_geometry_v1_buckets_gl, render)(br_geometry_v
+     if(nbuckets <= 0)
+         return BRE_OK;
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    {
++        static br_uint_32 diag_bucket_render_count;
++        if(diag_bucket_render_count < 128) {
++            br_uint_32 populated = 0;
++            br_uint_32 primitives = 0;
++            br_uint_32 groups = 0;
++            br_uint_32 triangles = 0;
++            for(br_int_32 bi = 0; bi < nbuckets; ++bi) {
++                if(buckets[bi] != NULL)
++                    ++populated;
++                for(br_primitive *scan = buckets[bi]; scan != NULL; scan = scan->next) {
++                    ++primitives;
++                    if(scan->type == BRT_GEOMETRY_STORED)
++                        ++groups;
++                    else if(scan->type == BRT_TRIANGLE)
++                        ++triangles;
++                }
++            }
++            BrWarning("3DMM glrend buckets-render call=%u buckets=%d populated=%u primitives=%u groups=%u triangles=%u trans_next=%u",
++                      (unsigned)diag_bucket_render_count, (int)nbuckets, (unsigned)populated, (unsigned)primitives,
++                      (unsigned)groups, (unsigned)triangles, (unsigned)renderer->trans.next);
++            ++diag_bucket_render_count;
++        }
++    }
++#endif
++
+     /*
+      * Upload our transparent triangles, if any.
+      */
+diff --git a/drivers/glrend/renderer.c b/drivers/glrend/renderer.c
+index dfb971b..5aceeb8 100644
+--- a/drivers/glrend/renderer.c
++++ b/drivers/glrend/renderer.c
+@@ -32,7 +32,7 @@ static void RendererGLInitImm(br_renderer *self, br_gl_main_shader *shader)
+     gl->GenBuffers(1, &self->trans.vbo);
+     gl->BindBuffer(GL_ARRAY_BUFFER, self->trans.vbo);
+ 
+-    if(shader->attributes.aUV >= 0) {
++    if(shader->attributes.aPosition >= 0) {
+         gl->EnableVertexAttribArray(shader->attributes.aPosition);
+         gl->VertexAttribPointer(shader->attributes.aPosition, 3, GL_FLOAT, GL_FALSE, sizeof(br_immvert_gl),
+                                 (void *)offsetof(br_immvert_gl, position));
+@@ -213,6 +213,20 @@ void BR_CMETHOD_DECL(br_renderer_gl, sceneEnd)(br_renderer *self)
+ {
+     const GladGLContext *gl = self->gl;
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    {
++        static br_uint_32 diag_scene_count;
++        if(diag_scene_count < 240) {
++            BrWarning("3DMM glrend scene-end n=%u groups=%u triangles_drawn=%u triangles_rendered=%u vertices=%u opaque_draws=%u transparent_draws=%u trans_next=%u",
++                      (unsigned)diag_scene_count, (unsigned)self->stats.face_group_count,
++                      (unsigned)self->stats.triangles_drawn_count, (unsigned)self->stats.triangles_rendered_count,
++                      (unsigned)self->stats.vertices_rendered_count, (unsigned)self->stats.opaque_draw_count,
++                      (unsigned)self->stats.transparent_draw_count, (unsigned)self->trans.next);
++            ++diag_scene_count;
++        }
++    }
++#endif
++
+     BufferRingGLEnd(&self->model_ring);
+ 
+     gl->Disable(GL_CULL_FACE);
+diff --git a/drivers/glrend/v1model.c b/drivers/glrend/v1model.c
+index f01ed8b..899b7fb 100644
+--- a/drivers/glrend/v1model.c
++++ b/drivers/glrend/v1model.c
+@@ -424,9 +424,58 @@ static br_boolean apply_state(br_renderer *renderer, const GladGLContext *gl)
+             break;
+     }
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    {
++        static br_uint_32 diag_state_count;
++        if(diag_state_count < 128) {
++            BrWarning("3DMM glrend apply-state n=%u opacity_raw=0x%08X opacity=%g m2v_t=(%g,%g,%g) mvp_row0=(%g,%g,%g,%g) mvp_row3=(%g,%g,%g,%g)",
++                      (unsigned)diag_state_count, (unsigned)(br_uint_32)renderer->state.current->surface.opacity,
++                      (double)BrScalarToFloat(renderer->state.current->surface.opacity),
++                      (double)BrScalarToFloat(renderer->state.current->matrix.model_to_view.m[3][0]),
++                      (double)BrScalarToFloat(renderer->state.current->matrix.model_to_view.m[3][1]),
++                      (double)BrScalarToFloat(renderer->state.current->matrix.model_to_view.m[3][2]),
++                      (double)model.mvp.m[0][0], (double)model.mvp.m[0][1], (double)model.mvp.m[0][2], (double)model.mvp.m[0][3],
++                      (double)model.mvp.m[3][0], (double)model.mvp.m[3][1], (double)model.mvp.m[3][2], (double)model.mvp.m[3][3]);
++            ++diag_state_count;
++        }
++    }
++#endif
++
+     return BufferRingGLPush(&renderer->model_ring, &model, sizeof(model));
+ }
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++static void RendererGL3DMMDiagDraw(const GladGLContext *gl, const char *kind, br_uint_32 primitives, br_uint_32 vertices)
++{
++    static br_uint_32 diag_draw_count;
++    if(diag_draw_count >= 128)
++        return;
++
++    GLint program = 0, fbo = 0, depth_func = 0, front_face = 0, cull_mode = 0;
++    GLint viewport[4] = {0, 0, 0, 0};
++    GLboolean depth_mask = GL_FALSE;
++    GLboolean colour_mask[4] = {GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE};
++    gl->GetIntegerv(GL_CURRENT_PROGRAM, &program);
++    gl->GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &fbo);
++    gl->GetIntegerv(GL_VIEWPORT, viewport);
++    gl->GetIntegerv(GL_DEPTH_FUNC, &depth_func);
++    gl->GetIntegerv(GL_FRONT_FACE, &front_face);
++    gl->GetIntegerv(GL_CULL_FACE_MODE, &cull_mode);
++    gl->GetBooleanv(GL_DEPTH_WRITEMASK, &depth_mask);
++    gl->GetBooleanv(GL_COLOR_WRITEMASK, colour_mask);
++    GLenum error = gl->GetError();
++
++    BrWarning("3DMM glrend draw n=%u kind=%s primitives=%u vertices=%u program=%d fbo=%d viewport=%d,%d,%d,%d depth=%d func=0x%X write=%d cull=%d mode=0x%X front=0x%X blend=%d colourmask=%d%d%d%d glerr=0x%X",
++              (unsigned)diag_draw_count, kind, (unsigned)primitives, (unsigned)vertices, (int)program, (int)fbo,
++              (int)viewport[0], (int)viewport[1], (int)viewport[2], (int)viewport[3],
++              (int)gl->IsEnabled(GL_DEPTH_TEST), (unsigned)depth_func, (int)depth_mask,
++              (int)gl->IsEnabled(GL_CULL_FACE), (unsigned)cull_mode, (unsigned)front_face,
++              (int)gl->IsEnabled(GL_BLEND), (int)colour_mask[0], (int)colour_mask[1],
++              (int)colour_mask[2], (int)colour_mask[3], (unsigned)error);
++    ++diag_draw_count;
++}
++#endif
++
+ void RendererGLRenderGroup(br_renderer *self, br_geometry_stored *stored, const gl_groupinfo *groupinfo)
+ {
+     const GladGLContext *gl = self->gl;
+@@ -448,6 +497,10 @@ void RendererGLRenderGroup(br_renderer *self, br_geometry_stored *stored, const
+             gl->DrawElements(GL_TRIANGLES, groupinfo->count, GL_UNSIGNED_SHORT, groupinfo->offset);
+     }
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    RendererGL3DMMDiagDraw(gl, "group", groupinfo->group->nfaces, groupinfo->group->nvertices);
++#endif
++
+     self->stats.face_group_count++;
+     self->stats.triangles_rendered_count += groupinfo->group->nfaces;
+     self->stats.triangles_drawn_count += groupinfo->group->nfaces;
+@@ -468,6 +521,10 @@ void RendererGLRenderTri(br_renderer *self, br_uintptr_t offset, const gl_groupi
+     gl->BindBuffer(GL_ARRAY_BUFFER, self->trans.vbo);
+     gl->DrawArrays(GL_TRIANGLES, (GLint)offset, 3);
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    RendererGL3DMMDiagDraw(gl, "triangle", 1, 3);
++#endif
++
+     self->stats.face_group_count++;
+     self->stats.triangles_rendered_count += 1;
+     self->stats.triangles_drawn_count += 1;

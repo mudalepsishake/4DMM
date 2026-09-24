@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     DOCPIC methods.
 
@@ -12,7 +12,7 @@ ASSERTNAME
 RTCLASS(DOCPIC)
 RTCLASS(DCPIC)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for picture document.
 ***************************************************************************/
 DOCPIC::DOCPIC(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCE(pdocb, pcfl, ctg, cno)
@@ -20,7 +20,7 @@ DOCPIC::DOCPIC(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno) : DOCE(pdocb, pcfl, ctg
     _ppic = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for picture document.
 ***************************************************************************/
 DOCPIC::~DOCPIC(void)
@@ -28,7 +28,7 @@ DOCPIC::~DOCPIC(void)
     ReleasePpo(&_ppic);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new picture document.
 ***************************************************************************/
 PDOCPIC DOCPIC::PdocpicNew(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
@@ -46,7 +46,7 @@ PDOCPIC DOCPIC::PdocpicNew(PDOCB pdocb, PCFL pcfl, CTG ctg, CNO cno)
     return pdocpic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new display gob for the document.
 ***************************************************************************/
 PDDG DOCPIC::PddgNew(PGCB pgcb)
@@ -54,7 +54,7 @@ PDDG DOCPIC::PddgNew(PGCB pgcb)
     return DCPIC::PdcpicNew(this, _ppic, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the size of the thing on file.
 ***************************************************************************/
 int32_t DOCPIC::_CbOnFile(void)
@@ -62,7 +62,7 @@ int32_t DOCPIC::_CbOnFile(void)
     return _ppic->CbOnFile();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the data out.
 ***************************************************************************/
 bool DOCPIC::_FWrite(PBLCK pblck, bool fRedirect)
@@ -73,7 +73,7 @@ bool DOCPIC::_FWrite(PBLCK pblck, bool fRedirect)
     return _ppic->FWrite(pblck);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the PIC.
 ***************************************************************************/
 bool DOCPIC::_FRead(PBLCK pblck)
@@ -86,7 +86,7 @@ bool DOCPIC::_FRead(PBLCK pblck)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DOCPIC.
 ***************************************************************************/
 void DOCPIC::AssertValid(uint32_t grf)
@@ -95,7 +95,7 @@ void DOCPIC::AssertValid(uint32_t grf)
     AssertPo(_ppic, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DOCPIC.
 ***************************************************************************/
 void DOCPIC::MarkMem(void)
@@ -104,9 +104,9 @@ void DOCPIC::MarkMem(void)
     DOCPIC_PAR::MarkMem();
     MarkMemObj(_ppic);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a pic display gob.
 ***************************************************************************/
 DCPIC::DCPIC(PDOCB pdocb, PPIC ppic, PGCB pgcb) : DDG(pdocb, pgcb)
@@ -114,7 +114,7 @@ DCPIC::DCPIC(PDOCB pdocb, PPIC ppic, PGCB pgcb) : DDG(pdocb, pgcb)
     _ppic = ppic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the min-max for a DCPIC.
 ***************************************************************************/
 void DCPIC::GetMinMax(RC *prcMinMax)
@@ -122,7 +122,7 @@ void DCPIC::GetMinMax(RC *prcMinMax)
     prcMinMax->Set(20, 20, kswMax, kswMax);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DCPIC.
 ***************************************************************************/
 PDCPIC DCPIC::PdcpicNew(PDOCB pdocb, PPIC ppic, PGCB pgcb)
@@ -143,7 +143,7 @@ PDCPIC DCPIC::PdcpicNew(PDOCB pdocb, PPIC ppic, PGCB pgcb)
     return pdcpic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the picture.
 ***************************************************************************/
 void DCPIC::Draw(PGNV pgnv, RC *prcClip)
@@ -159,7 +159,7 @@ void DCPIC::Draw(PGNV pgnv, RC *prcClip)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DCPIC.
 ***************************************************************************/
 void DCPIC::AssertValid(uint32_t grf)
@@ -168,7 +168,7 @@ void DCPIC::AssertValid(uint32_t grf)
     AssertPo(_ppic, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DCPIC.
 ***************************************************************************/
 void DCPIC::MarkMem(void)
@@ -177,4 +177,4 @@ void DCPIC::MarkMem(void)
     DCPIC_PAR::MarkMem();
     MarkMemObj(_ppic);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

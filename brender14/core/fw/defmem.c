@@ -1,0 +1,52 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: defmem.c 1.1 1997/12/10 16:41:06 jon Exp $
+ * $Locker: $
+ *
+ * Default memory handler that does nothing
+ */
+
+#include "brender.h"
+
+static void *BrNullAllocate(br_size_t size, br_uint_8 type)
+{
+    return 0;
+}
+
+static void *BrNullReallocate(void *ptr, br_size_t size, br_uint_8 type)
+{
+    return NULL;
+}
+
+static void BrNullFree(void *mem)
+{
+}
+
+static br_size_t BrNullInquire(br_uint_8 type)
+{
+    return 0;
+}
+
+static br_uint_32 BrNullAlign(br_uint_8 type)
+{
+    return 0;
+}
+
+/* BRender:
+ * Allocator structure
+ */
+br_allocator BrNullAllocator = {
+    .identifier = "Null",
+    .allocate   = BrNullAllocate,
+    .reallocate = BrNullReallocate,
+    .free       = BrNullFree,
+    .inquire    = BrNullInquire,
+    .align      = BrNullAlign,
+};
+
+// BRenderModern: Nope, we're using std now
+/// BRenderModern: *
+// BRender: * Global variable that can be overridden by linking something first
+// BRenderModern: */
+// BRenderModern: br_allocator *_BrDefaultAllocator = &BrNullAllocator;

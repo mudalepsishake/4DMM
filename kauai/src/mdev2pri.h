@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -19,17 +19,17 @@
 #include <thread>
 #include <atomic>
 
-// This corresponds to the Win95 MIDIEVENT structure (with no optional data).
-// We're using the older headers, so need to define our own.
+// 3DMMv1.0: This corresponds to the Win95 MIDIEVENT structure (with no optional data).
+// 3DMMv1.0: We're using the older headers, so need to define our own.
 struct MEV
 {
-    uint32_t dwDeltaTime; // midi ticks between this and previous event
-    uint32_t dwStreamID;  // reserved - must be zero
+    uint32_t dwDeltaTime; // 3DMMv1.0: midi ticks between this and previous event
+    uint32_t dwStreamID;  // 3DMMv1.0: reserved - must be zero
     uint32_t dwEvent;
 };
 typedef MEV *PMEV;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This is the midi stream cached object.
 ***************************************************************************/
 typedef class MDWS *PMDWS;
@@ -62,11 +62,11 @@ class MDWS : public MDWS_PAR
     void UnlockData(void);
 };
 
-// forward declaration
+// 3DMMv1.0: forward declaration
 typedef class MSMIX *PMSMIX;
 typedef class MISI *PMISI;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Midi stream queue.
 ***************************************************************************/
 typedef class MSQUE *PMSQUE;
@@ -79,8 +79,8 @@ class MSQUE : public MSQUE_PAR
     MARKMEM
 
   protected:
-    MUTX _mutx;        // restricts access to member variables
-    uint32_t _tsStart; // when we started the current sound
+    MUTX _mutx;        // 3DMMv1.0: restricts access to member variables
+    uint32_t _tsStart; // 3DMMv1.0: when we started the current sound
     PMSMIX _pmsmix;
 
     MSQUE(void);
@@ -101,7 +101,7 @@ class MSQUE : public MSQUE_PAR
     void Notify(PMDWS pmdws);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Midi Stream "mixer". It really just chooses which midi stream to play
     (based on the (spr, sii) priority).
 ***************************************************************************/
@@ -117,35 +117,35 @@ class MSMIX : public MSMIX_PAR
   protected:
     struct MSOS
     {
-        PMSQUE pmsque;     // the "channel" or queue that the sound is on
-        PMDWS pmdws;       // the sound
-        int32_t sii;       // its sound id (for a priority tie breaker)
-        int32_t spr;       // its priority
-        int32_t cactPlay;  // how many times to play the sound
-        uint32_t dts;      // length of this sound
-        uint32_t dtsStart; // position to start at
-        int32_t vlm;       // volume to play at
-        uint32_t tsStart;  // when we "started" the sound (minus dtsStart)
+        PMSQUE pmsque;     // 3DMMv1.0: the "channel" or queue that the sound is on
+        PMDWS pmdws;       // 3DMMv1.0: the sound
+        int32_t sii;       // 3DMMv1.0: its sound id (for a priority tie breaker)
+        int32_t spr;       // 3DMMv1.0: its priority
+        int32_t cactPlay;  // 3DMMv1.0: how many times to play the sound
+        uint32_t dts;      // 3DMMv1.0: length of this sound
+        uint32_t dtsStart; // 3DMMv1.0: position to start at
+        int32_t vlm;       // 3DMMv1.0: volume to play at
+        uint32_t tsStart;  // 3DMMv1.0: when we "started" the sound (minus dtsStart)
     };
 
-    // Mutex to protect our member variables
+    // 3DMMv1.0: Mutex to protect our member variables
     MUTX _mutx;
-    Signal _sgnlChanged; // to notify the thread that the sound list changed
+    Signal _sgnlChanged; // 3DMMv1.0: to notify the thread that the sound list changed
 
-    std::thread _thrdCleanup; // thread to terminate non-playing sounds
+    std::thread _thrdCleanup; // 3DMMv1.0: thread to terminate non-playing sounds
 
-    PMISI _pmisi;                 // the midi stream interface
-    PGL _pglmsos;                 // the list of current sounds, in priority order
-    std::atomic<int32_t> _cpvOut; // number of buffers submitted (0, 1, or 2)
+    PMISI _pmisi;                 // 3DMMv1.0: the midi stream interface
+    PGL _pglmsos;                 // 3DMMv1.0: the list of current sounds, in priority order
+    std::atomic<int32_t> _cpvOut; // 3DMMv1.0: number of buffers submitted (0, 1, or 2)
 
-    PGL _pglmevKey; // to accumulate state events for seeking
+    PGL _pglmevKey; // 3DMMv1.0: to accumulate state events for seeking
 
-    std::atomic<bool> _fPlaying; // whether we're currently playing the first stream
-    std::atomic<bool> _fWaiting; // we're waiting for our buffers to get returned
-    std::atomic<bool> _fDone;    // tells the aux thread to terminate
+    std::atomic<bool> _fPlaying; // 3DMMv1.0: whether we're currently playing the first stream
+    std::atomic<bool> _fWaiting; // 3DMMv1.0: we're waiting for our buffers to get returned
+    std::atomic<bool> _fDone;    // 3DMMv1.0: tells the aux thread to terminate
 
-    int32_t _vlmBase;  // the base device volume
-    int32_t _vlmSound; // the volume for the current sound
+    int32_t _vlmBase;  // 3DMMv1.0: the base device volume
+    int32_t _vlmSound; // 3DMMv1.0: the volume for the current sound
 
     MSMIX(void);
     bool _FInit(void);
@@ -172,17 +172,17 @@ class MSMIX : public MSMIX_PAR
     int32_t VlmCur(void);
 };
 
-// Define these so we can use old (msvc 2.1) header files
+// 3DMMv1.0: Define these so we can use old (msvc 2.1) header files
 #ifndef MEVT_SHORTMSG
-#define MEVT_SHORTMSG ((uint8_t)0x00) // parm = shortmsg for midiOutShortMsg
-#define MEVT_TEMPO ((uint8_t)0x01)    // parm = new tempo in microsec/qn
-#define MEVT_NOP ((uint8_t)0x02)      // parm = unused; does nothing
+#define MEVT_SHORTMSG ((uint8_t)0x00) // 3DMMv1.0: parm = shortmsg for midiOutShortMsg
+#define MEVT_TEMPO ((uint8_t)0x01)    // 3DMMv1.0: parm = new tempo in microsec/qn
+#define MEVT_NOP ((uint8_t)0x02)      // 3DMMv1.0: parm = unused; does nothing
 #define MIDIPROP_SET 0x80000000L
 #define MIDIPROP_GET 0x40000000L
 #define MIDIPROP_TIMEDIV 0x00000001L
-#endif //! MEVT_SHORTMSG
+#endif //! 3DMMv1.0: MEVT_SHORTMSG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The midi stream interface.
 ***************************************************************************/
 typedef void (*PFNMIDI)(uintptr_t luUser, void *pvData, uintptr_t luData);
@@ -203,4 +203,4 @@ class MISI : public MISI_PAR
     virtual void StopPlaying(void) = 0;
 };
 
-#endif //! MDEV2PRI_H
+#endif //! 3DMMv1.0: MDEV2PRI_H

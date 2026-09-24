@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -29,7 +29,7 @@ MiniaudioManager::~MiniaudioManager()
 
 ma_engine *MiniaudioManager::Pengine()
 {
-    // Initialise the miniaudio engine if we haven't already
+    // 3DMMEx: Initialise the miniaudio engine if we haven't already
     ma_engine *pengine = &_engine;
 
     _mutxInit.Enter();

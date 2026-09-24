@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -14,7 +14,7 @@ ASSERTNAME
 
 #include <fontconfig/fontconfig.h>
 
-// Find a default font to use when the requested font is unavailable
+// 3DMMEx: Find a default font to use when the requested font is unavailable
 static bool FFindSystemFont(PFNI pfniSystemFont)
 {
     AssertPo(pfniSystemFont, 0);
@@ -23,11 +23,11 @@ static bool FFindSystemFont(PFNI pfniSystemFont)
     FcPattern *ppattern = pvNil, *pmatch = pvNil;
     FcResult result;
 
-    ppattern = FcNameParse((FcChar8 *)"Helvetica,Arial,DejaVu Sans,Verdana,sans-serif");
+    ppattern = FcNameParse((FcChar8 *)"sans");
     if (ppattern == pvNil)
         goto LFail;
 
-    AssertDo(FcConfigSubstitute(pvNil, ppattern, FcMatchPattern), "FcConfigSubstitute returned false");
+    FcConfigSubstitute(pvNil, ppattern, FcMatchPattern);
     FcDefaultSubstitute(ppattern);
 
     pmatch = FcFontMatch(pvNil, ppattern, &result);
@@ -40,12 +40,6 @@ static bool FFindSystemFont(PFNI pfniSystemFont)
             stnFontFile.SetUtf8Sz((PU8SZ)pu8szFontFile);
             fRet = pfniSystemFont->FBuildFromPath(&stnFontFile);
         }
-    }
-
-    if (fRet)
-    {
-        Assert(pfniSystemFont->TExists() == tYes, "Found system font file does not exist");
-        Assert(!pfniSystemFont->FDir(), "Found system font file is a directory?");
     }
 
 LFail:
@@ -67,12 +61,12 @@ bool NTL::_FLoadFontTable()
     FcResult result;
     FNI fniSystemFont;
 
-    // Initialise Fontconfig
+    // 3DMMEx: Initialise Fontconfig
     AssertDo(pconfig = FcInitLoadConfigAndFonts(), "FcInitLoadConfigAndFonts failed");
     if (pvNil == pconfig)
         goto LFail;
 
-    // Find all available fonts
+    // 3DMMEx: Find all available fonts
     AssertDo(ppattern = FcPatternCreate(), "Could not create pattern");
     if (pvNil == ppattern)
         goto LFail;
@@ -85,7 +79,7 @@ bool NTL::_FLoadFontTable()
     if (pvNil == pfontset)
         goto LFail;
 
-    // Add each font to the font list
+    // 3DMMEx: Add each font to the font list
     for (int32_t ifont = 0; ifont < pfontset->nfont; ifont++)
     {
         FcPattern *pfont = pfontset->fonts[ifont];
@@ -99,12 +93,7 @@ bool NTL::_FLoadFontTable()
             FNI fniFontFile;
             if (fniFontFile.FBuildFromPath(&stnFontFile))
             {
-                if (!FAddFontFile(&fniFontFile))
-                {
-                    STN stnT;
-                    stnT.FFormatSz(PszLit("Could not load font: %s"), &stnFontFile);
-                    Warn(stnT.Psz());
-                }
+                AssertDo(FAddFontFile(&fniFontFile), "Could not add font file");
             }
         }
     }

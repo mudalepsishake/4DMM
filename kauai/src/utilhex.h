@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -10,7 +10,7 @@
 #ifndef UTILHEX_H
 #define UTILHEX_H
 
-/**
+/** 3DMMEx:
  * @brief Decode a hex string to a byte array.
  * If no buffer is given, the size of the encoded data will be returned.
  * @param   pszSrc      Hex-encoded string
@@ -20,7 +20,7 @@
  */
 bool FRgbFromHexString(PCSZ pszSrc, uint8_t *pbDst, size_t cbDst, size_t *pcbOut);
 
-/**
+/** 3DMMEx:
  * @brief Encode a byte array as a hex string
  * @param   pbSrc       Data to encode
  * @param   cbSrc       Length of data to encode
@@ -29,4 +29,4 @@ bool FRgbFromHexString(PCSZ pszSrc, uint8_t *pbDst, size_t cbDst, size_t *pcbOut
  **/
 bool FHexStringFromRgb(const uint8_t *pbSrc, size_t cbSrc, PSZ pszDst, size_t cchMax);
 
-#endif // UTILHEX_h
+#endif // 3DMMEx: UTILHEX_h

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -21,7 +21,7 @@ RTCLASS(FIL)
 RTCLASS(BLCK)
 RTCLASS(MSFIL)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a file.
 ***************************************************************************/
 FIL::FIL(FNI *pfni, uint32_t grffil)
@@ -30,18 +30,18 @@ FIL::FIL(FNI *pfni, uint32_t grffil)
     _fni = *pfni;
     _grffil = grffil;
 
-    // add it to the linked list
+    // 3DMMv1.0: add it to the linked list
     _mutxList.Enter();
     _Attach(&_pfilFirst);
     _mutxList.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor.  This is private.
 ***************************************************************************/
 FIL::~FIL(void)
 {
-    // make sure the file is closed.
+    // 3DMMv1.0: make sure the file is closed.
     _Close(fTrue);
 
     _mutxList.Enter();
@@ -49,7 +49,7 @@ FIL::~FIL(void)
     _mutxList.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to open an existing file.  Increments the open count.
 ***************************************************************************/
 PFIL FIL::PfilOpen(FNI *pfni, uint32_t grffil)
@@ -63,7 +63,7 @@ PFIL FIL::PfilOpen(FNI *pfni, uint32_t grffil)
         if (!pfil->FSetGrffil(grffil))
             return pvNil;
 
-        // increment the open count
+        // 3DMMv1.0: increment the open count
         pfil->AddRef();
         return pfil;
     }
@@ -83,7 +83,7 @@ PFIL FIL::PfilOpen(FNI *pfni, uint32_t grffil)
     return pfil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new file.  Increments the open count.
 ***************************************************************************/
 PFIL FIL::PfilCreate(FNI *pfni, uint32_t grffil)
@@ -113,7 +113,7 @@ PFIL FIL::PfilCreate(FNI *pfni, uint32_t grffil)
     return pfil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a temp file in the same directory as fni with
     the same ftg, or, if pfni is nil, in the standard place with vftgTemp.
     The file is not marked.
@@ -139,7 +139,7 @@ PFIL FIL::PfilCreateTemp(FNI *pfni)
     return PfilCreate(&fni, ffilTemp | ffilWriteEnable | ffilDenyWrite);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If we have the file indicated by fni open, returns the pfil, otherwise
     returns pvNil.  Doesn't affect the open count.
 ***************************************************************************/
@@ -164,7 +164,7 @@ PFIL FIL::PfilFromFni(FNI *pfni)
     return pfil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the file flags according to grffil and grffilMask.  Write enabling
     is only set, never cleared.  Same with marking.
 ***************************************************************************/
@@ -177,18 +177,18 @@ bool FIL::FSetGrffil(uint32_t grffil, uint32_t grffilMask)
 
     _mutx.Enter();
 
-    // make sure the permissions are high enough
+    // 3DMMv1.0: make sure the permissions are high enough
     if ((~_grffil & grffil & kgrffilPerm) && !_FOpen(fFalse, grffil))
     {
         PushErc(ercFilePerm);
         goto LRet;
     }
 
-    // adjust the mark flag
+    // 3DMMv1.0: adjust the mark flag
     if (grffil & ffilMark)
         _grffil |= ffilMark;
 
-    // adjust the temp flag
+    // 3DMMv1.0: adjust the temp flag
     if (grffilMask & ffilTemp)
     {
         if (grffil & ffilTemp)
@@ -204,7 +204,7 @@ LRet:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrement the open count.  If it is zero and the file isn't marked,
     the file is closed.
 ***************************************************************************/
@@ -221,7 +221,7 @@ void FIL::Release(void)
         delete this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a string representing the path of the file.
 ***************************************************************************/
 void FIL::GetStnPath(PSTN pstn)
@@ -233,7 +233,7 @@ void FIL::GetStnPath(PSTN pstn)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the temporary status of a file.
 ***************************************************************************/
 void FIL::SetTemp(bool fTemp)
@@ -248,7 +248,7 @@ void FIL::SetTemp(bool fTemp)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Rename the file to the given file name.  If an open file exists with
     the same name, we rename it and swap names with it as a temporary file.
     Otherwise, we delete any existing file with the same name.  The rules
@@ -271,14 +271,14 @@ bool FIL::FSetFni(FNI *pfni)
         return fTrue;
     }
 
-    // delete any existing file with this name, then rename our
-    // file to the given name
+    // 3DMMv1.0: delete any existing file with this name, then rename our
+    // 3DMMv1.0: file to the given name
     if (pfni->TExists() != tNo)
         pfni->FDelete();
     return FRename(pfni);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to clear the marks for files.
 ***************************************************************************/
 void FIL::ClearMarks(void)
@@ -294,7 +294,7 @@ void FIL::ClearMarks(void)
     _mutxList.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to close any files that are unmarked and have 0 open count.
 ***************************************************************************/
 void FIL::CloseUnmarked(void)
@@ -312,7 +312,7 @@ void FIL::CloseUnmarked(void)
     _mutxList.Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to close all files.
 ***************************************************************************/
 void FIL::ShutDown(void)
@@ -329,7 +329,7 @@ void FIL::ShutDown(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a pfil.
 ***************************************************************************/
 void FIL::AssertValid(uint32_t grf)
@@ -352,9 +352,9 @@ void FIL::AssertValid(uint32_t grf)
 
     Assert(this == pfil, "not in file list");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if the given range is within cbTot.
 ***************************************************************************/
 kpriv bool _FRangeIn(int32_t cbTot, int32_t cb, int32_t ib)
@@ -362,7 +362,7 @@ kpriv bool _FRangeIn(int32_t cbTot, int32_t cb, int32_t ib)
     return FIn(ib, 0, cbTot + 1) && FIn(cb, 0, cbTot - ib + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a piece of a flo into pv.
 ***************************************************************************/
 bool FLO::FReadRgb(void *pv, int32_t cbRead, FP dfp)
@@ -380,7 +380,7 @@ bool FLO::FReadRgb(void *pv, int32_t cbRead, FP dfp)
     return this->pfil->FReadRgb(pv, cbRead, this->fp + dfp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a piece of a flo from pv.
 ***************************************************************************/
 bool FLO::FWriteRgb(const void *pv, int32_t cbWrite, FP dfp)
@@ -398,7 +398,7 @@ bool FLO::FWriteRgb(const void *pv, int32_t cbWrite, FP dfp)
     return this->pfil->FWriteRgb(pv, cbWrite, this->fp + dfp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy data from this flo to another.
 ***************************************************************************/
 bool FLO::FCopy(PFLO pfloDst)
@@ -426,10 +426,10 @@ bool FLO::FCopy(PFLO pfloDst)
     {
         if (cbBlock > this->cb - cbT)
             cbBlock = this->cb - cbT;
-        // read the source
+        // 3DMMv1.0: read the source
         if (!this->pfil->FReadRgb(pv, cbBlock, this->fp + cbT))
             goto LFail;
-        // write to the dest
+        // 3DMMv1.0: write to the dest
         if (!pfloDst->pfil->FWriteRgb(pv, cbBlock, pfloDst->fp + cbT))
             goto LFail;
     }
@@ -442,7 +442,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate an hq and read the flo into it.
 ***************************************************************************/
 bool FLO::FReadHq(HQ *phq, int32_t cbRead, FP dfp)
@@ -466,7 +466,7 @@ bool FLO::FReadHq(HQ *phq, int32_t cbRead, FP dfp)
     return fT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the contents of an hq to the flo.
 ***************************************************************************/
 bool FLO::FWriteHq(HQ hq, int32_t dfp)
@@ -487,7 +487,7 @@ bool FLO::FWriteHq(HQ hq, int32_t dfp)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translate the text in a flo from the given osk to the current osk.
     If the text changes, creates a temp file and redirects the flo to the
     temp file (and releases a ref count on the pfil).
@@ -506,7 +506,7 @@ bool FLO::FTranslate(int16_t osk)
     FP fpSrc, fpDst;
     bool fRet = fFalse;
 
-    // look for a unicode byte order signature
+    // 3DMMv1.0: look for a unicode byte order signature
     oskSig = koskSbWin;
     if (this->cb >= SIZEOF(wchar) && this->cb % SIZEOF(wchar) == 0)
     {
@@ -528,7 +528,7 @@ bool FLO::FTranslate(int16_t osk)
         }
     }
 
-    // determine the probable osk
+    // 3DMMv1.0: determine the probable osk
     if (oskSig != osk)
     {
         if (oskNil == osk)
@@ -563,11 +563,11 @@ bool FLO::FTranslate(int16_t osk)
         if (cbBlock > this->cb - cbT)
             cbBlock = this->cb - cbT;
 
-        // read the source
+        // 3DMMv1.0: read the source
         if (!this->pfil->FReadRgbSeq(pvSrc, cbBlock, &fpSrc))
             goto LFail;
 
-        // translate
+        // 3DMMv1.0: translate
         cch = CchTranslateRgb(pvSrc, cbBlock, osk, pvNil, 0);
         if (cch <= 0)
             continue;
@@ -586,7 +586,7 @@ bool FLO::FTranslate(int16_t osk)
             goto LFail;
         }
 
-        // write to the dest
+        // 3DMMv1.0: write to the dest
         if (!pfilNew->FWriteRgbSeq(pvDst, cch * SIZEOF(achar), &fpDst))
             goto LFail;
     }
@@ -608,7 +608,7 @@ LFail:
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert this is a valif FLO.
 ***************************************************************************/
 void FLO::AssertValid(uint32_t grfflo)
@@ -625,9 +625,9 @@ void FLO::AssertValid(uint32_t grfflo)
             AssertIn(fp + cb, cb, fpMac + 1);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a data block.
 ***************************************************************************/
 BLCK::BLCK(PFLO pflo, bool fPacked)
@@ -642,7 +642,7 @@ BLCK::BLCK(PFLO pflo, bool fPacked)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a data block.
 ***************************************************************************/
 BLCK::BLCK(PFIL pfil, FP fp, int32_t cb, bool fPacked)
@@ -659,7 +659,7 @@ BLCK::BLCK(PFIL pfil, FP fp, int32_t cb, bool fPacked)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Another constructor for a data block.  Assumes ownership of the hq
     (and sets *phq to hqNil).
 ***************************************************************************/
@@ -678,7 +678,7 @@ BLCK::BLCK(HQ *phq, bool fPacked)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Another constructor for a data block.
 ***************************************************************************/
 BLCK::BLCK(void)
@@ -690,7 +690,7 @@ BLCK::BLCK(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The destructor.
 ***************************************************************************/
 BLCK::~BLCK(void)
@@ -699,7 +699,7 @@ BLCK::~BLCK(void)
     Free();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the data block to refer to the given flo.
 ***************************************************************************/
 void BLCK::Set(PFLO pflo, bool fPacked)
@@ -714,7 +714,7 @@ void BLCK::Set(PFLO pflo, bool fPacked)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the data block to refer to the given range on the file.
 ***************************************************************************/
 void BLCK::Set(PFIL pfil, FP fp, int32_t cb, bool fPacked)
@@ -731,7 +731,7 @@ void BLCK::Set(PFIL pfil, FP fp, int32_t cb, bool fPacked)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the data block to the given hq.  Assumes ownership of the hq and
     sets *phq to hqNil.
 ***************************************************************************/
@@ -750,7 +750,7 @@ void BLCK::SetHq(HQ *phq, bool fPacked)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Free the block (make it empty).
 ***************************************************************************/
 void BLCK::Free(void)
@@ -762,7 +762,7 @@ void BLCK::Free(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return an hq to the data.  If the blck is a memory based block, the
     block is also "freed".  If the block hasn't been packed or unpacked
     or had its min or lim moved, the hq returned is the one originally
@@ -806,7 +806,7 @@ HQ BLCK::HqFree(bool fPackedOk)
     return hqNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the length of the data block.
 ***************************************************************************/
 int32_t BLCK::Cb(bool fPackedOk)
@@ -820,7 +820,7 @@ int32_t BLCK::Cb(bool fPackedOk)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a temporary buffer.
 ***************************************************************************/
 bool BLCK::FSetTemp(int32_t cb, bool fForceFile)
@@ -828,9 +828,9 @@ bool BLCK::FSetTemp(int32_t cb, bool fForceFile)
     AssertThis(0);
     PFIL pfil;
 
-    if (!fForceFile && cb < (1L << 23) /* 8 MB */)
+    if (!fForceFile && cb < (1L << 23) /* 3DMMv1.0: 8 MB */)
     {
-        // try to allocate enough mem
+        // 3DMMv1.0: try to allocate enough mem
         HQ hq;
 
         if (FAllocHq(&hq, cb, fmemNil, mprNormal))
@@ -849,7 +849,7 @@ bool BLCK::FSetTemp(int32_t cb, bool fForceFile)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the beginning of the block.  Doesn't change the location of the
     end of the block.  Fails if you try to move before the beginning of
     the physical storage or after the lim of the block.
@@ -878,7 +878,7 @@ bool BLCK::FMoveMin(int32_t dib)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the end of the block.  Doesn't change the location of the
     beginning of the block.  Fails if you try to move before the min of the
     block or after the end of the physical storage.
@@ -906,7 +906,7 @@ bool BLCK::FMoveLim(int32_t dib)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a range of bytes from the data block.
 ***************************************************************************/
 bool BLCK::FReadRgb(void *pv, int32_t cb, int32_t ib, bool fPackedOk)
@@ -939,7 +939,7 @@ bool BLCK::FReadRgb(void *pv, int32_t cb, int32_t ib, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write a range of bytes to the data block.
 ***************************************************************************/
 bool BLCK::FWriteRgb(const void *pv, int32_t cb, int32_t ib, bool fPackedOk)
@@ -972,7 +972,7 @@ bool BLCK::FWriteRgb(const void *pv, int32_t cb, int32_t ib, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a range of bytes from the data block and put it in an hq.
 ***************************************************************************/
 bool BLCK::FReadHq(HQ *phq, int32_t cb, int32_t ib, bool fPackedOk)
@@ -1008,7 +1008,7 @@ bool BLCK::FReadHq(HQ *phq, int32_t cb, int32_t ib, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write an hq to the data block.
 ***************************************************************************/
 bool BLCK::FWriteHq(HQ hq, int32_t ib, bool fPackedOk)
@@ -1042,7 +1042,7 @@ bool BLCK::FWriteHq(HQ hq, int32_t ib, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the block to a flo.
 ***************************************************************************/
 bool BLCK::FWriteToFlo(PFLO pfloDst, bool fPackedOk)
@@ -1076,7 +1076,7 @@ bool BLCK::FWriteToFlo(PFLO pfloDst, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write this block to another block.
 ***************************************************************************/
 bool BLCK::FWriteToBlck(PBLCK pblckDst, bool fPackedOk)
@@ -1111,7 +1111,7 @@ bool BLCK::FWriteToBlck(PBLCK pblckDst, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a flo to the data in the block.
 ***************************************************************************/
 bool BLCK::FGetFlo(PFLO pflo, bool fPackedOk)
@@ -1157,7 +1157,7 @@ bool BLCK::FGetFlo(PFLO pflo, bool fPackedOk)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the block is packed. If the block is compressed, but
     determining the compression type failed, *pcfmt is set to cfmtNil and
     true is returned.
@@ -1175,7 +1175,7 @@ bool BLCK::FPacked(int32_t *pcfmt)
     return _fPacked;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the block is unpacked, pack it. If cfmt is cfmtNil, use the default
     packing format, otherwise use the one specified. If the block is
     already packed, this doesn't change the packing format.
@@ -1225,7 +1225,7 @@ bool BLCK::FPackData(int32_t cfmt)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the block is packed, unpack it.
 ***************************************************************************/
 bool BLCK::FUnpackData(void)
@@ -1273,7 +1273,7 @@ bool BLCK::FUnpackData(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the amount of memory the block is using (roughly).
 ***************************************************************************/
 int32_t BLCK::CbMem(void)
@@ -1286,7 +1286,7 @@ int32_t BLCK::CbMem(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a BLCK.
 ***************************************************************************/
 void BLCK::AssertValid(uint32_t grfblck)
@@ -1313,7 +1313,7 @@ void BLCK::AssertValid(uint32_t grfblck)
     Assert(!_fPacked || !(grfblck & fblckUnpacked), "block should be unpacked");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the BLCK.
 ***************************************************************************/
 void BLCK::MarkMem(void)
@@ -1322,9 +1322,9 @@ void BLCK::MarkMem(void)
     BLCK_PAR::MarkMem();
     MarkHq(_hq);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a file based message sink.
 ***************************************************************************/
 MSFIL::MSFIL(PFIL pfil)
@@ -1338,7 +1338,7 @@ MSFIL::MSFIL(PFIL pfil)
         SetFile(pfil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a file based message sink.
 ***************************************************************************/
 MSFIL::~MSFIL(void)
@@ -1348,7 +1348,7 @@ MSFIL::~MSFIL(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a MSFIL.
 ***************************************************************************/
 void MSFIL::AssertValid(uint32_t grf)
@@ -1357,9 +1357,9 @@ void MSFIL::AssertValid(uint32_t grf)
     AssertNilOrPo(_pfil, 0);
     Assert(_fError || pvNil == _pfil || _fpCur == _pfil->FpMac() || _pfil->ElError() != elNil, "bad _fpCur");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the current file to use for the MSFIL.
 ***************************************************************************/
 void MSFIL::SetFile(PFIL pfil)
@@ -1379,11 +1379,11 @@ void MSFIL::SetFile(PFIL pfil)
 #ifdef UNICODE
         wchar chw = kchwUnicode;
         _fError |= !_pfil->FWriteRgbSeq(&chw, SIZEOF(wchar), &_fpCur);
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the output file and give the caller our reference count on it.
 ***************************************************************************/
 PFIL MSFIL::PfilRelease(void)
@@ -1394,7 +1394,7 @@ PFIL MSFIL::PfilRelease(void)
     return pfil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump a line to the file.
 ***************************************************************************/
 void MSFIL::ReportLine(const PCSZ psz)
@@ -1414,7 +1414,7 @@ void MSFIL::ReportLine(const PCSZ psz)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump some text to the file.
 ***************************************************************************/
 void MSFIL::Report(PCSZ psz)
@@ -1435,7 +1435,7 @@ void MSFIL::Report(PCSZ psz)
     _fError |= !_pfil->FWriteRgbSeq(psz, CchSz(psz) * SIZEOF(achar), &_fpCur);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether there has been an error writing to this message sink.
 ***************************************************************************/
 bool MSFIL::FError(void)

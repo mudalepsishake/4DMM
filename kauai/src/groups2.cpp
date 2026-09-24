@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ******
     Project: Kauai
     Reviewed:
@@ -29,7 +29,7 @@ RTCLASS(GSTB)
 RTCLASS(GST)
 RTCLASS(AST)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a base string table.
 ***************************************************************************/
 GSTB::GSTB(int32_t cbExtra, uint32_t grfgst)
@@ -40,14 +40,14 @@ GSTB::GSTB(int32_t cbExtra, uint32_t grfgst)
     _cbEntry = cbExtra + SIZEOF(int32_t);
     _cbstFree = (grfgst & fgstAllowFree) ? 0 : cvNil;
 
-    // use some reasonable values for _cbMinGrow* - code can always set
-    // set these to something else
+    // 3DMMv1.0: use some reasonable values for _cbMinGrow* - code can always set
+    // 3DMMv1.0: set these to something else
     _cbMinGrow1 = 120;
     _cbMinGrow2 = 12 * _cbEntry;
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate the string table.
 ***************************************************************************/
 bool GSTB::_FDup(PGSTB pgstbDst)
@@ -67,7 +67,7 @@ bool GSTB::_FDup(PGSTB pgstbDst)
     return fTrue;
 }
 
-// string table on file
+// 3DMMv1.0: string table on file
 struct GSTF
 {
     int16_t bo;
@@ -80,7 +80,7 @@ struct GSTF
 VERIFY_STRUCT_SIZE(GSTF, 20);
 const BOM kbomGstf = 0x5FF00000L;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the amount of space on file needed for the string table.
 ***************************************************************************/
 int32_t GSTB::CbOnFile(void)
@@ -89,7 +89,7 @@ int32_t GSTB::CbOnFile(void)
     return SIZEOF(GSTF) + LwMul(_ivMac, _cbEntry) + _bstMac;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the string table to disk.  It is the client's responsibility to
     ensure that the extra data has the given byte order (bo) and osk.
     If the osk has a different character size than the current one, the
@@ -148,7 +148,7 @@ bool GSTB::FWrite(PBLCK pblck, int16_t bo, int16_t osk)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read string table data from a block.
 ***************************************************************************/
 bool GSTB::_FRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -183,8 +183,8 @@ bool GSTB::_FRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
         SwapBytesBom(&gstf, kbomGstf);
 
     cb -= SIZEOF(gstf);
-    // don't use LwMul, in case the file is corrupted, we don't want to assert,
-    // we should detect it below.
+    // 3DMMv1.0: don't use LwMul, in case the file is corrupted, we don't want to assert,
+    // 3DMMv1.0: we should detect it below.
     cbT = gstf.cbEntry * gstf.ibstMac;
     if (gstf.bo != kboCur || !FIn(gstf.cbEntry, SIZEOF(int32_t), kcbMax) || (gstf.cbEntry % SIZEOF(int32_t)) != 0 ||
         !FIn(gstf.ibstMac, 0, kcbMax) || !FIn(gstf.bstMac, gstf.ibstMac - LwMax(0, gstf.cbstFree), kcbMax) ||
@@ -215,7 +215,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ensures that there is room to add at least cstnAdd new strings with
     a total of cchAdd characters.  If there is more than enough room and
     fgrpShrink is passed, the GSTB may shrink.
@@ -241,7 +241,7 @@ bool GSTB::FEnsureSpace(int32_t cstnAdd, int32_t cchAdd, uint32_t grfgrp)
     return _FEnsureSizes(_bstMac + cbAdd + cstnAdd, LwMul(_ivMac + cbstAdd, _cbEntry), grfgrp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the minimum that a GSTB should grow by.
 ***************************************************************************/
 void GSTB::SetMinGrow(int32_t cstnAdd, int32_t cchAdd)
@@ -254,7 +254,7 @@ void GSTB::SetMinGrow(int32_t cstnAdd, int32_t cchAdd)
     _cbMinGrow2 = LwMul(cstnAdd, _cbEntry);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append an stn to string table.
 ***************************************************************************/
 bool GSTB::FAddStn(PSTN pstn, void *pvExtra, int32_t *pistn)
@@ -265,7 +265,7 @@ bool GSTB::FAddStn(PSTN pstn, void *pvExtra, int32_t *pistn)
     return FAddRgch(pstn->Prgch(), pstn->Cch(), pvExtra, pistn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the ith string.
 ***************************************************************************/
 bool GSTB::FPutRgch(int32_t istn, const achar *prgch, int32_t cch)
@@ -291,11 +291,11 @@ bool GSTB::FPutRgch(int32_t istn, const achar *prgch, int32_t cch)
         return fFalse;
     }
 
-    // remove the old one
+    // 3DMMv1.0: remove the old one
     bstOld = _Bst(istn);
     _RemoveSt(bstOld);
 
-    // append the new one
+    // 3DMMv1.0: append the new one
     *_Qbst(istn) = _bstMac;
     _AppendRgch(prgch, cch);
 
@@ -304,7 +304,7 @@ LDone:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the ith string with stn.
 ***************************************************************************/
 bool GSTB::FPutStn(int32_t istn, PSTN pstn)
@@ -315,7 +315,7 @@ bool GSTB::FPutStn(int32_t istn, PSTN pstn)
     return FPutRgch(istn, pstn->Prgch(), pstn->Cch());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get up to cchMax characters for the istn'th string.
 ***************************************************************************/
 void GSTB::GetRgch(int32_t istn, achar *prgch, int32_t cchMax, int32_t *pcch)
@@ -332,7 +332,7 @@ void GSTB::GetRgch(int32_t istn, achar *prgch, int32_t cchMax, int32_t *pcch)
     CopyPb(PrgchSt(qst), prgch, *pcch * SIZEOF(achar));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the ith string.
 ***************************************************************************/
 void GSTB::GetStn(int32_t istn, PSTN pstn)
@@ -345,7 +345,7 @@ void GSTB::GetStn(int32_t istn, PSTN pstn)
     pstn->SetSt(_Qst(istn));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the given stn in the string table.
 ***************************************************************************/
 bool GSTB::FFindStn(PSTN pstn, int32_t *pistn, uint32_t grfgst)
@@ -356,7 +356,7 @@ bool GSTB::FFindStn(PSTN pstn, int32_t *pistn, uint32_t grfgst)
     return FFindRgch(pstn->Prgch(), pstn->Cch(), pistn, grfgst);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Search for the string in the string table.  This version does a linear
     search.  GST overrides this to do a binary search if fgstSorted is
     passed in grfgst.
@@ -391,7 +391,7 @@ bool GSTB::FFindRgch(const achar *prgch, int32_t cch, int32_t *pistn, uint32_t g
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the string with the given extra data in the string table.
 ***************************************************************************/
 bool GSTB::FFindExtra(const void *prgbFind, PSTN pstn, int32_t *pistn)
@@ -432,7 +432,7 @@ bool GSTB::FFindExtra(const void *prgbFind, PSTN pstn, int32_t *pistn)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the extra data for element istn.
 ***************************************************************************/
 void GSTB::GetExtra(int32_t istn, void *pv)
@@ -449,7 +449,7 @@ void GSTB::GetExtra(int32_t istn, void *pv)
     CopyPb(qb, pv, _cbEntry - SIZEOF(int32_t));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the extra data for element istn.
 ***************************************************************************/
 void GSTB::PutExtra(int32_t istn, void *pv)
@@ -467,7 +467,7 @@ void GSTB::PutExtra(int32_t istn, void *pv)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return a volatile pointer to the string given the ibst (not the bst).
 ***************************************************************************/
 achar *GSTB::_Qst(int32_t ibst)
@@ -478,7 +478,7 @@ achar *GSTB::_Qst(int32_t ibst)
     return (achar *)_Qb1(bst);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Private api to append the string.  It's assumed that the first block
     is already big enough to accomodate the string.
 ***************************************************************************/
@@ -496,7 +496,7 @@ void GSTB::_AppendRgch(const achar *prgch, int32_t cch)
     _bstMac += (cch + 1) * SIZEOF(achar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Private api to remove the string.
 ***************************************************************************/
 void GSTB::_RemoveSt(int32_t bst)
@@ -526,7 +526,7 @@ void GSTB::_RemoveSt(int32_t bst)
     _bstMac -= cb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swap the bytes in the BST values.  Note that each bst is followed
     by the extra data, so we can't just use SwapBytesRglw.
 ***************************************************************************/
@@ -544,7 +544,7 @@ void GSTB::_SwapBytesRgbst(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translate the strings to/from the platform osk.  This only works if
     CbCharOsk(osk) == CbCharOsk(koskCur) (it asserts otherwise).
 ***************************************************************************/
@@ -568,7 +568,7 @@ void GSTB::_TranslateGrst(int16_t osk, bool fToCur)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translate the strings to the current osk.
 ***************************************************************************/
 bool GSTB::_FTranslateGrst(int16_t osk)
@@ -646,7 +646,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns true iff ibst is out of range or the corresponding bst is
     bvNil.
 ***************************************************************************/
@@ -663,7 +663,7 @@ bool GSTB::FFree(int32_t istn)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a string table.
 ***************************************************************************/
 void GSTB::AssertValid(uint32_t grfobj)
@@ -682,9 +682,9 @@ void GSTB::AssertValid(uint32_t grfobj)
 
     if (grfobj & fobjAssertFull)
     {
-        // it would be nice to assert that no strings overlap each other,
-        // but that's hard to do in linear time, so just assert that the
-        // grst is the correct size.
+        // 3DMMv1.0: it would be nice to assert that no strings overlap each other,
+        // 3DMMv1.0: but that's hard to do in linear time, so just assert that the
+        // 3DMMv1.0: grst is the correct size.
         for (cbstFree = cchTot = ibst = 0; ibst < _ivMac; ibst++)
         {
             bst = _Bst(ibst);
@@ -702,9 +702,9 @@ void GSTB::AssertValid(uint32_t grfobj)
         Assert(cbstFree == _cbstFree || _cbstFree == cvNil && cbstFree == 0, "bad _cbstFree");
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new string table and ensure that it has space for cstnInit
     strings, totalling cchInit characters.
 ***************************************************************************/
@@ -727,7 +727,7 @@ PGST GST::PgstNew(int32_t cbExtra, int32_t cstnInit, int32_t cchInit)
     return pgst;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a string table from a block and return it.
 ***************************************************************************/
 PGST GST::PgstRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -752,7 +752,7 @@ PGST GST::PgstRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     return pgst;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a string table from file and return it.
 ***************************************************************************/
 PGST GST::PgstRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
@@ -761,7 +761,7 @@ PGST GST::PgstRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
     return PgstRead(&blck, pbo, posk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate this GST.
 ***************************************************************************/
 PGST GST::PgstDup(void)
@@ -779,7 +779,7 @@ PGST GST::PgstDup(void)
     return pgst;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append a string to the string table.
 ***************************************************************************/
 bool GST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t *pistn)
@@ -800,7 +800,7 @@ bool GST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the given string and put its location in *pistn.  If it's not
     there, fill *pistn with where it would be.  If fgstSorted or fgstUserSorted
     is passed in, this does a binary search for the string; otherwise it
@@ -816,7 +816,7 @@ bool GST::FFindRgch(const achar *prgch, int32_t cch, int32_t *pistn, uint32_t gr
     if (!(grfgst & (fgstSorted | fgstUserSorted)))
         return GSTB::FFindRgch(prgch, cch, pistn, grfgst);
 
-    // the table should be sorted, so do a binary search
+    // 3DMMv1.0: the table should be sorted, so do a binary search
     int32_t ivMin, ivLim, iv;
     uint32_t fcmp;
     achar *qst;
@@ -841,12 +841,12 @@ bool GST::FFindRgch(const achar *prgch, int32_t cch, int32_t *pistn, uint32_t gr
             return fTrue;
         }
     }
-    // this is where it would be
+    // 3DMMv1.0: this is where it would be
     *pistn = ivMin;
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a new entry into the string text.
 ***************************************************************************/
 bool GST::FInsertRgch(int32_t istn, const achar *prgch, int32_t cch, const void *pvExtra)
@@ -864,7 +864,7 @@ bool GST::FInsertRgch(int32_t istn, const achar *prgch, int32_t cch, const void 
         return fFalse;
     }
 
-    // make room for the entry
+    // 3DMMv1.0: make room for the entry
     qb = (uint8_t *)_Qbst(istn);
     if (istn < _ivMac)
         BltPb(qb, qb + _cbEntry, LwMul(_ivMac - istn, _cbEntry));
@@ -881,14 +881,14 @@ bool GST::FInsertRgch(int32_t istn, const achar *prgch, int32_t cch, const void 
         Assert(pvNil == pvExtra, "cbExtra is zero");
 
     _ivMac++;
-    // put the string in
+    // 3DMMv1.0: put the string in
     _AppendRgch(prgch, cch);
 
     AssertThis(fobjAssertFull);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert an stn into the string table
 ***************************************************************************/
 bool GST::FInsertStn(int32_t istn, PSTN pstn, const void *pvExtra)
@@ -901,7 +901,7 @@ bool GST::FInsertStn(int32_t istn, PSTN pstn, const void *pvExtra)
     return FInsertRgch(istn, pstn->Prgch(), pstn->Cch(), pvExtra);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the string at location istn.
 ***************************************************************************/
 void GST::Delete(int32_t istn)
@@ -921,7 +921,7 @@ void GST::Delete(int32_t istn)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the entry at ivSrc to be immediately before the element that is
     currently at ivTarget.  If ivTarget > ivSrc, the entry actually ends
     up at (ivTarget - 1) and the entry at ivTarget doesn't move.  If
@@ -940,7 +940,7 @@ void GST::Move(int32_t ivSrc, int32_t ivTarget)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a string table.
 ***************************************************************************/
 void GST::AssertValid(uint32_t grfobj)
@@ -948,9 +948,9 @@ void GST::AssertValid(uint32_t grfobj)
     GST_PAR::AssertValid(grfobj);
     AssertVar(_cbstFree == cvNil, "bad _cbstFree in GST", &_cbstFree);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocate a new allocated string table and ensure that it has space for
     cstnInit strings, totalling cchInit characters.
 ***************************************************************************/
@@ -973,7 +973,7 @@ PAST AST::PastNew(int32_t cbExtra, int32_t cstnInit, int32_t cchInit)
     return past;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read an allocated string table from a block and return it.
 ***************************************************************************/
 PAST AST::PastRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
@@ -998,7 +998,7 @@ PAST AST::PastRead(PBLCK pblck, int16_t *pbo, int16_t *posk)
     return past;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read an allocated string table from file and return it.
 ***************************************************************************/
 PAST AST::PastRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
@@ -1007,7 +1007,7 @@ PAST AST::PastRead(PFIL pfil, FP fp, int32_t cb, int16_t *pbo, int16_t *posk)
     return PastRead(&blck, pbo, posk);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Duplicate this AST.
 ***************************************************************************/
 PAST AST::PastDup(void)
@@ -1025,7 +1025,7 @@ PAST AST::PastDup(void)
     return past;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append a string to the allocated string table.
 ***************************************************************************/
 bool AST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t *pistn)
@@ -1041,7 +1041,7 @@ bool AST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t
 
     if (_cbstFree > 0)
     {
-        /* find the first free bst */
+        /* 3DMMv1.0: find the first free bst */
         qb = _Qb2(0);
         for (ibst = 0; ibst < _ivMac; ibst++, qb += _cbEntry)
         {
@@ -1064,7 +1064,7 @@ bool AST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t
         return fFalse;
     }
 
-    // fill in the bst and extra data
+    // 3DMMv1.0: fill in the bst and extra data
     qb = (uint8_t *)_Qbst(ibst);
     *(int32_t *)qb = _bstMac;
     if (SIZEOF(int32_t) < _cbEntry)
@@ -1078,7 +1078,7 @@ bool AST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t
     else
         Assert(pvNil == pvExtra, "cbExtra is zero");
 
-    // put the string in
+    // 3DMMv1.0: put the string in
     _AppendRgch(prgch, cch);
 
     if (pvNil != pistn)
@@ -1087,7 +1087,7 @@ bool AST::FAddRgch(const achar *prgch, int32_t cch, const void *pvExtra, int32_t
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the string at location istn.
 ***************************************************************************/
 void AST::Delete(int32_t istn)
@@ -1104,7 +1104,7 @@ void AST::Delete(int32_t istn)
 
     if (istn == _ivMac - 1)
     {
-        // move _ivMac back past any free entries on the end
+        // 3DMMv1.0: move _ivMac back past any free entries on the end
         while (--_ivMac > 0 && *(int32_t *)(qb -= _cbEntry) == bvNil)
             _cbstFree--;
         TrashPvCb(_Qbst(_ivMac), LwMul(istn - _ivMac + 1, _cbEntry));
@@ -1120,7 +1120,7 @@ void AST::Delete(int32_t istn)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Validate a string table.
 ***************************************************************************/
 void AST::AssertValid(uint32_t grfobj)
@@ -1128,4 +1128,4 @@ void AST::AssertValid(uint32_t grfobj)
     AST_PAR::AssertValid(grfobj);
     AssertIn(_cbstFree, 0, LwMax(1, _ivMac));
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

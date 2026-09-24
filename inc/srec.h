@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     srec.h: Sound Recording class
 
@@ -16,13 +16,13 @@
 
 #ifdef HAS_AUDIOMAN
 #include "audioman.h"
-#endif // HAS_AUDIOMAN
+#endif // 3DMMEx: HAS_AUDIOMAN
 
 #ifdef KAUAI_SDL
 #include <miniaudio.h>
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
-/****************************************
+/** 3DMMv1.0: **************************************
     RIFF Header helper class
 ****************************************/
 #ifdef MAC
@@ -32,11 +32,11 @@
 #define DATA_TAG 'data'
 #define FACT_TAG 'fact'
 #else
-#define RIFF_TAG 'FFIR' // RIFF
-#define WAVE_TAG 'EVAW' // WAVE
-#define FMT__TAG ' tmf' // fmt_
-#define DATA_TAG 'atad' // data
-#define FACT_TAG 'tcaf' // fact
+#define RIFF_TAG 'FFIR' // 3DMMv1.0: RIFF
+#define WAVE_TAG 'EVAW' // 3DMMv1.0: WAVE
+#define FMT__TAG ' tmf' // 3DMMv1.0: fmt_
+#define DATA_TAG 'atad' // 3DMMv1.0: data
+#define FACT_TAG 'tcaf' // 3DMMv1.0: fact
 #endif
 
 #ifdef KAUAI_WIN32
@@ -87,9 +87,9 @@ class RIFF
 };
 #pragma pack(pop, _SOCPACK_)
 
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
-/****************************************
+/** 3DMMv1.0: **************************************
     The sound recording class
 ****************************************/
 typedef class SREC *PSREC;
@@ -102,30 +102,30 @@ class SREC : public SREC_PAR
     MARKMEM
 
   protected:
-    int32_t _csampSec; // sampling rate (number of samples per second)
-    int32_t _cchan;    // 1 = mono, 2 = stereo
-    int32_t _cbSample; // bytes per sample (1 = 8 bit, 2 = 16 bit, etc)
-    uint32_t _dtsMax;  // maximum length to record
+    int32_t _csampSec; // 3DMMv1.0: sampling rate (number of samples per second)
+    int32_t _cchan;    // 3DMMv1.0: 1 = mono, 2 = stereo
+    int32_t _cbSample; // 3DMMv1.0: bytes per sample (1 = 8 bit, 2 = 16 bit, etc)
+    uint32_t _dtsMax;  // 3DMMv1.0: maximum length to record
     bool _fRecording;
     bool _fPlaying;
-    bool _fHaveSound;   // have you recorded a sound yet?
-    bool _fBufferAdded; // have added record buffer
+    bool _fHaveSound;   // 3DMMv1.0: have you recorded a sound yet?
+    bool _fBufferAdded; // 3DMMv1.0: have added record buffer
 
 #ifdef KAUAI_WIN32
-    HWAVEIN _hwavein; // handle to wavein device
-    WAVEHDR _wavehdr; // wave hdr for buffer
+    HWAVEIN _hwavein; // 3DMMv1.0: handle to wavein device
+    WAVEHDR _wavehdr; // 3DMMv1.0: wave hdr for buffer
 
 #if defined(HAS_AUDIOMAN)
-    LPMIXER _pmixer;     // pointer to Audioman Mixer
-    LPCHANNEL _pchannel; // pointer to Audioman Channel
-    LPSOUND _psnd;       // psnd for current sound
-#endif                   // HAS_AUDIOMAN
-    RIFF *_priff;        // pointer to riff in memory
+    LPMIXER _pmixer;     // 3DMMv1.0: pointer to Audioman Mixer
+    LPCHANNEL _pchannel; // 3DMMv1.0: pointer to Audioman Channel
+    LPSOUND _psnd;       // 3DMMv1.0: psnd for current sound
+#endif                   // 3DMMEx: HAS_AUDIOMAN
+    RIFF *_priff;        // 3DMMv1.0: pointer to riff in memory
 
     bool _FOpenRecord();
     bool _FCloseRecord();
     static void _WaveInProc(HWAVEIN hwi, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2);
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
 #ifdef KAUAI_SDL
 
@@ -134,12 +134,12 @@ class SREC : public SREC_PAR
     bool _fInitDevice = fFalse;
     ma_device _device;
 
-    // This buffer holds recorded PCM audio frames
+    // 3DMMEx: This buffer holds recorded PCM audio frames
     HQ _hqBuffer = hqNil;
     int32_t _ibBuffer = 0;
 
-    ma_uint32 _cFrame;    // Number of frames recorded
-    ma_uint32 _cFrameMac; // Maximum number of frames to record
+    ma_uint32 _cFrame;    // 3DMMEx: Number of frames recorded
+    ma_uint32 _cFrameMac; // 3DMMEx: Maximum number of frames to record
 
     bool _fInitPlaybackBuffer = fFalse;
     ma_audio_buffer _playbackBuffer;
@@ -147,10 +147,10 @@ class SREC : public SREC_PAR
     bool _fInitPlaybackSound = fFalse;
     ma_sound _sound;
 
-    // Called when new audio frames are available
+    // 3DMMEx: Called when new audio frames are available
     static void OnDataProc(ma_device *pDevice, void *pOutput, const void *pInput, ma_uint32 frameCount);
 
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
   protected:
     bool _FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax);
@@ -172,4 +172,4 @@ class SREC : public SREC_PAR
     }
 };
 
-#endif // SREC_H
+#endif // 3DMMEx: SREC_H

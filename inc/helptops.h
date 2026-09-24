@@ -1,12 +1,12 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 #ifndef HELPTOPS_H
 #define HELPTOPS_H
 
-// All the help topics for projects, guidehelp, helpbook...etc.
-//////////////////////////////Help topics
-// logo wizard topics
+// 3DMMv1.0: All the help topics for projects, guidehelp, helpbook...etc.
+/// 3DMMv1.0: ///////////////////////////Help topics
+// 3DMMv1.0: logo wizard topics
 #define ktpcLogo00 0x20005200
 #define ktpcLogo01 0x20005201
 #define ktpcLogo02 0x20005202
@@ -25,46 +25,46 @@
 #define ktpcLogo11 0x2000520f
 #define ktpcLogo12 0x20005210
 #define ktpcLogo5C 0x20005211
-// how to scene topics
+// 3DMMv1.0: how to scene topics
 #define ktpcHowToScenes00 0x20005215
 #define ktpcHowToScenes01 0x20005216
 #define ktpcHowToScenes02 0x20005217
 #define ktpcHowToScenes03 0x20005218
-#define ktpcHowToScenes04 0x20005219 // 01
+#define ktpcHowToScenes04 0x20005219 // 3DMMv1.0: 01
 #define ktpcHowToScenes05 0x2000521A
 #define ktpcHowToScenes06 0x2000521B
-#define ktpcHowToScenes07 0x2000521C // 02
+#define ktpcHowToScenes07 0x2000521C // 3DMMv1.0: 02
 #define ktpcHowToScenes08 0x2000521D
-#define ktpcHowToScenes09 0x2000521E // 03
+#define ktpcHowToScenes09 0x2000521E // 3DMMv1.0: 03
 #define ktpcHowToScenes0A 0x2000521F
-#define ktpcHowToScenes0B 0x20005220 // 04
-#define ktpcHowToScenes0C 0x20005221 // 05
+#define ktpcHowToScenes0B 0x20005220 // 3DMMv1.0: 04
+#define ktpcHowToScenes0C 0x20005221 // 3DMMv1.0: 05
 #define ktpcHowToScenes0D 0x20005222
 #define ktpcHowToScenes0E 0x20005223
-#define ktpcHowToScenes0F 0x20005224 // 06
+#define ktpcHowToScenes0F 0x20005224 // 3DMMv1.0: 06
 #define ktpcHowToScenes10 0x20005225
 #define ktpcHowToScenes11 0x20005226
-#define ktpcHowToScenes12 0x20005227 // 07
+#define ktpcHowToScenes12 0x20005227 // 3DMMv1.0: 07
 #define ktpcHowToScenes13 0x20005228
-#define ktpcHowToScenes14 0x20005229 // 08
+#define ktpcHowToScenes14 0x20005229 // 3DMMv1.0: 08
 #define ktpcHowToScenes15 0x2000522A
-#define ktpcHowToScenes16 0x2000522B // 09
+#define ktpcHowToScenes16 0x2000522B // 3DMMv1.0: 09
 #define ktpcHowToScenes17 0x2000522C
 #define ktpcHowToScenes18 0x2000522D
-#define ktpcHowToScenes19 0x2000522E // 10
+#define ktpcHowToScenes19 0x2000522E // 3DMMv1.0: 10
 #define ktpcHowToScenes1A 0x2000522F
 #define ktpcHowToScenes1B 0x20005230
 #define ktpcHowToScenes1C 0x20005231
-#define ktpcHowToScenes1D 0x20005232 // 11
+#define ktpcHowToScenes1D 0x20005232 // 3DMMv1.0: 11
 #define ktpcHowToScenes1E 0x20000233
 #define ktpcHowToScenes1F 0x20005234
 #define ktpcHowToScenes20 0x20005235
-#define ktpcHowToScenes21 0x20005236 // 12
+#define ktpcHowToScenes21 0x20005236 // 3DMMv1.0: 12
 #define ktpcHowToScenes22 0x20005237
 #define ktpcHowToScenes23 0x20005238
 #define ktpcHowToScenes24 0x20005239
-#define ktpcHowToScenes25 0x2000523A // 13
-#define ktpcHowToScenes26 0x2000523B // 14
+#define ktpcHowToScenes25 0x2000523A // 3DMMv1.0: 13
+#define ktpcHowToScenes26 0x2000523B // 3DMMv1.0: 14
 #define ktpcHowToScenes27 0x2000523C
 #define ktpcHowToScenes28 0x2000523D
 #define ktpcHowToScenes29 0x2000523E
@@ -92,24 +92,24 @@
 #define ktpcHowToScenes3A 0x20005254
 #define ktpcHowToScenes3B 0x20005255
 #define ktpcHowToScenes5C 0x20005256
-// project alerts
+// 3DMMv1.0: project alerts
 #define ktpcDeviation 0x20005270
 #define ktpcExitHelp 0x20005271
 #define ktpcUserQuitsHelp 0x20005272
 #define ktpcUserIdle 0x20005273
 #define ktpcProjectCancel 0x20005274
 #define ktpcNewMovie 0x20005275
-// Projects Intro
+// 3DMMv1.0: Projects Intro
 #define Audio_only___Long_Intro 0x20005280
 #define Would_you_like_to 0x20005281
 #define Audio_only___The_Project_Gad 0x20005282
 #define ktpcPrjIntro03 0x20005283
-// How to alerts
+// 3DMMv1.0: How to alerts
 #define No_Scene 0x20005288
 #define No_Actor 0x20005289
 #define No_Word_Box 0x2000528A
 #define No_Undo 0x2000528B
-// guide help
+// 3DMMv1.0: guide help
 #define CO__To_see_the_scenes 0x20005290
 #define CO__Click_the_scene_you_want 0x20005291
 #define CO___then_click_the_camera 0x20005292
@@ -133,7 +133,7 @@
 #define Tip___Path_through 0x200052A4
 #define ktpcGuideHelp10 0x200052A5
 #define Def___camera_angle 0x200052A6
-// How to actors
+// 3DMMv1.0: How to actors
 #define ktpcHowToActors00 0x200052C0
 #define ktpcHowToActors01 0x200052C1
 #define ktpcHowToActors02 0x200052C2
@@ -283,7 +283,7 @@
 #define ktpcHowToActors92 0x20005352
 #define ktpcHowToActors93 0x20005353
 #define ktpcHowToActors94 0x20005354
-// How to words
+// 3DMMv1.0: How to words
 #define ktpcHowToWords00 0x20005640
 #define ktpcHowToWords01 0x20005641
 #define ktpcHowToWords02 0x20005642
@@ -366,45 +366,45 @@
 #define ktpcHowToWords67 0x2000568F
 #define ktpcHowToWords30 0x20005690
 #define ktpcHowToWords4B 0x20005691
-// How to sounds
+// 3DMMv1.0: How to sounds
 #define ktpcHowToSounds00 0x20005380
 #define ktpcHowToSounds01 0x20005381
 #define ktpcHowToSounds02 0x20005382
 #define ktpcHowToSounds03 0x20005383
-#define ktpcHowToSounds04 0x20005384 // 1
+#define ktpcHowToSounds04 0x20005384 // 3DMMv1.0: 1
 #define ktpcHowToSounds05 0x20005385
 #define ktpcHowToSounds06 0x20005386
 #define ktpcHowToSounds07 0x20005387
-#define ktpcHowToSounds08 0x20005388 // 2
+#define ktpcHowToSounds08 0x20005388 // 3DMMv1.0: 2
 #define ktpcHowToSounds09 0x20005389
 #define ktpcHowToSounds0A 0x2000538A
 #define ktpcHowToSounds0B 0x2000538B
-#define ktpcHowToSounds0C 0x2000538C // 3
+#define ktpcHowToSounds0C 0x2000538C // 3DMMv1.0: 3
 #define ktpcHowToSounds0D 0x2000538D
 #define ktpcHowToSounds0E 0x2000538E
-#define ktpcHowToSounds0F 0x2000538F // 4
+#define ktpcHowToSounds0F 0x2000538F // 3DMMv1.0: 4
 #define ktpcHowToSounds10 0x20005390
 #define ktpcHowToSounds11 0x20005391
-#define ktpcHowToSounds12 0x20005392 // 5
+#define ktpcHowToSounds12 0x20005392 // 3DMMv1.0: 5
 #define ktpcHowToSounds13 0x20005393
 #define ktpcHowToSounds14 0x20005394
-#define ktpcHowToSounds15 0x20005395 // 6
+#define ktpcHowToSounds15 0x20005395 // 3DMMv1.0: 6
 #define ktpcHowToSounds16 0x20005396
 #define ktpcHowToSounds17 0x20005397
-#define ktpcHowToSounds18 0x20005398 // 7
+#define ktpcHowToSounds18 0x20005398 // 3DMMv1.0: 7
 #define ktpcHowToSounds19 0x20005399
 #define ktpcHowToSounds1A 0x2000539A
 #define ktpcHowToSounds1B 0x2000539B
-#define ktpcHowToSounds1C 0x2000539C // 8
+#define ktpcHowToSounds1C 0x2000539C // 3DMMv1.0: 8
 #define ktpcHowToSounds1D 0x2000539D
 #define ktpcHowToSounds1E 0x2000539E
-#define ktpcHowToSounds1F 0x2000539F // 9
+#define ktpcHowToSounds1F 0x2000539F // 3DMMv1.0: 9
 #define ktpcHowToSounds20 0x200053A0
 #define ktpcHowToSounds21 0x200053A1
-#define ktpcHowToSounds22 0x200053A2 // 10
+#define ktpcHowToSounds22 0x200053A2 // 3DMMv1.0: 10
 #define ktpcHowToSounds23 0x200053A3
 #define ktpcHowToSounds24 0x200053A4
-#define ktpcHowToSounds25 0x200053A5 // 11
+#define ktpcHowToSounds25 0x200053A5 // 3DMMv1.0: 11
 #define ktpcHowToSounds26 0x200053A6
 #define ktpcHowToSounds2E 0x200053A7
 #define ktpcHowToSounds44 0x200053A8
@@ -426,7 +426,7 @@
 #define ktpcHowToSounds2C 0x200053B8
 #define ktpcHowToSounds2D 0x200053B9
 
-// Project 3 *WARNING 200053C0 thru 200053FF are use above**
+// 3DMMv1.0: Project 3 *WARNING 200053C0 thru 200053FF are use above**
 #define To_play_this_movie__click 0x20005400
 #define To_see_the_steps_for_changing 0x20005401
 #define Why__Actions__when_viewed 0x20005402
@@ -464,7 +464,7 @@
 #define CO__To_play_the_new_ending 0x20005422
 #define Tip___If_you_rewind_too_far 0x20005423
 #define Tip__Mean 0x20005424
-// Project 1
+// 3DMMv1.0: Project 1
 #define ktpc1Project00 0x20005430
 #define ktpc1Project01 0x20005431
 #define ktpc1Project02 0x20005432
@@ -517,7 +517,7 @@
 #define ktpc1Project31 0x20005461
 #define ktpc1Project32 0x20005462
 #define ktpc1Project33 0x20005463
-// Project 2
+// 3DMMv1.0: Project 2
 #define ktpc2Project00 0x20005470
 #define ktpc2Project01 0x20005471
 #define ktpc2Project02 0x20005472
@@ -568,7 +568,7 @@
 #define ktpc2Project2F 0x2000549F
 #define ktpc2Project30 0x200054A0
 #define ktpc2Project31 0x200054A1
-// Project 4
+// 3DMMv1.0: Project 4
 #define ktpc4Project00 0x200054B0
 #define ktpc4Project01 0x200054B1
 #define ktpc4Project02 0x200054B2
@@ -633,7 +633,7 @@
 #define ktpc4Project3D 0x200054ED
 #define ktpc4Project3E 0x200054EE
 #define ktpc4Project3F 0x200054EF
-// Project 5
+// 3DMMv1.0: Project 5
 #define ktpc5Project00 0x200054F0
 #define ktpc5Project01 0x200054F1
 #define ktpc5Project02 0x200054F2
@@ -716,8 +716,8 @@
 #define ktpc5Project4F 0x2000553F
 #define ktpc5Project50 0x20005540
 #define ktpc5Project51 0x20005541
-// easel help
-#define ktpcEaselHelp00 0x20005600 // scene organizer
+// 3DMMv1.0: easel help
+#define ktpcEaselHelp00 0x20005600 // 3DMMv1.0: scene organizer
 #define ktpcEaselHelp01 0x20005601
 #define ktpcEaselHelp02 0x20005602
 #define ktpcEaselHelp03 0x20005603
@@ -728,7 +728,7 @@
 #define ktpcEaselHelp08 0x20005608
 #define ktpcEaselHelp09 0x20005609
 #define ktpcEaselHelp0A 0x2000560A
-#define ktpcEaselHelp0B 0x2000560B // 3D words
+#define ktpcEaselHelp0B 0x2000560B // 3DMMv1.0: 3D words
 #define ktpcEaselHelp0C 0x2000560C
 #define ktpcEaselHelp0D 0x2000560D
 #define ktpcEaselHelp0E 0x2000560E
@@ -736,33 +736,33 @@
 #define ktpcEaselHelp10 0x20005610
 #define ktpcEaselHelp11 0x20005611
 #define ktpcEaselHelp12 0x20005612
-#define ktpcEaselHelp13 0x20005613 // listener browser
+#define ktpcEaselHelp13 0x20005613 // 3DMMv1.0: listener browser
 #define ktpcEaselHelp14 0x20005614
-#define ktpcEaselHelp15 0x20005615 // costume changer
+#define ktpcEaselHelp15 0x20005615 // 3DMMv1.0: costume changer
 #define ktpcEaselHelp16 0x20005616
 #define ktpcEaselHelp17 0x20005617
 #define ktpcEaselHelp18 0x20005618
-#define ktpcEaselHelp19 0x20005619 // sound effects
+#define ktpcEaselHelp19 0x20005619 // 3DMMv1.0: sound effects
 #define ktpcEaselHelp1A 0x2000561A
 #define ktpcEaselHelp1B 0x2000561B
 #define ktpcEaselHelp1C 0x2000561C
 #define ktpcEaselHelp1D 0x2000561D
-#define ktpcEaselHelp1E 0x2000561E // record your own
+#define ktpcEaselHelp1E 0x2000561E // 3DMMv1.0: record your own
 #define ktpcEaselHelp1F 0x2000561F
 #define ktpcEaselHelp20 0x20005620
 #define ktpcEaselHelp21 0x20005621
 #define ktpcEaselHelp22 0x20005622
 #define ktpcEaselHelp23 0x20005623
-#define ktpcEaselHelp24 0x20005624 // speech browser
+#define ktpcEaselHelp24 0x20005624 // 3DMMv1.0: speech browser
 #define ktpcEaselHelp25 0x20005625
 #define ktpcEaselHelp26 0x20005626
 #define ktpcEaselHelp27 0x20005627
 #define ktpcEaselHelp28 0x20005628
-#define ktpcEaselHelp29 0x20005629 // music browser
+#define ktpcEaselHelp29 0x20005629 // 3DMMv1.0: music browser
 #define ktpcEaselHelp2A 0x2000562A
 #define ktpcEaselHelp2B 0x2000562B
 #define ktpcEaselHelp2C 0x2000562C
-#define ktpcEaselHelp2D 0x2000562D // action browser
+#define ktpcEaselHelp2D 0x2000562D // 3DMMv1.0: action browser
 #define ktpcEaselHelp2E 0x2000562E
 #define ktpcEaselHelp2F 0x2000562F
 #define ktpcEaselHelp30 0x20005630
@@ -780,8 +780,8 @@
 #define kttRecordEaselCancel 0x2000563E
 #define kttRecordEaselOk 0x2000563F
 #define ktpcEaselHelp3F 0x20005695
-// WARNING: 0X20005640 - 0X20005691 is used above
-// project 6
+// 3DMMv1.0: WARNING: 0X20005640 - 0X20005691 is used above
+// 3DMMv1.0: project 6
 #define ktpc6Project00 0x200056A0
 #define ktpc6Project01 0x200056A1
 #define ktpc6Project02 0x200056A2
@@ -830,7 +830,7 @@
 #define ktpc6Project2D 0x200056CD
 #define ktpc6Project4F 0x200056CE
 #define ktpc6Project2E 0x200056CF
-// help book basics
+// 3DMMv1.0: help book basics
 #define ktpcBasics00 0x200056E0
 #define ktpcBasics01 0x200056E1
 #define ktpcBasics02 0x200056E2
@@ -848,8 +848,8 @@
 #define ktpcBasics0E 0x200056EE
 #define ktpcBasics0F 0x200056EF
 #define ktpcBasics10 0x200056F0
-// gadget 1 text--projects are in order and sequence, don't
-// change or bad things can(and will) happen
+// 3DMMv1.0: gadget 1 text--projects are in order and sequence, don't
+// 3DMMv1.0: change or bad things can(and will) happen
 #define ktpc1Gadget00 0x20005700
 #define ktpc1Gadget01 0x20005701
 #define ktpc1Gadget02 0x20005702
@@ -858,19 +858,19 @@
 #define ktpc1Gadget05 0x20005705
 #define ktpc1Gadget06 0x20005706
 #define ktpc1Gadget07 0x20005707
-// gadget 3 text
+// 3DMMv1.0: gadget 3 text
 #define ktpc3Gadget00 0x20005708
 #define ktpc3Gadget01 0x20005709
 #define ktpc3Gadget02 0x2000570A
 #define ktpc3Gadget03 0x2000570B
 #define ktpc3Gadget04 0x2000570C
 #define ktpc3Gadget05 0x2000570D
-// gadget 2 text
+// 3DMMv1.0: gadget 2 text
 #define ktpc2Gadget00 0x2000570E
 #define ktpc2Gadget01 0x2000570F
 #define ktpc2Gadget02 0x20005710
 #define ktpc2Gadget03 0x20005711
-// gadget 6 text
+// 3DMMv1.0: gadget 6 text
 #define ktpc6Gadget00 0x20005712
 #define ktpc6Gadget01 0x20005713
 #define ktpc6Gadget02 0x20005714
@@ -878,7 +878,7 @@
 #define ktpc6Gadget04 0x20005716
 #define ktpc6Gadget05 0x20005717
 #define ktpc6Gadget06 0x20005718
-// gadget 5 text
+// 3DMMv1.0: gadget 5 text
 #define ktpc5Gadget00 0x20005719
 #define ktpc5Gadget01 0x2000571A
 #define ktpc5Gadget02 0x2000571B
@@ -890,7 +890,7 @@
 #define ktpc5Gadget08 0x20005721
 #define ktpc5Gadget09 0x20005722
 #define ktpc5Gadget0A 0x20005723
-// gadget 4 text
+// 3DMMv1.0: gadget 4 text
 #define ktpc4Gadget00 0x20005724
 #define ktpc4Gadget01 0x20005725
 #define ktpc4Gadget02 0x20005726
@@ -899,7 +899,7 @@
 #define ktpc4Gadget07 0x20005729
 #define ktpcGadgetTextStart ktpc1Gadget00
 #define ktpcGadgetTextEnd ktpc4Gadget07
-// error help
+// 3DMMv1.0: error help
 #define ktpcercOomHq 0x20005800
 #define ktpcercOomPv 0x20005801
 #define ktpcercOomNew 0x20005802
@@ -989,10 +989,10 @@
 #define ktpcercSocGenericError 0x20005856
 #define ktpcercSocNoSndOnPaste 0x20005857
 #define ktpcercSocCantCopyMsnd 0x20005858
-// *If you add anything below this line you need to notify leannp about it so she can make a help topic for it*
+// 3DMMv1.0: *If you add anything below this line you need to notify leannp about it so she can make a help topic for it*
 
-//////////////////////////////////// Waves
-// logo wizard
+/// 3DMMv1.0: ///////////////////////////////// Waves
+// 3DMMv1.0: logo wizard
 #define kwavLogo00 0x00075000
 #define kwavLogo01 0x00075001
 #define kwavLogo02 0x00075002
@@ -1008,7 +1008,7 @@
 #define kwavLogo0C 0x0007500D
 #define kwavLogo11 0x0007500E
 #define kwavLogo12 0x0007500F
-// how to scenes
+// 3DMMv1.0: how to scenes
 #define kwavHTScenes00 0x00075030
 #define kwavHTScenes01 0x00075031
 #define kwavHTScenes02 0x00075032
@@ -1073,7 +1073,7 @@
 #define kwavHTScenes39 0x0007506E
 #define kwavHTScenes3A 0x0007506F
 #define kwavHTScenes3B 0x00075070
-// guide help68
+// 3DMMv1.0: guide help68
 #define kwavGuideHelp00 0x00075090
 #define kwavGuideHelp01 0x00075091
 #define kwavGuideHelp02 0x00075092
@@ -1094,23 +1094,23 @@
 #define kwavGuideHelp5C 0x000750A1
 #define kwavGuideHelp5D 0x000750A2
 #define kwavGuideHelp10 0x000750A3
-// Project alerts
+// 3DMMv1.0: Project alerts
 #define kwavPrjAlert00 0x000750B0
 #define kwavPrjAlert01 0x000750B1
 #define kwavPrjAlert02 0x000750B2
 #define kwavPrjAlert03 0x000750B3
 #define kwavPrjAlert04 0x000750B4
 #define kwavPrjAlert05 0x000750B5
-// How to alerts
+// 3DMMv1.0: How to alerts
 #define kwavHTAlert00 0x000750C0
 #define kwavHTAlert01 0x000750C1
 #define kwavHTAlert02 0x000750C2
-// Projects Intro
+// 3DMMv1.0: Projects Intro
 #define kwavPrjIntro00 0x000750C8
 #define kwavPrjIntro01 0x000750C9
 #define kwavPrjIntro02 0x000750CA
 #define kwavPrjIntro03 0x000750CB
-// How to Actors
+// 3DMMv1.0: How to Actors
 #define kwavHTActors00 0x000750D0
 #define kwavHTActors01 0x000750D1
 #define kwavHTActors02 0x000750D2
@@ -1260,7 +1260,7 @@
 #define kwavHTActors92 0x00075162
 #define kwavHTActors93 0x00075163
 #define kwavHTActors94 0x00075164
-// How to Words
+// 3DMMv1.0: How to Words
 #define kwavHTWords00 0x00075170
 #define kwavHTWords01 0x00075171
 #define kwavHTWords02 0x00075172
@@ -1342,7 +1342,7 @@
 #define kwavHTWords64 0x000751BE
 #define kwavHTWords66 0x000751BF
 #define kwavHTWords67 0x000751C0
-// How to Souncs
+// 3DMMv1.0: How to Souncs
 #define kwavHTSounds00 0x00075200
 #define kwavHTSounds01 0x00075201
 #define kwavHTSounds02 0x00075202
@@ -1401,7 +1401,7 @@
 #define kwavHTSounds2A 0x00075237
 #define kwavHTSounds2C 0x00075238
 #define kwavHTSounds2D 0x00075239
-// Project 3
+// 3DMMv1.0: Project 3
 #define kwav3Project00 0x00075250
 #define kwav3Project01 0x00075251
 #define kwav3Project02 0x00075252
@@ -1438,7 +1438,7 @@
 #define kwav3Project21 0x000752A1
 #define kwav3Project22 0x000752A2
 #define kwav3Project23 0x000752A3
-// Project 1
+// 3DMMv1.0: Project 1
 #define kwav1Project00 0x00075270
 #define kwav1Project01 0x00075271
 #define kwav1Project02 0x00075272
@@ -1489,7 +1489,7 @@
 #define kwav1Project2F 0x0007529F
 #define kwav1Project30 0x000752AA
 #define kwav1Project31 0x000752AB
-// Project 2
+// 3DMMv1.0: Project 2
 #define kwav2Project00 0x000752B0
 #define kwav2Project01 0x000752B1
 #define kwav2Project02 0x000752B2
@@ -1539,7 +1539,7 @@
 #define kwav2Project2E 0x000752DE
 #define kwav2Project2F 0x000752DF
 #define kwav2Project30 0x000752E0
-// Project 4
+// 3DMMv1.0: Project 4
 #define kwav4Project00 0x000752F0
 #define kwav4Project01 0x000752F1
 #define kwav4Project02 0x000752F2
@@ -1604,7 +1604,7 @@
 #define kwav4Project3D 0x0007532D
 #define kwav4Project3E 0x0007532E
 #define kwav4Project3F 0x0007532F
-// Project 5
+// 3DMMv1.0: Project 5
 #define kwav5Project00 0x00075330
 #define kwav5Project01 0x00075331
 #define kwav5Project02 0x00075332
@@ -1687,7 +1687,7 @@
 #define kwav5Project4F 0x0007538F
 #define kwav5Project50 0x00075390
 #define kwav5Project51 0x00075391
-// easel help
+// 3DMMv1.0: easel help
 #define kwavEaselHelp00 0x00075400
 #define kwavEaselHelp01 0x00075401
 #define kwavEaselHelp02 0x00075402
@@ -1739,7 +1739,7 @@
 #define kwavEaselHelp30 0x00075430
 #define kwavEaselHelp31 0x00075431
 #define kwavEaselHelp3E 0x00075432
-// project 6
+// 3DMMv1.0: project 6
 #define kwav6Project00 0x00075440
 #define kwav6Project01 0x00075441
 #define kwav6Project02 0x00075442
@@ -1787,7 +1787,7 @@
 #define kwav6Project2C 0x0007546C
 #define kwav6Project2D 0x0007546D
 #define kwav6Project4F 0x0007546E
-// help book basics
+// 3DMMv1.0: help book basics
 #define kwavBasics00 0x00075480
 #define kwavBasics01 0x00075481
 #define kwavBasics02 0x00075482
@@ -1805,7 +1805,7 @@
 #define kwavBasics0E 0x0007548E
 #define kwavBasics0F 0x0007548F
 #define kwavBasics10 0x00075490
-// toolhelp waves
+// 3DMMv1.0: toolhelp waves
 #define kwavToolHelp00 0x00075500
 #define kwavToolHelp01 0x00075501
 #define kwavToolHelp02 0x00075502
@@ -1877,7 +1877,7 @@
 #define kwavToolHelp47 0x00075547
 #define kwavToolHelp48 0x00075548
 #define kwavToolHelp7B 0x00075549
-// project tool tips
+// 3DMMv1.0: project tool tips
 #define kwavPrjTips00 0x00075550
 #define kwavPrjTips01 0x00075551
 #define kwavPrjTips02 0x00075552
@@ -1886,7 +1886,7 @@
 #define kwavPrjTips05 0x00075555
 #define kwavPrjTips06 0x00075556
 #define kwavPrjTips07 0x00075557
-// tooltips
+// 3DMMv1.0: tooltips
 #define kwavToolTips00 0x00076000
 #define kwavToolTips01 0x00076001
 #define kwavToolTips02 0x00076002
@@ -1974,15 +1974,15 @@
 #define kwavToolTips5C 0x00076054
 #define kwavToolTips5D 0x00076055
 #define kwavToolTips5E 0x00076056
-// for help book tooltips
+// 3DMMv1.0: for help book tooltips
 #define kwavHelpBook1 0x00076057
 #define kwavHelpBook2 0x00076058
 #define kwavHelpBook3 0x00076059
 #define kwavHelpBook4 0x0007605A
 #define kwavHelpBook5 0x0007605B
 
-// help book defines
-// help book labels - these are help topics
+// 3DMMv1.0: help book defines
+// 3DMMv1.0: help book labels - these are help topics
 #define labBookTOC 0x00012180
 #define labBookBasics 0x00012181
 #define labBookHowTo 0x00012182
@@ -1995,7 +1995,7 @@
 #define labBookHowTo5 0x00012189
 #define labBookHowTo6 0x0001218a
 
-// titles for the sections of the help book - these are help topics
+// 3DMMv1.0: titles for the sections of the help book - these are help topics
 #define tpcTitle1 0x000121a0
 #define tpcTitle2 0x000121a1
 #define tpcTitle3 0x000121a2
@@ -2012,13 +2012,13 @@
 #define tpcTitle9c 0x000121ad
 #define tpcTitle9d 0x000121ae
 
-// rollover tooltips for the help book + controls - help topics
+// 3DMMv1.0: rollover tooltips for the help book + controls - help topics
 #define ttBookCancel 0x0001703b
 #define ttBookPageFwd 0x0001703c
 #define ttBookPageBack 0x0001703d
 #define ttBookVolume 0x0001703e
 #define ttBookVoice 0x0001703f
-// rollover tooltips for the gadget
+// 3DMMv1.0: rollover tooltips for the gadget
 #define ttVolumeControl 0x00017033
 #define ttNextMovie 0x00017034
 #define ttPreviousMovie 0x00017035
@@ -2028,7 +2028,7 @@
 #define ttMelanieOnOff 0x00017039
 #define ttWhyButton 0x0001703a
 
-// Definitions for the help book pages, MUST BE SEQUENTIAL!!!
+// 3DMMv1.0: Definitions for the help book pages, MUST BE SEQUENTIAL!!!
 #define ktpcBook1TOC 0x20000105
 
 #define ktpcBook2Basics 0x20000106
@@ -2084,11 +2084,11 @@
 #define ktpcBook10Tips17 0x20000137
 #define ktpcBook10Tips18 0x20000138
 
-// define first and last topics in book
+// 3DMMv1.0: define first and last topics in book
 #define ktpcBookStart ktpcBook1TOC
 #define ktpcBookEnd ktpcBook10Tips18
 
-// help topic ids
+// 3DMMv1.0: help topic ids
 #define thCameraAngles 0x00017040
 #define thSceneChoices 0x00017041
 #define thSceneOrganizer 0x00017042
@@ -2220,11 +2220,11 @@
 #define Tip___Add_frames 0x00017c0
 #define Key___Map 0x00017c1
 #define Tip___Making_words_scroll 0x00017c2
-// nonfound stuff
+// 3DMMv1.0: nonfound stuff
 #define thMouseClick 0x000170c4
 #define GetRidWordBox 0x000170c5
 #define HT_ChooseFirstScene1 0x000170c6
 #define HT_AssignAction1 0x000170c7
 #define HT_ChooseActor1 0x000170c8
 
-#endif // !HELPTOPS_H
+#endif // 3DMMv1.0: !HELPTOPS_H

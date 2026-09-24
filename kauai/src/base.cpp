@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -21,21 +21,21 @@ int32_t vcactSuspendAssertValid = 0;
 int32_t vcactAVSave = 0;
 int32_t vcactAV = kswMax;
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
     Debugging stuff to track leaked allocated objects.
 ******************************************************************************/
-// Debugging object info.
+// 3DMMv1.0: Debugging object info.
 const int32_t kclwStackDoi = 10;
 struct DOI
 {
-    int16_t swMagic;       // magic number == kswMagicMem
-    int16_t cactRef;       // for marking memory and asserting on unused objects
-    PSZS pszsFile;         // file NewObj appears in
-    int32_t lwLine;        // line NewObj appears on
-    int32_t cbTot;         // total size of the block, including the DOI
-    std::thread::id tid;   // thread that allocated this
-    int32_t rglwStack[10]; // what we get from following the EBP/A6 chain
-    DOI *pdoiNext;         // singly linked list
+    int16_t swMagic;       // 3DMMv1.0: magic number == kswMagicMem
+    int16_t cactRef;       // 3DMMv1.0: for marking memory and asserting on unused objects
+    PSZS pszsFile;         // 3DMMv1.0: file NewObj appears in
+    int32_t lwLine;        // 3DMMv1.0: line NewObj appears on
+    int32_t cbTot;         // 3DMMv1.0: total size of the block, including the DOI
+    std::thread::id tid;   // 3DMMv1.0: thread that allocated this
+    int32_t rglwStack[10]; // 3DMMv1.0: what we get from following the EBP/A6 chain
+    DOI *pdoiNext;         // 3DMMv1.0: singly linked list
     DOI **ppdoiPrev;
 };
 
@@ -53,8 +53,8 @@ inline BASE *_PbaseFromDoi(DOI *pdoi)
 kpriv void _LinkDoi(DOI *pdoi, DOI **ppdoiFirst);
 kpriv void _UnlinkDoi(DOI *pdoi);
 
-DOI *_pdoiFirst;    // Head of linked list of all allocated objects.
-DOI *_pdoiFirstRaw; // Head of linked list of raw newly allocated objects.
+DOI *_pdoiFirst;    // 3DMMv1.0: Head of linked list of all allocated objects.
+DOI *_pdoiFirstRaw; // 3DMMv1.0: Head of linked list of raw newly allocated objects.
 
 inline void _Enter(void)
 {
@@ -68,13 +68,13 @@ inline void _Leave(void)
 #define klwMagicAllocatedBase KLCONST4('A', 'L', 'O', 'C')
 #define klwMagicNonAllocBase KLCONST4('N', 'O', 'A', 'L')
 
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 #define kcbBaseDebug 0
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
 RTCLASS(BLL)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the run-time class id (cls) of the class.
 ***************************************************************************/
 int32_t BASE::Cls(void)
@@ -82,7 +82,7 @@ int32_t BASE::Cls(void)
     return kclsBASE;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns true iff cls is kclsBASE.
 ***************************************************************************/
 bool BASE::FIs(int32_t cls)
@@ -90,7 +90,7 @@ bool BASE::FIs(int32_t cls)
     return kclsBASE == cls;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method. Returns true iff cls is kclsBASE.
 ***************************************************************************/
 bool BASE::FWouldBe(int32_t cls)
@@ -98,7 +98,7 @@ bool BASE::FWouldBe(int32_t cls)
     return kclsBASE == cls;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a BASE object.  Sets _cactRef to 1 and in debug sets
     the magic number to indicate whether the thing was allocated.
 ***************************************************************************/
@@ -110,14 +110,14 @@ BASE::BASE(void)
 
     if (pvNil != pdoi)
     {
-        // Note that we have to check _pdoiFirstRaw before entering the
-        // mutx so we don't try to enter the mutx before it's been
-        // initialized (during global object construction).
+        // 3DMMv1.0: Note that we have to check _pdoiFirstRaw before entering the
+        // 3DMMv1.0: mutx so we don't try to enter the mutx before it's been
+        // 3DMMv1.0: initialized (during global object construction).
         _Enter();
 
-        // see if this is in the raw list - note that we have to refresh
-        // _pdoiFirstRaw in case another thread grabbed it before we got
-        // the critical section
+        // 3DMMv1.0: see if this is in the raw list - note that we have to refresh
+        // 3DMMv1.0: _pdoiFirstRaw in case another thread grabbed it before we got
+        // 3DMMv1.0: the critical section
         for (pdoi = _pdoiFirstRaw; pdoi != pvNil && this != _PbaseFromDoi(pdoi); pdoi = pdoi->pdoiNext)
         {
             _AssertDoi(pdoi, tYes);
@@ -125,7 +125,7 @@ BASE::BASE(void)
 
         if (pvNil != pdoi)
         {
-            // this is us!
+            // 3DMMv1.0: this is us!
             _UnlinkDoi(pdoi);
             _LinkDoi(pdoi, &_pdoiFirst);
 
@@ -139,15 +139,15 @@ BASE::BASE(void)
     if (pvNil == pdoi)
     {
         _lwMagic = klwMagicNonAllocBase;
-        // don't call AssertValid here, since this may be during
-        // global initialization (FAssertProc and/or AssertPvCb may not be
-        // callable).
+        // 3DMMv1.0: don't call AssertValid here, since this may be during
+        // 3DMMv1.0: global initialization (FAssertProc and/or AssertPvCb may not be
+        // 3DMMv1.0: callable).
     }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increments the reference count.
 ***************************************************************************/
 void BASE::AddRef(void)
@@ -155,11 +155,11 @@ void BASE::AddRef(void)
     AssertThis(0);
     _cactRef++;
 
-    // NOTE: some classes allow _cactRef == 0, so we can't assert _cactRef > 1
+    // 3DMMv1.0: NOTE: some classes allow _cactRef == 0, so we can't assert _cactRef > 1
     Assert(_cactRef > 0, "_cactRef not positive");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrement the reference count and delete it if the reference count goes
     to zero.
 ***************************************************************************/
@@ -173,22 +173,22 @@ void BASE::Release(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Used to allocate all objects.  Clears the block and in debug, adds
     magic number, reference count for marking and inserts in linked list
     of allocated objects for object leakage tracking.
 ***************************************************************************/
 #ifdef DEBUG
 void *BASE::operator new(size_t cb, PSZS pszsFile, int32_t lwLine) noexcept
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 void *BASE::operator new(size_t cb) noexcept
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertVarMem(pszsFile);
     void *pv;
 
 #ifdef DEBUG
-    // do failure simulation
+    // 3DMMv1.0: do failure simulation
     _Enter();
 
     if (vdmglob.dmaglBase.FFail())
@@ -199,13 +199,13 @@ void *BASE::operator new(size_t cb) noexcept
     }
 
     _Leave();
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifdef WIN
     if ((pv = (void *)GlobalAlloc(GMEM_FIXED | GMEM_ZEROINIT, cb + kcbBaseDebug)) == pvNil)
-#else  //! WIN
+#else  //! 3DMMv1.0: WIN
     if ((pv = malloc(cb + kcbBaseDebug)) == pvNil)
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
         PushErc(ercOomNew);
     else
     {
@@ -228,7 +228,7 @@ void *BASE::operator new(size_t cb) noexcept
         pv = _PbaseFromDoi(pdoi);
 
 #if defined(WIN) && defined(IN_80386)
-        // follow the EBP chain....
+        // 3DMMv1.0: follow the EBP chain....
         int32_t *plw;
         int32_t ilw;
 
@@ -246,23 +246,23 @@ void *BASE::operator new(size_t cb) noexcept
                 plw = (int32_t *)*plw;
             }
         }
-#endif // WIN && IN_80386
+#endif // 3DMMEx: WIN && IN_80386
 
-        // update statistics
+        // 3DMMv1.0: update statistics
         vdmglob.dmaglBase.Allocate(cb);
 
         _Leave();
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 #ifndef WIN
         ClearPb(pv, cb);
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
     }
     return pv;
 }
 
 #if defined(DEBUG) || defined(WIN)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     DEBUG : Unlink from linked list of allocated objects and free the memory.
 ***************************************************************************/
 void BASE::operator delete(void *pv)
@@ -272,17 +272,17 @@ void BASE::operator delete(void *pv)
 
     _UnlinkDoi(pdoi);
 
-    // update statistics
+    // 3DMMv1.0: update statistics
     vdmglob.dmaglBase.Free(pdoi->cbTot - kcbBaseDebug);
 
     TrashPvCb(pdoi, pdoi->cbTot);
     pv = pdoi;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 #ifdef WIN
     GlobalFree((HGLOBAL)pv);
-#else  //! WIN
+#else  //! 3DMMv1.0: WIN
     free(pv);
-#endif //! WIN
+#endif //! 3DMMv1.0: WIN
 }
 
 #ifdef DEBUG
@@ -290,12 +290,12 @@ void BASE::operator delete(void *pv, schar *pszsFile, int32_t lwLine)
 {
     BASE::operator delete(pv);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-#endif // DEBUG || WIN
+#endif // 3DMMv1.0: DEBUG || WIN
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the this pointer is valid.
 ***************************************************************************/
 void BASE::AssertValid(uint32_t grfobj)
@@ -319,7 +319,7 @@ void BASE::AssertValid(uint32_t grfobj)
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this objects has already been marked, just return. If not, call
     its MarkMem method.
 ***************************************************************************/
@@ -338,7 +338,7 @@ void BASE::MarkMemStub(void)
         MarkMem();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark object.
 ***************************************************************************/
 void BASE::MarkMem(void)
@@ -348,7 +348,7 @@ void BASE::MarkMem(void)
         _PdoiFromBase(this)->cactRef++;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that a doi is valid and optionally linked or unlinked.
 ***************************************************************************/
 void _AssertDoi(DOI *pdoi, bool tLinked)
@@ -380,7 +380,7 @@ void _AssertDoi(DOI *pdoi, bool tLinked)
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Link object into list.
 ***************************************************************************/
 kpriv void _LinkDoi(DOI *pdoi, DOI **ppdoiFirst)
@@ -403,7 +403,7 @@ kpriv void _LinkDoi(DOI *pdoi, DOI **ppdoiFirst)
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlink object from list.
 ***************************************************************************/
 kpriv void _UnlinkDoi(DOI *pdoi)
@@ -424,7 +424,7 @@ kpriv void _UnlinkDoi(DOI *pdoi)
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Called if anyone tries to copy a class with NOCOPY(cls) in its
     declaration.
 ***************************************************************************/
@@ -433,7 +433,7 @@ void __AssertOnCopy(void)
     Bug("Copying a non-copyable object");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Asserts on unmarked allocated (BASE) objects.
 ***************************************************************************/
 void AssertUnmarkedObjs(void)
@@ -451,8 +451,8 @@ void AssertUnmarkedObjs(void)
 
     Assert(_pdoiFirstRaw == pvNil, "Raw list is not empty!");
 
-    // we want to traverse the list in the reverse order to report problems
-    // find the end of the list and see if there are any lost blocks
+    // 3DMMv1.0: we want to traverse the list in the reverse order to report problems
+    // 3DMMv1.0: find the end of the list and see if there are any lost blocks
     pdoiLast = pvNil;
     for (pdoi = _pdoiFirst; pvNil != pdoi; pdoi = pdoi->pdoiNext)
     {
@@ -463,7 +463,7 @@ void AssertUnmarkedObjs(void)
 
     if (cdoiLost == 0)
     {
-        // no lost blocks
+        // 3DMMv1.0: no lost blocks
         goto LDone;
     }
 
@@ -496,8 +496,8 @@ void AssertUnmarkedObjs(void)
         if (pdoi->ppdoiPrev == &_pdoiFirst)
             break;
 
-        // UUUUGGGGH! We don't have a pointer to the previous DOI, we
-        // have a pointer to the previous DOI's pdoiNext!
+        // 3DMMv1.0: UUUUGGGGH! We don't have a pointer to the previous DOI, we
+        // 3DMMv1.0: have a pointer to the previous DOI's pdoiNext!
         pdoi = (DOI *)PvSubBv(pdoi->ppdoiPrev, offset(DOI, pdoiNext));
     }
 
@@ -505,7 +505,7 @@ LDone:
     _Leave();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clears all marks on allocated (BASE) objects.
 ***************************************************************************/
 void UnmarkAllObjs(void)
@@ -528,9 +528,9 @@ void UnmarkAllObjs(void)
 
     _Leave();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Linked list element constructor
 ***************************************************************************/
 BLL::BLL(void)
@@ -539,17 +539,17 @@ BLL::BLL(void)
     _pbllNext = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove the element from the linked list
 ***************************************************************************/
 BLL::~BLL(void)
 {
-    // unlink the thing
+    // 3DMMv1.0: unlink the thing
     if (_ppbllPrev != pvNil)
         _Attach(pvNil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove the element from the linked list (if it's in one) and reattach
     it at ppbllPrev (if not pvNil).
 ***************************************************************************/
@@ -559,7 +559,7 @@ void BLL::_Attach(void *ppbllPrev)
     PBLL *ppbll = (PBLL *)ppbllPrev;
     AssertNilOrVarMem(ppbll);
 
-    // unlink the thing
+    // 3DMMv1.0: unlink the thing
     if (_ppbllPrev != pvNil)
     {
         Assert(*_ppbllPrev == this, "links corrupt");
@@ -570,10 +570,10 @@ void BLL::_Attach(void *ppbllPrev)
         }
     }
 
-    // link the thing
+    // 3DMMv1.0: link the thing
     if ((_ppbllPrev = ppbll) == pvNil)
     {
-        // not in a linked list
+        // 3DMMv1.0: not in a linked list
         _pbllNext = pvNil;
         return;
     }
@@ -586,7 +586,7 @@ void BLL::_Attach(void *ppbllPrev)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check the links.
 ***************************************************************************/
 void BLL::AssertValid(uint32_t grf)
@@ -604,4 +604,4 @@ void BLL::AssertValid(uint32_t grf)
         Assert(*_ppbllPrev == this, "links corrupt 2");
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

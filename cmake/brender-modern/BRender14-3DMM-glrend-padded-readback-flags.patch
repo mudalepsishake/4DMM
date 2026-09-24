@@ -1,0 +1,39 @@
+diff --git a/drivers/glrend/devpixmp.c b/drivers/glrend/devpixmp.c
+index 3522f3e..4471fa0 100644
+--- a/drivers/glrend/devpixmp.c
++++ b/drivers/glrend/devpixmp.c
+@@ -718,10 +718,17 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_dev
+     br_size_t                 packed_bytes;
+ 
+     /*
+-     * Need contiguous pixels and whole-pixel rows. Both flags are required.
++     * The old glrend path required BR_PMF_LINEAR here because it read
++     * glReadPixels() directly into the destination. That precondition makes
++     * the v164 padded-row temporary path unreachable: BRender deliberately
++     * clears BR_PMF_LINEAR whenever RGB888 row alignment adds padding.
++     *
++     * rectangleCopyFrom() below now owns that distinction. Tight positive
++     * rows use direct readback; padded/inverted rows use a tight temporary
++     * buffer and DevicePixelmapMemAddress() for the final row copy. Therefore
++     * the destination only needs accessible pixels and whole-pixel rows.
+      */
+-    if((dest->pm_flags & (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS)) !=
+-       (BR_PMF_LINEAR | BR_PMF_ROW_WHOLEPIXELS))
++    if(dest->pm_pixels == NULL || !(dest->pm_flags & BR_PMF_ROW_WHOLEPIXELS))
+         return BRE_FAIL;
+ 
+     if(PixelmapRectangleClipTwo(&srect, &dpoint, r, p, (br_pixelmap *)dest, (br_pixelmap *)self) == BR_CLIP_REJECT)
+@@ -797,9 +804,11 @@ static br_error BR_CMETHOD_DECL(br_device_pixelmap_gl, rectangleCopyFrom)(br_dev
+     {
+         static br_uint_32 readback_stride_diag_count;
+         if(readback_stride_diag_count < 64) {
+-            BrWarning("3DMM glrend readback stride dst=%p wh=%ux%u row=%d bpp=%u rect=%d,%d,%d,%d dpoint=%d,%d pack_row_pixels=%d path=%s",
++            BrWarning("3DMM glrend readback stride dst=%p wh=%ux%u row=%d flags=0x%08X linear=%d whole=%d bpp=%u rect=%d,%d,%d,%d dpoint=%d,%d pack_row_pixels=%d path=%s",
+                       (void *)dest, (unsigned)dest->pm_width, (unsigned)dest->pm_height,
+-                      (int)dest->pm_row_bytes, (unsigned)bytes_per_pixel,
++                      (int)dest->pm_row_bytes, (unsigned)dest->pm_flags,
++                      !!(dest->pm_flags & BR_PMF_LINEAR), !!(dest->pm_flags & BR_PMF_ROW_WHOLEPIXELS),
++                      (unsigned)bytes_per_pixel,
+                       (int)srect.x, (int)srect.y, (int)srect.w, (int)srect.h,
+                       (int)dpoint.x, (int)dpoint.y, (int)pack_row_pixels,
+                       direct_readback ? "direct-tight" : "tight-temp");

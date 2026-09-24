@@ -1,16 +1,16 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 #include "socres.h"
 #include "version.h"
 
-#define stringer(x) #x              // This macro converts the parameter x to a quoted literal string
+#define stringer(x) #x              // 3DMMv1.0: This macro converts the parameter x to a quoted literal string
 #define VERSIONSTR(rmj, rmm, rup)  stringer(rmj) "." stringer(rmm) "." stringer(rup) "\0"
 #define GIT_VERSION_STR(rmj, rmm, rup, gitversion) VERSIONSTR(rmj, rmm, rup) " (" gitversion ")\0"
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Version
+// 3DMMv1.0: Version
 //
 
 VS_VERSION_INFO VERSIONINFO
@@ -48,9 +48,9 @@ BEGIN
 END
 
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Data
+// 3DMMv1.0: Data
 //
 
 RC_PID_NUMBER  RCDATA   LOADONCALL MOVEABLE DISCARDABLE

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -14,7 +14,7 @@
 ASSERTNAME
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark all util-level memory and objects.
 ***************************************************************************/
 void MarkUtilMem(void)
@@ -34,4 +34,4 @@ void MarkUtilMem(void)
     for (pfil = FIL::PfilFirst(); pfil != pvNil; pfil = pfil->PfilNext())
         MarkMemObj(pfil);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

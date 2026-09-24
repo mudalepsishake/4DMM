@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1992,1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: angles.h 1.9 1995/05/25 13:37:24 sam Exp $
@@ -13,7 +13,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Angles are alway 0.16 fixed point
      */
     typedef br_fixed_luf br_angle;
@@ -63,7 +63,7 @@ extern "C"
 
 #endif
 
-    /*
+    /* BRender:
      * Fields that go into br_euler.order
      */
     enum
@@ -86,7 +86,7 @@ extern "C"
         BR_EULER_FRAME_ROTATING = 0x10
     };
 
-/*
+/* BRender:
  * Various possible orders
  */
 #define BR_EULER_ORDER(a, p, r, f) (BR_EULER_FIRST_##a | BR_EULER_PARITY_##p | BR_EULER_REPEAT_##r | BR_EULER_FRAME_##f)
@@ -120,7 +120,7 @@ extern "C"
         BR_EULER_ZYZ_R = BR_EULER_ORDER(Z, ODD, YES, ROTATING)
     };
 
-    /*
+    /* BRender:
      * A triple of euler angles and a description of how they are to
      * be applied - loosely based on -
      * 	"Euler Angle Convertion" Ken Shoemake, Graphics Gems IV pp. 222

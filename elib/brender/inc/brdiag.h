@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: brdiag.h 1.1 1995/07/28 18:57:13 sam Exp $
@@ -15,7 +15,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* BRender:
      * Instance of an error handler
      */
     typedef void BR_CALLBACK br_diag_warning_cbfn(char *message);
@@ -28,7 +28,7 @@ extern "C"
         br_diag_failure_cbfn *failure;
     } br_diaghandler;
 
-    /*
+    /* BRender:
      * For backwards compatibility
      */
     typedef struct br_errorhandler
@@ -39,11 +39,11 @@ extern "C"
 
     } br_errorhandler;
 
-/**
+/** BRender:
  ** Macros for diagnostic generation
  **/
 
-/*
+/* BRender:
  * Report message and exit - should not return to application
  */
 #define BR_FAILURE(s) BrFailure(s)
@@ -55,7 +55,7 @@ extern "C"
 #define BR_FAILURE5(s, a, b, c, d, e) BrFailure(s, a, b, c, d, e)
 #define BR_FAILURE6(s, a, b, c, d, e, f) BrFailure(s, a, b, c, d, e, f)
 
-/*
+/* BRender:
  * Report message and continue
  */
 #define BR_WARNING(s) BrWarning(s)
@@ -67,7 +67,7 @@ extern "C"
 #define BR_WARNING5(s, a, b, c, d, e) BrWarning(s, a, b, c, d, e)
 #define BR_WARNING6(s, a, b, c, d, e, f) BrWarning(s, a, b, c, d, e, f)
 
-/*
+/* BRender:
  * Report message and exit, including source file and line number
  */
 #define BR_FATAL(s) BrFatal(__FILE__, __LINE__, s)
@@ -79,7 +79,7 @@ extern "C"
 #define BR_FATAL5(s, a, b, c, d, e) BrFatal(__FILE__, __LINE__, s, a, b, c, d, e)
 #define BR_FATAL6(s, a, b, c, d, e, f) BrFatal(__FILE__, __LINE__, s, a, b, c, d, e, f)
 
-/*
+/* BRender:
  * Backwards compatibility
  */
 #define BR_ERROR(s) BrFailure(s)

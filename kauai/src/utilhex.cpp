@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -12,7 +12,7 @@ ASSERTNAME
 
 #include "utilhex.h"
 
-/**
+/** 3DMMEx:
  * @brief Parse a hex digit
  **/
 static bool FLwFromHex(const achar ch, int32_t *plw)
@@ -49,7 +49,7 @@ bool FRgbFromHexString(PCSZ pszSrc, uint8_t *pbDst, size_t cbDst, size_t *pcbOut
     if (pszSrc == pvNil || pcbOut == pvNil)
         return fFalse;
 
-    // String length should be a multiple of two
+    // 3DMMEx: String length should be a multiple of two
     cchSrc = CchSz(pszSrc);
     if (cchSrc % 2 != 0)
         return fFalse;
@@ -59,21 +59,21 @@ bool FRgbFromHexString(PCSZ pszSrc, uint8_t *pbDst, size_t cbDst, size_t *pcbOut
 
     *pcbOut = cbEncoded;
 
-    // Skip decoding if no buffer was given
+    // 3DMMEx: Skip decoding if no buffer was given
     if (pbDst == pvNil)
         return fTrue;
 
-    // Ensure we have enough space to store the result
+    // 3DMMEx: Ensure we have enough space to store the result
     if (cbEncoded > cbDst)
         return fFalse;
 
-    // Decode the string
+    // 3DMMEx: Decode the string
     for (size_t ich = 0; ich < cchSrc; ich += 2)
     {
         int32_t lwUpper, lwLower;
         if (!FLwFromHex(pszSrc[ich], &lwUpper) || !FLwFromHex(pszSrc[ich + 1], &lwLower))
         {
-            // Invalid hex digits
+            // 3DMMEx: Invalid hex digits
             *pcbOut = 0;
             return fFalse;
         }
@@ -85,7 +85,7 @@ bool FRgbFromHexString(PCSZ pszSrc, uint8_t *pbDst, size_t cbDst, size_t *pcbOut
     return fTrue;
 }
 
-/**
+/** 3DMMEx:
  * @brief Convert a nibble to a hex digit
  **/
 static achar ChFromNibble(uint8_t bNibble)

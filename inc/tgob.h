@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Lite, low-cholestoral, politically correct, ethinically and genderally
     mixed text gobs.
@@ -16,7 +16,7 @@
 #include "frame.h"
 
 //
-// Tgob class
+// 3DMMv1.0: Tgob class
 //
 #define TGOB_PAR GOB
 #define kclsTGOB KLCONST4('t', 'g', 'o', 'b')
@@ -41,7 +41,7 @@ class TGOB : public TGOB_PAR
 
   public:
     //
-    // Create and destroy functions
+    // 3DMMv1.0: Create and destroy functions
     //
     TGOB(PGCB pgcb);
     TGOB(int32_t hid);

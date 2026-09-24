@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: fwproto.h 1.42 1995/06/30 16:08:49 sam Exp $
@@ -15,123 +15,123 @@ extern "C"
 #endif
 
 #ifndef _NO_PROTOTYPES
-    /**
+    /** BRender:
      ** Fixed Point
      **/
 
-    /* result = abs(a)
+    /* BRender: result = abs(a)
      */
     br_fixed_ls BR_ASM_CALL BrFixedAbs(br_fixed_ls a);
 
-    /* result = a*b
+    /* BRender: result = a*b
      */
     br_fixed_ls BR_ASM_CALL BrFixedMul(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = a*b + c*d
+    /* BRender: result = a*b + c*d
      */
     br_fixed_ls BR_ASM_CALL BrFixedMac2(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d);
 
-    /* result = a*b + c*d + e*f
+    /* BRender: result = a*b + c*d + e*f
      */
     br_fixed_ls BR_ASM_CALL BrFixedMac3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e,
                                         br_fixed_ls f);
 
-    /* result = a*b + c*d + e*f + g*h
+    /* BRender: result = a*b + c*d + e*f + g*h
      */
     br_fixed_ls BR_ASM_CALL BrFixedMac4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e,
                                         br_fixed_ls f, br_fixed_ls g, br_fixed_ls h);
 
-    /* result = a*a
+    /* BRender: result = a*a
      */
     br_fixed_ls BR_ASM_CALL BrFixedSqr(br_fixed_ls a);
 
-    /* result = a*a + b*b
+    /* BRender: result = a*a + b*b
      */
     br_fixed_ls BR_ASM_CALL BrFixedSqr2(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = a*a + b*b + c*c
+    /* BRender: result = a*a + b*b + c*c
      */
     br_fixed_ls BR_ASM_CALL BrFixedSqr3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c);
-    /* result = a*a + b*b + c*c + d*d
+    /* BRender: result = a*a + b*b + c*c + d*d
      */
     br_fixed_ls BR_ASM_CALL BrFixedSqr4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d);
 
-    /* result = sqrt(a*a + b*b)
+    /* BRender: result = sqrt(a*a + b*b)
      */
     br_fixed_ls BR_ASM_CALL BrFixedLength2(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = sqrt(a*a + b*b + c*c)
+    /* BRender: result = sqrt(a*a + b*b + c*c)
      */
     br_fixed_ls BR_ASM_CALL BrFixedLength3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c);
 
-    /* result = sqrt(a*a + b*b + c*c + d*d)
+    /* BRender: result = sqrt(a*a + b*b + c*c + d*d)
      */
     br_fixed_ls BR_ASM_CALL BrFixedLength4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d);
 
-    /* result = 1/sqrt(a*a + b*b) (low precision)
+    /* BRender: result = 1/sqrt(a*a + b*b) (low precision)
      */
     br_fixed_ls BR_ASM_CALL BrFixedRLength2(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = 1/sqrt(a*a + b*b + c*c) (low precision)
+    /* BRender: result = 1/sqrt(a*a + b*b + c*c) (low precision)
      */
     br_fixed_ls BR_ASM_CALL BrFixedRLength3(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c);
 
-    /* result = 1/sqrt(a*a + b*b + c*c + d*d) (low precision)
+    /* BRender: result = 1/sqrt(a*a + b*b + c*c + d*d) (low precision)
      */
     br_fixed_ls BR_ASM_CALL BrFixedRLength4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d);
 
-    /* result = a/b
+    /* BRender: result = a/b
      */
     br_fixed_ls BR_ASM_CALL BrFixedDiv(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = a/b * 2^31
+    /* BRender: result = a/b * 2^31
      */
     br_fixed_ls BR_ASM_CALL BrFixedDivF(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = a/b (rounded towards 0)
+    /* BRender: result = a/b (rounded towards 0)
      */
     br_fixed_ls BR_ASM_CALL BrFixedDivR(br_fixed_ls a, br_fixed_ls b);
 
-    /* result = a*b/c
+    /* BRender: result = a*b/c
      */
     br_fixed_ls BR_ASM_CALL BrFixedMulDiv(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c);
 
-    /* result = (a*b + c*d)/e
+    /* BRender: result = (a*b + c*d)/e
      */
     br_fixed_ls BR_ASM_CALL BrFixedMac2Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e);
 
-    /* result = (a*b + c*d + e*f)/g
+    /* BRender: result = (a*b + c*d + e*f)/g
      */
     br_fixed_ls BR_ASM_CALL BrFixedMac3Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e,
                                            br_fixed_ls f, br_fixed_ls g);
 
-    /* result = (a*b + c*d + e*f + g*h)/i
+    /* BRender: result = (a*b + c*d + e*f + g*h)/i
      */
     br_fixed_ls BR_ASM_CALL BrFixedMac4Div(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e,
                                            br_fixed_ls f, br_fixed_ls g, br_fixed_ls h, br_fixed_ls i);
-    /* result = 1.0/a
+    /* BRender: result = 1.0/a
      */
     br_fixed_ls BR_ASM_CALL BrFixedRcp(br_fixed_ls a);
 
-    /*
+    /* BRender:
      * Various combinations whith fractions
      */
 
-    /* result = a*b + c*d - a & c are fractions
+    /* BRender: result = a*b + c*d - a & c are fractions
      */
     br_fixed_ls BR_ASM_CALL BrFixedFMac2(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d);
 
-    /* result = a*b + c*d + e*f - a,c & e are fractions
+    /* BRender: result = a*b + c*d + e*f - a,c & e are fractions
      */
     br_fixed_ls BR_ASM_CALL BrFixedFMac3(br_fixed_lsf a, br_fixed_ls b, br_fixed_lsf c, br_fixed_ls d, br_fixed_lsf e,
                                          br_fixed_ls f);
 
-    /* result = a*b + c*d + e*f + g*h (a,c,e,g are fractions)
+    /* BRender: result = a*b + c*d + e*f + g*h (a,c,e,g are fractions)
      */
     br_fixed_ls BR_ASM_CALL BrFixedFMac4(br_fixed_ls a, br_fixed_ls b, br_fixed_ls c, br_fixed_ls d, br_fixed_ls e,
                                          br_fixed_ls f, br_fixed_ls g, br_fixed_ls h);
 
-    /*
+    /* BRender:
      * Misc. support  functions
      */
     br_fixed_ls BR_ASM_CALL BrFixedSin(br_angle a);
@@ -149,14 +149,14 @@ extern "C"
     br_fixed_ls BR_PUBLIC_ENTRY BrFixedSqrt(br_fixed_ls a);
     br_fixed_ls BR_PUBLIC_ENTRY BrFixedPow(br_fixed_ls a, br_fixed_ls b);
 
-    /*
+    /* BRender:
      * Integer sqrt functions
      */
     br_uint_32 BR_ASM_CALL BrSqrt(br_uint_32 a);
     br_uint_32 BR_ASM_CALL BrFastSqrt(br_uint_32 a);
     br_uint_32 BR_ASM_CALL BrFastRSqrt(br_uint_32 a);
 
-/*
+/* BRender:
  * Optional inline fixed point maths
  */
 #ifndef NO_PROTOTYPES
@@ -177,17 +177,17 @@ extern "C"
 #endif
 #endif
 
-    /*
+    /* BRender:
      * Setup
      */
     void BR_PUBLIC_ENTRY BrBegin(void);
     void BR_PUBLIC_ENTRY BrEnd(void);
 
-    /*
+    /* BRender:
      * XXX - All the Add/Remove/Find/Count/Enum calls could ( when !(DEBUG | PARANOID))
      * be #defined in terms of the core Registry fns. with appropriate casts.
      */
-    /*
+    /* BRender:
      * Material Handling
      */
     br_material *BR_PUBLIC_ENTRY BrMaterialAdd(br_material *material);
@@ -208,7 +208,7 @@ extern "C"
     br_material *BR_PUBLIC_ENTRY BrMaterialAllocate(const char *name);
     void BR_PUBLIC_ENTRY BrMaterialFree(br_material *m);
 
-    /*
+    /* BRender:
      * Model Handling
      */
     br_model *BR_PUBLIC_ENTRY BrModelAdd(br_model *model);
@@ -232,7 +232,7 @@ extern "C"
     br_model *BR_PUBLIC_ENTRY BrModelAllocate(char *name, int nvertices, int nfaces);
     void BR_PUBLIC_ENTRY BrModelFree(br_model *m);
 
-    /*
+    /* BRender:
      * Texture handling
      */
     br_pixelmap *BR_PUBLIC_ENTRY BrMapAdd(br_pixelmap *pixelmap);
@@ -250,7 +250,7 @@ extern "C"
 
     void BR_PUBLIC_ENTRY BrMapUpdate(br_pixelmap *item, br_uint_16 flags);
 
-    /*
+    /* BRender:
      * Table handling
      */
     br_pixelmap *BR_PUBLIC_ENTRY BrTableAdd(br_pixelmap *pixelmap);
@@ -269,7 +269,7 @@ extern "C"
 
     void BR_PUBLIC_ENTRY BrTableUpdate(br_pixelmap *item, br_uint_16 flags);
 
-    /*
+    /* BRender:
      * Resource class handling
      */
     br_resource_class *BR_PUBLIC_ENTRY BrResClassAdd(br_resource_class *pixelmap);
@@ -286,7 +286,7 @@ extern "C"
 
     br_uint_32 BR_PUBLIC_ENTRY BrResClassEnum(char *pattern, br_resclass_enum_cbfn *callback, void *arg);
 
-    /*
+    /* BRender:
      * Actor Handling
      */
     typedef br_uint_32 BR_CALLBACK br_actor_enum_cbfn(br_actor *mat, void *arg);
@@ -307,7 +307,7 @@ extern "C"
     br_bounds *BR_PUBLIC_ENTRY BrActorToBounds(br_bounds *b, br_actor *ap);
     br_matrix34 *BR_PUBLIC_ENTRY BrBoundsToMatrix34(br_matrix34 *mat, br_bounds *bounds);
 
-    /*
+    /* BRender:
      * Pixelmap management
      */
     br_pixelmap *BR_PUBLIC_ENTRY BrPixelmapAllocate(br_uint_8 type, br_uint_16 w, br_uint_16 h, void *pixels,
@@ -322,7 +322,7 @@ extern "C"
     br_uint_16 BR_PUBLIC_ENTRY BrPixelmapPixelSize(br_pixelmap *pm);
     br_uint_16 BR_PUBLIC_ENTRY BrPixelmapChannels(br_pixelmap *pm);
 
-    /*
+    /* BRender:
      * Pixelmap operations
      */
     void BR_PUBLIC_ENTRY BrPixelmapFill(br_pixelmap *dst, br_uint_32 colour);
@@ -360,12 +360,12 @@ extern "C"
 
     void BR_PUBLIC_ENTRY BrPixelmapDoubleBuffer(br_pixelmap *dst, br_pixelmap *src);
 
-/*
+/* BRender:
  * Backwards compatibility
  */
 #define BrPixelmapPlot BrPixelmapPixelSet
 
-    /*
+    /* BRender:
      * File operations
      */
     br_model *BR_PUBLIC_ENTRY BrModelLoad(char *filename);
@@ -388,24 +388,24 @@ extern "C"
     br_uint_32 BR_PUBLIC_ENTRY BrActorLoadMany(char *filename, br_actor **actors, br_uint_16 num);
     br_uint_32 BR_PUBLIC_ENTRY BrActorSaveMany(char *filename, br_actor **actors, br_uint_16 num);
 
-    /*
+    /* BRender:
      * Lights
      */
     void BR_PUBLIC_ENTRY BrLightEnable(br_actor *l);
     void BR_PUBLIC_ENTRY BrLightDisable(br_actor *l);
 
-    /*
+    /* BRender:
      * Environment
      */
     br_actor *BR_PUBLIC_ENTRY BrEnvironmentSet(br_actor *a);
 
-    /*
+    /* BRender:
      * Clip planes
      */
     void BR_PUBLIC_ENTRY BrClipPlaneEnable(br_actor *cp);
     void BR_PUBLIC_ENTRY BrClipPlaneDisable(br_actor *cp);
 
-    /*
+    /* BRender:
      * 3x4 Matrix ops.
      */
     void BR_PUBLIC_ENTRY BrMatrix34Copy(br_matrix34 *A, br_matrix34 *b);
@@ -465,7 +465,7 @@ extern "C"
 
     void BR_PUBLIC_ENTRY BrMatrix34RollingBall(br_matrix34 *mat, int dx, int dy, int radius);
 
-    /*
+    /* BRender:
      * 4x4 Matrix ops.
      */
     void BR_PUBLIC_ENTRY BrMatrix4Copy(br_matrix4 *A, br_matrix4 *B);
@@ -492,7 +492,7 @@ extern "C"
     void BR_PUBLIC_ENTRY BrMatrix4Copy34(br_matrix4 *A, br_matrix34 *B);
     void BR_PUBLIC_ENTRY BrMatrix34Copy4(br_matrix34 *A, br_matrix4 *B);
 
-    /**
+    /** BRender:
      ** 2D Vectors
      **/
     void BR_PUBLIC_ENTRY BrVector2Copy(br_vector2 *v1, br_vector2 *v2);
@@ -509,7 +509,7 @@ extern "C"
     br_scalar BR_PUBLIC_ENTRY BrVector2Length(br_vector2 *v1);
     br_scalar BR_PUBLIC_ENTRY BrVector2LengthSquared(br_vector2 *v1);
 
-    /**
+    /** BRender:
      ** 3D VECTORS
      **/
     void BR_PUBLIC_ENTRY BrVector3Copy(br_vector3 *v1, br_vector2 *v2);
@@ -531,18 +531,18 @@ extern "C"
     void BR_PUBLIC_ENTRY BrVector3NormaliseQuick(br_vector3 *v1, br_vector3 *v2);
     void BR_PUBLIC_ENTRY BrVector3NormaliseLP(br_vector3 *v1, br_vector3 *v2);
 
-    /*
+    /* BRender:
      * 2D vectors
      */
     void BR_PUBLIC_ENTRY BrVector2Normalise(br_vector2 *v1, br_vector2 *v2);
 
-    /**
+    /** BRender:
      ** 4D Vectors
      **/
     br_scalar BR_PUBLIC_ENTRY BrVector4Dot(br_vector4 *v1, br_vector4 *v2);
     void BR_PUBLIC_ENTRY BrVector4Copy(br_vector4 *v1, br_vector4 *v2);
 
-    /*
+    /* BRender:
      * Euler Angles
      */
     br_matrix34 *BR_PUBLIC_ENTRY BrEulerToMatrix34(br_matrix34 *mat, br_euler *euler);
@@ -554,7 +554,7 @@ extern "C"
     br_quat *BR_PUBLIC_ENTRY BrEulerToQuat(br_quat *quat, br_euler *euler);
     br_euler *BR_PUBLIC_ENTRY BrQuatToEuler(br_euler *euler, br_quat *quat);
 
-    /*
+    /* BRender:
      * Quaternions
      */
     br_quat *BR_PUBLIC_ENTRY BrQuatMul(br_quat *q, br_quat *l, br_quat *r);
@@ -569,7 +569,7 @@ extern "C"
     br_matrix4 *BR_PUBLIC_ENTRY BrQuatToMatrix4(br_matrix4 *mat, br_quat *q);
     br_quat *BR_PUBLIC_ENTRY BrMatrix4ToQuat(br_quat *q, br_matrix4 *mat);
 
-    /*
+    /* BRender:
      * Block pool allocator
      */
     br_pool *BR_PUBLIC_ENTRY BrPoolAllocate(int block_size, int chunk_size, br_uint_8 mem_type);
@@ -580,7 +580,7 @@ extern "C"
 
     void BR_PUBLIC_ENTRY BrPoolEmpty(struct br_pool *pool);
 
-    /*
+    /* BRender:
      * Transforms
      */
     void BR_PUBLIC_ENTRY BrTransformToMatrix34(br_matrix34 *mat, br_transform *xform);
@@ -591,7 +591,7 @@ extern "C"
     void BR_PUBLIC_ENTRY BrMatrix34PostTransform(br_matrix34 *mat, br_transform *xform);
     void BR_PUBLIC_ENTRY BrMatrix4PreTransform(br_matrix4 *mat, br_transform *xform);
 
-    /*
+    /* BRender:
      * 2x3 Matrix ops.
      */
     void BR_PUBLIC_ENTRY BrMatrix23Copy(br_matrix23 *A, br_matrix23 *b);
@@ -631,13 +631,13 @@ extern "C"
     void BR_PUBLIC_ENTRY BrMatrix23LPInverse(br_matrix23 *A, br_matrix23 *B);
     void BR_PUBLIC_ENTRY BrMatrix23LPNormalise(br_matrix23 *A, br_matrix23 *B);
 
-/*
+/* BRender:
  * Backwards compatibility
  */
 #define BrMatrix34Transform BrTransformToMatrix34
 #define BrTransformTransfer BrTransformToTransform
 
-    /*
+    /* BRender:
      * Picking
      */
     typedef int BR_CALLBACK br_pick2d_cbfn(br_actor *a, br_model *model, br_material *material, br_vector3 *ray_pos,
@@ -659,7 +659,7 @@ extern "C"
     int BR_PUBLIC_ENTRY BrModelPick2D(br_model *model, br_material *material, br_vector3 *ray_pos, br_vector3 *ray_dir,
                                       br_scalar t_near, br_scalar t_far, br_modelpick2d_cbfn *callback, void *arg);
 
-    /*
+    /* BRender:
      * Custom calback support
      */
     br_uint_8 BR_PUBLIC_ENTRY BrOnScreenCheck(br_bounds *bounds);
@@ -676,7 +676,7 @@ extern "C"
 
     void BR_PUBLIC_ENTRY BrSceneModelLight(br_model *model, br_material *default_material, br_actor *root, br_actor *a);
 
-    /*
+    /* BRender:
      * Byte swapping
      */
     typedef float br_float;
@@ -686,12 +686,12 @@ extern "C"
     br_float BR_PUBLIC_ENTRY BrSwapFloat(br_float f);
     void *BR_PUBLIC_ENTRY BrSwapBlock(void *block, int count, int size);
 
-    /*
+    /* BRender:
      * Misc. support
      */
     typedef int BR_CALLBACK br_qsort_cbfn(const void *, const void *);
     void BR_PUBLIC_ENTRY BrQsort(void *basep, unsigned int nelems, unsigned int size, br_qsort_cbfn *comp);
-    /*
+    /* BRender:
      * Diagnostic generation
      */
     void BR_PUBLIC_ENTRY BrFailure(char *s, ...);
@@ -700,19 +700,19 @@ extern "C"
     void BR_PUBLIC_ENTRY _BrAssert(char *condition, char *file, unsigned line);
     void BR_PUBLIC_ENTRY _BrUAssert(char *condition, char *file, unsigned line);
 
-    /*
+    /* BRender:
      * Set new handlers
      */
     br_diaghandler *BR_PUBLIC_ENTRY BrDiagHandlerSet(br_diaghandler *newdh);
     br_filesystem *BR_PUBLIC_ENTRY BrFilesystemSet(br_filesystem *newfs);
     br_allocator *BR_PUBLIC_ENTRY BrAllocatorSet(br_allocator *newal);
 
-/*
+/* BRender:
  * Backwards compatibility
  */
 #define BrErrorHandlerSet BrDiagHandlerSet
 
-    /*
+    /* BRender:
      * Generic file IO
      */
     br_uint_32 BR_PUBLIC_ENTRY BrFileAttributes(void);
@@ -732,12 +732,12 @@ extern "C"
 
     int BR_PUBLIC_ENTRY BrFilePrintf(void *f, char *fmt, ...);
 
-    /*
+    /* BRender:
      * Data file output type (one of BR_FS_MODE_xxx)
      */
     int BR_PUBLIC_ENTRY BrWriteModeSet(int text);
 
-    /*
+    /* BRender:
      * Generic memory allocation
      */
     void *BR_PUBLIC_ENTRY BrMemAllocate(br_size_t size, br_uint_8 type);
@@ -747,7 +747,7 @@ extern "C"
     char *BR_PUBLIC_ENTRY BrMemStrDup(char *str);
     void *BR_PUBLIC_ENTRY BrMemCalloc(int nelems, br_size_t size, br_uint_8 type);
 
-    /*
+    /* BRender:
      * Resource allocation
      */
     void *BR_PUBLIC_ENTRY BrResAllocate(void *vparent, br_size_t size, int res_class);
@@ -762,7 +762,7 @@ extern "C"
     typedef br_uint_32 BR_CALLBACK br_resenum_cbfn(void *vres, void *arg);
     br_uint_32 BR_PUBLIC_ENTRY BrResChildEnum(void *vres, br_resenum_cbfn *callback, void *arg);
 
-    /*
+    /* BRender:
      * Block operations
      */
     void BR_ASM_CALL BrBlockFill(void *dest_ptr, int value, int dwords);
@@ -772,7 +772,7 @@ extern "C"
     void BR_ASM_CALL BrFarBlockCopy(void __far *dest_ptr, void *src_ptr, int dwords);
 #endif
 
-    /*
+    /* BRender:
      * Scratchpad buffer allocation - Currenty, only one allocation
      * may be outstanding at any time
      */
@@ -781,7 +781,7 @@ extern "C"
     br_size_t BR_PUBLIC_ENTRY BrScratchInquire(void);
     void BR_PUBLIC_ENTRY BrScratchFlush(void);
 
-    /*
+    /* BRender:
      * Utility "FindFailed" callbacks that can be used to automaticaly load
      * models/materials/maps/tables from the filesystem
      */
@@ -790,7 +790,7 @@ extern "C"
     br_model *BR_CALLBACK BrModelFindFailedLoad(char *name);
     br_material *BR_CALLBACK BrMaterialFindFailedLoad(char *name);
 
-/*
+/* BRender:
  * Backwards comaptibility
  */
 #define BrModelPrepare BrModelUpdate
@@ -798,12 +798,12 @@ extern "C"
 #define BrMapPrepare BrMapUpdate
 #define BrTablePrepare BrTableUpdate
 
-    /*
+    /* BRender:
      * Error retrieval
      */
     br_error BR_PUBLIC_ENTRY BrGetLastError(void **valuep);
 
-#endif /* _NO_PROTOTYPES */
+#endif /* BRender: _NO_PROTOTYPES */
 
 #ifdef __cplusplus
 };

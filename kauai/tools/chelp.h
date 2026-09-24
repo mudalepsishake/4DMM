@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Main include file for the help authoring tool.
 
@@ -26,14 +26,14 @@ enum
     khidLigPicture,
 };
 
-// creator type for the help editor
+// 3DMMv1.0: creator type for the help editor
 #define kctgChelp KLCONST4('C', 'H', 'L', 'P')
 
 typedef class LID *PLID;
 typedef class LIG *PLIG;
 typedef class HETD *PHETD;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     App class
 ***************************************************************************/
 #define APP_PAR APPB
@@ -68,7 +68,7 @@ class APP : public APP_PAR
 };
 extern APP vapp;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     List document
 ***************************************************************************/
 #define LID_PAR DOCB
@@ -87,10 +87,10 @@ class LID : public LID_PAR
         CNO cnoMbmp;
     };
 
-    PCRM _pcrm;   // where to look for the chunks
-    CTG _ctg;     // what ctg to look for
-    CHID _chid;   // what chid value the MBMP should be at (if _ctg is not MBMP)
-    PGL _pglcach; // list of the chunks that we found
+    PCRM _pcrm;   // 3DMMv1.0: where to look for the chunks
+    CTG _ctg;     // 3DMMv1.0: what ctg to look for
+    CHID _chid;   // 3DMMv1.0: what chid value the MBMP should be at (if _ctg is not MBMP)
+    PGL _pglcach; // 3DMMv1.0: list of the chunks that we found
 
     LID(void);
     ~LID(void);
@@ -106,7 +106,7 @@ class LID : public LID_PAR
     PMBMP PmbmpGet(int32_t icki);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     List display gob
 ***************************************************************************/
 const int32_t kdxpCellLig = kdzpInch * 2;
@@ -123,9 +123,9 @@ class LIG : public LIG_PAR
     CMD_MAP_DEC(LIG)
 
   protected:
-    PTXHD _ptxhd;     // the document to put the chunk in
-    PSCB _pscb;       // our scroll bar
-    int32_t _dypCell; // how tall are our cells
+    PTXHD _ptxhd;     // 3DMMv1.0: the document to put the chunk in
+    PSCB _pscb;       // 3DMMv1.0: our scroll bar
+    int32_t _dypCell; // 3DMMv1.0: how tall are our cells
 
     LIG(PLID plid, GCB *pgcb);
     bool _FInit(PTXHD ptxhd, int32_t dypCell);
@@ -140,7 +140,7 @@ class LIG : public LIG_PAR
     virtual bool FCmdScroll(PCMD pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Color chooser GOB.
 ***************************************************************************/
 const int32_t kcacrCcg = 8;
@@ -156,9 +156,9 @@ class CCG : public CCG_PAR
     ASSERT
 
   protected:
-    PTXHD _ptxhd;     // the document to put the color in
-    int32_t _cacrRow; // how many colors to put on a row
-    bool _fForeColor; // whether this sets the foreground or background color
+    PTXHD _ptxhd;     // 3DMMv1.0: the document to put the color in
+    int32_t _cacrRow; // 3DMMv1.0: how many colors to put on a row
+    bool _fForeColor; // 3DMMv1.0: whether this sets the foreground or background color
 
     bool _FGetAcrFromPt(int32_t xp, int32_t yp, ACR *pacr, RC *prc = pvNil, int32_t *piscr = pvNil);
 
@@ -172,7 +172,7 @@ class CCG : public CCG_PAR
     virtual bool FEnsureToolTip(PGOB *ppgobCurTip, int32_t xpMouse, int32_t ypMouse) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Color chooser tool tip.
 ***************************************************************************/
 typedef class CCGT *PCCGT;
@@ -198,7 +198,7 @@ class CCGT : public CCGT_PAR
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help editor doc - consists of a CFL containing (possibly) multiple
     topics.
 ***************************************************************************/
@@ -211,8 +211,8 @@ class HEDO : public HEDO_PAR
     ASSERT
 
   protected:
-    PCFL _pcfl; // the chunky file
-    PRCA _prca; // the resources
+    PCFL _pcfl; // 3DMMv1.0: the chunky file
+    PRCA _prca; // 3DMMv1.0: the resources
 
     HEDO(void);
     ~HEDO(void);
@@ -241,7 +241,7 @@ class HEDO : public HEDO_PAR
     virtual PHETD PhetdOpenPrev(PHETD phetd);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     TSEL: used to track a selection in a chunky file doc
 ***************************************************************************/
 #define TSEL_PAR BASE
@@ -276,7 +276,7 @@ class TSEL : public TSEL_PAR
     bool FSetCno(CNO cno);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help editor document display GOB - displays a HEDO.
 ***************************************************************************/
 typedef class HEDG *PHEDG;
@@ -289,13 +289,13 @@ class HEDG : public HEDG_PAR
     ASSERT
 
   protected:
-    int32_t _onn;       // fixed width font to use
-    int32_t _dypHeader; // height of the header
-    int32_t _dypLine;   // height of one line
-    int32_t _dxpChar;   // width of a character
-    int32_t _dypBorder; // height of border (included in _dypLine)
-    PCFL _pcfl;         // the chunky file
-    TSEL _tsel;         // the selection
+    int32_t _onn;       // 3DMMv1.0: fixed width font to use
+    int32_t _dypHeader; // 3DMMv1.0: height of the header
+    int32_t _dypLine;   // 3DMMv1.0: height of one line
+    int32_t _dxpChar;   // 3DMMv1.0: width of a character
+    int32_t _dypBorder; // 3DMMv1.0: height of border (included in _dypLine)
+    PCFL _pcfl;         // 3DMMv1.0: the chunky file
+    TSEL _tsel;         // 3DMMv1.0: the selection
 
     HEDG(PHEDO phedo, PCFL pcfl, PGCB pgcb);
     virtual void _Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz = 0, int32_t scvVert = 0) override;
@@ -320,14 +320,14 @@ class HEDG : public HEDG_PAR
     virtual void _Activate(bool fActive) override;
     virtual int32_t _ScvMax(bool fVert) override;
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
     virtual void _ClearSel(void) override;
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid) override;
 
 #ifdef WIN
     void _StartPage(PGNV pgnv, PSTN pstnDoc, int32_t lwPage, RC *prcPage, int32_t onn);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
   public:
     static PHEDG PhedgNew(PHEDO phedo, PCFL pcfl, PGCB pgcb);
@@ -353,7 +353,7 @@ class HEDG : public HEDG_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Help editor topic doc - for editing a single topic in a HEDO.
     An instance of this class is a child doc of a HEDO.
 ***************************************************************************/
@@ -366,10 +366,10 @@ class HETD : public HETD_PAR
     MARKMEM
 
   protected:
-    PCFL _pcfl; // which chunk is being edited
+    PCFL _pcfl; // 3DMMv1.0: which chunk is being edited
     CNO _cno;
-    PGST _pgst;   // string versions of stuff in HTOP
-    STN _stnDesc; // description
+    PGST _pgst;   // 3DMMv1.0: string versions of stuff in HTOP
+    STN _stnDesc; // 3DMMv1.0: description
 
     HETD(PDOCB pdocb, PRCA prca, PCFL pcfl, CNO cno);
     ~HETD(void);
@@ -404,7 +404,7 @@ class HETD : public HETD_PAR
     void GetHtopStn(int32_t istn, PSTN pstn);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     DDG for an HETD.  Help text document editing gob.
 ***************************************************************************/
 typedef class HETG *PHETG;
@@ -418,18 +418,18 @@ class HETG : public HETG_PAR
   protected:
     HETG(PHETD phetd, PGCB pgcb);
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil) override;
 
-    // override these so we can put up our dialogs
+    // 3DMMv1.0: override these so we can put up our dialogs
     virtual bool _FGetOtherSize(int32_t *pdypFont) override;
     virtual bool _FGetOtherSubSuper(int32_t *pdypOffset) override;
 
-    // we have our own ruler
+    // 3DMMv1.0: we have our own ruler
     virtual int32_t _DypTrul(void) override;
     virtual PTRUL _PtrulNew(PGCB pgcb) override;
 
-    // override _DrawLinExtra so we can put boxes around grouped text.
+    // 3DMMv1.0: override _DrawLinExtra so we can put boxes around grouped text.
     virtual void _DrawLinExtra(PGNV pgnv, PRC prcClip, LIN *plin, int32_t dxp, int32_t yp, uint32_t grftxtg) override;
 
   public:
@@ -468,7 +468,7 @@ class HETG : public HETG_PAR
 const int32_t kstidFind = 1;
 const int32_t kstidReplace = 2;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The ruler for a help text document.
 ***************************************************************************/
 typedef class HTRU *PHTRU;
@@ -480,7 +480,7 @@ class HTRU : public HTRU_PAR
     ASSERT
 
   protected:
-    // ruler track type
+    // 3DMMv1.0: ruler track type
     enum
     {
         rttNil,
@@ -515,4 +515,4 @@ class HTRU : public HTRU_PAR
     virtual void SetDypHeight(int32_t dyp);
 };
 
-#endif //! CHELP_H
+#endif //! 3DMMv1.0: CHELP_H

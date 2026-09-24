@@ -1,7 +1,7 @@
-/* Copyright (c) Mark Cave-Ayland.
+/* 3DMMEx: Copyright (c) Mark Cave-Ayland.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Mark Cave-Ayland
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@ ASSERTNAME
 
 const uint32_t kfpError = 0xFFFFFFFF;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Open or create the file by calling CreateFile.  Returns hBadWin on
     failure.
 ***************************************************************************/
@@ -27,7 +27,7 @@ kpriv FILE *_HfileOpen(PSZ psz, uint32_t grffil)
     return std::fopen(psz, mode);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Open or create the file.  If the file is already open, sets the
     permissions according to grffil.
 ***************************************************************************/
@@ -48,14 +48,14 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
         Assert(!fCreate, "can't create an open file");
         if ((~_grffil & grffil) == 0)
         {
-            // permissions are already set high enough
+            // 3DMMEx: permissions are already set high enough
             fRet = fTrue;
             goto LRet;
         }
         std::fclose(_fp);
         _fp = NULL;
 
-        // maintain the permissions we had before
+        // 3DMMEx: maintain the permissions we had before
         grffil |= _grffil & kgrffilPerm;
     }
 
@@ -63,7 +63,7 @@ bool FIL::_FOpen(bool fCreate, uint32_t grffil)
 
     if (NULL == _fp)
     {
-        // if it was open, re-open it with old permissions
+        // 3DMMEx: if it was open, re-open it with old permissions
         if (_fOpen)
         {
             _fp = _HfileOpen(_fni._stnFile.Psz(), _grffil);
@@ -86,7 +86,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Close the file.
 ***************************************************************************/
 void FIL::_Close(bool fFinal)
@@ -112,7 +112,7 @@ void FIL::_Close(bool fFinal)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Flush the file (and its volume?).
 ***************************************************************************/
 void FIL::Flush(void)
@@ -127,7 +127,7 @@ void FIL::Flush(void)
     _mutx.Leave();
 }
 
-/******************************************    *********************************
+/** 3DMMEx: ****************************************    *********************************
     Seek to the given fp - assumes the mutx is already entered.
 ***************************************************************************/
 void FIL::_SetFpPos(FP fpos)
@@ -144,7 +144,7 @@ void FIL::_SetFpPos(FP fpos)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the length of the file.  This doesn't zero the appended portion.
 ***************************************************************************/
 bool FIL::FSetFpMac(FP fpos)
@@ -184,7 +184,7 @@ bool FIL::FSetFpMac(FP fpos)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return the length of the file.
 ***************************************************************************/
 FP FIL::FpMac(void)
@@ -212,7 +212,7 @@ FP FIL::FpMac(void)
     return fpos;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Read a block from the file.
 ***************************************************************************/
 bool FIL::FReadRgb(void *pv, int32_t cb, FP fp)
@@ -254,7 +254,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Write a block to the file.
 ***************************************************************************/
 bool FIL::FWriteRgb(const void *pv, int32_t cb, FP fp)
@@ -296,7 +296,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Swap the names of the two files.  They should be in the same directory.
 ***************************************************************************/
 bool FIL::FSwapNames(PFIL pfil)
@@ -364,7 +364,7 @@ LRet:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Rename a file.  The new fni should be on the same volume.
     This may fail without an error code being set.
 ***************************************************************************/

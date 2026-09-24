@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 This c file is compiled to a command-line exe which when run produces
 the 80386 asm version of the KCDC decompression code.
 
@@ -230,7 +230,7 @@ void Offset(long ibit, long cbit, long dibBase, long cbBase)
 
     if (kcbitKcdc3 == cbit)
     {
-        // Put in the test for being done
+        // 3DMMv1.0: Put in the test for being done
         fprintf(output, "	cmp esi,%d\n", (1 << cbit) - 1);
         fprintf(output, "	je LDone\n");
     }

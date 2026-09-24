@@ -1,35 +1,35 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-// -----------------------------------------------------
-// #define'd values for US / Z Version of Socrates
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: #define'd values for US / Z Version of Socrates
+// 3DMMv1.0: -----------------------------------------------------
 
-// -----------------------------------------------------
-// the Place object descriptors
-// these values are typically the 'base' of the objects
-// within the place.
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: the Place object descriptors
+// 3DMMv1.0: these values are typically the 'base' of the objects
+// 3DMMv1.0: within the place.
+// 3DMMv1.0: -----------------------------------------------------
 #include <buildgob.h>
 
-// Shared objects -- cursors, map, portfolio.
+// 3DMMv1.0: Shared objects -- cursors, map, portfolio.
 #include <sharedef.h>
 
-// -----------------------------------------------------
-// Help balloon and control definitions
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Help balloon and control definitions
+// 3DMMv1.0: -----------------------------------------------------
 #include <balloons.chh>
 
 #ifndef SOCDEFN_H
 #define SOCDEFN_H
 
-#define kgobInit 0x00012100 // Initialize globals
-// #define kgobPortfolio	0x00012200		// Portfolio object
-#define kgobMovie 0x00012300 // Movie viewer object
+#define kgobInit 0x00012100 // 3DMMv1.0: Initialize globals
+// 3DMMEx: #define kgobPortfolio	0x00012200		// Portfolio object
+#define kgobMovie 0x00012300 // 3DMMv1.0: Movie viewer object
 
-// -----------------------------------------------------
-// Definitions of objects within various places/objects
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Definitions of objects within various places/objects
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kgobMcZeeRoller 0x00010301
 #define kgobMcZeePacker 0x00010302
@@ -203,7 +203,7 @@
 #define kgobTvViewL 0x00011c0d
 #define kgobTvViewR 0x00011c0e
 
-// Duplicate definition in shared\map.chh
+// 3DMMv1.0: Duplicate definition in shared\map.chh
 #define kgobMapHere 0x00012003
 
 #define kgobTalentBookObj 0x00012204
@@ -218,9 +218,9 @@
 #define kgobSplotView 0x0001220d
 #define kgobSplotGlass 0x0001220e
 
-// -----------------------------------------------------
-// Common object definitions
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Common object definitions
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kgobPortfolio 0x00010101
 #define kgobPortIcon 0x00010102
@@ -231,9 +231,9 @@
 #define kgobNavbarRight 0x00010109
 #define kgobNavbarDown 0x0001010a
 
-// -----------------------------------------------------
-// Common object bit flag definitions (for Util)
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Common object bit flag definitions (for Util)
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kflgPortfolio 0x00000001
 #define kflgPortIcon 0x00000002
@@ -245,9 +245,9 @@
 #define kflgNavbarRight 0x00000200
 #define kflgNavbarDown 0x00000400
 
-// -----------------------------------------------------
-// Palette Definition
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Palette Definition
+// 3DMMv1.0: -----------------------------------------------------
 #define kpalSocBase 0x00010000
 #define kpalImaginopolis 0x00010001
 #define kpalSocTicket 0x00010002
@@ -259,18 +259,18 @@
 #define kpalSocProjects 0x00010008
 #define kpalSocStreet 0x00010009
 
-// -----------------------------------------------------
-// Sound definitions?  Midi definitions?
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Sound definitions?  Midi definitions?
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kwavSplash 0x00010001
 #define kwavBingo 0x00010003
-//							0x00010010 Reserved for sound
-//	 						0x00010030 definations in sharutil.chh.
+// 3DMMv1.0:							0x00010010 Reserved for sound
+// 3DMMv1.0:	 						0x00010030 definations in sharutil.chh.
 
-// -----------------------------------------------------
-// help TOPIC definitions
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: help TOPIC definitions
+// 3DMMv1.0: -----------------------------------------------------
 
 #define ktpcLoginGetName 0x00018540
 #define ktpcLoginInst 0x00018541
@@ -298,7 +298,7 @@
 #define ktpcSplotIdea2 0x00018559
 #define ktpcStudio1 0x0001855a
 
-// voice over help topics + waves
+// 3DMMv1.0: voice over help topics + waves
 #define ktpcVO04AA 0x00018000
 #define ktpcVO5 0x00018001
 #define ktpcVO6 0x00018002
@@ -357,9 +357,9 @@
 
 #define ktpcVO57AA 0x0001803a
 
-#define ktpcStd1A 0x0001803b // These three MUST be consecutive!
-#define ktpcVO97A 0x0001803c // Used in Studio1 for Random McZee
-#define ktpcVO97B 0x0001803d // wait state.
+#define ktpcStd1A 0x0001803b // 3DMMv1.0: These three MUST be consecutive!
+#define ktpcVO97A 0x0001803c // 3DMMv1.0: Used in Studio1 for Random McZee
+#define ktpcVO97B 0x0001803d // 3DMMv1.0: wait state.
 
 #define ktpcVO53 0x00018040
 #define ktpc30_thr4 0x00018041
@@ -430,9 +430,9 @@
 #define kwavVO86A 0x00018101
 #define kwavVO86B 0x00018102
 
-#define kwavStd1A 0x00018103 // These three MUST be consecutive!
-#define kwavVO97A 0x00018104 // Used in Studio1 for Random McZee
-#define kwavVO97B 0x00018105 // wait state.
+#define kwavStd1A 0x00018103 // 3DMMv1.0: These three MUST be consecutive!
+#define kwavVO97A 0x00018104 // 3DMMv1.0: Used in Studio1 for Random McZee
+#define kwavVO97B 0x00018105 // 3DMMv1.0: wait state.
 
 #define kwavVO53 0x00018106
 #define kwav30_thr4 0x00018107
@@ -448,11 +448,11 @@
 #define kwavStudioTVPop 0x00018113
 #define kwavBioCancel 0x00018114
 #define kwavBioPopup 0x00018115
-// music definitions
+// 3DMMv1.0: music definitions
 
-//-----------------------------------------------------
-// Shared MIDI music definitions
-//-----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Shared MIDI music definitions
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kmidBackstage 0x00010011
 #define kmidBoothjam 0x00010012

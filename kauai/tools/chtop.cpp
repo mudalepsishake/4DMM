@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Chunky help topic editor documents and their DDGs.
 
@@ -18,9 +18,9 @@ RTCLASS(HTRU)
 
 #ifndef UNICODE
 #define SPELL
-#else // UNICODE
+#else // 3DMMv1.0: UNICODE
 #undef SPELL
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
 
 BEGIN_CMD_MAP(HEDG, DDG)
 ON_CID_GEN(cidDeleteTopic, &HEDG::FCmdDeleteTopic, &HEDG::FEnableHedgCmd)
@@ -61,14 +61,14 @@ bool _fCaseSensitive;
 void _TokenizeStn(PSTN pstn);
 bool _FDoFindDlg(void);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for HEDO class.
 ***************************************************************************/
 HEDO::HEDO(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for HEDO class.
 ***************************************************************************/
 HEDO::~HEDO(void)
@@ -76,7 +76,7 @@ HEDO::~HEDO(void)
     ReleasePpo(&_pcfl);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new document based on the given fni.
     Use pfni == pvNil to create a new file, non-nil to open an
     existing file.
@@ -94,7 +94,7 @@ PHEDO HEDO::PhedoNew(FNI *pfni, PRCA prca)
     {
         AssertPo(pfni, ffniFile);
 
-        // make sure no other docs are based on this pcfl.
+        // 3DMMv1.0: make sure no other docs are based on this pcfl.
         if (pvNil != DOCB::PdocbFromFni(pfni))
             return pvNil;
         pcfl = CFL::PcflOpen(pfni, fcflNil);
@@ -115,7 +115,7 @@ PHEDO HEDO::PhedoNew(FNI *pfni, PRCA prca)
     return phedo;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG for the HEDO.
 ***************************************************************************/
 PDDG HEDO::PddgNew(PGCB pgcb)
@@ -124,7 +124,7 @@ PDDG HEDO::PddgNew(PGCB pgcb)
     return HEDG::PhedgNew(this, _pcfl, pgcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current FNI for the doc.  Return false if the doc is not
     currently based on an FNI (it's a new doc or an internal one).
 ***************************************************************************/
@@ -139,7 +139,7 @@ bool HEDO::FGetFni(FNI *pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document and optionally set this fni as the current one.
     If the doc is currently based on an FNI, pfni may be nil, indicating
     that this is a normal save (not save as).  If pfni is not nil and
@@ -161,7 +161,7 @@ bool HEDO::FSaveToFni(FNI *pfni, bool fSetFni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ask the user what file they want to save to.
 ***************************************************************************/
 bool HEDO::FGetFniSave(FNI *pfni)
@@ -175,7 +175,7 @@ bool HEDO::FGetFniSave(FNI *pfni)
                             "", PszLit("All files\0*.*\0"), vwig.hwndApp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate all DDGs on this HEDO.  Also dirties the document.  Should be
     called by any code that edits the document.
 ***************************************************************************/
@@ -185,10 +185,10 @@ void HEDO::InvalAllDdg(CNO cno)
     int32_t ipddg;
     PDDG pddg;
 
-    // mark the document dirty
+    // 3DMMv1.0: mark the document dirty
     SetDirty();
 
-    // inform the DDGs
+    // 3DMMv1.0: inform the DDGs
     for (ipddg = 0; pvNil != (pddg = PddgGet(ipddg)); ipddg++)
     {
         if (pddg->FIs(kclsHEDG))
@@ -198,7 +198,7 @@ void HEDO::InvalAllDdg(CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Export the help topics in their textual representation for compilation
     by chomp.
     REVIEW shonk: this code is a major hack and very fragile.
@@ -238,7 +238,7 @@ bool HEDO::FExportText(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resume searching in the topic at or after the given one, according to
     fAdvance.
 ***************************************************************************/
@@ -264,7 +264,7 @@ void HEDO::DoFindNext(PHETD phetd, CNO cno, bool fAdvance)
             phetd->AddRef();
         else if (pvNil == (phetd = HETD::PhetdNew(this, _prca, _pcfl, cno)))
         {
-            // couldn't load the thing
+            // 3DMMv1.0: couldn't load the thing
             return;
         }
     }
@@ -280,15 +280,15 @@ void HEDO::DoFindNext(PHETD phetd, CNO cno, bool fAdvance)
 
     while (pvNil != phetd)
     {
-        // search phetd
+        // 3DMMv1.0: search phetd
         AssertPo(phetd, 0);
 
         if (phetd->FFind(stn.Prgch(), stn.Cch(), 0, &cpMin, &cpLim, _fCaseSensitive))
         {
-            // found it!
+            // 3DMMv1.0: found it!
             if (phetd->Cddg() == 0)
             {
-                // need to open a window onto the doc.
+                // 3DMMv1.0: need to open a window onto the doc.
                 phetd->PdmdNew();
             }
             else
@@ -310,7 +310,7 @@ void HEDO::DoFindNext(PHETD phetd, CNO cno, bool fAdvance)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open the next topic subdocument.  If phetd is nil, open the first one.
 ***************************************************************************/
 PHETD HEDO::PhetdOpenNext(PHETD phetd)
@@ -324,7 +324,7 @@ PHETD HEDO::PhetdOpenNext(PHETD phetd)
 
     if (pvNil == phetd)
     {
-        // start the search
+        // 3DMMv1.0: start the search
         _pcfl->FGetIcki(kctgHelpTopic, 0, &icki);
     }
     else if (cnoNil != (cki.cno = phetd->Cno()))
@@ -335,7 +335,7 @@ PHETD HEDO::PhetdOpenNext(PHETD phetd)
 
     if (pvNil == (pdocb = phetd))
     {
-        // icki is valid
+        // 3DMMv1.0: icki is valid
         if (_pcfl->FGetCki(icki, &cki) && cki.ctg == kctgHelpTopic)
         {
             if (pvNil != (phetd = HETD::PhetdFromChunk(this, cki.cno)))
@@ -346,8 +346,8 @@ PHETD HEDO::PhetdOpenNext(PHETD phetd)
             return HETD::PhetdNew(this, _prca, _pcfl, cki.cno);
         }
 
-        // we're done with the saved topics - get the first
-        // new unsaved one
+        // 3DMMv1.0: we're done with the saved topics - get the first
+        // 3DMMv1.0: new unsaved one
         if (pvNil == (pdocb = PdocbChd()))
             return pvNil;
         if (pdocb->FIs(kclsHETD) && ((PHETD)pdocb)->Cno() == cnoNil)
@@ -373,7 +373,7 @@ PHETD HEDO::PhetdOpenNext(PHETD phetd)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open the previous topic subdocument.  If phetd is nil, open the last one.
 ***************************************************************************/
 PHETD HEDO::PhetdOpenPrev(PHETD phetd)
@@ -388,7 +388,7 @@ PHETD HEDO::PhetdOpenPrev(PHETD phetd)
 
     if (pvNil == phetd || (cki.cno = phetd->Cno()) == cnoNil)
     {
-        // look for the last unsaved topic before phetd
+        // 3DMMv1.0: look for the last unsaved topic before phetd
         phetdNew = pvNil;
         for (pdocb = PdocbChd(); phetd != pdocb && pvNil != pdocb; pdocb = pdocb->PdocbSib())
         {
@@ -422,7 +422,7 @@ PHETD HEDO::PhetdOpenPrev(PHETD phetd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the HEDO.
 ***************************************************************************/
 void HEDO::AssertValid(uint32_t grf)
@@ -430,9 +430,9 @@ void HEDO::AssertValid(uint32_t grf)
     HEDO_PAR::AssertValid(grf);
     AssertPo(_pcfl, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for TSEL class.
 ***************************************************************************/
 TSEL::TSEL(PCFL pcfl)
@@ -443,7 +443,7 @@ TSEL::TSEL(PCFL pcfl)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to a nil selection.
 ***************************************************************************/
 void TSEL::_SetNil(void)
@@ -453,7 +453,7 @@ void TSEL::_SetNil(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to the given line.  Return true iff the resulting
     selection is not nil.
 ***************************************************************************/
@@ -474,7 +474,7 @@ bool TSEL::FSetIcki(int32_t icki)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to the given cno.
 ***************************************************************************/
 bool TSEL::FSetCno(CNO cno)
@@ -489,7 +489,7 @@ bool TSEL::FSetCno(CNO cno)
     return ivNil != _icki;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adjust the sel after an edit to the doc.  Assume icki is wrong
     (except as indicators of invalid cno).
 ***************************************************************************/
@@ -506,7 +506,7 @@ void TSEL::Adjust(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the sel.
 ***************************************************************************/
 void TSEL::AssertValid(uint32_t grf)
@@ -515,9 +515,9 @@ void TSEL::AssertValid(uint32_t grf)
     AssertPo(_pcfl, 0);
     Assert((_cno == cnoNil) == (_icki == ivNil), "nil values not in sync");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the HEDG.
 ***************************************************************************/
 HEDG::HEDG(PHEDO phedo, PCFL pcfl, PGCB pgcb) : DDG(phedo, pgcb), _tsel(pcfl)
@@ -538,7 +538,7 @@ HEDG::HEDG(PHEDO phedo, PCFL pcfl, PGCB pgcb) : DDG(phedo, pgcb), _tsel(pcfl)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new HEDG.
 ***************************************************************************/
 PHEDG HEDG::PhedgNew(PHEDO phedo, PCFL pcfl, PGCB pgcb)
@@ -559,7 +559,7 @@ PHEDG HEDG::PhedgNew(PHEDO phedo, PCFL pcfl, PGCB pgcb)
     return phedg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     We're being activated or deactivated, invert the sel.
 ***************************************************************************/
 void HEDG::_Activate(bool fActive)
@@ -571,7 +571,7 @@ void HEDG::_Activate(bool fActive)
     _DrawSel(&gnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invalidate the display from cno to the end of the display.  If we're
     the active HEDG, also redraw.
 ***************************************************************************/
@@ -581,12 +581,12 @@ void HEDG::InvalCno(CNO cno)
     int32_t icki, ickiT;
     RC rc;
 
-    // we need to recalculate the lnLim
+    // 3DMMv1.0: we need to recalculate the lnLim
     _pcfl->FGetIcki(kctgHelpTopic, cno, &icki);
     _pcfl->FGetIcki(kctgHelpTopic, 0, &ickiT);
     icki -= ickiT;
 
-    // correct the sel
+    // 3DMMv1.0: correct the sel
     ickiT = _tsel.Icki();
     if (ivNil != ickiT && ickiT >= icki)
         _tsel.Adjust();
@@ -605,7 +605,7 @@ void HEDG::InvalCno(CNO cno)
         InvalRc(&rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the topic list.
 ***************************************************************************/
 void HEDG::Draw(PGNV pgnv, RC *prcClip)
@@ -624,7 +624,7 @@ void HEDG::Draw(PGNV pgnv, RC *prcClip)
     pgnv->SetOnn(_onn);
     xp = _XpFromIch(0);
 
-    // draw the header
+    // 3DMMv1.0: draw the header
     stn = PszLit("  Hex         CNO     Name");
     pgnv->DrawStn(&stn, xp, 0);
     pgnv->GetRcSrc(&rc);
@@ -632,23 +632,23 @@ void HEDG::Draw(PGNV pgnv, RC *prcClip)
     rc.ypBottom = _dypHeader;
     pgnv->FillRc(&rc, kacrBlack);
 
-    // use the sel to find the first icki to draw
+    // 3DMMv1.0: use the sel to find the first icki to draw
     icki = _IckiFromYp(LwMax(prcClip->ypTop, _dypHeader));
     for (yp = _YpFromIcki(icki); yp < prcClip->ypBottom && _pcfl->FGetCkiCtg(kctgHelpTopic, icki, &cki); icki++)
     {
-        // draw the cki description
+        // 3DMMv1.0: draw the cki description
         _pcfl->FGetName(cki.ctg, cki.cno, &stnT);
         stn.FFormatSz(PszLit("%08x %10d   \"%s\""), cki.cno, cki.cno, &stnT);
         pgnv->DrawStn(&stn, xp, yp);
         yp += _dypLine;
     }
 
-    // draw the selection
+    // 3DMMv1.0: draw the selection
     if (_fActive)
         _DrawSel(pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hilite the selection (if there is one)
 ***************************************************************************/
 void HEDG::_DrawSel(PGNV pgnv)
@@ -668,7 +668,7 @@ void HEDG::_DrawSel(PGNV pgnv)
     pgnv->HiliteRc(&rc, kacrWhite);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection to the given icki or cno.  If cno is not cnoNil,
     this uses the cno, otherwise it uses the icki.  If both are nil, it
     clears the selection.
@@ -690,17 +690,17 @@ void HEDG::_SetSel(int32_t icki, CNO cno)
 
     GNV gnv(this);
 
-    // erase the old sel
+    // 3DMMv1.0: erase the old sel
     if (_fActive)
         _DrawSel(&gnv);
 
-    // set the new sel and draw it
+    // 3DMMv1.0: set the new sel and draw it
     _tsel.FSetIcki(icki);
     if (_fActive)
         _DrawSel(&gnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the sel into view.
 ***************************************************************************/
 void HEDG::_ShowSel(void)
@@ -723,7 +723,7 @@ void HEDG::_ShowSel(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mouse down in our content.
 ***************************************************************************/
 void HEDG::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -748,7 +748,7 @@ void HEDG::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
         _EditTopic(_tsel.Cno());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle key input.
 ***************************************************************************/
 bool HEDG::FCmdKey(PCMD_KEY pcmd)
@@ -807,7 +807,7 @@ bool HEDG::FCmdKey(PCMD_KEY pcmd)
         break;
 
     case kvkReturn:
-        // edit the topic
+        // 3DMMv1.0: edit the topic
         if (ivNil != icki)
             _EditTopic(_tsel.Cno());
         break;
@@ -819,7 +819,7 @@ bool HEDG::FCmdKey(PCMD_KEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the maximum for the indicated scroll bar.
 ***************************************************************************/
 int32_t HEDG::_ScvMax(bool fVert)
@@ -835,7 +835,7 @@ int32_t HEDG::_ScvMax(bool fVert)
     return 320;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle enabling/disabling HEDG commands.
 ***************************************************************************/
 bool HEDG::FEnableHedgCmd(PCMD pcmd, uint32_t *pgrfeds)
@@ -857,7 +857,7 @@ bool HEDG::FEnableHedgCmd(PCMD pcmd, uint32_t *pgrfeds)
     case cidFindAgain:
         if (!vpstrg->FGet(kstidFind, &stn) || stn.Cch() <= 0)
             *pgrfeds = fedsDisable;
-        // fall thru
+        // 3DMMv1.0: fall thru
     case cidFind:
     case cidPrint:
     case cidSpellCheck:
@@ -872,7 +872,7 @@ bool HEDG::FEnableHedgCmd(PCMD pcmd, uint32_t *pgrfeds)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle command to delete a chunk.
 ***************************************************************************/
 bool HEDG::FCmdDeleteTopic(PCMD pcmd)
@@ -884,7 +884,7 @@ bool HEDG::FCmdDeleteTopic(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles commands to edit a topic.
 ***************************************************************************/
 bool HEDG::FCmdEditTopic(PCMD pcmd)
@@ -899,7 +899,7 @@ bool HEDG::FCmdEditTopic(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create and edit a new topic in the help file.
 ***************************************************************************/
 bool HEDG::FCmdNewTopic(PCMD pcmd)
@@ -911,7 +911,7 @@ bool HEDG::FCmdNewTopic(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create and edit a new topic in the help file.
 ***************************************************************************/
 bool HEDG::FCmdExport(PCMD pcmd)
@@ -923,7 +923,7 @@ bool HEDG::FCmdExport(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Opens a window onto the given topic.
 ***************************************************************************/
 void HEDG::_EditTopic(CNO cno)
@@ -931,7 +931,7 @@ void HEDG::_EditTopic(CNO cno)
     AssertThis(0);
     PHETD phetd;
 
-    // check for a hetd already open on the chunk.
+    // 3DMMv1.0: check for a hetd already open on the chunk.
     if (cnoNil != cno && pvNil != (phetd = HETD::PhetdFromChunk(_pdocb, cno)))
     {
         phetd->ActivateDmd();
@@ -945,7 +945,7 @@ void HEDG::_EditTopic(CNO cno)
     ReleasePpo(&phetd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the selection to a new document.
 ***************************************************************************/
 bool HEDG::_FCopySel(PDOCB *ppdocb)
@@ -971,7 +971,7 @@ bool HEDG::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the current selection.
 ***************************************************************************/
 void HEDG::_ClearSel(void)
@@ -988,7 +988,7 @@ void HEDG::_ClearSel(void)
     HETD::CloseDeletedHetd(_pdocb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Paste all the topics of the given document into the current document.
 ***************************************************************************/
 bool HEDG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
@@ -1034,7 +1034,7 @@ bool HEDG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the content part of the HEDG minus header (and any future footer).
 ***************************************************************************/
 void HEDG::_GetContent(RC *prc)
@@ -1043,7 +1043,7 @@ void HEDG::_GetContent(RC *prc)
     prc->ypTop += _dypHeader;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the icki that corresponds with the given yp value.  If yp is in
     the header, returns ivNil.
 ***************************************************************************/
@@ -1055,7 +1055,7 @@ int32_t HEDG::_IckiFromYp(int32_t yp)
     return _scvVert + (yp - _dypHeader) / _dypLine;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Perform a scroll according to scaHorz and scaVert.
 ***************************************************************************/
 void HEDG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t scvVert)
@@ -1120,7 +1120,7 @@ void HEDG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t sc
         _ScrollDxpDyp(dxp, dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the bits in the window.
 ***************************************************************************/
 void HEDG::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
@@ -1132,14 +1132,14 @@ void HEDG::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
     Scroll(&rc, -dxp, -dyp, kginDraw);
     if (0 != dxp)
     {
-        // scroll the header
+        // 3DMMv1.0: scroll the header
         rc.ypTop = 0;
         rc.ypBottom = _dypHeader - 1;
         Scroll(&rc, -dxp, 0, kginDraw);
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a find in some topics.
 ***************************************************************************/
 bool HEDG::FCmdFind(PCMD pcmd)
@@ -1152,7 +1152,7 @@ bool HEDG::FCmdFind(PCMD pcmd)
     case cidFind:
         if (!_FDoFindDlg())
             break;
-        // fall thru
+        // 3DMMv1.0: fall thru
     case cidFindAgain:
         Phedo()->DoFindNext(pvNil, _tsel.Cno(), fFalse);
         break;
@@ -1161,7 +1161,7 @@ bool HEDG::FCmdFind(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Print some topics.
 ***************************************************************************/
 bool HEDG::FCmdPrint(PCMD pcmd)
@@ -1195,7 +1195,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
     bool fInPage = fFalse;
     PHEDO phedo = Phedo();
 
-    // set up the print dialog structure
+    // 3DMMv1.0: set up the print dialog structure
     ClearPb(&pd, SIZEOF(pd));
     pd.lStructSize = SIZEOF(pd);
     pd.Flags = PD_RETURNDC | PD_HIDEPRINTTOFILE | PD_NOPAGENUMS | PD_NOSELECTION | PD_USEDEVMODECOPIES;
@@ -1204,7 +1204,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
     if (!PrintDlg(&pd))
         goto LFail;
 
-    // see if the device supports BitBlt
+    // 3DMMv1.0: see if the device supports BitBlt
     if (!(GetDeviceCaps(pd.hDC, RASTERCAPS) & RC_BITBLT))
         goto LFail;
 
@@ -1241,28 +1241,28 @@ bool HEDG::FCmdPrint(PCMD pcmd)
 
     _StartPage(pgnv, &stnDoc, lwPage++, &rcPage, onnDef);
 
-    // set the topic info font and get its height
+    // 3DMMv1.0: set the topic info font and get its height
     pgnv->SetFont(onnDef, fontNil, kdypFontTitle, tahLeft, tavTop);
     pgnv->GetRcFromRgch(&rcT, pvNil, 0, 0, 0);
     dypLine = rcT.Dyp();
 
-    // print the topics
+    // 3DMMv1.0: print the topics
     for (icki = 0, pdocb = pvNil;;)
     {
         if (ivNil != icki && _pcfl->FGetCkiCtg(kctgHelpTopic, icki++, &cki))
         {
-            // get a saved topic
+            // 3DMMv1.0: get a saved topic
             if (pvNil != (phetd = HETD::PhetdFromChunk(phedo, cki.cno)))
                 phetd->AddRef();
             else if (pvNil == (phetd = HETD::PhetdNew(phedo, phedo->Prca(), _pcfl, cki.cno)))
             {
-                // couldn't load the thing
+                // 3DMMv1.0: couldn't load the thing
                 continue;
             }
         }
         else
         {
-            // get an unsaved topic
+            // 3DMMv1.0: get an unsaved topic
             icki = ivNil;
             if (pvNil == pdocb)
                 pdocb = Phedo()->PdocbChd();
@@ -1280,7 +1280,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
 
         if (pvNil == (phetg = (PHETG)phetd->PddgGet(0)))
         {
-            // need to open a window onto the doc.
+            // 3DMMv1.0: need to open a window onto the doc.
             GCB gcb(khidDdg, this);
             if (pvNil == (phetg = (PHETG)phetd->PddgNew(&gcb)))
                 goto LFail;
@@ -1293,12 +1293,12 @@ bool HEDG::FCmdPrint(PCMD pcmd)
 
         if (yp > rcPage.ypTop)
         {
-            // see if we should start a new page before the topic
+            // 3DMMv1.0: see if we should start a new page before the topic
             yp += 3 * dypLine;
 
             if (yp + phetg->DypLine(0) + dypLine * 3 > rcPage.ypBottom)
             {
-                // start a new page
+                // 3DMMv1.0: start a new page
                 if (0 >= EndPage(pd.hDC))
                     goto LFail;
                 if (0 >= StartPage(pd.hDC))
@@ -1308,7 +1308,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
             }
         }
 
-        // draw the topic header stuff
+        // 3DMMv1.0: draw the topic header stuff
         rcT = rcPage;
         rcT.ypTop = yp;
         rcT.ypBottom = yp + 3 * dypLine;
@@ -1339,11 +1339,11 @@ bool HEDG::FCmdPrint(PCMD pcmd)
         pgnv->SetPenSize(1, 1);
         pgnv->FrameRc(&rcT, kacrBlack);
 
-        // draw the start box
+        // 3DMMv1.0: draw the start box
         rcT.Set(rcPage.xpLeft, yp - kdzpBox, rcPage.xpLeft + dxpTopic, yp);
         pgnv->FillRc(&rcT, kacrBlack);
 
-        // draw the lines
+        // 3DMMv1.0: draw the lines
         for (ilin = 0;; ilin++)
         {
             dyp = phetg->DypLine(ilin);
@@ -1352,10 +1352,10 @@ bool HEDG::FCmdPrint(PCMD pcmd)
 
             if (ilin > 0 && yp + dyp > rcPage.ypBottom)
             {
-                // end the page and start a new one
+                // 3DMMv1.0: end the page and start a new one
                 ypTopic = -1;
 
-                // draw the topic end box
+                // 3DMMv1.0: draw the topic end box
                 rcT.Set(rcPage.xpLeft, yp, rcPage.xpLeft + dxpTopic, yp + kdzpBox / 2);
                 pgnv->FillRcApt(&rcT, &vaptGray, kacrGray, kacrWhite);
 
@@ -1365,7 +1365,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
                     goto LFail;
                 yp = rcPage.ypTop;
 
-                // draw the start box
+                // 3DMMv1.0: draw the start box
                 rcT.Set(rcPage.xpLeft, yp - kdzpBox / 2, rcPage.xpLeft + dxpTopic, yp);
                 pgnv->FillRcApt(&rcT, &vaptGray, kacrGray, kacrWhite);
 
@@ -1376,7 +1376,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
             yp += dyp;
         }
 
-        // draw the topic end box
+        // 3DMMv1.0: draw the topic end box
         rcT.Set(rcPage.xpLeft, yp, rcPage.xpLeft + dxpTopic, yp + kdzpBox);
         pgnv->FillRc(&rcT, kacrBlack);
 
@@ -1387,7 +1387,7 @@ bool HEDG::FCmdPrint(PCMD pcmd)
     if (0 >= EndPage(pd.hDC))
         goto LFail;
 
-    // end the print job
+    // 3DMMv1.0: end the print job
     if (0 >= EndDoc(pd.hDC))
     {
     LFail:
@@ -1404,29 +1404,29 @@ bool HEDG::FCmdPrint(PCMD pcmd)
         GlobalFree(pd.hDevNames);
     ReleasePpo(&pgnv);
     ReleasePpo(&pgpt);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
     return fTrue;
 }
 
 #ifdef WIN
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Print the page number and document name.
 ***************************************************************************/
 void HEDG::_StartPage(PGNV pgnv, PSTN pstnDoc, int32_t lwPage, RC *prcPage, int32_t onn)
 {
     STN stn;
 
-    // draw the document name and page number
+    // 3DMMv1.0: draw the document name and page number
     pgnv->SetFont(onn, fontNil, 10, tahLeft, tavTop);
     pgnv->DrawStn(pstnDoc, prcPage->xpLeft, prcPage->ypBottom + 12);
     stn.FFormatSz(PszLit("- %d -"), lwPage);
     pgnv->SetFont(onn, fontNil, 10, tahCenter, tavTop);
     pgnv->DrawStn(&stn, prcPage->XpCenter(), prcPage->ypBottom + 12);
 }
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Check spelling in topics from the selected one on.
 ***************************************************************************/
 bool HEDG::FCmdCheckSpelling(PCMD pcmd)
@@ -1463,12 +1463,12 @@ bool HEDG::FCmdCheckSpelling(PCMD pcmd)
 
     while (pvNil != phetd)
     {
-        // check phetd
+        // 3DMMv1.0: check phetd
         AssertPo(phetd, 0);
 
         if (phetd->Cddg() == 0)
         {
-            // need to open a window onto the doc.
+            // 3DMMv1.0: need to open a window onto the doc.
             pdmd = phetd->PdmdNew();
         }
         else
@@ -1506,14 +1506,14 @@ bool HEDG::FCmdCheckSpelling(PCMD pcmd)
             stn.FFormatSz(PszLit("Corrected %d words."), cactTotal);
         vpappb->TGiveAlertSz(stn.Psz(), bkOk, cokExclamation);
     }
-#else  //! SPELL
+#else  //! 3DMMv1.0: SPELL
     vpappb->TGiveAlertSz(PszLit("Spell checking not available"), bkOk, cokExclamation);
-#endif //! SPELL
+#endif //! 3DMMv1.0: SPELL
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump the text of all topics.
 ***************************************************************************/
 bool HEDG::FCmdDump(PCMD pcmd)
@@ -1552,25 +1552,25 @@ bool HEDG::FCmdDump(PCMD pcmd)
 #ifdef UNICODE
     rgch[0] = kchwUnicode;
     pfil->FWriteRgbSeq(rgch, SIZEOF(achar), &fpCur);
-#endif // UNICODE
+#endif // 3DMMv1.0: UNICODE
 
-    // dump the topics
+    // 3DMMv1.0: dump the topics
     for (icki = 0, pdocb = pvNil, fFirst = fTrue;;)
     {
         if (ivNil != icki && _pcfl->FGetCkiCtg(kctgHelpTopic, icki++, &cki))
         {
-            // get a saved topic
+            // 3DMMv1.0: get a saved topic
             if (pvNil != (phetd = HETD::PhetdFromChunk(phedo, cki.cno)))
                 phetd->AddRef();
             else if (pvNil == (phetd = HETD::PhetdNew(phedo, phedo->Prca(), _pcfl, cki.cno)))
             {
-                // couldn't load the thing
+                // 3DMMv1.0: couldn't load the thing
                 continue;
             }
         }
         else
         {
-            // get an unsaved topic
+            // 3DMMv1.0: get an unsaved topic
             icki = ivNil;
             if (pvNil == pdocb)
                 pdocb = Phedo()->PdocbChd();
@@ -1614,7 +1614,7 @@ bool HEDG::FCmdDump(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of an object.
 ***************************************************************************/
 void HEDG::AssertValid(uint32_t grf)
@@ -1623,9 +1623,9 @@ void HEDG::AssertValid(uint32_t grf)
     AssertPo(&_tsel, 0);
     AssertPo(_pcfl, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method:  For all HETD children of the DOCB, checks if the chunk
     still exists and nukes the HETD if not.
 ***************************************************************************/
@@ -1640,8 +1640,8 @@ void HETD::CloseDeletedHetd(PDOCB pdocb)
         if (!pdocb->FIs(kclsHETD))
             continue;
         phetd = (PHETD)pdocb;
-        // NOTE: can't assert the phetd here because the chunk may be gone
-        // AssertPo(phetd, 0);
+        // 3DMMv1.0: NOTE: can't assert the phetd here because the chunk may be gone
+        // 3DMMv1.0: AssertPo(phetd, 0);
         AssertBasePo(phetd, 0);
         AssertNilOrPo(phetd->_pcfl, 0);
         if (phetd->_cno != cnoNil && pvNil != phetd->_pcfl && !phetd->_pcfl->FFind(kctgHelpTopic, phetd->_cno))
@@ -1653,7 +1653,7 @@ void HETD::CloseDeletedHetd(PDOCB pdocb)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to look for a HETD for the given chunk.
 ***************************************************************************/
 PHETD HETD::PhetdFromChunk(PDOCB pdocb, CNO cno)
@@ -1674,7 +1674,7 @@ PHETD HETD::PhetdFromChunk(PDOCB pdocb, CNO cno)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a help topic document.
 ***************************************************************************/
 HETD::HETD(PDOCB pdocb, PRCA prca, PCFL pcfl, CNO cno) : TXHD(prca, pdocb)
@@ -1684,7 +1684,7 @@ HETD::HETD(PDOCB pdocb, PRCA prca, PCFL pcfl, CNO cno) : TXHD(prca, pdocb)
     _cno = cno;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a help topic editing document.
 ***************************************************************************/
 HETD::~HETD(void)
@@ -1692,7 +1692,7 @@ HETD::~HETD(void)
     ReleasePpo(&_pgst);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read a help topic document from the given
     (pcfl, cno) and using the given prca as the source for pictures
     and buttons.
@@ -1718,19 +1718,19 @@ PHETD HETD::PhetdNew(PDOCB pdocb, PRCA prca, PCFL pcfl, CNO cno)
     if (cnoNil == cno)
         phetd->_dxpDef = 200;
 
-    // force the default font to be Comic Sans MS
+    // 3DMMv1.0: force the default font to be Comic Sans MS
     phetd->_stnFontDef = PszLit("Comic Sans MS");
     if (!vntl.FGetOnn(&phetd->_stnFontDef, &phetd->_onnDef))
         phetd->_onnDef = vpappb->OnnDefVariable();
     phetd->_oskFont = koskCur;
 
-    // force the background color to clear
+    // 3DMMv1.0: force the background color to clear
     phetd->SetAcrBack(kacrClear);
 
     return phetd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the given chunk into this TXRD.
 ***************************************************************************/
 bool HETD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
@@ -1746,7 +1746,7 @@ bool HETD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
 
     if (pcfl->FGetKidChidCtg(ctg, cno, 0, kctgGst, &kid))
     {
-        // read the string table
+        // 3DMMv1.0: read the string table
         if (!pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck) || pvNil == (_pgst = GST::PgstRead(&blck)) ||
             _pgst->IvMac() != 6 && (_pgst->IvMac() != 5 || !_pgst->FAddRgch(PszLit(""), 0)))
         {
@@ -1760,7 +1760,7 @@ bool HETD::_FReadChunk(PCFL pcfl, CTG ctg, CNO cno, bool fCopyText)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the name of the document.
 ***************************************************************************/
 void HETD::GetName(PSTN pstn)
@@ -1788,7 +1788,7 @@ void HETD::GetName(PSTN pstn)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document.  Handles only cidSave.  Asserts on cidSaveAs and
     cidSaveCopy.
 ***************************************************************************/
@@ -1833,7 +1833,7 @@ bool HETD::FSave(int32_t cid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save a help topic to the given chunky file.  Fill in *pcki with where
     we put the root chunk.
 ***************************************************************************/
@@ -1850,7 +1850,7 @@ bool HETD::FSaveToChunk(PCFL pcfl, CKI *pcki, bool fRedirectText)
 
     if (pvNil != _pgst)
     {
-        // add the string table chunk and write it
+        // 3DMMv1.0: add the string table chunk and write it
         if (!pcfl->FAddChild(pcki->ctg, pcki->cno, 0, _pgst->CbOnFile(), kctgGst, &cno, &blck) || !_pgst->FWrite(&blck))
         {
             pcfl->Delete(pcki->ctg, pcki->cno);
@@ -1862,7 +1862,7 @@ bool HETD::FSaveToChunk(PCFL pcfl, CKI *pcki, bool fRedirectText)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new Document MDI window for this help topic.
 ***************************************************************************/
 PDMD HETD::PdmdNew(void)
@@ -1924,7 +1924,7 @@ PDMD HETD::PdmdNew(void)
     return pdmd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG for the HETD.
 ***************************************************************************/
 PDDG HETD::PddgNew(PGCB pgcb)
@@ -1956,7 +1956,7 @@ enum
     kiditLimTopic
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up a dialog for the user to edit the help topic properties.
 ***************************************************************************/
 void HETD::EditHtop(void)
@@ -1971,7 +1971,7 @@ void HETD::EditHtop(void)
 
     if (pvNil != _pgst)
     {
-        // initialize the string fields
+        // 3DMMv1.0: initialize the string fields
         _pgst->GetStn(0, &stn);
         pdlg->FPutStn(kiditBalnStnTopic, &stn);
         _pgst->GetStn(1, &stn);
@@ -2000,7 +2000,7 @@ void HETD::EditHtop(void)
 
     pdlg->FPutStn(kiditDescriptionTopic, &_stnDesc);
 
-    // initialize the numeric fields
+    // 3DMMv1.0: initialize the numeric fields
     pdlg->FPutLwInEdit(kiditBalnTopic, _htop.cnoBalloon);
     pdlg->FPutLwInEdit(kiditHidTopic, _htop.hidThis);
     pdlg->FPutLwInEdit(kiditHidTargetTopic, _htop.hidTarget);
@@ -2056,7 +2056,7 @@ void HETD::EditHtop(void)
             rgch[0] = rgch[1] = rgch[2] = rgch[3] = kchSpace;
             stn.GetRgch(rgch);
 
-            // first character becomes the high byte
+            // 3DMMv1.0: first character becomes the high byte
             _htop.ckiSnd.ctg = LwFromBytes((uint8_t)rgch[0], (uint8_t)rgch[1], (uint8_t)rgch[2], (uint8_t)rgch[3]);
         }
     }
@@ -2085,7 +2085,7 @@ void HETD::EditHtop(void)
     SetDirty();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a search on this topic document.
 ***************************************************************************/
 bool HETD::FDoFind(int32_t cpMin, int32_t *pcpMin, int32_t *pcpLim)
@@ -2106,7 +2106,7 @@ bool HETD::FDoFind(int32_t cpMin, int32_t *pcpMin, int32_t *pcpLim)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a replace on this topic document.
 ***************************************************************************/
 bool HETD::FDoReplace(int32_t cp1, int32_t cp2, int32_t *pcpMin, int32_t *pcpLim)
@@ -2124,7 +2124,7 @@ bool HETD::FDoReplace(int32_t cp1, int32_t cp2, int32_t *pcpMin, int32_t *pcpLim
     return FReplaceRgch(stn.Psz(), stn.Cch(), cp1, cp2 - cp1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a string corresponding to an entry in the HTOP. -1 means get the
     topic description.
 ***************************************************************************/
@@ -2142,7 +2142,7 @@ void HETD::GetHtopStn(int32_t istn, PSTN pstn)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a HETD.
 ***************************************************************************/
 void HETD::AssertValid(uint32_t grf)
@@ -2153,7 +2153,7 @@ void HETD::AssertValid(uint32_t grf)
     AssertNilOrPo(_pgst, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the HETD.
 ***************************************************************************/
 void HETD::MarkMem(void)
@@ -2162,9 +2162,9 @@ void HETD::MarkMem(void)
     HETD_PAR::MarkMem();
     MarkMemObj(_pgst);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a help text editing gob.
 ***************************************************************************/
 HETG::HETG(PHETD phetd, PGCB pgcb) : HETG_PAR(phetd, pgcb)
@@ -2172,7 +2172,7 @@ HETG::HETG(PHETD phetd, PGCB pgcb) : HETG_PAR(phetd, pgcb)
     _fMark = fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new help text editing gob.
 ***************************************************************************/
 PHETG HETG::PhetgNew(PHETD phetd, PGCB pgcb)
@@ -2193,7 +2193,7 @@ PHETG HETG::PhetgNew(PHETD phetd, PGCB pgcb)
     return phetg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the height of the ruler.
 ***************************************************************************/
 int32_t HETG::_DypTrul(void)
@@ -2202,7 +2202,7 @@ int32_t HETG::_DypTrul(void)
     return kdzpInch / 2 + 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the ruler.
 ***************************************************************************/
 PTRUL HETG::_PtrulNew(PGCB pgcb)
@@ -2225,7 +2225,7 @@ enum
     kiditLimPicture
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a picture into the help text document.
 ***************************************************************************/
 bool HETG::FInsertPicture(PCRF pcrf, CTG ctg, CNO cno)
@@ -2290,7 +2290,7 @@ enum
 
 bool _FDlgFormatButton(PDLG pdlg, int32_t *pidit, void *pv);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dialog proc for formatting a button.
 ***************************************************************************/
 bool _FDlgFormatButton(PDLG pdlg, int32_t *pidit, void *pv)
@@ -2302,7 +2302,7 @@ bool _FDlgFormatButton(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelButton:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
 
     case kiditOkButton:
         if (!pdlg->FGetValues(0, kiditLimButton))
@@ -2325,7 +2325,7 @@ bool _FDlgFormatButton(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a button into the help text document.
 ***************************************************************************/
 bool HETG::FInsertButton(PCRF pcrf, CTG ctg, CNO cno)
@@ -2394,7 +2394,7 @@ enum
 
 bool _FDlgFormatEdit(PDLG pdlg, int32_t *pidit, void *pv);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dialog proc for formatting an edit control.
 ***************************************************************************/
 bool _FDlgFormatEdit(PDLG pdlg, int32_t *pidit, void *pv)
@@ -2406,7 +2406,7 @@ bool _FDlgFormatEdit(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelEdit:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
 
     case kiditOkEdit:
         if (!pdlg->FGetValues(0, kiditLimEdit))
@@ -2429,7 +2429,7 @@ bool _FDlgFormatEdit(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Insert a text edit control into the help text document.
 ***************************************************************************/
 bool HETG::FCmdInsertEdit(PCMD pcmd)
@@ -2472,7 +2472,7 @@ bool HETG::FCmdInsertEdit(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy the selection.
 ***************************************************************************/
 bool HETG::_FCopySel(PDOCB *ppdocb)
@@ -2505,7 +2505,7 @@ bool HETG::_FCopySel(PDOCB *ppdocb)
     return pvNil != *ppdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw extra stuff for the line. In our case we put a box around grouped
     text.
 ***************************************************************************/
@@ -2540,7 +2540,7 @@ void HETG::_DrawLinExtra(PGNV pgnv, PRC prcClip, LIN *plin, int32_t dxp, int32_t
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the view on the help topic.
 ***************************************************************************/
 void HETG::Draw(PGNV pgnv, RC *prcClip)
@@ -2564,7 +2564,7 @@ enum
     kiditLimGroupText,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle grouping text.
 ***************************************************************************/
 bool HETG::FCmdGroupText(PCMD pcmd)
@@ -2640,7 +2640,7 @@ enum
     kiditLimSpace,
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up the line & paragraph spacing dialog and handle any changes.
 ***************************************************************************/
 bool HETG::FCmdLineSpacing(PCMD pcmd)
@@ -2693,7 +2693,7 @@ bool HETG::FCmdLineSpacing(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle enabling/disabling HETG commands.
 ***************************************************************************/
 bool HETG::FEnableHetgCmd(PCMD pcmd, uint32_t *pgrfeds)
@@ -2753,7 +2753,7 @@ bool HETG::FEnableHetgCmd(PCMD pcmd, uint32_t *pgrfeds)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allow the user to edit the properties of an embedded picture.
 ***************************************************************************/
 bool HETG::FCmdFormatPicture(PCMD pcmd)
@@ -2818,7 +2818,7 @@ bool HETG::FCmdFormatPicture(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allow the user to edit the properties of an embedded button.
 ***************************************************************************/
 bool HETG::FCmdFormatButton(PCMD pcmd)
@@ -2896,7 +2896,7 @@ bool HETG::FCmdFormatButton(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allow the user to edit the properties of an embedded edit control.
 ***************************************************************************/
 bool HETG::FCmdFormatEdit(PCMD pcmd)
@@ -2950,7 +2950,7 @@ bool HETG::FCmdFormatEdit(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Edit the topic info.
 ***************************************************************************/
 bool HETG::FCmdEditHtop(PCMD pcmd)
@@ -2962,7 +2962,7 @@ bool HETG::FCmdEditHtop(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open the next or previous topic.
 ***************************************************************************/
 bool HETG::FCmdNextTopic(PCMD pcmd)
@@ -2992,10 +2992,10 @@ bool HETG::FCmdNextTopic(PCMD pcmd)
     if (phetdThis->Cno() == cnoNil || phetdThis->FDirty())
         phetdThis = pvNil;
 
-    // open a DMD onto the topic
+    // 3DMMv1.0: open a DMD onto the topic
     if (phetd->Cddg() == 0)
     {
-        // need to open a window onto the doc.
+        // 3DMMv1.0: need to open a window onto the doc.
         if (phetd->PdmdNew() != pvNil && pvNil != phetdThis)
             phetdThis->CloseAllDdg();
     }
@@ -3010,7 +3010,7 @@ bool HETG::FCmdNextTopic(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle cidFind and cidFindAgain.  Search for some text.
 ***************************************************************************/
 bool HETG::FCmdFind(PCMD pcmd)
@@ -3066,7 +3066,7 @@ bool HETG::FCmdFind(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle printing of a topic.
 ***************************************************************************/
 bool HETG::FCmdPrint(PCMD pcmd)
@@ -3079,7 +3079,7 @@ bool HETG::FCmdPrint(PCMD pcmd)
     STN stn;
     RC rc;
 
-    // set up the print dialog structure
+    // 3DMMv1.0: set up the print dialog structure
     ClearPb(&pd, SIZEOF(pd));
     pd.lStructSize = SIZEOF(pd);
     pd.Flags = PD_RETURNDC | PD_HIDEPRINTTOFILE | PD_NOPAGENUMS | PD_NOSELECTION | PD_USEDEVMODECOPIES;
@@ -3088,7 +3088,7 @@ bool HETG::FCmdPrint(PCMD pcmd)
     if (!PrintDlg(&pd))
         goto LFail;
 
-    // see if the device supports BitBlt
+    // 3DMMv1.0: see if the device supports BitBlt
     if (!(GetDeviceCaps(pd.hDC, RASTERCAPS) & RC_BITBLT))
         goto LFail;
 
@@ -3138,7 +3138,7 @@ bool HETG::FCmdPrint(PCMD pcmd)
         GlobalFree(pd.hDevNames);
     ReleasePpo(&pgnv);
     ReleasePpo(&pgpt);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
     return fTrue;
 }
@@ -3156,7 +3156,7 @@ enum
     kiditLimSpell
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Spell check the topic.
 ***************************************************************************/
 bool HETG::FCmdCheckSpelling(PCMD pcmd)
@@ -3182,14 +3182,14 @@ bool HETG::FCmdCheckSpelling(PCMD pcmd)
             stn.FFormatSz(PszLit("Corrected %d words."), cactChanges);
         vpappb->TGiveAlertSz(stn.Psz(), bkOk, cokExclamation);
     }
-#else  //! SPELL
+#else  //! 3DMMv1.0: SPELL
     vpappb->TGiveAlertSz(PszLit("Spell checking not available"), bkOk, cokExclamation);
-#endif //! SPELL
+#endif //! 3DMMv1.0: SPELL
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Spell check the topic.
 ***************************************************************************/
 bool HETG::FCheckSpelling(int32_t *pcactChanges)
@@ -3230,10 +3230,10 @@ bool HETG::FCheckSpelling(int32_t *pcactChanges)
     {
         if (cchBuf <= 0)
         {
-            // fetch more text
+            // 3DMMv1.0: fetch more text
             if ((cchBuf = CvFromRgv(rgch)) + cpMin < cpMac)
             {
-                // make sure we end on a word boundary
+                // 3DMMv1.0: make sure we end on a word boundary
                 int32_t cpT = _ptxtb->CpPrev(cpMin + cchBuf, fTrue);
                 if (cpT > cpMin)
                     cchBuf = cpT - cpMin;
@@ -3259,16 +3259,16 @@ bool HETG::FCheckSpelling(int32_t *pcactChanges)
             continue;
         }
 
-        // misspelled word
+        // 3DMMv1.0: misspelled word
         SetSel(cpMin + ichMin, cpMin + ichLim);
 
         if (scrs == scrsReturningChangeAlways)
         {
-            // change all word - change it and continue on
+            // 3DMMv1.0: change all word - change it and continue on
             goto LChange;
         }
 
-        // put up the dialog
+        // 3DMMv1.0: put up the dialog
         if (pvNil == pdlg && pvNil == (pdlg = DLG::PdlgNew(dlidCheckSpelling)))
         {
             vpappb->TGiveAlertSz(PszLit("Couldn't create spelling dialog!"), bkOk, cokExclamation);
@@ -3282,7 +3282,7 @@ bool HETG::FCheckSpelling(int32_t *pcactChanges)
         else
             pdlg->FPutStn(kiditComboSpell, &stnSrc);
 
-        // fill in the suggestions
+        // 3DMMv1.0: fill in the suggestions
         pdlg->ClearList(kiditComboSpell);
         for (cstn = 0; cstn < 20 && vpsplc->FSuggest(rgch + ichMin, ichLim - ichMin, cstn == 0, &stnDst); cstn++)
         {
@@ -3305,7 +3305,7 @@ bool HETG::FCheckSpelling(int32_t *pcactChanges)
 
         case kiditIgnoreAllSpell:
             vpsplc->FIgnoreAll(&stnSrc);
-            // fall thru
+            // 3DMMv1.0: fall thru
         case kiditIgnoreSpell:
         LIgnore:
             if (cchBuf > ichLim)
@@ -3319,7 +3319,7 @@ bool HETG::FCheckSpelling(int32_t *pcactChanges)
             pdlg->GetStn(kiditComboSpell, &stnDst);
             if (!stnDst.FEqualRgch(rgch + ichMin, ichLim - ichMin))
             {
-                // tell the spell checker that we're doing a change
+                // 3DMMv1.0: tell the spell checker that we're doing a change
                 vpsplc->FChange(&stnSrc, &stnDst, idit == kiditChangeAllSpell);
 
             LChange:
@@ -3347,15 +3347,15 @@ bool HETG::FCheckSpelling(int32_t *pcactChanges)
     }
 
     ReleasePpo(&pdlg);
-#else  //! SPELL
+#else  //! 3DMMv1.0: SPELL
     vpappb->TGiveAlertSz(PszLit("Spell checking not available"), bkOk, cokExclamation);
     *pcactChanges = 0;
-#endif //! SPELL
+#endif //! 3DMMv1.0: SPELL
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle idle stuff - update the ruler with our new height.
 ***************************************************************************/
 void HETG::InvalCp(int32_t cp, int32_t ccpIns, int32_t ccpDel)
@@ -3379,7 +3379,7 @@ enum
     kiditLimSize
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a font size from the user.
 ***************************************************************************/
 bool HETG::_FGetOtherSize(int32_t *pdypFont)
@@ -3414,7 +3414,7 @@ enum
     kiditLimOffset
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the amount to sub/superscript from the user.
 ***************************************************************************/
 bool HETG::_FGetOtherSubSuper(int32_t *pdypOffset)
@@ -3443,7 +3443,7 @@ bool HETG::_FGetOtherSubSuper(int32_t *pdypOffset)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the height of a particular line. Returns 0 if the line is past
     the end of the document.
 ***************************************************************************/
@@ -3461,7 +3461,7 @@ int32_t HETG::DypLine(int32_t ilin)
     return LwMax(1, lin.dyp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a text ruler.
 ***************************************************************************/
 HTRU::HTRU(GCB *pgcb, PTXTG ptxtg) : HTRU_PAR(pgcb)
@@ -3470,7 +3470,7 @@ HTRU::HTRU(GCB *pgcb, PTXTG ptxtg) : HTRU_PAR(pgcb)
     _ptxtg = ptxtg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new text ruler.
 ***************************************************************************/
 PHTRU HTRU::PhtruNew(GCB *pgcb, PTXTG ptxtg, int32_t dxpTab, int32_t dxpDoc, int32_t dypDoc, int32_t xpLeft,
@@ -3496,7 +3496,7 @@ PHTRU HTRU::PhtruNew(GCB *pgcb, PTXTG ptxtg, int32_t dxpTab, int32_t dxpDoc, int
     return phtru;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the ruler.
 ***************************************************************************/
 void HTRU::Draw(PGNV pgnv, RC *prcClip)
@@ -3536,7 +3536,7 @@ void HTRU::Draw(PGNV pgnv, RC *prcClip)
     pgnv->FillRc(&rcT, kacrBlack);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Track the mouse.
 ***************************************************************************/
 bool HTRU::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -3611,7 +3611,7 @@ enum
     kiditLimFont
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Give the fonts in a dialog.
 ***************************************************************************/
 bool HETG::FCmdFontDialog(PCMD pcmd)
@@ -3626,7 +3626,7 @@ bool HETG::FCmdFontDialog(PCMD pcmd)
     if (pvNil == (pdlg = DLG::PdlgNew(dlidChooseFont)))
         return fTrue;
 
-    // fill in the font list
+    // 3DMMv1.0: fill in the font list
     pdlg->ClearList(kiditComboFont);
     for (onn = 0; onn < vntl.OnnMac(); onn++)
     {
@@ -3655,7 +3655,7 @@ bool HETG::FCmdFontDialog(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the tab width.
 ***************************************************************************/
 void HTRU::SetDxpTab(int32_t dxpTab)
@@ -3669,7 +3669,7 @@ void HTRU::SetDxpTab(int32_t dxpTab)
     InvalRc(pvNil, kginMark);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the document width.
 ***************************************************************************/
 void HTRU::SetDxpDoc(int32_t dxpDoc)
@@ -3683,7 +3683,7 @@ void HTRU::SetDxpDoc(int32_t dxpDoc)
     InvalRc(pvNil, kginMark);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change the location of the left edge of the document.
 ***************************************************************************/
 void HTRU::SetXpLeft(int32_t xpLeft)
@@ -3697,7 +3697,7 @@ void HTRU::SetXpLeft(int32_t xpLeft)
     InvalRc(pvNil, kginMark);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the text height.
 ***************************************************************************/
 void HTRU::SetDypHeight(int32_t dyp)
@@ -3712,7 +3712,7 @@ void HTRU::SetDypHeight(int32_t dyp)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a HTRU.
 ***************************************************************************/
 void HTRU::AssertValid(uint32_t grf)
@@ -3722,9 +3722,9 @@ void HTRU::AssertValid(uint32_t grf)
     AssertIn(_dxpTab, 1, kcbMax);
     AssertIn(_dxpDoc, 1, kcbMax);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Munge the string so it is a valid token or empty.
 ***************************************************************************/
 void _TokenizeStn(PSTN pstn)
@@ -3764,7 +3764,7 @@ enum
 
 bool _FDlgFind(PDLG pdlg, int32_t *pidit, void *pv);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dialog proc for searching.
 ***************************************************************************/
 bool _FDlgFind(PDLG pdlg, int32_t *pidit, void *pv)
@@ -3776,7 +3776,7 @@ bool _FDlgFind(PDLG pdlg, int32_t *pidit, void *pv)
     switch (*pidit)
     {
     case kiditCancelFind:
-        return fTrue; // dismiss the dialog
+        return fTrue; // 3DMMv1.0: dismiss the dialog
 
     case kiditOkFind:
         if (!pdlg->FGetValues(0, kiditLimFind))
@@ -3800,7 +3800,7 @@ bool _FDlgFind(PDLG pdlg, int32_t *pidit, void *pv)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do the find dialog.  Return true if the user OK'ed the dialog.
 ***************************************************************************/
 bool _FDoFindDlg(void)

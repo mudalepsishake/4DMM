@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -22,7 +22,7 @@ RTCLASS(EDMW)
 const int32_t kdxpInsetEdcb = 2;
 const int32_t kdxpInsetSled = 2;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for edit control parameter block.
 ***************************************************************************/
 EDPAR::EDPAR(int32_t hid, PGOB pgob, uint32_t grfgob, int32_t gin, RC *prcAbs, RC *prcRel, int32_t onn, uint32_t grfont,
@@ -39,7 +39,7 @@ EDPAR::EDPAR(int32_t hid, PGOB pgob, uint32_t grfgob, int32_t gin, RC *prcAbs, R
     _cmhl = cmhl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the data in the EDPAR.
 ***************************************************************************/
 void EDPAR::Set(int32_t hid, PGOB pgob, uint32_t grfgob, int32_t gin, RC *prcAbs, RC *prcRel, int32_t onn,
@@ -56,7 +56,7 @@ void EDPAR::Set(int32_t hid, PGOB pgob, uint32_t grfgob, int32_t gin, RC *prcAbs
     _cmhl = cmhl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the font portion of the EDPAR.
 ***************************************************************************/
 void EDPAR::SetFont(int32_t onn, uint32_t grfont, int32_t dypFont, int32_t tah, int32_t tav, ACR acrFore, ACR acrBack)
@@ -70,7 +70,7 @@ void EDPAR::SetFont(int32_t onn, uint32_t grfont, int32_t dypFont, int32_t tah, 
     _acrBack = acrBack;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for edit control.
 ***************************************************************************/
 EDCB::EDCB(PGCB pgcb, int32_t cmhl) : GOB(pgcb)
@@ -81,7 +81,7 @@ EDCB::EDCB(PGCB pgcb, int32_t cmhl) : GOB(pgcb)
     _pgnv = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for edit control.
 ***************************************************************************/
 EDCB::~EDCB(void)
@@ -90,7 +90,7 @@ EDCB::~EDCB(void)
     ReleasePpo(&_pgnv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the edit control.
 ***************************************************************************/
 bool EDCB::_FInit(void)
@@ -117,7 +117,7 @@ bool EDCB::_FInit(void)
     return pvNil != _pgnv;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the contents of the gob.
 ***************************************************************************/
 void EDCB::Draw(PGNV pgnv, RC *prcClip)
@@ -142,7 +142,7 @@ void EDCB::Draw(PGNV pgnv, RC *prcClip)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a mousedown in the edit control.
 ***************************************************************************/
 bool EDCB::FCmdTrackMouse(PCMD_MOUSE pcmd)
@@ -181,7 +181,7 @@ bool EDCB::FCmdTrackMouse(PCMD_MOUSE pcmd)
         SetSel(ich, _fSelByWord ? _IchNext(ich, fTrue) : ich);
     }
     _fXpValid = fFalse;
-    _SwitchSel(fTrue); // make sure the selection is on
+    _SwitchSel(fTrue); // 3DMMv1.0: make sure the selection is on
     ShowSel(fFalse);
 
     if (!(pcmd->grfcust & fcustMouse))
@@ -190,7 +190,7 @@ bool EDCB::FCmdTrackMouse(PCMD_MOUSE pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a key down.
 ***************************************************************************/
 bool EDCB::FCmdKey(PCMD_KEY pcmd)
@@ -207,8 +207,8 @@ bool EDCB::FCmdKey(PCMD_KEY pcmd)
     achar rgch[kcchInsBuf + 1];
     bool fPage;
 
-    // keep fetching characters until we get a cursor key, delete key or
-    // until the buffer is full.
+    // 3DMMv1.0: keep fetching characters until we get a cursor key, delete key or
+    // 3DMMv1.0: until the buffer is full.
     vkDone = vkNil;
     ichLim = 0;
     do
@@ -216,7 +216,7 @@ bool EDCB::FCmdKey(PCMD_KEY pcmd)
         grfcust = pcmd->grfcust;
         switch (pcmd->vk)
         {
-        // these keys all terminate the key fetching loop
+        // 3DMMv1.0: these keys all terminate the key fetching loop
         case kvkHome:
         case kvkEnd:
         case kvkLeft:
@@ -249,7 +249,7 @@ bool EDCB::FCmdKey(PCMD_KEY pcmd)
 #ifdef WIN
                 if ((achar)pcmd->ch == kchReturn)
                     rgch[ichLim++] = kchLineFeed;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
             }
             break;
         }
@@ -260,7 +260,7 @@ bool EDCB::FCmdKey(PCMD_KEY pcmd)
 LInsert:
     if (ichLim > 0)
     {
-        // have some characters to insert
+        // 3DMMv1.0: have some characters to insert
         FReplace(rgch, ichLim, _ichAnchor, _ichOther);
     }
 
@@ -312,13 +312,13 @@ LInsert:
 
         if (dlnSel < 0 && ln == 0)
         {
-            // do the same as the home key
+            // 3DMMv1.0: do the same as the home key
             dich = -_ichOther;
             _fXpValid = fFalse;
         }
         else if (dlnSel > 0 && ln >= lnMac - 1)
         {
-            // do the same as the end key
+            // 3DMMv1.0: do the same as the end key
             dich = IchMac() - _ichOther;
             _fXpValid = fFalse;
         }
@@ -331,7 +331,7 @@ LInsert:
             }
             if (fPage)
             {
-                // determine dlnSel
+                // 3DMMv1.0: determine dlnSel
                 RC rc;
                 int32_t yp, dyp;
 
@@ -340,19 +340,19 @@ LInsert:
                 dyp = _YpFromLn(ln + 1) - yp;
                 dyp = rc.Dyp() - dyp;
                 Assert(LwAbs(dlnSel) == 1, "bad dlnSel");
-                yp = yp + dlnSel * dyp; // the target yp
+                yp = yp + dlnSel * dyp; // 3DMMv1.0: the target yp
                 dlnSel = dlnSel * LwMax(1, LwAbs(_LnFromYp(yp) - ln));
             }
-            // to play it safe...
+            // 3DMMv1.0: to play it safe...
             ln = LwBound(ln + dlnSel, 0, lnMac);
             dich = _IchFromLnXp(ln, _xpSel + _xp) - _ichOther;
         }
 
     LSetSel:
-        // move the selection
+        // 3DMMv1.0: move the selection
         if (grfcust & fcustShift)
         {
-            // extend selection
+            // 3DMMv1.0: extend selection
             SetSel(_ichAnchor, _ichOther + dich);
             ShowSel();
         }
@@ -385,7 +385,7 @@ LInsert:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do idle processing.  If this handler has the active selection, make sure
     the selection is on or off according to rglw[0] (non-zero means on)
     and set rglw[0] to false.  Always return false.
@@ -394,7 +394,7 @@ bool EDCB::FCmdSelIdle(PCMD pcmd)
 {
     AssertThis(0);
 
-    // if rglw[1] is this one's hid, don't change the sel state.
+    // 3DMMv1.0: if rglw[1] is this one's hid, don't change the sel state.
     if (pcmd->rglw[1] != Hid())
     {
         if (!pcmd->rglw[0])
@@ -408,7 +408,7 @@ bool EDCB::FCmdSelIdle(PCMD pcmd)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle an activate sel command.
 ***************************************************************************/
 bool EDCB::FCmdActivateSel(PCMD pcmd)
@@ -417,7 +417,7 @@ bool EDCB::FCmdActivateSel(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Either make the selection for the EDCB active or inactive.
 ***************************************************************************/
 void EDCB::Activate(bool fActive)
@@ -430,7 +430,7 @@ void EDCB::Activate(bool fActive)
         _SwitchSel(fFalse, kginDefault);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the rectangle that is to contain the text.  This allows derived
     classes to have borders, etc.
 ***************************************************************************/
@@ -439,7 +439,7 @@ void EDCB::_GetRcContent(RC *prc)
     GetRc(prc, cooLocal);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the vis for the GNV to be the intersection of the GOB's vis and
     the content rc.
 ***************************************************************************/
@@ -451,7 +451,7 @@ void EDCB::_InitGnv(PGNV pgnv)
     pgnv->IntersectRcVis(&rc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The rectangle has changed - show the selection.
 ***************************************************************************/
 void EDCB::_NewRc(void)
@@ -459,7 +459,7 @@ void EDCB::_NewRc(void)
     ShowSel(fTrue, ginNil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the selection.
 ***************************************************************************/
 void EDCB::SetSel(int32_t ichAnchor, int32_t ichOther, int32_t gin)
@@ -488,7 +488,7 @@ void EDCB::SetSel(int32_t ichAnchor, int32_t ichOther, int32_t gin)
         }
         else
         {
-            // they have the same anchor and neither is an insertion
+            // 3DMMv1.0: they have the same anchor and neither is an insertion
             _InvertIchRange(_pgnv, _ichOther, ichOther, gin);
             _ichOther = ichOther;
         }
@@ -501,7 +501,7 @@ void EDCB::SetSel(int32_t ichAnchor, int32_t ichOther, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Turn the sel on or off according to fOn.
 ***************************************************************************/
 void EDCB::_SwitchSel(bool fOn, int32_t gin)
@@ -519,7 +519,7 @@ void EDCB::_SwitchSel(bool fOn, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the selection is visible (or at least _ichOther is).
 ***************************************************************************/
 void EDCB::ShowSel(bool fForceJustification, int32_t gin)
@@ -531,18 +531,18 @@ void EDCB::ShowSel(bool fForceJustification, int32_t gin)
     RC rc;
     int32_t ichAnchor = _ichAnchor;
 
-    // find the lines we want to show
+    // 3DMMv1.0: find the lines we want to show
     ln = _LnFromIch(_ichOther);
     lnHope = _LnFromIch(ichAnchor);
     _GetRcContent(&rc);
     rc.Inset(kdxpInsetEdcb, 0);
 
-    // find the height needed to display these
+    // 3DMMv1.0: find the height needed to display these
     zpMin = _YpFromLn(LwMin(ln, lnHope));
     zpLim = _YpFromLn(LwMax(ln, lnHope) + 1);
     if (zpLim > zpMin + rc.Dyp() && ln != lnHope)
     {
-        // can't show both
+        // 3DMMv1.0: can't show both
         if (lnHope > ln)
         {
             zpMin = _YpFromLn(ln);
@@ -558,12 +558,12 @@ void EDCB::ShowSel(bool fForceJustification, int32_t gin)
     dypScroll = fForceJustification ? -_yp : 0;
     dypScroll = LwMax(LwMin(dypScroll, rc.ypBottom - zpLim), rc.ypTop - zpMin);
 
-    // now do the horizontal stuff
+    // 3DMMv1.0: now do the horizontal stuff
     zpMin = _XpFromIch(_ichOther);
     zpLim = _XpFromIch(ichAnchor);
     if (LwAbs(zpLim - zpMin) > rc.Dxp())
     {
-        // can't show both
+        // 3DMMv1.0: can't show both
         if (zpMin > zpLim)
         {
             zpLim = zpMin;
@@ -585,7 +585,7 @@ void EDCB::ShowSel(bool fForceJustification, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert the current selection.
 ***************************************************************************/
 void EDCB::_InvertSel(PGNV pgnv, int32_t gin)
@@ -597,7 +597,7 @@ void EDCB::_InvertSel(PGNV pgnv, int32_t gin)
 
     if (_ichAnchor == _ichOther)
     {
-        // insertion bar
+        // 3DMMv1.0: insertion bar
         ln = _LnFromIch(_ichAnchor);
         rc.xpLeft = _XpFromIch(_ichAnchor) - 1;
         rc.xpRight = rc.xpLeft + 2;
@@ -616,7 +616,7 @@ void EDCB::_InvertSel(PGNV pgnv, int32_t gin)
         _InvertIchRange(pgnv, _ichAnchor, _ichOther, gin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert a range.
 ***************************************************************************/
 void EDCB::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, int32_t gin)
@@ -642,7 +642,7 @@ void EDCB::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, int32_t gin)
 
     if (ln2 == ln1)
     {
-        // only one line involved
+        // 3DMMv1.0: only one line involved
         rc.xpRight = xp2;
         if (rcT.FIntersect(&rc, &rcClip))
         {
@@ -654,7 +654,7 @@ void EDCB::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, int32_t gin)
         return;
     }
 
-    // invert the sel on the first line
+    // 3DMMv1.0: invert the sel on the first line
     rc.xpRight = rcClip.xpRight;
     if (rcT.FIntersect(&rc, &rcClip))
     {
@@ -664,7 +664,7 @@ void EDCB::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, int32_t gin)
             InvalRc(&rcT, gin);
     }
 
-    // invert the main rectangular block
+    // 3DMMv1.0: invert the main rectangular block
     rc.xpLeft = rcClip.xpLeft;
     rc.ypTop = rc.ypBottom;
     rc.ypBottom = _YpFromLn(ln2);
@@ -676,7 +676,7 @@ void EDCB::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, int32_t gin)
             InvalRc(&rcT, gin);
     }
 
-    // invert the last line
+    // 3DMMv1.0: invert the last line
     rc.ypTop = rc.ypBottom;
     rc.ypBottom = _YpFromLn(ln2 + 1);
     rc.xpRight = xp2;
@@ -689,7 +689,7 @@ void EDCB::_InvertIchRange(PGNV pgnv, int32_t ich1, int32_t ich2, int32_t gin)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Update the correct lines on screen.
 ***************************************************************************/
 void EDCB::_UpdateLn(int32_t ln, int32_t clnIns, int32_t clnDel, int32_t dypDel, int32_t gin)
@@ -712,10 +712,10 @@ void EDCB::_UpdateLn(int32_t ln, int32_t clnIns, int32_t clnDel, int32_t dypDel,
     rc.ypBottom = yp + dypIns;
     if (lnMac > ln + clnIns - clnDel && dypIns != dypDel)
     {
-        // Have some bits to blt vertically. If the background isn't clear,
-        // but _fMark is set, still do the scroll, since _fMark is intended
-        // to avoid flashing (allowing offscreen drawing) and scrolling
-        // doesn't flash anyway.
+        // 3DMMv1.0: Have some bits to blt vertically. If the background isn't clear,
+        // 3DMMv1.0: but _fMark is set, still do the scroll, since _fMark is intended
+        // 3DMMv1.0: to avoid flashing (allowing offscreen drawing) and scrolling
+        // 3DMMv1.0: doesn't flash anyway.
         if (_fClear && kginDraw == gin)
             gin = kginMark;
 
@@ -743,7 +743,7 @@ void EDCB::_UpdateLn(int32_t ln, int32_t clnIns, int32_t clnDel, int32_t dypDel,
     _fXpValid = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the text in the edit control.
 ***************************************************************************/
 void EDCB::_Scroll(int32_t dxp, int32_t dyp, int32_t gin)
@@ -757,7 +757,7 @@ void EDCB::_Scroll(int32_t dxp, int32_t dyp, int32_t gin)
     Scroll(&rc, dxp, dyp, gin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the yp for the given character.
 ***************************************************************************/
 int32_t EDCB::_YpFromIch(int32_t ich)
@@ -765,7 +765,7 @@ int32_t EDCB::_YpFromIch(int32_t ich)
     return _YpFromLn(_LnFromIch(ich));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the single character at ich.
 ***************************************************************************/
 achar EDCB::_ChFetch(int32_t ich)
@@ -778,7 +778,7 @@ achar EDCB::_ChFetch(int32_t ich)
     return ch;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return ich of the previous character, skipping line feed characters. If
     fWord is true, skip to the beginning of a word.
 ***************************************************************************/
@@ -810,7 +810,7 @@ int32_t EDCB::_IchPrev(int32_t ich, bool fWord)
     return ich;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return ich of the next character, skipping line feed characters. If
     fWord is true, skip to the beginning of the next word.
 ***************************************************************************/
@@ -843,7 +843,7 @@ int32_t EDCB::_IchNext(int32_t ich, bool fWord)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the EDCB
 ***************************************************************************/
 void EDCB::AssertValid(uint32_t grf)
@@ -852,10 +852,10 @@ void EDCB::AssertValid(uint32_t grf)
     AssertIn(_ichAnchor, 0, kcbMax);
     AssertIn(_ichOther, 0, kcbMax);
     AssertPo(_pgnv, 0);
-    // REVIEW shonk: fill in EDCB::AssertValid
+    // 3DMMv1.0: REVIEW shonk: fill in EDCB::AssertValid
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the EDML.
 ***************************************************************************/
 void EDCB::MarkMem(void)
@@ -866,12 +866,12 @@ void EDCB::MarkMem(void)
 }
 #endif
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for plain edit control.
 ***************************************************************************/
 EDPL::EDPL(PEDPAR pedpar) : EDCB(&pedpar->_gcb, pedpar->_cmhl)
 {
-    // inputs are all asserted in AssertThis
+    // 3DMMv1.0: inputs are all asserted in AssertThis
     _onn = pedpar->_onn;
     _grfont = pedpar->_grfont;
     _dypFont = pedpar->_dypFont;
@@ -884,7 +884,7 @@ EDPL::EDPL(PEDPAR pedpar) : EDCB(&pedpar->_gcb, pedpar->_cmhl)
     _dypLine = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the EDPL.
 ***************************************************************************/
 bool EDPL::_FInit(void)
@@ -895,7 +895,7 @@ bool EDPL::_FInit(void)
     if (!EDPL_PAR::_FInit())
         return fFalse;
 
-    // get the _dypLine value
+    // 3DMMv1.0: get the _dypLine value
     _pgnv->SetFont(_onn, _grfont, _dypFont, _tah);
     _pgnv->GetRcFromRgch(&rc, pvNil, 0, 0, 0);
     _dypLine = rc.Dyp();
@@ -903,7 +903,7 @@ bool EDPL::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the yp for the given line.
 ***************************************************************************/
 int32_t EDPL::_YpFromLn(int32_t ln)
@@ -924,7 +924,7 @@ int32_t EDPL::_YpFromLn(int32_t ln)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return which line the yp belongs in.
 ***************************************************************************/
 int32_t EDPL::_LnFromYp(int32_t yp)
@@ -934,7 +934,7 @@ int32_t EDPL::_LnFromYp(int32_t yp)
     return LwBound((yp - yp0) / _dypLine, 0, _LnMac() + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Hilite the rectangle.
 ***************************************************************************/
 void EDPL::_HiliteRc(PGNV pgnv, RC *prc)
@@ -944,7 +944,7 @@ void EDPL::_HiliteRc(PGNV pgnv, RC *prc)
     pgnv->HiliteRc(prc, _acrBack);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the xp for the given character.
 ***************************************************************************/
 int32_t EDPL::_XpFromIch(int32_t ich)
@@ -978,7 +978,7 @@ int32_t EDPL::_XpFromIch(int32_t ich)
     return rc.xpRight;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the character that the xp is in on the given line. If fClosest is
     true, this finds the character boundary that the point is closest to
     (for traditional selection). If fClosest is false, it finds the character
@@ -1006,7 +1006,7 @@ int32_t EDPL::_IchFromLnXp(int32_t ln, int32_t xp, bool fClosest)
     ich = LwMax(ichMinLn, _IchPrev(ichMin));
     if (fClosest && ich < ichMin)
     {
-        // determine whether we should return ich or _IchNext(ich).
+        // 3DMMv1.0: determine whether we should return ich or _IchNext(ich).
         if ((ichLim = _IchNext(ich)) <= ichMin && LwAbs(xp - _XpFromIch(ichLim)) < LwAbs(xp - _XpFromIch(ich)))
         {
             ich = ichLim;
@@ -1015,7 +1015,7 @@ int32_t EDPL::_IchFromLnXp(int32_t ln, int32_t xp, bool fClosest)
     return ich;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the given line in the given GNV.
 ***************************************************************************/
 void EDPL::_DrawLine(PGNV pgnv, int32_t ln)
@@ -1044,13 +1044,13 @@ void EDPL::_DrawLine(PGNV pgnv, int32_t ln)
     }
     else
     {
-        // fill to the bottom
+        // 3DMMv1.0: fill to the bottom
         rcSrc.ypTop = ypTop;
         pgnv->FillRc(&rcSrc, _acrBack);
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the origin for drawing text.
 ***************************************************************************/
 int32_t EDPL::_XpOrigin(void)
@@ -1071,7 +1071,7 @@ int32_t EDPL::_XpOrigin(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a single-line edit control.
 ***************************************************************************/
 void EDPL::AssertValid(uint32_t grf)
@@ -1086,9 +1086,9 @@ void EDPL::AssertValid(uint32_t grf)
     AssertPo(&_acrBack, facrRgb | facrIndex);
     AssertIn(_dypLine, 1, kcbMax);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for single line edit control.
 ***************************************************************************/
 EDSL::EDSL(PEDPAR pedpar) : EDPL(pedpar)
@@ -1096,7 +1096,7 @@ EDSL::EDSL(PEDPAR pedpar) : EDPL(pedpar)
     AssertBaseThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new EDSL (single line edit control).
 ***************************************************************************/
 PEDSL EDSL::PedslNew(PEDPAR pedpar)
@@ -1113,7 +1113,7 @@ PEDSL EDSL::PedslNew(PEDPAR pedpar)
     return pedsl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a pointer to the characters for the given line.
 ***************************************************************************/
 bool EDSL::_FLockLn(int32_t ln, achar **pprgch, int32_t *pcch)
@@ -1133,7 +1133,7 @@ bool EDSL::_FLockLn(int32_t ln, achar **pprgch, int32_t *pcch)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlock a line.
 ***************************************************************************/
 void EDSL::_UnlockLn(int32_t ln, achar *prgch)
@@ -1142,7 +1142,7 @@ void EDSL::_UnlockLn(int32_t ln, achar *prgch)
     Assert(prgch == _rgch, "bad call to _UnlockLn");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the line that ich is on.
 ***************************************************************************/
 int32_t EDSL::_LnFromIch(int32_t ich)
@@ -1152,7 +1152,7 @@ int32_t EDSL::_LnFromIch(int32_t ich)
     return ich <= IchMac() ? 0 : 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the first ich for the given line.
 ***************************************************************************/
 int32_t EDSL::_IchMinLn(int32_t ln)
@@ -1161,7 +1161,7 @@ int32_t EDSL::_IchMinLn(int32_t ln)
     return ln == 0 ? 0 : IchMac() + 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of characters.
 ***************************************************************************/
 int32_t EDSL::IchMac(void)
@@ -1170,7 +1170,7 @@ int32_t EDSL::IchMac(void)
     return _cch;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of lines.
 ***************************************************************************/
 int32_t EDSL::_LnMac(void)
@@ -1179,7 +1179,7 @@ int32_t EDSL::_LnMac(void)
     return 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the characters between ich1 and ich2 with those in (prgch, cchIns).
     Calls _UpdateLn() to clean up the display.
 ***************************************************************************/
@@ -1224,7 +1224,7 @@ bool EDSL::FReplace(const achar *prgch, int32_t cchIns, int32_t ich1, int32_t ic
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this is a character we can't accept, return false.
 ***************************************************************************/
 bool EDSL::_FFilterCh(achar ch)
@@ -1232,7 +1232,7 @@ bool EDSL::_FFilterCh(achar ch)
     return !(fchControl & GrfchFromCh(ch));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the text in the edit control.
 ***************************************************************************/
 void EDSL::GetStn(PSTN pstn)
@@ -1243,7 +1243,7 @@ void EDSL::GetStn(PSTN pstn)
     pstn->SetRgch(_rgch, _cch);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the text in the edit control.  Sets the selection to an insertion
     point at the end of the text.
 ***************************************************************************/
@@ -1255,7 +1255,7 @@ void EDSL::SetStn(PSTN pstn, int32_t gin)
     FReplace(pstn->Prgch(), pstn->Cch(), 0, IchMac(), gin);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get some text.
 ***************************************************************************/
 int32_t EDSL::CchFetch(achar *prgch, int32_t ich, int32_t cchWant)
@@ -1271,7 +1271,7 @@ int32_t EDSL::CchFetch(achar *prgch, int32_t ich, int32_t cchWant)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a single-line edit control.
 ***************************************************************************/
 void EDSL::AssertValid(uint32_t grf)
@@ -1287,9 +1287,9 @@ void EDSL::AssertValid(uint32_t grf)
     AssertIn(_ichAnchor, 0, _cch + 1);
     AssertIn(_ichOther, 0, _cch + 1);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for multi line edit control.
 ***************************************************************************/
 EDML::EDML(PEDPAR pedpar) : EDPL(pedpar)
@@ -1302,7 +1302,7 @@ EDML::~EDML(void)
     ReleasePpo(&_pglich);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new EDML (multi line edit control).
 ***************************************************************************/
 PEDML EDML::PedmlNew(PEDPAR pedpar)
@@ -1320,7 +1320,7 @@ PEDML EDML::PedmlNew(PEDPAR pedpar)
     return pedml;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the multi line edit control.
 ***************************************************************************/
 bool EDML::_FInit(void)
@@ -1334,7 +1334,7 @@ bool EDML::_FInit(void)
     return _pglich->FPush(&ich);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a pointer to the characters for the given line.
 ***************************************************************************/
 bool EDML::_FLockLn(int32_t ln, achar **pprgch, int32_t *pcch)
@@ -1363,7 +1363,7 @@ bool EDML::_FLockLn(int32_t ln, achar **pprgch, int32_t *pcch)
         ichT = LwMax(ich, _IchPrev(*pcch));
         if (ichT < *pcch && ((fchControl | fchMayBreak) & GrfchFromCh(_ChFetch(ichT))))
         {
-            // don't include the break character(s)
+            // 3DMMv1.0: don't include the break character(s)
             *pcch = ichT;
         }
         *pcch -= ich;
@@ -1372,7 +1372,7 @@ bool EDML::_FLockLn(int32_t ln, achar **pprgch, int32_t *pcch)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlock a line.
 ***************************************************************************/
 void EDML::_UnlockLn(int32_t ln, achar *prgch)
@@ -1381,7 +1381,7 @@ void EDML::_UnlockLn(int32_t ln, achar *prgch)
     _bsm.Unlock();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the line that ich is on.
 ***************************************************************************/
 int32_t EDML::_LnFromIch(int32_t ich)
@@ -1412,7 +1412,7 @@ int32_t EDML::_LnFromIch(int32_t ich)
     return lnMin - 1;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the first ich for the given line.
 ***************************************************************************/
 int32_t EDML::_IchMinLn(int32_t ln)
@@ -1426,7 +1426,7 @@ int32_t EDML::_IchMinLn(int32_t ln)
     return ich;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of characters.
 ***************************************************************************/
 int32_t EDML::IchMac(void)
@@ -1436,7 +1436,7 @@ int32_t EDML::IchMac(void)
     return _bsm.IbMac() / SIZEOF(achar);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of lines.
 ***************************************************************************/
 int32_t EDML::_LnMac(void)
@@ -1445,7 +1445,7 @@ int32_t EDML::_LnMac(void)
     return _pglich->IvMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace the characters between ich1 and ich2 with those in (prgch, cchIns).
     Calls _UpdateLn() to clean up the display.
 ***************************************************************************/
@@ -1470,7 +1470,7 @@ bool EDML::FReplace(const achar *prgch, int32_t cchIns, int32_t ich1, int32_t ic
     clnDel = _LnFromIch(ich2) - lnMin;
     ypOld = _YpFromLn(lnMin);
 
-    // estimate the number of inserted lines
+    // 3DMMv1.0: estimate the number of inserted lines
     clnIns = _ClnEstimate(prgch, cchIns);
     if (clnIns > clnDel && !_pglich->FEnsureSpace(clnIns - clnDel))
         return fFalse;
@@ -1480,11 +1480,11 @@ bool EDML::FReplace(const achar *prgch, int32_t cchIns, int32_t ich1, int32_t ic
     if (!_FReplaceCore(prgch, cchIns, ich1, ich2 - ich1))
         return fFalse;
 
-    // delete lines { lnMin + 1, ..., lnMin + clnDel }
+    // 3DMMv1.0: delete lines { lnMin + 1, ..., lnMin + clnDel }
     for (ln = lnMin + clnDel; ln > lnMin; ln--)
         _pglich->Delete(ln);
 
-    // adjust the ich's further in the _pglich
+    // 3DMMv1.0: adjust the ich's further in the _pglich
     if (0 != (dich = cchIns - ich2 + ich1))
     {
         int32_t *pich;
@@ -1495,14 +1495,14 @@ bool EDML::FReplace(const achar *prgch, int32_t cchIns, int32_t ich1, int32_t ic
             *pich += dich;
     }
 
-    // update the selection
+    // 3DMMv1.0: update the selection
     _ichAnchor = _ichOther = ich1 + cchIns;
 
-    // reformat the lines
+    // 3DMMv1.0: reformat the lines
     ln = _LnReformat(lnMin, &clnDel2, &clnIns);
     clnDel += clnDel2;
 
-    // keep the text in the same position vertically
+    // 3DMMv1.0: keep the text in the same position vertically
     ypNew = _YpFromLn(lnMin);
     _yp += ypOld - ypNew;
 
@@ -1511,7 +1511,7 @@ bool EDML::FReplace(const achar *prgch, int32_t cchIns, int32_t ich1, int32_t ic
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a replace operation just on the text.
 ***************************************************************************/
 bool EDML::_FReplaceCore(const achar *prgch, int32_t cchIns, int32_t ich, int32_t cchDel)
@@ -1519,7 +1519,7 @@ bool EDML::_FReplaceCore(const achar *prgch, int32_t cchIns, int32_t ich, int32_
     return _bsm.FReplace(prgch, cchIns, ich, cchDel);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Estimate the number of new lines (exact for a simple EDML).
 ***************************************************************************/
 int32_t EDML::_ClnEstimate(const achar *prgch, int32_t cch)
@@ -1536,7 +1536,7 @@ int32_t EDML::_ClnEstimate(const achar *prgch, int32_t cch)
     return cln;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find new line starts starting at lnMin.
 ***************************************************************************/
 int32_t EDML::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
@@ -1564,7 +1564,7 @@ int32_t EDML::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
     return lnMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this is a character we can't accept, return false.
 ***************************************************************************/
 bool EDML::_FFilterCh(achar ch)
@@ -1574,7 +1574,7 @@ bool EDML::_FFilterCh(achar ch)
     return !(fchControl & grfch) || (fchBreak & grfch);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get some text.
 ***************************************************************************/
 int32_t EDML::CchFetch(achar *prgch, int32_t ich, int32_t cchWant)
@@ -1590,7 +1590,7 @@ int32_t EDML::CchFetch(achar *prgch, int32_t ich, int32_t cchWant)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a multi-line edit control.
 ***************************************************************************/
 void EDML::AssertValid(uint32_t grf)
@@ -1622,7 +1622,7 @@ void EDML::AssertValid(uint32_t grf)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the EDML.
 ***************************************************************************/
 void EDML::MarkMem(void)
@@ -1632,16 +1632,16 @@ void EDML::MarkMem(void)
     MarkMemObj(&_bsm);
     MarkMemObj(_pglich);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for multi line edit control.
 ***************************************************************************/
 EDMW::EDMW(PEDPAR pedpar) : EDML(pedpar)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new multi-line wrapping edit control.
 ***************************************************************************/
 PEDMW EDMW::PedmwNew(PEDPAR pedpar)
@@ -1659,12 +1659,12 @@ PEDMW EDMW::PedmwNew(PEDPAR pedpar)
     return pedmw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return an estimate of how many new lines there are in the text to insert.
 ***************************************************************************/
 int32_t EDMW::_ClnEstimate(achar *prgch, int32_t cch)
 {
-    // the common case
+    // 3DMMv1.0: the common case
     if (cch <= 1)
         return 1;
 
@@ -1681,7 +1681,7 @@ int32_t EDMW::_ClnEstimate(achar *prgch, int32_t cch)
     return cln + EDML::_ClnEstimate(prgch, cch);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine the line starts from line lnMin on.  This may also affect
     lnMin's line start.  Returns the first line that changed (1 less than
     the first line start that changed).
@@ -1711,13 +1711,13 @@ int32_t EDMW::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
 
     if (lnMin > 0 && !(fchBreak & GrfchFromCh(prgch[_IchPrev(ich)])))
     {
-        // see if some of the text will fit on the previous line
+        // 3DMMv1.0: see if some of the text will fit on the previous line
         int32_t ichPrev = _IchMinLn(lnMin - 1);
 
         _pgnv->GetRcFromRgch(&rc, prgch + ichPrev, rgich[0] - ichPrev);
         if (rc.Dxp() <= dxp)
         {
-            // need to reformat the previous line
+            // 3DMMv1.0: need to reformat the previous line
             _pglich->Delete(lnMin);
             clnDel++;
             ich = ichPrev;
@@ -1739,7 +1739,7 @@ int32_t EDMW::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
             _pgnv->GetRcFromRgch(&rc, prgch + ich, rgich[cich - 1] - ich);
             if (rc.Dxp() >= dxp)
                 break;
-            // keep the last one and refill
+            // 3DMMv1.0: keep the last one and refill
             rgich[0] = rgich[cich - 1];
             cich = _CichGetBreakables(prgch, rgich[0], rgich + 1, kcichMax - 1);
             iichCur = 0;
@@ -1757,7 +1757,7 @@ int32_t EDMW::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
 
         if (ivMin == iichCur)
         {
-            // have to break a non-breaking stream - oh well
+            // 3DMMv1.0: have to break a non-breaking stream - oh well
             for (ivMin = ich, ivLim = rgich[iichCur]; ivMin < ivLim;)
             {
                 iv = (ivMin + ivLim) / 2;
@@ -1772,7 +1772,7 @@ int32_t EDMW::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
         }
         else
         {
-            // we found our break location
+            // 3DMMv1.0: we found our break location
             Assert(rgich[ivMin - 1] >= ich, "bad entry in rgich");
             ichNew = rgich[ivMin - 1];
             iichCur = ivMin;
@@ -1783,10 +1783,10 @@ int32_t EDMW::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
 
         if (ichNew >= IchMac())
         {
-            // we've run out of text - delete all remaining lines
+            // 3DMMv1.0: we've run out of text - delete all remaining lines
             clnDel += _pglich->IvMac() - lnCur;
             AssertDo(_pglich->FSetIvMac(lnCur), 0);
-            break; // we're done
+            break; // 3DMMv1.0: we're done
         }
 
         grfch = GrfchFromCh(_ChFetch(ichNew));
@@ -1800,8 +1800,8 @@ int32_t EDMW::_LnReformat(int32_t lnMin, int32_t *pclnDel, int32_t *pclnIns)
             if (ich < iv)
                 break;
             if (ich == iv)
-                goto LDone; // we're done
-            // delete this line start
+                goto LDone; // 3DMMv1.0: we're done
+            // 3DMMv1.0: delete this line start
             _pglich->Delete(lnCur);
             clnDel++;
         }
@@ -1822,7 +1822,7 @@ LDone:
     return lnMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the locations of possible breaking characters from prgch + ich.
     Doesn't continue past a return character.  Return the number of locations
     found.
@@ -1851,13 +1851,13 @@ int32_t EDMW::_CichGetBreakables(achar *prgch, int32_t ich, int32_t *prgich, int
         }
     }
 
-    // add the end of stream loaction
+    // 3DMMv1.0: add the end of stream loaction
     Assert(cich < cichMax, "what?");
     prgich[cich++] = IchMac();
     return cich;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The size of the GOB changed - relayout.
 ***************************************************************************/
 void EDMW::_NewRc(void)

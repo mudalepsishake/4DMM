@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -19,21 +19,21 @@ RTCLASS(WMS)
 
 const int32_t kcbMaxWmsBuffer = 0x0000FFFF / SIZEOF(MEV) * SIZEOF(MEV);
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Constructor for the Win95 Midi stream class.
 ***************************************************************************/
 WMS::WMS(PFNMIDI pfn, uintptr_t luUser) : WMSB(pfn, luUser)
 {
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for the Win95 Midi stream class.
 ***************************************************************************/
 WMS::~WMS(void)
 {
     if (hNil != _hth)
     {
-        // tell the thread to end and wait for it to finish
+        // 3DMMEx: tell the thread to end and wait for it to finish
         _fDone = fTrue;
         SetEvent(_hevt);
         WaitForSingleObject(_hth, INFINITE);
@@ -54,7 +54,7 @@ WMS::~WMS(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new WMS.
 ***************************************************************************/
 PWMS WMS::PwmsNew(PFNMIDI pfn, uintptr_t luUser)
@@ -70,7 +70,7 @@ PWMS WMS::PwmsNew(PFNMIDI pfn, uintptr_t luUser)
     return pwms;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Initialize the WMS: get the addresses of the stream API.
 ***************************************************************************/
 bool WMS::_FInit(void)
@@ -78,20 +78,20 @@ bool WMS::_FInit(void)
     OSVERSIONINFO osv;
     DWORD luThread;
 
-    // Make sure we're on Win95 and not NT, since the API exists on NT 3.51
-    // but it fails.
+    // 3DMMEx: Make sure we're on Win95 and not NT, since the API exists on NT 3.51
+    // 3DMMEx: but it fails.
     osv.dwOSVersionInfoSize = SIZEOF(osv);
     if (!GetVersionEx(&osv))
         return fFalse;
 
-// Old header files don't have this defined!
+// 3DMMEx: Old header files don't have this defined!
 #ifndef VER_PLATFORM_WIN32_WINDOWS
 #define VER_PLATFORM_WIN32_WINDOWS 1
-#endif //! VER_PLATFORM_WIN32_WINDOWS
+#endif //! 3DMMEx: VER_PLATFORM_WIN32_WINDOWS
 
     if (VER_PLATFORM_WIN32_WINDOWS != osv.dwPlatformId)
     {
-        // don't bother trying - NT's scheduler works fine anyway.
+        // 3DMMEx: don't bother trying - NT's scheduler works fine anyway.
         return fFalse;
     }
 
@@ -122,7 +122,7 @@ bool WMS::_FInit(void)
     if (hNil == (_hevt = CreateEvent(pvNil, fFalse, fFalse, pvNil)))
         return fFalse;
 
-    // create the thread
+    // 3DMMEx: create the thread
     if (hNil == (_hth = CreateThread(pvNil, 1024, WMS::_ThreadProc, this, 0, &luThread)))
     {
         return fFalse;
@@ -133,7 +133,7 @@ bool WMS::_FInit(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of a WMS.
 ***************************************************************************/
 void WMS::AssertValid(uint32_t grf)
@@ -152,7 +152,7 @@ void WMS::AssertValid(uint32_t grf)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory for the WMS.
 ***************************************************************************/
 void WMS::MarkMem(void)
@@ -173,9 +173,9 @@ void WMS::MarkMem(void)
     MarkMemObj(_pglpmsir);
     _mutx.Leave();
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Opens the midi stream and sets the time division to 1000 ticks per
     quarter note. It is assumed that the midi data has a tempo record
     indicating 1 quarter note per second (1000000 microseconds per quarter).
@@ -185,7 +185,7 @@ bool WMS::_FOpen(void)
 {
     AssertThis(0);
 
-    // MIDIPROPTIMEDIV struct
+    // 3DMMEx: MIDIPROPTIMEDIV struct
     struct MT
     {
         DWORD cbStruct;
@@ -205,9 +205,9 @@ bool WMS::_FOpen(void)
         goto LFail;
     }
 
-    // We set the time division to 1000 ticks per beat, so clients can
-    // use 1 beat per second and just use milliseconds for timing.
-    // We also un-pause the stream.
+    // 3DMMEx: We set the time division to 1000 ticks per beat, so clients can
+    // 3DMMEx: use 1 beat per second and just use milliseconds for timing.
+    // 3DMMEx: We also un-pause the stream.
     mt.cbStruct = SIZEOF(mt);
     mt.dwTimeDiv = 1000;
 
@@ -220,14 +220,14 @@ bool WMS::_FOpen(void)
         return fFalse;
     }
 
-    // we know there are no buffers submitted
+    // 3DMMEx: we know there are no buffers submitted
     AssertVar(_cmhOut == 0, "why is _cmhOut non-zero?", &_cmhOut);
     _cmhOut = 0;
 
-    // get the system volume level
+    // 3DMMEx: get the system volume level
     _GetSysVol();
 
-    // set our volume level
+    // 3DMMEx: set our volume level
     _SetSysVlm();
 
 LDone:
@@ -236,7 +236,7 @@ LDone:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Close the midi stream.
 ***************************************************************************/
 bool WMS::_FClose(void)
@@ -258,13 +258,13 @@ bool WMS::_FClose(void)
         return fFalse;
     }
 
-    // reset the device
+    // 3DMMEx: reset the device
     _Reset();
 
-    // restore the volume level
+    // 3DMMEx: restore the volume level
     _SetSysVol(_luVolSys);
 
-    // free the device
+    // 3DMMEx: free the device
     (*_pfnClose)(_hms);
     _hms = hNil;
 
@@ -274,7 +274,7 @@ bool WMS::_FClose(void)
 }
 
 #ifdef STREAM_BUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Just return the value of our flag, not (hNil != _hms).
 ***************************************************************************/
 bool WMS::FActive(void)
@@ -282,7 +282,7 @@ bool WMS::FActive(void)
     return _fActive;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Need to set _fActive as well.
 ***************************************************************************/
 bool WMS::FActivate(bool fActivate)
@@ -294,9 +294,9 @@ bool WMS::FActivate(bool fActivate)
         _fActive = FPure(fActivate);
     return fRet;
 }
-#endif // STREAM_BUG
+#endif // 3DMMEx: STREAM_BUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Reset the midi stream so it's ready to accept new input. Assumes we
     already have the mutx.
 ***************************************************************************/
@@ -314,13 +314,13 @@ void WMS::_ResetStream(void)
         _FClose();
         _FOpen();
     }
-#else  //! STREAM_BUG
+#else  //! 3DMMEx: STREAM_BUG
     (*_pfnStop)(_hms);
     _Reset();
-#endif //! STREAM_BUG
+#endif //! 3DMMEx: STREAM_BUG
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     This submits a buffer and restarts the midi stream. If the data is
     bigger than 64K, this (in conjunction with _Notify) deals with it.
 ***************************************************************************/
@@ -355,7 +355,7 @@ bool WMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPl
 
     if (0 == _CmhSubmitBuffers() && ipmsir == 0)
     {
-        // submitting the buffers failed
+        // 3DMMEx: submitting the buffers failed
         _pglpmsir->Delete(0);
         _ipmsirCur = 0;
     LFail:
@@ -368,7 +368,7 @@ bool WMS::FQueueBuffer(void *pvData, int32_t cb, int32_t ibStart, int32_t cactPl
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Submits buffers. Assumes the _mutx is already ours.
 ***************************************************************************/
 int32_t WMS::_CmhSubmitBuffers(void)
@@ -384,7 +384,7 @@ int32_t WMS::_CmhSubmitBuffers(void)
         _pglpmsir->Get(_ipmsirCur, &pmsir);
         if (pmsir->ibNext >= pmsir->cb)
         {
-            // see if the sound should be repeated
+            // 3DMMEx: see if the sound should be repeated
             if (pmsir->cactPlay == 1)
             {
                 _ipmsirCur++;
@@ -394,12 +394,12 @@ int32_t WMS::_CmhSubmitBuffers(void)
             pmsir->ibNext = 0;
         }
 
-        // see if one of the buffers is free
+        // 3DMMEx: see if one of the buffers is free
         for (imh = 0;; imh++)
         {
             if (imh >= kcmhMsir)
             {
-                // all buffers are busy
+                // 3DMMEx: all buffers are busy
                 Assert(_cmhOut >= kcmhMsir, 0);
                 return cmh;
             }
@@ -407,7 +407,7 @@ int32_t WMS::_CmhSubmitBuffers(void)
                 break;
         }
 
-        // fill the buffer and submit it
+        // 3DMMEx: fill the buffer and submit it
         pmh = &pmsir->rgmh[imh];
         pmh->lpData = (byte *)PvAddBv(pmsir->pvData, pmsir->ibNext);
         cbMh = LwMin(pmsir->cb - pmsir->ibNext, kcbMaxWmsBuffer);
@@ -421,7 +421,7 @@ int32_t WMS::_CmhSubmitBuffers(void)
             cmh++;
         else
         {
-            // just play the previous buffers and forget about this one
+            // 3DMMEx: just play the previous buffers and forget about this one
             pmsir->ibNext = pmsir->cb;
             pmsir->rgibLim[imh] = 0;
             pmsir->cactPlay = 1;
@@ -432,7 +432,7 @@ int32_t WMS::_CmhSubmitBuffers(void)
     return cmh;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Prepare and submit the given buffer. Assumes the mutx is ours.
 ***************************************************************************/
 bool WMS::_FSubmit(PMH pmh)
@@ -442,7 +442,7 @@ bool WMS::_FSubmit(PMH pmh)
     if (hNil == _hms)
         return fFalse;
 
-    // prepare and submit the buffer
+    // 3DMMEx: prepare and submit the buffer
     if (MMSYSERR_NOERROR != midiOutPrepareHeader(_hms, (PMHO)pmh, sizeof(*pmh)))
         return fFalse;
 
@@ -459,7 +459,7 @@ bool WMS::_FSubmit(PMH pmh)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Stop the midi stream.
 ***************************************************************************/
 void WMS::StopPlaying(void)
@@ -477,7 +477,7 @@ void WMS::StopPlaying(void)
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Call back from the midi stream. If the number of active buffers returns
     to 0, this stops the midi stream. If the indicated sound is done,
     we notify the client.
@@ -497,7 +497,7 @@ void __stdcall WMS::_MidiProc(HMS hms, UINT msg, DWORD_PTR luUser, DWORD_PTR lu1
     pwms->_Notify(hms, pmh);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     The this-based callback.
 
     The mmsys guys claim that it's illegal to call midiOutUnprepareHeader,
@@ -537,23 +537,23 @@ void WMS::_Notify(HMS hms, PMH pmh)
 
     Assert(pmh->lpData == PvAddBv(pmsir->pvData, pmsir->rgibLim[imh] - pmh->dwBufferLength), "pmh->lpData is wrong");
 
-    // mark this buffer free
+    // 3DMMEx: mark this buffer free
     pmsir->rgibLim[imh] = 0;
 
-    // fill and submit buffers
+    // 3DMMEx: fill and submit buffers
     _CmhSubmitBuffers();
 
-    // update the submitted buffer count
+    // 3DMMEx: update the submitted buffer count
     --_cmhOut;
 
-    // wake up the auxillary thread to do callbacks and stop and reset
-    // the device it there's nothing more to play
+    // 3DMMEx: wake up the auxillary thread to do callbacks and stop and reset
+    // 3DMMEx: the device it there's nothing more to play
     SetEvent(_hevt);
 
     _mutx.Leave();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: Static method. Thread function for the WMS object. This thread
     just waits for the event to be triggered, indicating that we got
     a callback from the midiStream stuff and it's time to do our callbacks.
@@ -567,7 +567,7 @@ DWORD __stdcall WMS::_ThreadProc(LPVOID pv)
     return pwms->_LuThread();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     AT: This thread just sleeps until the next sound is due to expire, then
     wakes up and nukes any expired sounds.
 ***************************************************************************/
@@ -593,7 +593,7 @@ DWORD WMS::_LuThread(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Check for MSIRs that are done and do the callback on them and free them.
     Assumes the _mutx is checked out exactly once.
 ***************************************************************************/
@@ -608,25 +608,25 @@ void WMS::_DoCallBacks()
 
         if (_cmhOut > 0)
         {
-            // see if the MSIR is done
+            // 3DMMEx: see if the MSIR is done
             int32_t imh;
 
             for (imh = 0; imh < kcmhMsir; imh++)
             {
                 if (0 < pmsir->rgibLim[imh])
                 {
-                    // this one is busy
+                    // 3DMMEx: this one is busy
                     return;
                 }
             }
         }
 
-        // this one is done
+        // 3DMMEx: this one is done
         _pglpmsir->Delete(0);
         _ipmsirCur--;
         _mutx.Leave();
 
-        // notify the client that we're done with the sound
+        // 3DMMEx: notify the client that we're done with the sound
         (*_pfnCall)(_luUser, pmsir->pvData, pmsir->luData);
         FreePpv((void **)&pmsir);
 

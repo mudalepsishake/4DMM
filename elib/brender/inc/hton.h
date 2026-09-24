@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: hton.h 1.2 1995/02/22 21:37:11 sam Exp $
@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-/*
+/* 3DMMv1.0:
  * Mac is in network order already
  */
 #if defined(__MPW__) || defined(__THINKC__)
@@ -32,7 +32,7 @@ extern "C"
 
 #endif
 
-/*
+/* 3DMMv1.0:
  * PC is big-endian
  */
 #if defined(__GNUC__) || defined(__WATCOMC__) || defined(__ZTC__)

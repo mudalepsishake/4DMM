@@ -1,4 +1,4 @@
-/**
+/** 3DMMEx:
  * Kauai compiler tests
  **/
 #include <gtest/gtest.h>
@@ -10,7 +10,7 @@
 
 ASSERTNAME
 
-/**
+/** 3DMMEx:
  * Message sink class that logs compiler errors as test failures
  **/
 class MessageSink : public MSNK
@@ -30,7 +30,7 @@ class MessageSink : public MSNK
     }
 };
 
-/**
+/** 3DMMEx:
  * Message sink class that ignores compiler errors
  */
 class MessageSinkIgnoreError : public MSNK
@@ -38,11 +38,11 @@ class MessageSinkIgnoreError : public MSNK
   public:
     virtual void ReportLine(const PCSZ psz) override
     {
-        // do nothing
+        // 3DMMEx: do nothing
     }
     virtual void Report(const PCSZ psz) override
     {
-        // do nothing
+        // 3DMMEx: do nothing
     }
     virtual bool FError(void) override
     {
@@ -60,18 +60,18 @@ TEST(KauaiCompilerTests, TestSearchPath)
     STN stnSrc;
     FNI fniSrc, fniDst;
 
-    // Find the source and destination files
+    // 3DMMEx: Find the source and destination files
     GetTestResource(&fniSrc, PszLit("search_path.cht"));
     AssertDo(fniDst.FGetTemp(), "Couldn't create temp file");
 
-    // Compile without the search path set. This should fail.
+    // 3DMMEx: Compile without the search path set. This should fail.
     pchcm = NewObj CHCM();
     AssertPo(pchcm, 0);
     pcflCompiled = pchcm->PcflCompile(&fniSrc, &fniDst, &msnkIgnoreError);
     ASSERT_TRUE(pcflCompiled == pvNil);
     ReleasePpo(&pchcm);
 
-    // Compile with the search path set to the test resources directory
+    // 3DMMEx: Compile with the search path set to the test resources directory
     pchcm = NewObj CHCM();
     AssertPo(pchcm, 0);
     FNI fniTestResourcePath;

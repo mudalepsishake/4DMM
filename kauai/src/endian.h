@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,21 +16,21 @@
 #ifndef ENDIAN_H
 #define ENDIAN_H
 
-// define the endian-ness
+// 3DMMEx: define the endian-ness
 #ifdef IN_80386
 #ifndef LITTLE_ENDIAN
 #define LITTLE_ENDIAN
-#endif // LITTLE_ENDIAN
-#endif // IN_80386
+#endif // 3DMMEx: LITTLE_ENDIAN
+#endif // 3DMMEx: IN_80386
 
 #ifdef LITTLE_ENDIAN
 #define BigLittle(a, b) b
 #define Big(a)
 #define Little(a) a
-#else //! LITTLE_ENDIAN
+#else //! 3DMMEx: LITTLE_ENDIAN
 #define BigLittle(a, b) a
 #define Big(a) a
 #define Little(a)
-#endif //! LITTLE_ENDIAN
+#endif //! 3DMMEx: LITTLE_ENDIAN
 
 #endif

@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1992,1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: matrix.h 1.3 1995/02/22 21:37:13 sam Exp $

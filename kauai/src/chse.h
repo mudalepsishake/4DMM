@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ******
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef CHSE_H
 #define CHSE_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Chunky source emitter class
 ***************************************************************************/
 #ifdef DEBUG
@@ -25,7 +25,7 @@ enum
     fchseNil = 0,
     fchseDump = 0x8000,
 };
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 typedef class CHSE *PCHSE;
 #define CHSE_PAR BASE
@@ -64,7 +64,7 @@ class CHSE : public CHSE_PAR
     void DumpBlck(PBLCK pblck);
     bool FDumpScript(PSCPT pscpt, PSCCB psccb);
 
-    // General sz emitting routines
+    // 3DMMv1.0: General sz emitting routines
     void DumpSz(PCSZ psz)
     {
         AssertThis(fchseDump);
@@ -83,4 +83,4 @@ class CHSE : public CHSE_PAR
     }
 };
 
-#endif // !CHSE_H
+#endif // 3DMMv1.0: !CHSE_H

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(PIC)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new PIC based on the given HPIC with
     bounding rectangle *prc. If this fails, it is the callers responsibility
     to free the hpic. If it succeeds, the ppic returned owns the hpic.
@@ -35,7 +35,7 @@ PPIC PIC::PpicNew(HPIC hpic, RC *prc)
     return ppic;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the natural rectangle for the picture.
 ***************************************************************************/
 void PIC::GetRc(RC *prc)
@@ -44,7 +44,7 @@ void PIC::GetRc(RC *prc)
     *prc = _rc;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the picture to the chunky file. The OS specific representation
     will be a child of the chunk and have the given chid value.
 ***************************************************************************/
@@ -69,7 +69,7 @@ bool PIC::FAddToCfl(PCFL pcfl, CTG ctg, CNO *pcno, CHID chid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put the picture as the given ctg and cno in the chunky file. The
     OS specific representation will be a child of the chunk and have the
     given chid value.
@@ -101,7 +101,7 @@ bool PIC::FPutInCfl(PCFL pcfl, CTG ctg, CNO cno, CHID chid)
         return fFalse;
     }
 
-    // delete all other reps with the same ctg and chid
+    // 3DMMv1.0: delete all other reps with the same ctg and chid
     for (ikid = pcfl->Ckid(ctg, cno); ikid-- > 0;)
     {
         AssertDo(pcfl->FGetKid(ctg, cno, ikid, &kid), 0);
@@ -112,7 +112,7 @@ bool PIC::FPutInCfl(PCFL pcfl, CTG ctg, CNO cno, CHID chid)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a PIC.
 ***************************************************************************/
 void PIC::AssertValid(uint32_t grf)
@@ -120,9 +120,9 @@ void PIC::AssertValid(uint32_t grf)
     PIC_PAR::AssertValid(0);
     Assert(_hpic != hNil, "bad hpic");
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A PFNRPO to read PIC 0 from a GRAF chunk.
 ***************************************************************************/
 bool FReadMainPic(PCFL pcfl, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -131,7 +131,7 @@ bool FReadMainPic(PCFL pcfl, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32
 
     if (pvNil == ppbaco)
     {
-        // REVIEW shonk: get a better estimate of the real size -
+        // 3DMMv1.0: REVIEW shonk: get a better estimate of the real size -
         *pcb = 1;
         return fTrue;
     }

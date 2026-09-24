@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -24,36 +24,36 @@ ASSERTNAME
 
 RTCLASS(USAC)
 
-// Allocate globals in utilglob before any other globals to avoid crashes on exit
+// 3DMMEx: Allocate globals in utilglob before any other globals to avoid crashes on exit
 #pragma init_seg(lib)
 
 #ifdef DEBUG
-// protects our debug linked list object management
+// 3DMMv1.0: protects our debug linked list object management
 MUTX vmutxBase;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 MUTX vmutxMem;
 
-// Shuffler and random number generator for the script interpreter
+// 3DMMv1.0: Shuffler and random number generator for the script interpreter
 SFL vsflUtil;
 RND vrndUtil;
 
-// Standard Kauai codec
+// 3DMMv1.0: Standard Kauai codec
 KCDC vkcdcUtil;
 
-// Standard compression manager - gets initialized with the standard
-// Kauai codec. Clients can add additional codecs or redirect vpcodmUtil
-// to a different compression manager with their own codecs
+// 3DMMv1.0: Standard compression manager - gets initialized with the standard
+// 3DMMv1.0: Kauai codec. Clients can add additional codecs or redirect vpcodmUtil
+// 3DMMv1.0: to a different compression manager with their own codecs
 CODM vcodmUtil(&vkcdcUtil, kcfmtKauai2);
 PCODM vpcodmUtil = &vcodmUtil;
 
-// Standard scalable application clok.
+// 3DMMv1.0: Standard scalable application clok.
 USAC _usac;
 PUSAC vpusac = &_usac;
 
 #ifdef DEBUG
 
-// Debug memory globals
+// 3DMMv1.0: Debug memory globals
 DMGLOB vdmglob;
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

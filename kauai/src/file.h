@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,14 +16,14 @@
 #ifndef FILE_H
 #define FILE_H
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Byte order issues
 ****************************************/
 
 const int16_t kboCur = 0x0001;
 const int16_t kboOther = 0x0100;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Basic types
 ****************************************/
 
@@ -32,16 +32,16 @@ typedef int32_t FP;
 enum
 {
     ffilNil = 0x00,
-    ffilWriteEnable = 0x01, // we can write to the file
-    ffilDenyWrite = 0x02,   // others can't write to the file
-    ffilDenyRead = 0x04,    // others can't read the file
+    ffilWriteEnable = 0x01, // 3DMMv1.0: we can write to the file
+    ffilDenyWrite = 0x02,   // 3DMMv1.0: others can't write to the file
+    ffilDenyRead = 0x04,    // 3DMMv1.0: others can't read the file
 
     ffilTemp = 0x10,
     ffilMark = 0x20
 };
 const uint32_t kgrffilPerm = ffilWriteEnable | ffilDenyWrite | ffilDenyRead;
 
-// file error levels - in order of severity
+// 3DMMv1.0: file error levels - in order of severity
 enum
 {
     elNil,
@@ -51,7 +51,7 @@ enum
     kelCritical
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     FIL class
 ****************************************/
 typedef class FIL *PFIL;
@@ -64,7 +64,7 @@ class FIL : public FIL_PAR
     ASSERT
 
   protected:
-    // static member variables
+    // 3DMMv1.0: static member variables
     static MUTX _mutxList;
     static PFIL _pfilFirst;
 
@@ -74,7 +74,7 @@ class FIL : public FIL_PAR
     bool _fOpen : 1;
     bool _fEverOpen : 1;
     bool _fWrote : 1;
-    uint32_t _grffil; // permissions, mark and temp flags
+    uint32_t _grffil; // 3DMMv1.0: permissions, mark and temp flags
     int32_t _el;
 
 #ifdef MAC
@@ -83,9 +83,9 @@ class FIL : public FIL_PAR
     HANDLE _hfile;
 #else
     FILE *_fp;
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
-    // private methods
+    // 3DMMv1.0: private methods
     FIL(FNI *pfni, uint32_t grffil);
     ~FIL(void);
 
@@ -94,16 +94,16 @@ class FIL : public FIL_PAR
     void _SetFpPos(FP fp);
 
   public:
-    // public static members
+    // 3DMMv1.0: public static members
     static FTG vftgCreator;
 
   public:
-    // static methods
+    // 3DMMv1.0: static methods
     static void ClearMarks(void);
     static void CloseUnmarked(void);
     static void ShutDown(void);
 
-    // static methods returning a PFIL
+    // 3DMMv1.0: static methods returning a PFIL
     static PFIL PfilFirst(void)
     {
         return _pfilFirst;
@@ -169,10 +169,10 @@ class FIL : public FIL_PAR
     void Flush(void);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     File Location Class
 ****************************************/
-// for AssertValid
+// 3DMMv1.0: for AssertValid
 enum
 {
     ffloNil,
@@ -208,7 +208,7 @@ struct FLO
     ASSERT
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Data block class - wrapper around either a flo or an hq.
 ***************************************************************************/
 enum
@@ -234,10 +234,10 @@ class BLCK : public BLCK_PAR
   protected:
     bool _fPacked;
 
-    // for file based blocks
+    // 3DMMv1.0: for file based blocks
     FLO _flo;
 
-    // for memory based blocks
+    // 3DMMv1.0: for memory based blocks
     HQ _hq;
     int32_t _ibMin;
     int32_t _ibLim;
@@ -256,14 +256,14 @@ class BLCK : public BLCK_PAR
     HQ HqFree(bool fPackedOk = fFalse);
     int32_t Cb(bool fPackedOk = fFalse);
 
-    // changing the range of the block
+    // 3DMMv1.0: changing the range of the block
     bool FMoveMin(int32_t dib);
     bool FMoveLim(int32_t dib);
 
-    // create a temp block
+    // 3DMMv1.0: create a temp block
     bool FSetTemp(int32_t cb, bool fForceFile = fFalse);
 
-    // reading from and writing to
+    // 3DMMv1.0: reading from and writing to
     bool FRead(void *pv, bool fPackedOk = fFalse)
     {
         return FReadRgb(pv, Cb(fPackedOk), 0, fPackedOk);
@@ -281,21 +281,21 @@ class BLCK : public BLCK_PAR
         return FReadHq(phq, Cb(fPackedOk), 0, fPackedOk);
     }
 
-    // writing a block to a flo or another blck.
+    // 3DMMv1.0: writing a block to a flo or another blck.
     bool FWriteToFlo(PFLO pfloDst, bool fPackedOk = fFalse);
     bool FWriteToBlck(PBLCK pblckDst, bool fPackedOk = fFalse);
     bool FGetFlo(PFLO pflo, bool fPackedOk = fFalse);
 
-    // packing and unpacking
+    // 3DMMv1.0: packing and unpacking
     bool FPacked(int32_t *pcfmt = pvNil);
     bool FPackData(int32_t cfmt = cfmtNil);
     bool FUnpackData(void);
 
-    // Amount of memory being used
+    // 3DMMv1.0: Amount of memory being used
     int32_t CbMem(void);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Message sink class. Basic interface for output streaming.
 ***************************************************************************/
 typedef class MSNK *PMSNK;
@@ -311,7 +311,7 @@ class MSNK : public MSNK_PAR
     virtual bool FError(void) = 0;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     File based message sink.
 ***************************************************************************/
 typedef class MSFIL *PMSFIL;
@@ -340,4 +340,4 @@ class MSFIL : public MSFIL_PAR
     PFIL PfilRelease(void);
 };
 
-#endif //! FILE_H
+#endif //! 3DMMv1.0: FILE_H

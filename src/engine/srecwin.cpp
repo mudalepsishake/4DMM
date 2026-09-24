@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     srec.cpp: Sound recording class
 
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(SREC)
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Create a new SREC
 ***************************************************************************/
 PSREC SREC::PsrecNew(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax)
@@ -34,7 +34,7 @@ PSREC SREC::PsrecNew(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t
     return psrec;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Init this SREC
 ***************************************************************************/
 bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dtsMax)
@@ -54,9 +54,9 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
     _fRecording = fFalse;
     _fHaveSound = fFalse;
 
-    vpsndm->Suspend(fTrue); // turn off sndm so we can get wavein device
+    vpsndm->Suspend(fTrue); // 3DMMEx: turn off sndm so we can get wavein device
 
-    // See if sound recording is possible at all
+    // 3DMMEx: See if sound recording is possible at all
     cwid = waveInGetNumDevs();
     if (0 == cwid)
     {
@@ -64,14 +64,14 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
         return fFalse;
     }
 
-    // allocate a 10 second buffer
+    // 3DMMEx: allocate a 10 second buffer
     _wavehdr.dwBufferLength = (cchan * csampSec * cbSample * dtsMax) / 1000;
     if (!FAllocPv((void **)&_priff, sizeof(RIFF) + _wavehdr.dwBufferLength, fmemClear, mprNormal))
         return fFalse;
 
     _wavehdr.lpData = reinterpret_cast<LPSTR>(PvAddBv(_priff, sizeof(RIFF)));
 
-    // init RIFF structure
+    // 3DMMEx: init RIFF structure
     _priff->Set(_cchan, _csampSec, _cbSample, 0);
 
     if (fFalse == _FOpenRecord())
@@ -79,12 +79,12 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
         return fFalse;
     }
 
-    // get audioman
+    // 3DMMEx: get audioman
     _pmixer = GetAudioManMixer();
     if (pvNil == _pmixer)
         return fFalse;
 
-    // get a channel
+    // 3DMMEx: get a channel
     _pmixer->AllocChannel(&_pchannel);
     if (pvNil == _pchannel)
         return fFalse;
@@ -92,14 +92,14 @@ bool SREC::_FInit(int32_t csampSec, int32_t cchan, int32_t cbSample, uint32_t dt
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Clean up and delete this SREC
 ***************************************************************************/
 SREC::~SREC(void)
 {
     AssertBaseThis(0);
 
-    // make sure nothing is playing or recording
+    // 3DMMEx: make sure nothing is playing or recording
     if (_fRecording || _fPlaying)
         FStop();
 
@@ -109,10 +109,10 @@ SREC::~SREC(void)
     ReleasePpo(&_pchannel);
     ReleasePpo(&_pmixer);
     FreePpv((void **)&_priff);
-    vpsndm->Suspend(fFalse); // restore sound mgr
+    vpsndm->Suspend(fFalse); // 3DMMEx: restore sound mgr
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Open Device for recording
 ***************************************************************************/
 bool SREC::_FOpenRecord(void)
@@ -123,15 +123,15 @@ bool SREC::_FOpenRecord(void)
 
     if (pvNil == _hwavein)
     {
-        // open a wavein device
+        // 3DMMEx: open a wavein device
         if (waveInOpen(&_hwavein, WAVE_MAPPER, _priff->PwfxGet(), (DWORD_PTR)_WaveInProc, (DWORD_PTR)this,
                        CALLBACK_FUNCTION))
         {
-            // it doesn't support this format
+            // 3DMMEx: it doesn't support this format
             return fFalse;
         }
 
-        // prepare header on block of data
+        // 3DMMEx: prepare header on block of data
         _wavehdr.dwUser = (DWORD_PTR)this;
         if (waveInPrepareHeader(_hwavein, &_wavehdr, sizeof(WAVEHDR)))
         {
@@ -141,7 +141,7 @@ bool SREC::_FOpenRecord(void)
         }
     }
 
-    // add buffer to device
+    // 3DMMEx: add buffer to device
     if (!_fBufferAdded)
         if (waveInAddBuffer(_hwavein, &_wavehdr, sizeof(WAVEHDR)))
         {
@@ -156,7 +156,7 @@ bool SREC::_FOpenRecord(void)
     return true;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Close Device for recording
 ***************************************************************************/
 bool SREC::_FCloseRecord(void)
@@ -165,14 +165,14 @@ bool SREC::_FCloseRecord(void)
 
     if (_hwavein)
     {
-        // stop if necessary
+        // 3DMMEx: stop if necessary
         waveInReset(_hwavein);
 
-        // unprepare header
+        // 3DMMEx: unprepare header
         waveInUnprepareHeader(_hwavein, &_wavehdr, sizeof(WAVEHDR));
         _fRecording = fFalse;
 
-        // close
+        // 3DMMEx: close
         waveInClose(_hwavein);
         _hwavein = pvNil;
     }
@@ -180,35 +180,35 @@ bool SREC::_FCloseRecord(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Figure out if we're recording or not
 ***************************************************************************/
 void SREC::_UpdateStatus(void)
 {
     AssertThis(0);
 
-    // ------------------------------------
-    // Check playing mode
-    // ------------------------------------
+    // 3DMMEx: ------------------------------------
+    // 3DMMEx: Check playing mode
+    // 3DMMEx: ------------------------------------
     if ((_fPlaying) && !_pchannel->IsPlaying())
     {
-        // then we just stopped
-        Sleep(250L);            // sleep a little bit to cover AudioMan bug
-        vpsndm->Suspend(fTrue); // suspend sound mgr
+        // 3DMMEx: then we just stopped
+        Sleep(250L);            // 3DMMEx: sleep a little bit to cover AudioMan bug
+        vpsndm->Suspend(fTrue); // 3DMMEx: suspend sound mgr
     }
     _fPlaying = _pchannel->IsPlaying();
 
-    // ------------------------------------
-    // 	Check Recording mode
-    // If we are recording, AND our HaveSound flag
-    // is set, then we must have just finished, so
-    // process the data, and turn off the recording flag
-    // ------------------------------------
+    // 3DMMEx: ------------------------------------
+    // 3DMMEx: 	Check Recording mode
+    // 3DMMEx: If we are recording, AND our HaveSound flag
+    // 3DMMEx: is set, then we must have just finished, so
+    // 3DMMEx: process the data, and turn off the recording flag
+    // 3DMMEx: ------------------------------------
     if ((_fRecording) && (_fHaveSound))
     {
-        LPSOUND psnd = pvNil;     // original psnd
-        LPSOUND psndBias = pvNil; // psnd Bias correction filter
-        LPSOUND psndTrim = pvNil; // psnd Trim filter
+        LPSOUND psnd = pvNil;     // 3DMMEx: original psnd
+        LPSOUND psndBias = pvNil; // 3DMMEx: psnd Bias correction filter
+        LPSOUND psndTrim = pvNil; // 3DMMEx: psnd Trim filter
 
         _fRecording = fFalse;
         if (_wavehdr.dwBytesRecorded == 0)
@@ -217,15 +217,15 @@ void SREC::_UpdateStatus(void)
             return;
         }
 
-        // using the Audioman APIs, apply the gain and Trim filter, and save it back out
-        // to a different temp file.
+        // 3DMMEx: using the Audioman APIs, apply the gain and Trim filter, and save it back out
+        // 3DMMEx: to a different temp file.
         _wavehdr.dwBytesRecorded -=
             8 *
-            (_cchan * _cbSample); // chop off last 8 samples worth, since some audio cards put garbage on end of data
+            (_cchan * _cbSample); // 3DMMEx: chop off last 8 samples worth, since some audio cards put garbage on end of data
         _priff->Set(_cchan, _csampSec, _cbSample, _wavehdr.dwBytesRecorded);
 
-        // now use AudioMan API to load the temp file, apply a trim filter and place
-        // trimmed sound out to our temp file
+        // 3DMMEx: now use AudioMan API to load the temp file, apply a trim filter and place
+        // 3DMMEx: trimmed sound out to our temp file
         if (FAILED(AllocSoundFromMemory(&psnd, (LPBYTE)_priff, _priff->Cb())))
         {
             PushErc(ercOomNew);
@@ -236,46 +236,46 @@ void SREC::_UpdateStatus(void)
 
         if (FAILED(AllocBiasFilter(&psndBias, psnd)))
         {
-            // then just return the sound raw
+            // 3DMMEx: then just return the sound raw
             _psnd = psnd;
             return;
         }
 
-        // release the original sound, since it's now owned by the psndGain
+        // 3DMMEx: release the original sound, since it's now owned by the psndGain
         ReleasePpo(&psnd);
 
         if (FAILED(AllocTrimFilter(&_psnd, psndBias)))
         {
-            // then just return the sound with the bias filter on it...
+            // 3DMMEx: then just return the sound with the bias filter on it...
             _psnd = psndBias;
             return;
         }
-        // release the psndBias, since it's now owned by the psndTrim
+        // 3DMMEx: release the psndBias, since it's now owned by the psndTrim
         ReleasePpo(&psndBias);
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Figure out if we're recording or not
 ***************************************************************************/
 void SREC::_WaveInProc(HWAVEIN hwi, UINT uMsg, DWORD_PTR dwInstance, DWORD_PTR dwParam1, DWORD_PTR dwParam2)
 {
-    // the psrec pointer is a pointer to the class which generated the event and owns the device
+    // 3DMMEx: the psrec pointer is a pointer to the class which generated the event and owns the device
     SREC *psrec = (SREC *)dwInstance;
 
     switch (uMsg)
     {
     case WIM_DATA: {
-        // any time we get a block of data, we are done, we set our flag
-        // to true, allowing _UpdateStatus to notice that we are _fRecording and _fHaveSound
-        // at which point it will process the data...
+        // 3DMMEx: any time we get a block of data, we are done, we set our flag
+        // 3DMMEx: to true, allowing _UpdateStatus to notice that we are _fRecording and _fHaveSound
+        // 3DMMEx: at which point it will process the data...
         psrec->_fHaveSound = fTrue;
         psrec->_fBufferAdded = fFalse;
     }
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Start recording
 ***************************************************************************/
 bool SREC::FStart(void)
@@ -283,7 +283,7 @@ bool SREC::FStart(void)
     AssertThis(0);
     Assert(!_fRecording, "stop previous recording first");
 
-    // make sure we are open
+    // 3DMMEx: make sure we are open
     if (_fPlaying)
         FStop();
 
@@ -294,7 +294,7 @@ bool SREC::FStart(void)
     _fRecording = fFalse;
     _wavehdr.dwBytesRecorded = 0;
 
-    // now record data
+    // 3DMMEx: now record data
     if (waveInStart(_hwavein))
         return fFalse;
 
@@ -303,7 +303,7 @@ bool SREC::FStart(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Stop recording or playing
 ***************************************************************************/
 bool SREC::FStop(void)
@@ -311,25 +311,25 @@ bool SREC::FStop(void)
     AssertThis(0);
     Assert(_fRecording || _fPlaying, "Nothing to stop");
 
-    // if we are recording
+    // 3DMMEx: if we are recording
     if (_fRecording)
     {
-        // then stop the recording device
+        // 3DMMEx: then stop the recording device
         waveInStop(_hwavein);
     }
-    else if (_fPlaying) // if we are playing
+    else if (_fPlaying) // 3DMMEx: if we are playing
     {
-        // then stop the playing device
+        // 3DMMEx: then stop the playing device
         _pchannel->Stop();
     }
 
-    // update status accordingly
+    // 3DMMEx: update status accordingly
     _UpdateStatus();
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Start playing the current sound
 ***************************************************************************/
 bool SREC::FPlay(void)
@@ -337,21 +337,21 @@ bool SREC::FPlay(void)
     AssertThis(0);
     Assert(_fHaveSound, "No sound to play");
 
-    // open the _fniTrim file with MCI
+    // 3DMMEx: open the _fniTrim file with MCI
     _FCloseRecord();
 
     if (_psnd && _pchannel)
     {
-        vpsndm->StopAll();       // stop any outstanding bogus sounds from button pushs
-        vpsndm->Suspend(fFalse); // restore sound mgr
+        vpsndm->StopAll();       // 3DMMEx: stop any outstanding bogus sounds from button pushs
+        vpsndm->Suspend(fFalse); // 3DMMEx: restore sound mgr
 
-        _pchannel->Stop();             // stop our channel (should be nop)
-        _pchannel->SetSoundSrc(_psnd); // give it our sound
-        _pchannel->SetPosition(0);     // seek to the beginning
+        _pchannel->Stop();             // 3DMMEx: stop our channel (should be nop)
+        _pchannel->SetSoundSrc(_psnd); // 3DMMEx: give it our sound
+        _pchannel->SetPosition(0);     // 3DMMEx: seek to the beginning
 
-        if (FAILED(_pchannel->Play())) // play the sound
+        if (FAILED(_pchannel->Play())) // 3DMMEx: play the sound
         {
-            _UpdateStatus(); // this will check play status, and clean up accordingly
+            _UpdateStatus(); // 3DMMEx: this will check play status, and clean up accordingly
         }
         else
             _fPlaying = fTrue;
@@ -360,7 +360,7 @@ bool SREC::FPlay(void)
     return _fPlaying;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Are we recording?
 ***************************************************************************/
 bool SREC::FRecording(void)
@@ -371,7 +371,7 @@ bool SREC::FRecording(void)
     return _fRecording;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Are we playing the current sound?
 ***************************************************************************/
 bool SREC::FPlaying(void)
@@ -382,7 +382,7 @@ bool SREC::FPlaying(void)
     return _fPlaying;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Save the current sound to the given FNI
 ***************************************************************************/
 bool SREC::FSave(PFNI pfni)
@@ -396,7 +396,7 @@ bool SREC::FSave(PFNI pfni)
     {
         pfni->GetStnPath(&stn);
 
-        // now save _psnd to the FNI passed in
+        // 3DMMEx: now save _psnd to the FNI passed in
         SZS szs;
         stn.GetSzs(szs);
         if (FAILED(SoundToFileAsWave(_psnd, szs)))
@@ -410,7 +410,7 @@ bool SREC::FSave(PFNI pfni)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Assert the validity of the SREC.
 ***************************************************************************/
 void SREC::AssertValid(uint32_t grf)
@@ -420,7 +420,7 @@ void SREC::AssertValid(uint32_t grf)
     Assert(pvNil != _pchannel, "No Channel?");
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Mark memory used by the SREC
 ***************************************************************************/
 void SREC::MarkMem(void)
@@ -429,4 +429,4 @@ void SREC::MarkMem(void)
     MarkPv(_priff);
     SREC_PAR::MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     portfstub.cpp: Portfolio stub
 
@@ -12,7 +12,7 @@ bool FPortDisplayWithIds(FNI *pfni, bool fOpen, int32_t lFilterLabel, int32_t lF
 {
     Bug("Portfolio not implemented on this platform");
 
-    // Notify scripts that the portfolio was closed
+    // 3DMMEx: Notify scripts that the portfolio was closed
     vpcex->EnqueueCid(cidPortfolioClosed, 0, 0, fFalse);
     vpcex->EnqueueCid(cidPortfolioResult, 0, 0, fFalse);
 

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@
 
 #include "midistreamwin.h"
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Our fake midi stream class.
 ***************************************************************************/
 typedef class OMS *POMS;
@@ -39,12 +39,12 @@ class OMS : public OMS_PAR
     };
 
     MUTX _mutx;
-    HN _hevt; // event to notify the thread that the stream data has changed
-    HN _hth;  // thread to play the stream data
+    HN _hevt; // 3DMMEx: event to notify the thread that the stream data has changed
+    HN _hth;  // 3DMMEx: thread to play the stream data
 
-    std::atomic<bool> _fChanged; // the event has been signalled
-    std::atomic<bool> _fStop;    // tells the aux thread to stop all buffers
-    std::atomic<bool> _fDone;    // tells the aux thread to return
+    std::atomic<bool> _fChanged; // 3DMMEx: the event has been signalled
+    std::atomic<bool> _fStop;    // 3DMMEx: tells the aux thread to stop all buffers
+    std::atomic<bool> _fDone;    // 3DMMEx: tells the aux thread to return
 
     int32_t _imsbCur;
     PGL _pglmsb;
@@ -70,4 +70,4 @@ class OMS : public OMS_PAR
     virtual void StopPlaying(void) override;
 };
 
-#endif //! MIDISTREAMWINNT_H
+#endif //! 3DMMEx: MIDISTREAMWINNT_H

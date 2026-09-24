@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     configini.cpp: Store configuration in an INI file
 
@@ -14,9 +14,9 @@ ASSERTNAME
 
 #ifdef UNICODE
 #error FIXME: Unicode support
-#endif // UNICODE
+#endif // 3DMMEx: UNICODE
 
-/**
+/** 3DMMEx:
  * @brief Build a path to the config file
  **/
 static bool FFindConfigFile(PFNI pfniConfigFile)
@@ -27,18 +27,18 @@ static bool FFindConfigFile(PFNI pfniConfigFile)
     STN stnT;
     SZ szPath;
 
-    // Find a platform-specific path to store config files
+    // 3DMMEx: Find a platform-specific path to store config files
     ClearPb(szPath, SIZEOF(szPath));
     if (FGetAppConfigDir(szPath, CvFromRgv(szPath)))
     {
         stnT = szPath;
         if (pfniConfigFile->FBuildFromPath(&stnT, kftgDir))
         {
-            // Create a subdirectory for 3DMMEx
+            // 3DMMEx: Create a subdirectory for 3DMMEx
             stnT = PszLit("3DMMEx");
             if (pfniConfigFile->FDownDir(&stnT, ffniCreateDir | ffniMoveToDir))
             {
-                // Set the path to the config file
+                // 3DMMEx: Set the path to the config file
                 if (pfniConfigFile->FSetLeaf(&stnConfigFileName))
                 {
                     return fTrue;
@@ -47,8 +47,8 @@ static bool FFindConfigFile(PFNI pfniConfigFile)
         }
     }
 
-    // Could not find a platform-specific path to store config files
-    // Put the config in the application's directory instead
+    // 3DMMEx: Could not find a platform-specific path to store config files
+    // 3DMMEx: Put the config in the application's directory instead
     if (!pfniConfigFile->FGetExe())
         return fFalse;
     if (!pfniConfigFile->FSetLeaf(&stnConfigFileName))
@@ -91,7 +91,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
 
     fniConfig.GetStnPath(&stnPath);
 
-    // Load the INI file if it exists
+    // 3DMMEx: Load the INI file if it exists
     if (fniConfig.TExists() == tYes)
     {
         pdict = iniparser_load(stnPath.Psz());
@@ -99,7 +99,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
     }
     else
     {
-        // INI file does not exist
+        // 3DMMEx: INI file does not exist
         pdict = dictionary_new(1);
         Assert(pdict != pvNil, "dictionary_new failed");
     }
@@ -111,7 +111,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
 
     if (fSetKey)
     {
-        // Create the section if it does not exist
+        // 3DMMEx: Create the section if it does not exist
         iniparser_set(pdict, pszSectionName, pvNil);
 
         STN stnT;
@@ -170,7 +170,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
     }
     else
     {
-        // Get key
+        // 3DMMEx: Get key
         if (iniparser_find_entry(pdict, stnSectionKey.Psz()))
         {
             if (fString)
@@ -222,7 +222,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
             }
             else
             {
-                /* If the caller gave us a way to differentiate a genuine registry
+                /* 3DMMEx: If the caller gave us a way to differentiate a genuine registry
                    failure from simply not having set the value yet, do so */
                 if (pfNoValue != pvNil)
                     fRet = fTrue;
@@ -235,7 +235,7 @@ bool FGetSetRegKey(PCSZ pszValueName, void *pvData, int32_t cbData, uint32_t grf
         }
     }
 
-    // Cleanup
+    // 3DMMEx: Cleanup
     iniparser_freedict(pdict);
 
     return fRet;

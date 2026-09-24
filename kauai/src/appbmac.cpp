@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,17 +15,17 @@ ASSERTNAME
 
 uint32_t _GrfcustFromEvt(PEVT pevt);
 
-// by default grow the stack by 8K and call MoreMasters 10 times
+// 3DMMv1.0: by default grow the stack by 8K and call MoreMasters 10 times
 const int32_t _cbExtraStackDef = 0x2000L;
 const int32_t _cactMoreMastersDef = 10;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     main for the entire frame work app.  Does system initialization and
     calls FrameMain.
 ***************************************************************************/
 void __cdecl main(void)
 {
-    // Grow the stack and expand the heap. This MUST be done first!
+    // 3DMMv1.0: Grow the stack and expand the heap. This MUST be done first!
     if (pvNil == vpappb)
         APPB::_SetupHeap(_cbExtraStackDef, _cactMoreMastersDef);
     else
@@ -40,18 +40,18 @@ void __cdecl main(void)
     InitDialogs(pvNil);
     InitCursor();
 
-    // Go to the app's main entry point.
+    // 3DMMv1.0: Go to the app's main entry point.
     FrameMain();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to increase the stack size by cbExtraStack and call
     MoreMasters the specified number of times.
 ***************************************************************************/
 void APPB::_SetupHeap(int32_t cbExtraStack, int32_t cactMoreMasters)
 {
-    // This is called before any Mac OS stuff is initialized, so
-    // don't assert on anything.
+    // 3DMMv1.0: This is called before any Mac OS stuff is initialized, so
+    // 3DMMv1.0: don't assert on anything.
     static _fCalled = fFalse;
 
     if (_fCalled)
@@ -62,7 +62,7 @@ void APPB::_SetupHeap(int32_t cbExtraStack, int32_t cactMoreMasters)
 
     if (cbExtraStack > 0)
     {
-        // limit the increase to 100K
+        // 3DMMv1.0: limit the increase to 100K
         SetApplLimit(PvSubBv(GetApplLimit(), LwMin(cbExtraStack, 102400L)));
     }
     MaxApplZone();
@@ -70,19 +70,19 @@ void APPB::_SetupHeap(int32_t cbExtraStack, int32_t cactMoreMasters)
         MoreMasters();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Method to set up the heap.
 ***************************************************************************/
 void APPB::SetupHeap(void)
 {
-    // This is called before any Mac OS stuff is initialized, so
-    // don't assert on anything.
+    // 3DMMv1.0: This is called before any Mac OS stuff is initialized, so
+    // 3DMMv1.0: don't assert on anything.
 
-    // add 8K to the stack and call MoreMasters 10 times.
+    // 3DMMv1.0: add 8K to the stack and call MoreMasters 10 times.
     _SetupHeap(_cbExtraStackDef, _cactMoreMastersDef);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Shutdown immediately.
 ***************************************************************************/
 void APPB::Abort(void)
@@ -90,18 +90,18 @@ void APPB::Abort(void)
     ExitToShell();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do OS specific initialization.
 ***************************************************************************/
 bool APPB::_FInitOS(void)
 {
     AssertThis(0);
 
-    // we already initialized everything
+    // 3DMMv1.0: we already initialized everything
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open a desk accessory.
 ***************************************************************************/
 bool APPB::FCmdOpenDA(PCMD pcmd)
@@ -121,11 +121,11 @@ bool APPB::FCmdOpenDA(PCMD pcmd)
         OpenDeskAcc((uint8_t *)rgchs);
         SetPort(pprt);
     }
-    pcmd->cid = cidNil; // don't record this command
+    pcmd->cid = cidNil; // 3DMMv1.0: don't record this command
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next event from the OS.
 ***************************************************************************/
 bool APPB::_FGetNextEvt(EVT *pevt)
@@ -140,7 +140,7 @@ bool APPB::_FGetNextEvt(EVT *pevt)
     return pevt->what != nullEvent;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The given GOB is tracking the mouse.  See if there are any relevant
     mouse events in the system event queue.  Fill in *ppt with the location
     of the mouse relative to pgob. Also ensure that GrfcustCur() will
@@ -188,12 +188,12 @@ void APPB::TrackMouse(PGOB pgob, PT *ppt)
         case osEvt:
             if ((evt.message & 0xFF000000) == 0xFA000000)
             {
-                // mouse move
+                // 3DMMv1.0: mouse move
                 goto LDone;
             }
             if (evt.message & 0x01000000)
             {
-                // suspend or resume
+                // 3DMMv1.0: suspend or resume
                 Bug("How can this happen?");
                 if (evt.message & 0x00000001)
                     _ActivateApp(&evt);
@@ -210,7 +210,7 @@ LDone:
     pgob->MapPt(ppt, cooGlobal, cooLocal);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dispatch the OS level event to a translator.
 ***************************************************************************/
 void APPB::_DispatchEvt(EVT *pevt)
@@ -251,7 +251,7 @@ void APPB::_DispatchEvt(EVT *pevt)
     case osEvt:
         if (pevt->message & 0x01000000)
         {
-            // suspend or resume
+            // 3DMMv1.0: suspend or resume
             if (pevt->message & 0x00000001)
                 _ActivateApp(pevt);
             else
@@ -263,7 +263,7 @@ void APPB::_DispatchEvt(EVT *pevt)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dispatch an OS level mouse down event.
 ***************************************************************************/
 void APPB::_MouseDownEvt(EVT *pevt)
@@ -344,15 +344,15 @@ void APPB::_MouseDownEvt(EVT *pevt)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dispatch an OS level mouse up event.
 ***************************************************************************/
 void APPB::_MouseUpEvt(EVT *pevt)
 {
-    // Ignore mouse up events
+    // 3DMMv1.0: Ignore mouse up events
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Translate an OS level key down event to a CMD.  This returns false if
     the key maps to a menu item.
     //REVIEW shonk: resolve (ch, vk) differences between Mac and Win
@@ -377,7 +377,7 @@ bool APPB::_FTranslateKeyEvt(EVT *pevt, PCMD_KEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look at the next system event and if it's a key, fill in the *pcmd with
     the relevant info.
 ***************************************************************************/
@@ -403,7 +403,7 @@ bool APPB::FGetNextKeyFromOsQueue(PCMD_KEY pcmd)
     return _FTranslateKeyEvt(&evt, pcmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the grfcust for the given event.
 ***************************************************************************/
 uint32_t _GrfcustFromEvt(PEVT pevt)
@@ -424,7 +424,7 @@ uint32_t _GrfcustFromEvt(PEVT pevt)
     return grfcust;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dispatch an OS level update event.
 ***************************************************************************/
 void APPB::_UpdateEvt(EVT *pevt)
@@ -450,7 +450,7 @@ void APPB::_UpdateEvt(EVT *pevt)
     SetPort(pprtSav);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dispatch an OS level activate event.
 ***************************************************************************/
 void APPB::_ActivateEvt(EVT *pevt)
@@ -458,11 +458,11 @@ void APPB::_ActivateEvt(EVT *pevt)
     AssertThis(0);
     AssertVarMem(pevt);
 
-    // Tell the gob code that an hwnd is being activated or deactivated
+    // 3DMMv1.0: Tell the gob code that an hwnd is being activated or deactivated
     GOB::ActivateHwnd((HWND)pevt->message, pevt->modifiers & 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle an OS level disk event.
 ***************************************************************************/
 void APPB::_DiskEvt(EVT *pevt)
@@ -471,7 +471,7 @@ void APPB::_DiskEvt(EVT *pevt)
     AssertVarMem(pevt);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle activation of the app.
 ***************************************************************************/
 void APPB::_ActivateApp(EVT *pevt)
@@ -482,7 +482,7 @@ void APPB::_ActivateApp(EVT *pevt)
     _Activate(fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle deactivation of the app.
 ***************************************************************************/
 void APPB::_DeactivateApp(EVT *pevt)
@@ -493,7 +493,7 @@ void APPB::_DeactivateApp(EVT *pevt)
     _Activate(fFalse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle an OS level mouse moved event.
 ***************************************************************************/
 void APPB::_MouseMovedEvt(EVT *pevt)
@@ -502,7 +502,7 @@ void APPB::_MouseMovedEvt(EVT *pevt)
     AssertVarMem(pevt);
 }
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Standard alert resources
 ****************************************/
 enum
@@ -513,7 +513,7 @@ enum
     kridYesNoCancelAlert
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put an alert up.  Return which button was hit.  Returns tYes for yes
     or ok; tNo for no; tMaybe for cancel.
 ***************************************************************************/
@@ -530,7 +530,7 @@ bool APPB::TGiveAlertSz(PSZ psz, int32_t bk, int32_t cok)
     {
     default:
         BugVar("bad bk value", &bk);
-        // fall through
+        // 3DMMv1.0: fall through
     case bkOk:
         rid = kridOkAlert;
         break;
@@ -551,7 +551,7 @@ bool APPB::TGiveAlertSz(PSZ psz, int32_t bk, int32_t cok)
     default:
         BugVar("bad cok value", &cok);
         Debug(ParamText(stn.Pst(), (uchar *)"", (uchar *)"", (uchar *)"");)
-            // fall through
+            // 3DMMv1.0: fall through
             case cokNil : bid = Alert(rid, pvNil);
         break;
     case cokInformation:
@@ -584,7 +584,7 @@ const short kbidDebugger = 1;
 const short kbidIgnore = 2;
 const short kbidQuit = 3;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Debug initialization.
 ***************************************************************************/
 bool APPB::_FInitDebug(void)
@@ -592,7 +592,7 @@ bool APPB::_FInitDebug(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert proc.
     REVIEW shonk: Mac FAssertProcApp: flesh out and fix for unicode.
 ***************************************************************************/

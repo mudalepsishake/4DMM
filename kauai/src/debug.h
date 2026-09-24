@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -21,13 +21,10 @@ inline void Debugger(void)
 {
     DebugBreak();
 }
-#elif defined(__APPLE__)
-/* This has to be extern "C" to avoid a collision in MacTypes.h */
-extern "C" void Debugger(void);
 #else
-/* Defer to platform implementation */
+/* 3DMMEx: Defer to platform implementation */
 extern void Debugger(void);
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 
 #ifdef DEBUG
 bool FAssertProc(schar *pszsFile, int32_t lwLine, schar *pszsMsg, void *pv, int32_t cb);
@@ -51,7 +48,7 @@ void WarnProc(schar *pszsFile, int32_t lwLine, schar *pszsMsg);
 #define Debug(foo) foo
 #define DebugShip(dbg, shp) dbg
 
-// these Asserts are for use in a header file
+// 3DMMv1.0: these Asserts are for use in a header file
 #define AssertH(f)                                                                                                     \
     if (!(f) && FAssertProc(pvNil, __LINE__, pvNil, pvNil, 0))                                                         \
         Debugger();                                                                                                    \
@@ -59,7 +56,7 @@ void WarnProc(schar *pszsFile, int32_t lwLine, schar *pszsMsg);
         (void)(0)
 #define BugH() AssertH(fFalse)
 
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 
 #define ASSERTNAME
 #define Debugger()
@@ -76,13 +73,13 @@ void WarnProc(schar *pszsFile, int32_t lwLine, schar *pszsMsg);
 #define DebugShip(dbg, shp) shp
 #define AssertH(f)
 
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
 #define RawRtn() Bug("Unimplemented Code")
 #define NewCode() Bug("Untested Code")
 
-// Use this static assert to ensure structures that are part of the file format do not change in size
+// 3DMMEx: Use this static assert to ensure structures that are part of the file format do not change in size
 #define VERIFY_STRUCT_SIZE(STRUCT_NAME, STRUCT_SIZE)                                                                   \
     static_assert(sizeof(STRUCT_NAME) == STRUCT_SIZE, "Size of " #STRUCT_NAME " does not match file format");
 
-#endif //! DEBUG_H
+#endif //! 3DMMv1.0: DEBUG_H

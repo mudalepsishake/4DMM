@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tatr.h: Theater class
 
@@ -14,15 +14,15 @@
 #ifndef TATR_H
 #define TATR_H
 
-#ifdef DEBUG // Flags for TATR::AssertValid()
+#ifdef DEBUG // 3DMMv1.0: Flags for TATR::AssertValid()
 enum
 {
     ftatrNil = 0x0000,
     ftatrMvie = 0x0001,
 };
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/****************************************
+/** 3DMMv1.0: **************************************
     The theater class
 ****************************************/
 typedef class TATR *PTATR;
@@ -36,8 +36,8 @@ class TATR : public TATR_PAR
     CMD_MAP_DEC(TATR)
 
   protected:
-    int32_t _kidParent; // ID of gob parent of MVU
-    PMVIE _pmvie;       // Currently loaded movie
+    int32_t _kidParent; // 3DMMv1.0: ID of gob parent of MVU
+    PMVIE _pmvie;       // 3DMMv1.0: Currently loaded movie
 
   protected:
     TATR(int32_t hid) : CMH(hid)
@@ -60,4 +60,4 @@ class TATR : public TATR_PAR
     }
 };
 
-#endif // TATR_H
+#endif // 3DMMEx: TATR_H

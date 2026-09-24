@@ -1,0 +1,47 @@
+/* BRender:
+ * Copyright (c) 1993-1995 Argonaut Technologies Limited. All rights reserved.
+ *
+ * $Id: driver.c 1.1 1997/12/10 16:45:39 jon Exp $
+ * $Locker: $
+ *
+ * Driver interface functions
+ */
+#include <stddef.h>
+#include <string.h>
+
+#include "drv.h"
+#include "shortcut.h"
+#include "brassert.h"
+
+br_device *BR_EXPORT BrDrv1MCGABegin(const char *arguments)
+{
+    br_device *device;
+
+    /* BRender:
+     * Set up device
+     */
+    device = DeviceVGAAllocate("MCGA");
+
+    if(device == NULL)
+        return NULL;
+
+    /* BRender:
+     * Setup the output facility
+     */
+    if(OutputFacilityVGAAllocate(device, "MCGA", 0x13, 320, 200, 8, BR_PMT_INDEX_8, BR_TRUE) == NULL) {
+        /* BRender:
+         * If nothing is available, then don't admit to being a device
+         */
+        ObjectFree(device);
+        return NULL;
+    }
+
+    return device;
+}
+
+#ifdef DEFINE_BR_ENTRY_POINT
+br_device *BR_EXPORT BrDrv1Begin(const char *arguments)
+{
+    return BrDrv1MCGABegin(arguments);
+}
+#endif

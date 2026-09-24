@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -19,7 +19,7 @@
 #include "frame.h"
 #include "kiddef.h"
 
-// forward declarations
+// 3DMMv1.0: forward declarations
 typedef class WOKS *PWOKS;
 typedef class SCEG *PSCEG;
 typedef class GOK *PGOK;
@@ -32,4 +32,4 @@ typedef struct HTOP *PHTOP;
 #include "kidspace.h"
 #include "kidhelp.h"
 
-#endif //! KIDFRAME_H
+#endif //! 3DMMv1.0: KIDFRAME_H

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -27,7 +27,7 @@
 #include "frame.h"
 ASSERTNAME
 
-// command map shared by every command handler
+// 3DMMv1.0: command map shared by every command handler
 BEGIN_CMD_MAP_BASE(CMH)
 END_CMD_MAP_NIL()
 
@@ -36,11 +36,11 @@ RTCLASS(CEX)
 
 int32_t CMH::_hidLast;
 
-// Number of milliseconds to wait between repeat cidTrackMouse commands
+// 3DMMEx: Number of milliseconds to wait between repeat cidTrackMouse commands
 const int32_t kdtsTrackMouse = 10;
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CMD.
 ***************************************************************************/
 void CMD::AssertValid(uint32_t grf)
@@ -49,9 +49,9 @@ void CMD::AssertValid(uint32_t grf)
     AssertNilOrPo(pgg, 0);
     AssertNilOrPo(pcmh, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to return a hid (command handler ID) such that the numbers
     { hid, hid + 1, ... , hid + ccmh - 1 } are not currently in use and all
     have their high bit set. To avoid possible conflicts, hard-wired
@@ -85,7 +85,7 @@ int32_t CMH::HidUnique(int32_t ccmh)
     return _hidLast - (ccmh - 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a command handler - set the handler id.
 ***************************************************************************/
 CMH::CMH(int32_t hid)
@@ -95,7 +95,7 @@ CMH::CMH(int32_t hid)
     _hid = hid;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a command handler - purge any global references to it
     from the app. The app purges it from the command dispatcher.
 ***************************************************************************/
@@ -107,7 +107,7 @@ CMH::~CMH(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a CMH.
 ***************************************************************************/
 void CMH::AssertValid(uint32_t grf)
@@ -115,9 +115,9 @@ void CMH::AssertValid(uint32_t grf)
     CMH_PAR::AssertValid(0);
     Assert(_hid != hidNil, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Protected virtual function to find a CMME (command map entry) for the
     given command id.
 ***************************************************************************/
@@ -141,14 +141,14 @@ bool CMH::_FGetCmme(int32_t cid, uint32_t grfcmmWanted, CMME *pcmme)
             }
         }
 
-        // check for a default function
+        // 3DMMv1.0: check for a default function
         if (pcmmeT->pfncmd != pvNil && (pcmmeT->grfcmm & grfcmmWanted) && pcmmeDef == pvNil)
         {
             pcmmeDef = pcmmeT;
         }
     }
 
-    // no specific one found, return the default one
+    // 3DMMv1.0: no specific one found, return the default one
     if (pcmmeDef != pvNil)
     {
         *pcmme = *pcmmeDef;
@@ -157,7 +157,7 @@ bool CMH::_FGetCmme(int32_t cid, uint32_t grfcmmWanted, CMME *pcmme)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines whether this command handler can handle the given command. If
     not, returns false (and does nothing else). If so, executes the command
     and returns true.
@@ -187,7 +187,7 @@ bool CMH::FDoCmd(PCMD pcmd)
     return (this->*cmme.pfncmd)(pcmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines whether the command is enabled. If this command handler
     doesn't normally handle the command, this returns false (and does
     nothing else). Otherwise sets the grfeds and returns true.
@@ -222,7 +222,7 @@ bool CMH::FEnableCmd(PCMD pcmd, uint32_t *pgrfeds)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command dispatcher constructor.
 ***************************************************************************/
 CEX::CEX(void)
@@ -230,7 +230,7 @@ CEX::CEX(void)
     AssertBaseThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a CEX.
 ***************************************************************************/
 CEX::~CEX(void)
@@ -255,7 +255,7 @@ CEX::~CEX(void)
     ReleasePpo(&_cmdCur.pgg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new CEX object.
 ***************************************************************************/
 PCEX CEX::PcexNew(int32_t ccmdInit, int32_t ccmhInit)
@@ -274,7 +274,7 @@ PCEX CEX::PcexNew(int32_t ccmdInit, int32_t ccmhInit)
     return pcex;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialization of the command dispatcher.
 ***************************************************************************/
 bool CEX::_FInit(int32_t ccmdInit, int32_t ccmhInit)
@@ -293,7 +293,7 @@ bool CEX::_FInit(int32_t ccmdInit, int32_t ccmhInit)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start recording a macro to the given chunky file.
 ***************************************************************************/
 void CEX::Record(PCFL pcfl)
@@ -326,7 +326,7 @@ void CEX::Record(PCFL pcfl)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop recording a command stream, and write the command stream to
     file. If there were any errors, delete the command stream from the
     chunky file. Pushes a command notifying the world that recording
@@ -348,7 +348,7 @@ void CEX::StopRecording(void)
 
         if (_cact > 1)
         {
-            // rewrite the last one's _cact
+            // 3DMMv1.0: rewrite the last one's _cact
             CMDF cmdf;
 
             _pglcmdf->Get(_icmdf, &cmdf);
@@ -385,7 +385,7 @@ void CEX::StopRecording(void)
     PushCid(cidCexRecordDone, pvNil, pvNil, _rec, _cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Record a command.
 ***************************************************************************/
 void CEX::RecordCmd(PCMD pcmd)
@@ -402,27 +402,27 @@ void CEX::RecordCmd(PCMD pcmd)
     {
         if (_cmd.pgg == pvNil && FEqualRgb(pcmd, &_cmd, SIZEOF(_cmd)))
         {
-            // commands are the same, just increment the _cact
+            // 3DMMv1.0: commands are the same, just increment the _cact
             if (pcmd->cid < cidMinNoRepeat || pcmd->cid >= cidLimNoRepeat)
                 _cact++;
             return;
         }
 
-        // new command is not the same as the previous one
+        // 3DMMv1.0: new command is not the same as the previous one
         if (_cact > 1)
         {
-            // rewrite the previous one's _cact
+            // 3DMMv1.0: rewrite the previous one's _cact
             _pglcmdf->Get(_icmdf, &cmdf);
             cmdf.cact = _cact;
             _pglcmdf->Put(_icmdf, &cmdf);
         }
 
-        // increment _icmdf
+        // 3DMMv1.0: increment _icmdf
         _icmdf++;
         _cact = 0;
     }
 
-    // fill in the cmdf and save it in the list
+    // 3DMMv1.0: fill in the cmdf and save it in the list
     cmdf.cid = pcmd->cid;
     cmdf.hid = pcmd->pcmh == pvNil ? hidNil : pcmd->pcmh->Hid();
     cmdf.cact = 1;
@@ -431,12 +431,12 @@ void CEX::RecordCmd(PCMD pcmd)
 
     if (!_pglcmdf->FInsert(_icmdf, &cmdf))
     {
-        // out of memory
+        // 3DMMv1.0: out of memory
         _rec = recMemError;
         return;
     }
 
-    // write the group and make it a child of the macro
+    // 3DMMv1.0: write the group and make it a child of the macro
     if (pvNil != pcmd->pgg)
     {
         BLCK blck;
@@ -461,7 +461,7 @@ void CEX::RecordCmd(PCMD pcmd)
     _cmd = *pcmd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Play back the command stream starting in the given pcfl with the given
     cno.
 ***************************************************************************/
@@ -499,7 +499,7 @@ void CEX::Play(PCFL pcfl, CNO cno)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop play back of a command stream. Pushes a command notifying the
     world that play back has stopped. The command (cidCexPlayDone) contains
     the error code (rec), and cno in the first two lw's of the command.
@@ -521,7 +521,7 @@ void CEX::StopPlaying(void)
     ReleasePpo(&_pglcmdf);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the next command.
 ***************************************************************************/
 bool CEX::_FReadCmd(PCMD pcmd)
@@ -534,7 +534,7 @@ bool CEX::_FReadCmd(PCMD pcmd)
 
     if (_cact > 0)
     {
-        // this command is being repeated
+        // 3DMMv1.0: this command is being repeated
         *pcmd = _cmd;
         _cact--;
         return fTrue;
@@ -558,7 +558,7 @@ bool CEX::_FReadCmd(PCMD pcmd)
 
         Assert(cmdf.cact <= 1, 0);
 
-        // read the gg
+        // 3DMMv1.0: read the gg
         if (!_pcfl->FGetKidChidCtg(kctgMacro, _cno, cmdf.chidGg, kctgGg, &kid) ||
             !_pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck) || pvNil == (pcmd->pgg = GG::PggRead(&blck, &bo, &osk)))
         {
@@ -567,7 +567,7 @@ bool CEX::_FReadCmd(PCMD pcmd)
         }
         if (bo != kboCur || osk != koskCur)
         {
-            // don't know how to change byte order or translate strings
+            // 3DMMv1.0: don't know how to change byte order or translate strings
             ReleasePpo(&pcmd->pgg);
             _rec = recWrongPlatform;
             goto LStop;
@@ -580,13 +580,13 @@ bool CEX::_FReadCmd(PCMD pcmd)
         _cmd = *pcmd;
     return fTrue;
 
-    // error handling
+    // 3DMMv1.0: error handling
 LStop:
     StopPlaying();
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine whether it's OK to communicate with the CMH. Default is to
     return true iff there is no current modal gob or the cmh is not a gob
     or it is a gob in the tree of the modal gob.
@@ -608,7 +608,7 @@ bool CEX::_FCmhOk(PCMH pcmh)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a command handler to the filter list. These command handlers get
     a crack at every command whether or not it is for them. grfcmm
     determines which targets the handler will see commands for (as in
@@ -626,7 +626,7 @@ bool CEX::FAddCmh(PCMH pcmh, int32_t cmhl, uint32_t grfcmm)
 
     if (fcmmNil == (grfcmm & kgrfcmmAll))
     {
-        // no sense adding this
+        // 3DMMv1.0: no sense adding this
         Bug("why is grfcmm nil?");
         return fFalse;
     }
@@ -645,7 +645,7 @@ bool CEX::FAddCmh(PCMH pcmh, int32_t cmhl, uint32_t grfcmm)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Removes the the handler (at the given cmhl level) from the handler list.
 ***************************************************************************/
 void CEX::RemoveCmh(PCMH pcmh, int32_t cmhl)
@@ -673,7 +673,7 @@ void CEX::RemoveCmh(PCMH pcmh, int32_t cmhl)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove all references to the handler from the command dispatcher,
     including from the handler list and the command queue.
 ***************************************************************************/
@@ -707,7 +707,7 @@ void CEX::BuryCmh(PCMH pcmh)
                 Bug(SDL_GetError());
             }
         }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
         _pgobTrack = pvNil;
     }
     if (_cmdCur.pcmh == pcmh)
@@ -740,7 +740,7 @@ void CEX::BuryCmh(PCMH pcmh)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the first item with the given cmhl in the handler list. If there
     aren't any, still sets *picmhe to where they would be.
 ***************************************************************************/
@@ -765,7 +765,7 @@ bool CEX::_FFindCmhl(int32_t cmhl, int32_t *picmhe)
     return icmheMin < _pglcmhe->IvMac() && qrgcmhe[icmheMin].cmhl == cmhl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds a command to the tail of the queue.
 ***************************************************************************/
 void CEX::EnqueueCid(int32_t cid, PCMH pcmh, PGG pgg, int32_t lw0, int32_t lw1, int32_t lw2, int32_t lw3)
@@ -785,7 +785,7 @@ void CEX::EnqueueCid(int32_t cid, PCMH pcmh, PGG pgg, int32_t lw0, int32_t lw1, 
     EnqueueCmd(&cmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pushes a command onto the head of the queue.
 ***************************************************************************/
 void CEX::PushCid(int32_t cid, PCMH pcmh, PGG pgg, int32_t lw0, int32_t lw1, int32_t lw2, int32_t lw3)
@@ -805,7 +805,7 @@ void CEX::PushCid(int32_t cid, PCMH pcmh, PGG pgg, int32_t lw0, int32_t lw1, int
     PushCmd(&cmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds a command to the tail of the queue. This asserts if it can't add
     it to the queue. Clients should make sure that the value of ccmdInit
     passed to PcexNew is large enough to handle the busiest session.
@@ -824,10 +824,10 @@ void CEX::EnqueueCmd(PCMD pcmd)
 #ifdef DEBUG
     if (_ccmdMax < _pglcmd->IvMac())
         _ccmdMax = _pglcmd->IvMac();
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Pushes a command onto the head of the queue. This asserts if it can't
     add it to the queue. Clients should make sure that the value of ccmdInit
     passed to PcexNew is large enough to handle the busiest session.
@@ -846,10 +846,10 @@ void CEX::PushCmd(PCMD pcmd)
 #ifdef DEBUG
     if (_ccmdMax < _pglcmd->IvMac())
         _ccmdMax = _pglcmd->IvMac();
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Checks if a cid is in the queue.
 ***************************************************************************/
 bool CEX::FCidIn(int32_t cid)
@@ -870,7 +870,7 @@ bool CEX::FCidIn(int32_t cid)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Flushes all instances of a cid in the queue.
 ***************************************************************************/
 void CEX::FlushCid(int32_t cid)
@@ -892,7 +892,7 @@ void CEX::FlushCid(int32_t cid)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the next command to be dispatched (put it in _cmdCur). Return tYes
     if there was a command and it should be dispatched. Return tNo if there
     wasn't a command (if the system queue should be checked). Return tMaybe
@@ -903,7 +903,7 @@ tribool CEX::_TGetNextCmd(void)
 {
     AssertThis(0);
 
-    // get the next command from the command stream
+    // 3DMMv1.0: get the next command from the command stream
     if (!_pglcmd->FPop(&_cmdCur))
     {
         ClearPb(&_cmdCur, SIZEOF(_cmdCur));
@@ -923,12 +923,12 @@ tribool CEX::_TGetNextCmd(void)
 
         if (!vpappb->FForeground())
         {
-            // if we're not in the foreground, toggle the state of
-            // fcustMouse repeatedly. Most of the time, this will cause
-            // the client to stop tracking the mouse. Clients
-            // whose tracking state depends on something other than
-            // the mouse state should call vpappb->FForeground() to
-            // determine if tracking should be aborted.
+            // 3DMMv1.0: if we're not in the foreground, toggle the state of
+            // 3DMMv1.0: fcustMouse repeatedly. Most of the time, this will cause
+            // 3DMMv1.0: the client to stop tracking the mouse. Clients
+            // 3DMMv1.0: whose tracking state depends on something other than
+            // 3DMMv1.0: the mouse state should call vpappb->FForeground() to
+            // 3DMMv1.0: determine if tracking should be aborted.
             static bool _fDown;
 
             _fDown = !_fDown;
@@ -938,7 +938,7 @@ tribool CEX::_TGetNextCmd(void)
                 pcmd->grfcust &= ~fcustMouse;
         }
 
-        // Check if we need to dispatch this message
+        // 3DMMEx: Check if we need to dispatch this message
         int32_t tsNow = TsCurrentSystem();
         bool fEqualLastTrack = FEqualRgb(&_cmdCur, &_cmdLastTrack, SIZEOF(_cmdLastTrack));
         if (fEqualLastTrack && ((tsNow - _tsLastTrack) < kdtsTrackMouse))
@@ -954,15 +954,15 @@ tribool CEX::_TGetNextCmd(void)
     }
     AssertPo(&_cmdCur, 0);
 
-    // handle playing and recording
+    // 3DMMv1.0: handle playing and recording
     if (rsPlaying == _rs)
     {
-        // We're playing back. Throw away the incoming command and play
-        // one from the stream.
+        // 3DMMv1.0: We're playing back. Throw away the incoming command and play
+        // 3DMMv1.0: one from the stream.
         ReleasePpo(&_cmdCur.pgg);
 
-        // let a cidCexStopPlay go through and handle it at the end.
-        // this is so a cmh can intercept it.
+        // 3DMMv1.0: let a cidCexStopPlay go through and handle it at the end.
+        // 3DMMv1.0: this is so a cmh can intercept it.
         if (_cmdCur.cid != cidCexStopPlay && !_FReadCmd(&_cmdCur))
             return tMaybe;
     }
@@ -977,7 +977,7 @@ tribool CEX::_TGetNextCmd(void)
     return tYes;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Send the command (_cmdCur) to the given command handler.
 ***************************************************************************/
 bool CEX::_FSendCmd(PCMH pcmh)
@@ -990,26 +990,26 @@ bool CEX::_FSendCmd(PCMH pcmh)
     return pcmh->FDoCmd(&_cmdCur);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle post processing on the command - record it if we're recording,
     free the pgg, etc.
 ***************************************************************************/
 void CEX::_CleanUpCmd(void)
 {
-    // If the handler went away during command dispatching, we should
-    // have heard about it (via BuryCmh) and should have set _cmdCur.pcmh
-    // to nil.
+    // 3DMMv1.0: If the handler went away during command dispatching, we should
+    // 3DMMv1.0: have heard about it (via BuryCmh) and should have set _cmdCur.pcmh
+    // 3DMMv1.0: to nil.
     AssertNilOrPo(_cmdCur.pcmh, 0);
 
-    // record the command after dispatching, in case arguments got added
-    // or the cid was set to nil.
+    // 3DMMv1.0: record the command after dispatching, in case arguments got added
+    // 3DMMv1.0: or the cid was set to nil.
     if (rsRecording == _rs && !FIn(_cmdCur.cid, cidMinNoRecord, cidLimNoRecord) && cidNil != _cmdCur.cid &&
         cidCexStopRec != _cmdCur.cid)
     {
         RecordCmd(&_cmdCur);
     }
 
-    // check for a stop record or stop play command
+    // 3DMMv1.0: check for a stop record or stop play command
     if (rsNormal != _rs)
     {
         if (cidCexStopPlay == _cmdCur.cid && rsPlaying == _rs)
@@ -1021,7 +1021,7 @@ void CEX::_CleanUpCmd(void)
     ReleasePpo(&_cmdCur.pgg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If there is a command in the queue, this dispatches it and returns
     true. If there aren't any commands in the queue, it simply returns
     false. If a gob is tracking the mouse and the queue is empty, a
@@ -1052,7 +1052,7 @@ bool CEX::FDispatchNextCmd(void)
         return tRet != tNo;
     }
 
-    // pipe it through the command handlers, then to the target
+    // 3DMMv1.0: pipe it through the command handlers, then to the target
     fHandled = fFalse;
     for (_icmheNext = 0; _icmheNext < _pglcmhe->IvMac() && !fHandled;)
     {
@@ -1085,7 +1085,7 @@ bool CEX::FDispatchNextCmd(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Give the handler a crack at enabling/disabling the command.
 ***************************************************************************/
 bool CEX::_FEnableCmd(PCMH pcmh, PCMD pcmd, uint32_t *pgrfeds)
@@ -1100,7 +1100,7 @@ bool CEX::_FEnableCmd(PCMH pcmh, PCMD pcmd, uint32_t *pgrfeds)
     return pcmh->FEnableCmd(pcmd, pgrfeds);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines whether the given command is currently enabled. This is
     normally used for menu graying/checking etc and toolbar enabling/status.
 ***************************************************************************/
@@ -1112,7 +1112,7 @@ uint32_t CEX::GrfedsForCmd(PCMD pcmd)
     CMHE cmhe;
     uint32_t grfeds;
 
-    // pipe it through the command handlers, then to the target
+    // 3DMMv1.0: pipe it through the command handlers, then to the target
     for (icmhe = 0, ccmhe = _pglcmhe->IvMac(); icmhe < ccmhe; icmhe++)
     {
         _pglcmhe->Get(icmhe, &cmhe);
@@ -1128,7 +1128,7 @@ uint32_t CEX::GrfedsForCmd(PCMD pcmd)
             goto LDone;
     }
 
-    // handle the CEX commands
+    // 3DMMv1.0: handle the CEX commands
     switch (pcmd->cid)
     {
     case cidCexStopRec:
@@ -1148,7 +1148,7 @@ LDone:
     return grfeds;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines whether the given command is currently enabled. This is
     normally used for menu graying/checking etc and toolbar enabling/status.
 ***************************************************************************/
@@ -1170,7 +1170,7 @@ uint32_t CEX::GrfedsForCid(int32_t cid, PCMH pcmh, PGG pgg, int32_t lw0, int32_t
     return GrfedsForCmd(&cmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the next command is a key command and if so, put it in *pcmd
     (and remove it from the queue).
 ***************************************************************************/
@@ -1184,7 +1184,7 @@ bool CEX::FGetNextKey(PCMD pcmd)
         goto LFail;
     if ((iv = _pglcmd->IvMac()) > 0)
     {
-        // get next cmd
+        // 3DMMv1.0: get next cmd
         _pglcmd->Get(iv - 1, pcmd);
         if (pcmd->cid == cidKey)
         {
@@ -1199,7 +1199,7 @@ bool CEX::FGetNextKey(PCMD pcmd)
     return vpappb->FGetNextKeyFromOsQueue((PCMD_KEY)pcmd);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The given GOB wants to track the mouse.
 ***************************************************************************/
 void CEX::TrackMouse(PGOB pgob)
@@ -1221,13 +1221,13 @@ void CEX::TrackMouse(PGOB pgob)
     {
         Warn(SDL_GetError());
     }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 
     _tsLastTrack = 0;
     _cmdLastTrack.cid = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Stop tracking the mouse.
 ***************************************************************************/
 void CEX::EndMouseTracking(void)
@@ -1252,11 +1252,11 @@ void CEX::EndMouseTracking(void)
     }
 #else
     RawRtn();
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
     _pgobTrack = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the gob that is tracking the mouse.
 ***************************************************************************/
 PGOB CEX::PgobTracking(void)
@@ -1265,7 +1265,7 @@ PGOB CEX::PgobTracking(void)
     return _pgobTrack;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Suspend or resume the command dispatcher. All this does is
     release (capture) the mouse if we're current tracking the mouse and
     we're being suspended (resumed).
@@ -1296,10 +1296,10 @@ void CEX::Suspend(bool fSuspend)
             SDL_CaptureMouse(SDL_TRUE);
         }
     }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the modal GOB.
 ***************************************************************************/
 void CEX::SetModalGob(PGOB pgob)
@@ -1311,7 +1311,7 @@ void CEX::SetModalGob(PGOB pgob)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the command dispatcher
 ***************************************************************************/
 void CEX::AssertValid(uint32_t grf)
@@ -1324,7 +1324,7 @@ void CEX::AssertValid(uint32_t grf)
     AssertNilOrPo(_cmdCur.pgg, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark the memory associated with the command dispatcher.
 ***************************************************************************/
 void CEX::MarkMem(void)
@@ -1346,4 +1346,4 @@ void CEX::MarkMem(void)
             MarkMemObj(cmd.pgg);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

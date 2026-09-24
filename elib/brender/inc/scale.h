@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: scale.h 1.2 1995/02/22 21:37:23 sam Exp $
@@ -10,7 +10,7 @@
 void BR_PUBLIC_ENTRY BrScaleBegin(void);
 void BR_PUBLIC_ENTRY BrScaleEnd(void);
 
-/*
+/* BRender:
  * scale pixelmap src to new_x,new_y with filter width fwidth
  * src must be BR_PMT_RGB_888
  */

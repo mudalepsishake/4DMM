@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -16,8 +16,8 @@
 #ifndef SNDAM_H
 #define SNDAM_H
 
-// allowable formats for the audioman device
-// WARNING: code assumes that (kwav*16 - kwav*8) is constant!
+// 3DMMv1.0: allowable formats for the audioman device
+// 3DMMv1.0: WARNING: code assumes that (kwav*16 - kwav*8) is constant!
 enum
 {
     kwav11M8,
@@ -35,7 +35,7 @@ enum
     kwavLim
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Audioman sound device class.
 ***************************************************************************/
 typedef class SDAM *PSDAM;
@@ -56,7 +56,7 @@ class SDAM : public SDAM_PAR
     SDAM(void);
     virtual bool _FInit(int32_t wav);
 
-    // inherited methods
+    // 3DMMv1.0: inherited methods
     virtual PSNQUE _PsnqueNew(void) override;
     virtual void _Suspend(bool fSuspend) override;
 
@@ -72,4 +72,4 @@ class SDAM : public SDAM_PAR
     virtual void EndSynch(void) override;
 };
 
-#endif //! SNDAM_H
+#endif //! 3DMMv1.0: SNDAM_H

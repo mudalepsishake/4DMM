@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -109,12 +109,12 @@
 #include "codkpri.h"
 ASSERTNAME
 
-// REVIEW shonk: should we turn on _Safety?
+// 3DMMv1.0: REVIEW shonk: should we turn on _Safety?
 #define SAFETY
 
 RTCLASS(KCDC)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Encode or decode a block.
 ***************************************************************************/
 bool KCDC::FConvert(bool fEncode, int32_t cfmt, void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int32_t *pcbDst)
@@ -143,7 +143,7 @@ bool KCDC::FConvert(bool fEncode, int32_t cfmt, void *pvSrc, int32_t cbSrc, void
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Bit array class - for writing the compressed data.
 ***************************************************************************/
 class BITA
@@ -169,7 +169,7 @@ class BITA
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the buffer to write to.
 ***************************************************************************/
 void BITA::Set(void *pvDst, int32_t cbDst)
@@ -181,14 +181,14 @@ void BITA::Set(void *pvDst, int32_t cbDst)
     _ibit = _ib = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write some bits.
 ***************************************************************************/
 bool BITA::FWriteBits(uint32_t lu, int32_t cbit)
 {
     int32_t cb;
 
-    // store the partial byte
+    // 3DMMv1.0: store the partial byte
     if (_ibit > 0)
     {
         AssertIn(_ib, 0, _cb);
@@ -227,7 +227,7 @@ bool BITA::FWriteBits(uint32_t lu, int32_t cbit)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the value logarithmically encoded.
 ***************************************************************************/
 bool BITA::FWriteLogEncoded(uint32_t lu)
@@ -245,7 +245,7 @@ bool BITA::FWriteLogEncoded(uint32_t lu)
     return FWriteBits(lu << 1, cbit + 1);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compress the data in pvSrc using the KCDC encoding.  Returns false if
     the data can't be compressed. This is not optimized (ie, it's slow).
 ***************************************************************************/
@@ -270,7 +270,7 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
     if (cbDst - kcbTailKcdc <= 1)
         return fFalse;
 
-    // allocate the links
+    // 3DMMv1.0: allocate the links
     if (!FAllocPv((void **)&pmpibibNext, LwMul(SIZEOF(int32_t), cbSrc), fmemNil, mprNormal) ||
         !FAllocPv((void **)&pmpsuibStart, LwMul(SIZEOF(int32_t), 0x10000), fmemNil, mprNormal))
     {
@@ -278,9 +278,9 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
         goto LFail;
     }
 
-    // write the links
-    // we need to set each entry of pmpsuibStart to a big negative number,
-    // but not too big, or we risk overflow below.
+    // 3DMMv1.0: write the links
+    // 3DMMv1.0: we need to set each entry of pmpsuibStart to a big negative number,
+    // 3DMMv1.0: but not too big, or we risk overflow below.
     FillPb(pmpsuibStart, LwMul(SIZEOF(int32_t), 0x10000), 0xCC);
     for (ibSrc = 0; ibSrc < cbSrc - 1; ibSrc++)
     {
@@ -292,7 +292,7 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
     pmpibibNext[cbSrc - 1] = 0xCCCCCCCCL;
     FreePpv((void **)&pmpsuibStart);
 
-    // write flags byte
+    // 3DMMv1.0: write flags byte
     bita.Set(pvDst, cbDst);
     AssertDo(bita.FWriteBits(0, 8), 0);
 
@@ -301,18 +301,18 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
         uint8_t *pbMatch;
         int32_t cbMaxMatch;
 
-        // get the new byte and the link
+        // 3DMMv1.0: get the new byte and the link
         ibTest = pmpibibNext[ibSrc];
         Assert(ibTest < ibSrc, 0);
 
-        // assume we'll store a literal
+        // 3DMMv1.0: assume we'll store a literal
         cbMatch = 1;
         ibMatch = ibSrc;
 
         if (ibTest <= (ibMin = ibSrc - kdibMinKcdc4))
             goto LStore;
 
-        // we've seen this byte pair before - look for the longest match
+        // 3DMMv1.0: we've seen this byte pair before - look for the longest match
         cbMaxMatch = LwMin(kcbMaxLenKcdc, cbSrc - ibSrc);
         pbMatch = prgbSrc + ibSrc;
         bMatchNew = prgbSrc[ibSrc + 1];
@@ -329,8 +329,8 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
 
             AssertIn(cbT, cbMatch + 1, kcbMaxLenKcdc + 1);
 
-            // if this run requires a 20 bit offset, we need to beat a
-            // 9 or 6 bit offset by 2 bytes
+            // 3DMMv1.0: if this run requires a 20 bit offset, we need to beat a
+            // 3DMMv1.0: 9 or 6 bit offset by 2 bytes
             if (ibSrc - ibTest < kdibMinKcdc3 || cbT - cbMatch > 1 || ibSrc - ibMatch >= kdibMinKcdc2)
             {
                 cbMatch = cbT;
@@ -344,20 +344,20 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
             Assert(pmpibibNext[ibTest] < ibTest, 0);
         }
 
-        // write out the bits
+        // 3DMMv1.0: write out the bits
     LStore:
         AssertIn(ibMatch, 0, ibSrc + (cbMatch == 1));
         AssertIn(cbMatch, 1 + (ibMatch < ibSrc) + (ibSrc - ibMatch >= kdibMinKcdc3), kcbMaxLenKcdc + 1);
 
         if (cbMatch == 1)
         {
-            // literal
+            // 3DMMv1.0: literal
             if (!bita.FWriteBits((uint32_t)prgbSrc[ibSrc] << 1, 9))
                 goto LFail;
         }
         else
         {
-            // find the offset
+            // 3DMMv1.0: find the offset
             uint32_t luCode, luLen;
             int32_t cbit;
 
@@ -365,25 +365,25 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
             luLen = cbMatch - 1;
             if (luCode < kdibMinKcdc1)
             {
-                // 6 bit offset
+                // 3DMMv1.0: 6 bit offset
                 cbit = 2 + kcbitKcdc0;
                 luCode = ((luCode - kdibMinKcdc0) << 2) | 1;
             }
             else if (luCode < kdibMinKcdc2)
             {
-                // 9 bit offset
+                // 3DMMv1.0: 9 bit offset
                 cbit = 3 + kcbitKcdc1;
                 luCode = ((luCode - kdibMinKcdc1) << 3) | 0x03;
             }
             else if (luCode < kdibMinKcdc3)
             {
-                // 12 bit offset
+                // 3DMMv1.0: 12 bit offset
                 cbit = 4 + kcbitKcdc2;
                 luCode = ((luCode - kdibMinKcdc2) << 4) | 0x07;
             }
             else
             {
-                // 20 bit offset
+                // 3DMMv1.0: 20 bit offset
                 Assert(luCode < kdibMinKcdc4, 0);
                 cbit = 4 + kcbitKcdc3;
                 luCode = ((luCode - kdibMinKcdc3) << 4) | 0x0F;
@@ -400,11 +400,11 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
         }
     }
 
-    // fill the remainder of the last byte with 1's
+    // 3DMMv1.0: fill the remainder of the last byte with 1's
     if (bita.Ibit() > 0)
         AssertDo(bita.FWriteBits(0xFF, 8 - bita.Ibit()), 0);
 
-    // write the tail (kcbTailKcdc bytes of FF)
+    // 3DMMv1.0: write the tail (kcbTailKcdc bytes of FF)
     for (cbT = 0; cbT < kcbTailKcdc; cbT += SIZEOF(int32_t))
     {
         if (!bita.FWriteBits(0xFFFFFFFF, LwMin(SIZEOF(int32_t), kcbTailKcdc - cbT) << 3))
@@ -419,12 +419,12 @@ bool KCDC::_FEncode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
     return fTrue;
 
 LFail:
-    // can't compress the source
+    // 3DMMv1.0: can't compress the source
     FreePpv((void **)&pmpibibNext);
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decompress a compressed KCDC stream.
 ***************************************************************************/
 bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int32_t *pcbDst)
@@ -446,8 +446,8 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
         return fFalse;
     }
 
-    // verify that the last kcbTailKcdc bytes are FF.  This guarantees that
-    // we won't run past the end of the source.
+    // 3DMMv1.0: verify that the last kcbTailKcdc bytes are FF.  This guarantees that
+    // 3DMMv1.0: we won't run past the end of the source.
     for (ib = 0; ib++ < kcbTailKcdc;)
     {
         if (((uint8_t *)pvSrc)[cbSrc - ib] != 0xFF)
@@ -471,7 +471,7 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
     *pcbDst = cbTot;
     return fTrue;
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     int32_t cb, dib, ibit, cbit;
     uint32_t luCur;
@@ -483,9 +483,9 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
 #define _FTest(ibit) (luCur & (1L << (ibit)))
 #ifdef LITTLE_ENDIAN
 #define _Advance(cb) ((pbSrc += (cb)), (luCur = *(uint32_t *)(pbSrc - 4)))
-#else //! LITTLE_ENDIAN
+#else //! 3DMMv1.0: LITTLE_ENDIAN
 #define _Advance(cb) ((pbSrc += (cb)), (luCur = LwFromBytes(pbSrc[-1], pbSrc[-2], pbSrc[-3], pbSrc[-4])))
-#endif //! LITTLE_ENDIAN
+#endif //! 3DMMv1.0: LITTLE_ENDIAN
 
     _Advance(4);
 
@@ -493,17 +493,17 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
     {
         if (!_FTest(ibit))
         {
-            // literal
+            // 3DMMv1.0: literal
 #ifdef SAFETY
             if (pbDst >= pbLimDst)
                 goto LFail;
-#endif // SAFETY
+#endif // 3DMMv1.0: SAFETY
             *pbDst++ = (uint8_t)(luCur >> (ibit + 1));
             ibit += 9;
         }
         else
         {
-            // get the offset
+            // 3DMMv1.0: get the offset
             cb = 1;
             if (!_FTest(ibit + 1))
             {
@@ -532,7 +532,7 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
             _Advance(ibit >> 3);
             ibit &= 0x07;
 
-            // get the length
+            // 3DMMv1.0: get the length
             for (cbit = 0;;)
             {
                 if (!_FTest(ibit + cbit))
@@ -547,7 +547,7 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
 #ifdef SAFETY
             if (pbLimDst - pbDst < cb || pbDst - (uint8_t *)pvDst < dib)
                 goto LFail;
-#endif // SAFETY
+#endif // 3DMMv1.0: SAFETY
             for (pbT = pbDst - dib; cb-- > 0;)
                 *pbDst++ = *pbT++;
         }
@@ -561,14 +561,14 @@ bool KCDC::_FDecode(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int3
 #undef _FTest
 #undef _Advance
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 
 LFail:
     Bug("bad compressed data");
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Compress the data in pvSrc using the KCD2 encoding.  Returns false if
     the data can't be compressed. This is not optimized (ie, it's slow).
 ***************************************************************************/
@@ -594,7 +594,7 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
     if (cbDst - kcbTailKcdc <= 1)
         return fFalse;
 
-    // allocate the links
+    // 3DMMv1.0: allocate the links
     if (!FAllocPv((void **)&pmpibibNext, LwMul(SIZEOF(int32_t), cbSrc), fmemNil, mprNormal) ||
         !FAllocPv((void **)&pmpsuibStart, LwMul(SIZEOF(int32_t), 0x10000), fmemNil, mprNormal))
     {
@@ -602,9 +602,9 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
         goto LFail;
     }
 
-    // write the links
-    // we need to set each entry of pmpsuibStart to a big negative number,
-    // but not too big, or we risk overflow below.
+    // 3DMMv1.0: write the links
+    // 3DMMv1.0: we need to set each entry of pmpsuibStart to a big negative number,
+    // 3DMMv1.0: but not too big, or we risk overflow below.
     FillPb(pmpsuibStart, LwMul(SIZEOF(int32_t), 0x10000), 0xCC);
     for (ibSrc = 0; ibSrc < cbSrc - 1; ibSrc++)
     {
@@ -616,7 +616,7 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
     pmpibibNext[cbSrc - 1] = 0xCCCCCCCCL;
     FreePpv((void **)&pmpsuibStart);
 
-    // write flags byte
+    // 3DMMv1.0: write flags byte
     bita.Set(pvDst, cbDst);
     AssertDo(bita.FWriteBits(0, 8), 0);
 
@@ -632,18 +632,18 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
             goto LStore;
         }
 
-        // get the new byte and the link
+        // 3DMMv1.0: get the new byte and the link
         ibTest = pmpibibNext[ibSrc];
         Assert(ibTest < ibSrc, 0);
 
-        // assume we'll store a literal
+        // 3DMMv1.0: assume we'll store a literal
         cbMatch = 1;
         ibMatch = ibSrc;
 
         if (ibTest <= (ibMin = ibSrc - kdibMinKcdc4))
             goto LStore;
 
-        // we've seen this byte pair before - look for the longest match
+        // 3DMMv1.0: we've seen this byte pair before - look for the longest match
         cbMaxMatch = LwMin(kcbMaxLenKcdc, cbSrc - ibSrc);
         pbMatch = prgbSrc + ibSrc;
         bMatchNew = prgbSrc[ibSrc + 1];
@@ -660,8 +660,8 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
 
             AssertIn(cbT, cbMatch + 1, kcbMaxLenKcdc + 1);
 
-            // if this run requires a 20 bit offset, we need to beat a
-            // 9 or 6 bit offset by 2 bytes
+            // 3DMMv1.0: if this run requires a 20 bit offset, we need to beat a
+            // 3DMMv1.0: 9 or 6 bit offset by 2 bytes
             if (ibSrc - ibTest < kdibMinKcdc3 || cbT - cbMatch > 1 || ibSrc - ibMatch >= kdibMinKcdc2)
             {
                 cbMatch = cbT;
@@ -675,11 +675,11 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
             Assert(pmpibibNext[ibTest] < ibTest, 0);
         }
 
-        // write out the bits
+        // 3DMMv1.0: write out the bits
     LStore:
         if (cbMatch != 1 && cbRun > 0)
         {
-            // write the previous literal run
+            // 3DMMv1.0: write the previous literal run
             int32_t ibit, ib;
 
             if (!bita.FWriteLogEncoded(cbRun))
@@ -708,7 +708,7 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
 
         if (cbMatch == 0)
         {
-            // we're done
+            // 3DMMv1.0: we're done
             break;
         }
 
@@ -719,7 +719,7 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
             AssertIn(ibMatch, 0, ibSrc);
             AssertIn(cbMatch, 2 + (ibSrc - ibMatch >= kdibMinKcdc3), kcbMaxLenKcdc + 1);
 
-            // find the offset
+            // 3DMMv1.0: find the offset
             uint32_t luCode, luLen;
             int32_t cbit;
 
@@ -727,25 +727,25 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
             luLen = cbMatch - 1;
             if (luCode < kdibMinKcdc1)
             {
-                // 6 bit offset
+                // 3DMMv1.0: 6 bit offset
                 cbit = 2 + kcbitKcdc0;
                 luCode = ((luCode - kdibMinKcdc0) << 2) | 1;
             }
             else if (luCode < kdibMinKcdc2)
             {
-                // 9 bit offset
+                // 3DMMv1.0: 9 bit offset
                 cbit = 3 + kcbitKcdc1;
                 luCode = ((luCode - kdibMinKcdc1) << 3) | 0x03;
             }
             else if (luCode < kdibMinKcdc3)
             {
-                // 12 bit offset
+                // 3DMMv1.0: 12 bit offset
                 cbit = 4 + kcbitKcdc2;
                 luCode = ((luCode - kdibMinKcdc2) << 4) | 0x07;
             }
             else
             {
-                // 20 bit offset
+                // 3DMMv1.0: 20 bit offset
                 Assert(luCode < kdibMinKcdc4, 0);
                 cbit = 4 + kcbitKcdc3;
                 luCode = ((luCode - kdibMinKcdc3) << 4) | 0x0F;
@@ -762,11 +762,11 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
         }
     }
 
-    // fill the remainder of the last byte with 1's
+    // 3DMMv1.0: fill the remainder of the last byte with 1's
     if (bita.Ibit() > 0)
         AssertDo(bita.FWriteBits(0xFF, 8 - bita.Ibit()), 0);
 
-    // write the tail (kcbTailKcdc bytes of FF)
+    // 3DMMv1.0: write the tail (kcbTailKcdc bytes of FF)
     for (cbT = 0; cbT < kcbTailKcdc; cbT += SIZEOF(int32_t))
     {
         if (!bita.FWriteBits(0xFFFFFFFF, LwMin(SIZEOF(int32_t), kcbTailKcdc - cbT) << 3))
@@ -781,12 +781,12 @@ bool KCDC::_FEncode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
     return fTrue;
 
 LFail:
-    // can't compress the source
+    // 3DMMv1.0: can't compress the source
     FreePpv((void **)&pmpibibNext);
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decompress a compressed KCD2 stream.
 ***************************************************************************/
 bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int32_t *pcbDst)
@@ -808,8 +808,8 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
         return fFalse;
     }
 
-    // verify that the last kcbTailKcd2 bytes are FF.  This guarantees that
-    // we won't run past the end of the source.
+    // 3DMMv1.0: verify that the last kcbTailKcd2 bytes are FF.  This guarantees that
+    // 3DMMv1.0: we won't run past the end of the source.
     for (ib = 0; ib++ < kcbTailKcd2;)
     {
         if (((uint8_t *)pvSrc)[cbSrc - ib] != 0xFF)
@@ -833,7 +833,7 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
     *pcbDst = cbTot;
     return fTrue;
 
-#else //! IN_80386
+#else //! 3DMMv1.0: IN_80386
 
     int32_t cb, dib, ibit, cbit;
     uint32_t luCur;
@@ -849,15 +849,15 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
 #define _FTest(ibit) (luCur & (1L << (ibit)))
 #ifdef LITTLE_ENDIAN
 #define _Advance(cb) ((pbSrc += (cb)), (luCur = *(uint32_t *)(pbSrc - 4)))
-#else //! LITTLE_ENDIAN
+#else //! 3DMMv1.0: LITTLE_ENDIAN
 #define _Advance(cb) ((pbSrc += (cb)), (luCur = LwFromBytes(pbSrc[-1], pbSrc[-2], pbSrc[-3], pbSrc[-4])))
-#endif //! LITTLE_ENDIAN
+#endif //! 3DMMv1.0: LITTLE_ENDIAN
 
     _Advance(4);
 
     for (ibit = 0;;)
     {
-        // get the length
+        // 3DMMv1.0: get the length
         for (cbit = 0;;)
         {
             if (!_FTest(ibit + cbit))
@@ -873,24 +873,24 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
 
         if (!_FTest(ibit))
         {
-            // literal
+            // 3DMMv1.0: literal
 #ifdef SAFETY
             if (pbDst + cb > pbLimDst)
                 goto LFail;
             if (pbSrc - 3 + cb > pbLimSrc)
                 goto LFail;
-#endif // SAFETY
+#endif // 3DMMv1.0: SAFETY
             ibit++;
 
             fAligned = (ibit == 8);
             if (fAligned)
             {
-                // Aligned: copy an extra byte
+                // 3DMMEx: Aligned: copy an extra byte
                 cb++;
             }
             else
             {
-                // Unaligned: the rest of the bits in the current src byte are the lower bits of the final dest byte
+                // 3DMMEx: Unaligned: the rest of the bits in the current src byte are the lower bits of the final dest byte
                 bT = ((luCur & ~((1 << ibit) - 1)) & 0xFF) >> ibit;
                 cbitHi = ibit;
                 ibit += (8 - ibit);
@@ -902,7 +902,7 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
 
             if (!fAligned)
             {
-                // Unaligned: the next cbitHi bits are the upper bits of the final dest byte
+                // 3DMMEx: Unaligned: the next cbitHi bits are the upper bits of the final dest byte
                 uint8_t bUpper = (uint8_t)((luCur & ((1 << (ibit + cbitHi)) - 1)) >> ibit);
                 bT |= (bUpper << (8 - cbitHi));
                 *pbDst++ = bT;
@@ -911,7 +911,7 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
         }
         else
         {
-            // get the offset
+            // 3DMMv1.0: get the offset
             cb += 2;
             if (!_FTest(ibit + 1))
             {
@@ -938,7 +938,7 @@ bool KCDC::_FDecode2(void *pvSrc, int32_t cbSrc, void *pvDst, int32_t cbDst, int
 #ifdef SAFETY
             if (pbLimDst - pbDst < cb || pbDst - (uint8_t *)pvDst < dib)
                 goto LFail;
-#endif // SAFETY
+#endif // 3DMMv1.0: SAFETY
             for (pbT = pbDst - dib; cb-- > 0;)
                 *pbDst++ = *pbT++;
         }
@@ -954,7 +954,7 @@ LDone:
 #undef _FTest
 #undef _Advance
 
-#endif //! IN_80386
+#endif //! 3DMMv1.0: IN_80386
 
 LFail:
     Bug("bad compressed data");

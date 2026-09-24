@@ -1,0 +1,27 @@
+--- a/drivers/glrend/v1model.c
++++ b/drivers/glrend/v1model.c
+@@ -313,6 +313,16 @@
+         br_primitive_state_info_gl info;
+         DeviceGLExtractPrimitiveState(state, &info, tex_default);
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++        /*
++         * 4DMM/3DMM authored materials are predominantly flat/Gouraud.  The
++         * modern GL driver already has a complete Phong path which interpolates
++         * position/normal and calls accumulateLights() in the fragment shader.
++         * Promote the legacy material request here so dynamic lighting is
++         * evaluated per pixel without changing the stored movie/material data.
++         */
++        model->shading_mode = 2;
++#else
+         switch(info.shading_mode) {
+             case BRT_FLAT:
+             default:
+@@ -327,6 +337,7 @@
+                 model->shading_mode = 2;
+                 break;
+         }
++#endif
+ 
+         model->disable_colour_key = info.disable_colour_key;
+ 

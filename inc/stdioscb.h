@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/*****************************************************************************\
+/** 3DMMv1.0: ***************************************************************************\
  *
  *	stdioscb.h
  *
@@ -16,7 +16,7 @@
 #define STDIOSCB_H
 
 //
-//	The studio scrollbar class.
+// 3DMMv1.0:	The studio scrollbar class.
 //
 
 const int32_t kctsFps = 20;
@@ -35,9 +35,14 @@ class SSCB : public SSCB_PAR
     bool _fNoAutoadjust;
 
     bool _fBtnAddsFrames;
+    bool _fBtnInsertBefore;
+    bool _fBtnInsertBlank;
+    bool _fBtnBatchInsert;
+    bool _fBtnNativeEnd;
+    bool _fBtnNativeStartBlank;
 
     //
-    //	Private methods
+    // 3DMMv1.0:	Private methods
     //
     int32_t _CxScrollbar(int32_t kidScrollbar, int32_t kidThumb);
 
@@ -46,7 +51,7 @@ class SSCB : public SSCB_PAR
     PTGOB _ptgobScene;
 
 #ifdef SHOW_FPS
-    // Frame descriptor
+    // 3DMMv1.0: Frame descriptor
     struct FDSC
     {
         uint32_t ts;
@@ -56,20 +61,20 @@ class SSCB : public SSCB_PAR
     PTGOB _ptgobFps;
     FDSC _rgfdsc[kctsFps];
     int32_t _itsNext;
-#endif // SHOW_FPS
+#endif // 3DMMv1.0: SHOW_FPS
 
     PMVIE _pmvie;
     SSCB(PMVIE pmvie);
 
   public:
     //
-    //	Constructors and destructors
+    // 3DMMv1.0:	Constructors and destructors
     //
     static PSSCB PsscbNew(PMVIE pmvie);
     ~SSCB(void);
 
     //
-    //	Notification
+    // 3DMMv1.0:	Notification
     //
     virtual void Update(void);
     void SetMvie(PMVIE pmvie);
@@ -82,9 +87,9 @@ class SSCB : public SSCB_PAR
     void SetSndFrame(bool fSoundInFrame);
 
     //
-    //	Event handling
+    // 3DMMv1.0:	Event handling
     //
     bool FCmdScroll(PCMD pcmd);
 };
 
-#endif // STDIOSCB_H
+#endif // 3DMMv1.0: STDIOSCB_H

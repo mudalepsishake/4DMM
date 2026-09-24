@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -13,27 +13,27 @@
 #include "util.h"
 ASSERTNAME
 
-// REVIEW shonk: Mac: implement HQ statistics
+// 3DMMv1.0: REVIEW shonk: Mac: implement HQ statistics
 
-// HQ header - actually goes at the end of the hq.
+// 3DMMv1.0: HQ header - actually goes at the end of the hq.
 struct HQH
 {
 #ifdef DEBUG
-    short swMagic;    // to detect memory trashing
-    short cactRef;    // for marking memory
-    schar *pszsFile;  // source file that allocation request is coming from
-    int32_t lwLine;   // line in file that allocation request is coming from
-    HQ hqPrev;        // previous hq in doubly linked list
-    HQ hqNext;        // next hq in doubly linked list
-#endif                // DEBUG
-    uint8_t cactLock; // lock count
-    uint8_t cbExtra;  // count of extra bytes
+    short swMagic;    // 3DMMv1.0: to detect memory trashing
+    short cactRef;    // 3DMMv1.0: for marking memory
+    schar *pszsFile;  // 3DMMv1.0: source file that allocation request is coming from
+    int32_t lwLine;   // 3DMMv1.0: line in file that allocation request is coming from
+    HQ hqPrev;        // 3DMMv1.0: previous hq in doubly linked list
+    HQ hqNext;        // 3DMMv1.0: next hq in doubly linked list
+#endif                // 3DMMv1.0: DEBUG
+    uint8_t cactLock; // 3DMMv1.0: lock count
+    uint8_t cbExtra;  // 3DMMv1.0: count of extra bytes
 };
 
 #ifdef DEBUG
-HQ _hqFirst; // head of the doubly linked list
+HQ _hqFirst; // 3DMMv1.0: head of the doubly linked list
 int32_t vcactSuspendCheckPointers = 0;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 inline void *_QvFromHq(HQ hq)
 {
@@ -51,7 +51,7 @@ inline HQH *_QhqhFromHqBv(HQ hq, int32_t bv)
 int32_t __pascal _CbFreeStuff(int32_t cb);
 ADST vadst;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This is the GrowZone proc (a call back from the Mac OS memory manager).
     If _fInAlloc is true, we don't do anything, cuz the code that's doing
     the allocation will free stuff and try again.
@@ -71,7 +71,7 @@ int32_t __pascal _CbFreeStuff(int32_t cb)
     return cb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the address stripper - overloaded to also set the
     grow-zone proc.
 ***************************************************************************/
@@ -81,14 +81,14 @@ ADST::ADST(void)
     SetGrowZone(&_CbFreeStuff);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Allocates a new moveable block.
 ***************************************************************************/
 #ifdef DEBUG
 bool FAllocHqDebug(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr, schar *pszsFile, int32_t lwLine)
-#else  //! DEBUG
+#else  //! 3DMMv1.0: DEBUG
 bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 {
     AssertVarMem(phq);
     AssertIn(cb, 0, kcbMax);
@@ -103,7 +103,7 @@ bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
 #ifdef DEBUG
     if (_hqFirst != hqNil)
         AssertHq(_hqFirst);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     if (cb > kcbMax)
     {
@@ -113,7 +113,7 @@ bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
 
     hqh.cbExtra = (-cb) & 3;
     Assert((cb + hqh.cbExtra) % 4 == 0, 0);
-    // assert we don't overflow (the limit of kcbMax should ensure this)
+    // 3DMMv1.0: assert we don't overflow (the limit of kcbMax should ensure this)
     Assert(cb + size(HQH) + hqh.cbExtra > cb, 0);
 
     cb += hqh.cbExtra + size(HQH);
@@ -146,14 +146,14 @@ bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
         _QhqhFromHq(_hqFirst)->hqPrev = *phq;
     }
     _hqFirst = *phq;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     hqh.cactLock = 0;
     *_QhqhFromHqBv(*phq, cb - size(HQH)) = hqh;
     AssertHq(*phq);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Resizes the given hq.  *phq may change (on Windows).  If fhqClear,
     clears any newly added space.
 ***************************************************************************/
@@ -187,7 +187,7 @@ bool FResizePhq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
     }
 
 #ifdef DEBUG
-    // trash the old stuff
+    // 3DMMv1.0: trash the old stuff
     if (cbOld > cb)
         FillPb(PvAddBv(_QvFromHq(*phq), cb), cbOld + size(HQH) - cb, kbGarbage);
 #endif
@@ -195,7 +195,7 @@ bool FResizePhq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
 
     hqh.cbExtra = (-cb) & 3;
     Assert((cb + hqh.cbExtra) % 4 == 0, 0);
-    // assert we don't overflow (the limit of kcbMax should ensure this)
+    // 3DMMv1.0: assert we don't overflow (the limit of kcbMax should ensure this)
     Assert(cb + size(HQH) + hqh.cbExtra > cb, 0);
 
     fInAllocSave = _fInAlloc;
@@ -219,21 +219,21 @@ bool FResizePhq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr)
         if (grfmem & fmemClear)
             ClearPb(PvAddBv(_QvFromHq(*phq), cbOld), cb - cbOld);
 #ifdef DEBUG
-        else // trash the new stuff
+        else // 3DMMv1.0: trash the new stuff
             FillPb(PvAddBv(_QvFromHq(*phq), cbOld), cb - cbOld, kbGarbage);
 
-        // trash the rest of the block
+        // 3DMMv1.0: trash the rest of the block
         FillPb(PvAddBv(_QvFromHq(*phq), cb), hqh.cbExtra + size(HQH), kbGarbage);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     }
-    // put the HQH where it belongs
+    // 3DMMv1.0: put the HQH where it belongs
     *_QhqhFromHqBv(*phq, cb + hqh.cbExtra) = hqh;
 
     AssertHq(*phq);
     return true;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If hq is not nil, frees it.
 ***************************************************************************/
 void FreePhq(HQ *phq)
@@ -250,7 +250,7 @@ void FreePhq(HQ *phq)
     hqh = *_QhqhFromHq(*phq);
     Assert(hqh.cactLock == 0, "Freeing locked HQ");
 
-    // update prev's next pointer
+    // 3DMMv1.0: update prev's next pointer
     if (hqh.hqPrev == hqNil)
     {
         Assert(_hqFirst == *phq, "prev is wrongly nil");
@@ -263,22 +263,22 @@ void FreePhq(HQ *phq)
         _QhqhFromHq(hqh.hqPrev)->hqNext = hqh.hqNext;
     }
 
-    // update next's prev pointer
+    // 3DMMv1.0: update next's prev pointer
     if (hqh.hqNext != hqNil)
     {
         AssertHq(hqh.hqNext);
         _QhqhFromHq(hqh.hqNext)->hqPrev = hqh.hqPrev;
     }
 
-    // fill the block with garbage
+    // 3DMMv1.0: fill the block with garbage
     FillPb(_QvFromHq(*phq), GetHandleSize((HN)*phq), kbGarbage);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     DisposHandle((HN)*phq);
     *phq = hqNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the size of the hq (the client area of the block).
 ***************************************************************************/
 int32_t CbOfHq(HQ hq)
@@ -290,7 +290,7 @@ int32_t CbOfHq(HQ hq)
     return cbRaw - _QhqhFromHqBv(hq, cbRaw)->cbExtra;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy an hq to a new block.
 ***************************************************************************/
 bool FCopyHq(HQ hqSrc, HQ *phqDst, int32_t mpr)
@@ -335,7 +335,7 @@ bool FCopyHq(HQ hqSrc, HQ *phqDst, int32_t mpr)
         _QhqhFromHq(_hqFirst)->hqPrev = *phqDst;
     }
     _hqFirst = *phqDst;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     qhqh->cactLock = 0;
 
     AssertHq(*phqDst);
@@ -343,7 +343,7 @@ bool FCopyHq(HQ hqSrc, HQ *phqDst, int32_t mpr)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns a volatile pointer from an hq.
 ***************************************************************************/
 void *QvFromHq(HQ hq)
@@ -351,9 +351,9 @@ void *QvFromHq(HQ hq)
     AssertHq(hq);
     return _QvFromHq(hq);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Lock the hq and return a pointer to the data.
 ***************************************************************************/
 void *PvLockHq(HQ hq)
@@ -368,7 +368,7 @@ void *PvLockHq(HQ hq)
     return _QvFromHq(hq);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Unlock the hq.  Asserts and does nothing if the lock count is zero.
 ***************************************************************************/
 void UnlockHq(HQ hq)
@@ -386,7 +386,7 @@ void UnlockHq(HQ hq)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that a given hq is valid.
 ***************************************************************************/
 void AssertHq(HQ hq)
@@ -398,21 +398,21 @@ void AssertHq(HQ hq)
     int32_t cb;
     short sw;
 
-    // make sure hq isn't nil or odd
+    // 3DMMv1.0: make sure hq isn't nil or odd
     if (hq == hqNil || (int32_t(hq) & 1) != 0)
     {
         BugVar("hq is nil or odd", &hq);
         return;
     }
 
-    // make sure *hq is not nil or odd
+    // 3DMMv1.0: make sure *hq is not nil or odd
     if ((qv = _QvFromHq(hq)) == pvNil || (int32_t(qv) & 1) != 0)
     {
         BugVar("*hq is nil or odd", &qv);
         return;
     }
 
-    // get the heap limits and make sure the hq is in it
+    // 3DMMv1.0: get the heap limits and make sure the hq is in it
     if (pvNil == _pvMinZone)
         _pvMinZone = ApplicZone();
     pvLimZone = (void *)LMGetHeapEnd();
@@ -433,7 +433,7 @@ void AssertHq(HQ hq)
     AssertVar(cb >= size(HQH), "hq block is too small", &cb);
     AssertVar(cb <= BvSubPvs(pvLimZone, _QvFromHq(hq)), "hq block runs past end of heap", &cb);
 
-    // verify the HQH
+    // 3DMMv1.0: verify the HQH
     hqh = *_QhqhFromHqBv(hq, cb - size(HQH));
     if (hqh.swMagic != kswMagicMem)
     {
@@ -445,14 +445,14 @@ void AssertHq(HQ hq)
     Assert((hqh.cactLock == 0) == !(sw & 0x0080), "lock count is wrong");
     Assert((hqh.hqPrev == hqNil) == (hq == _hqFirst), "hqPrev is wrong");
 
-    // verify the links
+    // 3DMMv1.0: verify the links
     if (hqh.hqPrev != hqNil)
         Assert(_QhqhFromHq(hqh.hqPrev)->hqNext == hq, "hqNext in prev is wrong");
     if (hqh.hqNext != hqNil)
         Assert(_QhqhFromHq(hqh.hqNext)->hqPrev == hq, "hqPrev in next is wrong");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Increment the ref count on an hq.
 ***************************************************************************/
 void MarkHq(HQ hq)
@@ -464,7 +464,7 @@ void MarkHq(HQ hq)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Asserts on all unmarked HQs.
 ***************************************************************************/
 void _AssertUnmarkedHqs(void)
@@ -488,7 +488,7 @@ void _AssertUnmarkedHqs(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clears all reference counts.
 ***************************************************************************/
 void _UnmarkAllHqs(void)
@@ -502,7 +502,7 @@ void _UnmarkAllHqs(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert on obviously bogus pointers.  Assert that [pv, pv+cb) resides
     in either the app zone or the system zone.  If cb is zero, pv can
     be anything (including nil).
@@ -533,4 +533,4 @@ void AssertPvCb(void *pv, int32_t cb)
         AssertVar(pvClean >= _pvMinSysZone && pvLim <= pvLimSysZone, "(pv,cb) not in app or sys zone", &pv);
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

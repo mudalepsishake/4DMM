@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Mark Cave-Ayland
     Project: Kauai
     Reviewed:
@@ -13,7 +13,7 @@
 #include "frame.h"
 ASSERTNAME
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Constructor for a picture.
 ***************************************************************************/
 PIC::PIC(void)
@@ -22,7 +22,7 @@ PIC::PIC(void)
     _rc.Zero();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for a picture.
 ***************************************************************************/
 PIC::~PIC(void)
@@ -30,7 +30,7 @@ PIC::~PIC(void)
     AssertBaseThis(0);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Read a picture from a chunky file.  This routine only reads or converts
     OS specific representations with the given chid value.
 ***************************************************************************/
@@ -47,11 +47,11 @@ PPIC PIC::PpicFetch(PCFL pcfl, CTG ctg, CNO cno, CHID chid)
         return PpicRead(&blck);
     }
 
-    // REVIEW shonk: convert another type to a MetaFile...
+    // 3DMMEx: REVIEW shonk: convert another type to a MetaFile...
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Read a picture from a chunky file.  This routine only reads a system
     specific pict (Mac PICT or Windows MetaFile) and its header.
 ***************************************************************************/
@@ -63,7 +63,7 @@ PPIC PIC::PpicRead(PBLCK pblck)
     return NULL;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return the total size on file.
 ***************************************************************************/
 int32_t PIC::CbOnFile(void)
@@ -74,7 +74,7 @@ int32_t PIC::CbOnFile(void)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Write the meta file (and its header) to the given BLCK.
 ***************************************************************************/
 bool PIC::FWrite(PBLCK pblck)
@@ -86,7 +86,7 @@ bool PIC::FWrite(PBLCK pblck)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Static method to read the file as a native picture (EMF or WMF file).
 ***************************************************************************/
 PPIC PIC::PpicReadNative(FNI *pfni)

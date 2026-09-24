@@ -1,17 +1,25 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
 //
 //
 //
-// Studio control code
+// 3DMMv1.0: Studio control code
 //
-// Created: Jan, 10, 1995
+// 3DMMv1.0: Created: Jan, 10, 1995
 //
 //
 //
 
 #include "studio.h"
+
+#if defined(KAUAI_WIN32)
+// The native Object Groups tool lives in utest.cpp but must be notified from
+// STDIO::FSetMovie(), the definitive movie handoff used by normal File/Open.
+// Posting the refresh keeps the native list rebuild outside the active Studio
+// load transaction while ensuring it observes the newly installed MVIE.
+extern void Queue4DMMObjectGroupsMovieRefresh(void);
+#endif // KAUAI_WIN32
 
 ASSERTNAME
 RTCLASS(STDIO)
@@ -58,14 +66,18 @@ ON_CID_GEN(cidSoundsEnabled, &STDIO::FCmdSoundsEnabled, pvNil)
 ON_CID_GEN(cidCreateTbox, &STDIO::FCmdCreateTbox, pvNil)
 ON_CID_GEN(cidActorEaselOpen, &STDIO::FCmdActorEaselOpen, pvNil)
 ON_CID_GEN(cidListenerEaselOpen, &STDIO::FCmdListenerEaselOpen, pvNil)
+ON_CID_GEN(cidCameraTrackAlign, &STDIO::FCmdCameraTrackAlign, pvNil)
+ON_CID_GEN(cidContinueInPlace, &STDIO::FCmdContinueInPlace, pvNil)
+ON_CID_GEN(cidDepthMotionTween, &STDIO::FCmdDepthMotionTween, pvNil)
+ON_CID_GEN(cidManualCamera, &STDIO::FCmdManualCamera, pvNil)
 #ifdef DEBUG
 ON_CID_GEN(cidWriteBmps, &STDIO::FCmdWriteBmps, pvNil)
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 END_CMD_MAP_NIL()
 
 const int32_t kcbCursorCache = 1024;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Create the studio and get it running.
  *
@@ -113,7 +125,7 @@ PSTDIO STDIO::PstdioNew(int32_t hid, PCRM pcrmStudio, PFNI pfniUserDoc, bool fFa
 
     pmvie = vapp.PmvieRetrieve();
 
-    // _FOpenStudio() depends on _psmcc being initialized
+    // 3DMMv1.0: _FOpenStudio() depends on _psmcc being initialized
     if (!pstdio->_FOpenStudio((pfniUserDoc == pvNil) && (pmvie == pvNil)))
     {
         goto LFail;
@@ -130,7 +142,7 @@ PSTDIO STDIO::PstdioNew(int32_t hid, PCRM pcrmStudio, PFNI pfniUserDoc, bool fFa
     {
         if (fFailIfDocOpenFailed)
             goto LFail;
-        else if (!pstdio->FLoadMovie()) // try blank doc
+        else if (!pstdio->FLoadMovie()) // 3DMMv1.0: try blank doc
             goto LFail;
     }
 
@@ -145,7 +157,7 @@ LFail:
     return (pstdio);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Destroy the studio.
  *
@@ -172,7 +184,7 @@ STDIO::~STDIO(void)
     ReleasePpo(&pgobStudio);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Open studio.chk and start the studio script
  *
@@ -200,7 +212,7 @@ bool STDIO::_FOpenStudio(bool fPaletteFade)
 
     vapp.BeginLongOp();
 
-    // read miscellaneous message strings
+    // 3DMMv1.0: read miscellaneous message strings
     for (icrf = 0; icrf < _pcrm->Ccrf(); icrf++)
     {
         pcrf = _pcrm->PcrfGet(icrf);
@@ -210,7 +222,7 @@ bool STDIO::_FOpenStudio(bool fPaletteFade)
             break;
         }
     }
-    if (pvNil == _pgstMisc) // if not found or read error
+    if (pvNil == _pgstMisc) // 3DMMv1.0: if not found or read error
         goto LFail;
 
     if (pvNil == (psceg = ((APP *)vpappb)->Pkwa()->PscegNew(_pcrm, ((APP *)vpappb)->Pkwa())))
@@ -219,7 +231,7 @@ bool STDIO::_FOpenStudio(bool fPaletteFade)
     }
 
     //
-    // Read in common palette
+    // 3DMMv1.0: Read in common palette
     //
     for (icrf = 0; icrf < _pcrm->Ccrf(); icrf++)
     {
@@ -234,9 +246,9 @@ bool STDIO::_FOpenStudio(bool fPaletteFade)
         }
     }
 
-    // kidStudio should be kcnoStudio according to Hungarian, but the "kid"
-    // prefix is entrenched into the script/help stuff and can't be easily
-    // all changed to kcno.
+    // 3DMMv1.0: kidStudio should be kcnoStudio according to Hungarian, but the "kid"
+    // 3DMMv1.0: prefix is entrenched into the script/help stuff and can't be easily
+    // 3DMMv1.0: all changed to kcno.
     if (pvNil == (pscpt = (PSCPT)_pcrm->PbacoFetch(kctgScript, kidStudio, SCPT::FReadScript)))
     {
         goto LFail;
@@ -250,7 +262,7 @@ bool STDIO::_FOpenStudio(bool fPaletteFade)
         goto LFail;
     }
 
-    // Create the scroll bars
+    // 3DMMv1.0: Create the scroll bars
     if (pvNil == (psscb = SSCB::PsscbNew(_pmvie)))
     {
         goto LFail;
@@ -280,7 +292,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the portfolio doc from one of Melanie's project documents
 ***************************************************************************/
 bool STDIO::FCmdLoadProjectMovie(PCMD pcmd)
@@ -299,7 +311,7 @@ bool STDIO::FCmdLoadProjectMovie(PCMD pcmd)
         Bug("Missing string in FCmdLoadProjectMovie");
         goto LEnd;
     }
-    vpapp->GetFniMelanie(&fni); // Get Melanie's directory
+    vpapp->GetFniMelanie(&fni); // 3DMMv1.0: Get Melanie's directory
     if (!fni.FSetLeaf(&stnLeaf))
         goto LEnd;
     if (tYes != fni.TExists())
@@ -314,11 +326,11 @@ bool STDIO::FCmdLoadProjectMovie(PCMD pcmd)
     }
     Assert(_pmvie != pvNil, "FLoadMovie lied to us");
 
-    /* Make sure the autosave file's been switched to a temp file */
+    /* 3DMMv1.0: Make sure the autosave file's been switched to a temp file */
     if (!_pmvie->FEnsureAutosave())
         goto LEnd;
 
-    /* Tell the movie to forget about the original file */
+    /* 3DMMv1.0: Tell the movie to forget about the original file */
     _pmvie->ForceSaveAs();
 
     fLoaded = fTrue;
@@ -327,7 +339,7 @@ LEnd:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Change the current movie -- close any currently open movie.
  *
@@ -344,14 +356,14 @@ bool STDIO::FLoadMovie(PFNI pfni, CNO cno)
 {
     bool fRet, fClosedOld;
 
-    /* If loading a specific movie, attempt to load a blank movie first */
+    /* 3DMMv1.0: If loading a specific movie, attempt to load a blank movie first */
     if (pfni != pvNil)
     {
         if (!(fRet = _FLoadMovie(pvNil, cnoNil, &fClosedOld)) || !fClosedOld)
             goto LDone;
     }
 
-    /* Now do what the user asked us to do */
+    /* 3DMMv1.0: Now do what the user asked us to do */
     fRet = _FLoadMovie(pfni, cno, &fClosedOld);
 
 LDone:
@@ -359,19 +371,35 @@ LDone:
 }
 
 bool STDIO::_FLoadMovie(PFNI pfni, CNO cno, bool *pfClosedOld)
-#endif // BUG1959
+#endif // 3DMMv1.0: BUG1959
 {
     AssertBaseThis(0);
     AssertNilOrPo(pfni, 0);
 
     bool fRet = fFalse;
+    bool fVmm = fFalse;
     PMVU pmvu;
     PMVIE pmvie = pvNil, pmvieOld = pvNil;
     PBKGD pbkgd = pvNil;
+    FNI fniResolved;
+    PFNI pfniLoad = pfni;
+
+    // The Open Movie dialog and command-line path both accept V3DMM packages,
+    // but MVIE::PmvieNew reads only ordinary CHN2 .3mm files.  Resolve the
+    // wrapper centrally here so startup, Ctrl+O, drag/open, and secondary-
+    // instance opens all use the same package path instead of handing the VMM
+    // container directly to CFL::PcflOpen.
+    if (pfni != pvNil && F4DMMFniIsVmm(pfni))
+    {
+        if (!vapp.FResolveVmmMovie(pfni, &fniResolved))
+            goto LFail;
+        pfniLoad = &fniResolved;
+        fVmm = fTrue;
+    }
 
 #ifdef BUG1959
     *pfClosedOld = fTrue;
-#endif // BUG1959
+#endif // 3DMMv1.0: BUG1959
 
     if (_pmvie != pvNil)
     {
@@ -385,7 +413,7 @@ bool STDIO::_FLoadMovie(PFNI pfni, CNO cno, bool *pfClosedOld)
             fRet = fTrue;
 #ifdef BUG1959
             *pfClosedOld = fFalse;
-#endif // BUG1959
+#endif // 3DMMv1.0: BUG1959
             goto LFail;
         }
         _pmvie->Flush();
@@ -398,11 +426,37 @@ bool STDIO::_FLoadMovie(PFNI pfni, CNO cno, bool *pfClosedOld)
         }
     }
 
-    pmvie = MVIE::PmvieNew(vpapp->FSlowCPU(), _psmcc, pfni, cno);
+    if (fVmm)
+        MVIE::MultiLog(pvNil, "vmm_load studio pmvie_new begin");
+    pmvie = MVIE::PmvieNew(vpapp->FSlowCPU(), _psmcc, pfniLoad, cno);
     if (pmvie == pvNil)
     {
+        if (fVmm)
+            MVIE::MultiLog(pvNil, "vmm_load fail stage=pmvie_new");
         ReleasePpo(&pmvieOld);
         goto LFail;
+    }
+    if (fVmm)
+        MVIE::MultiLog(pmvie, "vmm_load studio pmvie_new ok");
+
+    if (fVmm)
+    {
+        // Work from the private extracted CHN2 file, but remember the original
+        // VMM as the document target.  v113 can now repack the updated movie
+        // and embedded 4DMM metadata back into that wrapper without ever
+        // treating the VMM container itself as a CFL.
+        if (!pmvie->FEnsureAutosave())
+        {
+            MVIE::MultiLog(pmvie, "vmm_load fail stage=ensure_autosave");
+            goto LFail;
+        }
+        MVIE::MultiLog(pmvie, "vmm_load autosave ok");
+        if (!pmvie->FUseVmmSaveTarget(pfni))
+        {
+            MVIE::MultiLog(pmvie, "vmm_load fail stage=establish_save_target");
+            goto LFail;
+        }
+        MVIE::MultiLog(pmvie, "vmm_load save_target ok");
     }
 
     fRet = FSetMovie(pmvie);
@@ -427,7 +481,7 @@ LFail:
     if (pbkgd != pvNil)
         pbkgd->SetFLeaveLitesOn(fFalse);
 
-    /* Restore old movie if loading new one failed */
+    /* 3DMMv1.0: Restore old movie if loading new one failed */
     if (_pmvie == pvNil)
     {
         Assert(!fRet, "Bogus state for studio");
@@ -442,7 +496,7 @@ LFail:
         pmvieOld->CloseAllDdg();
         ReleasePpo(&pmvieOld);
 
-        /* Turn lights back on, in new BWLD (they got turned off when releasing
+        /* 3DMMv1.0: Turn lights back on, in new BWLD (they got turned off when releasing
             the old movie) */
         if (fResetLites)
             pbkgd->TurnOnLights(_pmvie->Pbwld());
@@ -451,12 +505,12 @@ LFail:
 #ifdef BUG1959
     if (pfni == pvNil && fRet && *pfClosedOld)
         vptagm->ClearCache(sidNil, ftagmFile);
-#endif // BUG1959
+#endif // 3DMMv1.0: BUG1959
 
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Set the current movie -- close any currently open movie.
  *
@@ -476,6 +530,7 @@ bool STDIO::FSetMovie(PMVIE pmvie)
     RC rcRel, rcAbs;
     PGOK pgok;
     GCB gcb;
+    bool fUndoHistory = vapp.FUndoHistory();
 
     vapp.BeginLongOp();
 
@@ -483,9 +538,29 @@ bool STDIO::FSetMovie(PMVIE pmvie)
     _psmcc->Psscb()->SetMvie(pvNil);
     _pmvie = pmvie;
     _pmvie->AddRef();
+#if defined(BRENDER_MODERN_14)
+    // The scaled presentation owns a native cached movie frame independently
+    // of the newly assigned MVIE. Clear it at the definitive movie handoff so
+    // New Movie cannot display the previous movie until its first scene exists.
+    BrModernViewportClearCachedFrame();
+#endif
+
+    // A movie loaded or created after Studio startup is a new MVIE object.
+    // Apply the launch mode at the definitive Studio handoff instead of
+    // relying on startup properties or constructor state surviving the swap.
+    if (fUndoHistory)
+    {
+        _pmvie->SetCundbMax(50);
+        _pmvie->EnableUndoHistoryWindow();
+    }
+    else
+    {
+        _pmvie->SetCundbMax(1);
+        _pmvie->EnableUndoHistoryWindow(fFalse);
+    }
 
     //
-    // Position the view
+    // 3DMMv1.0: Position the view
     //
     rcRel.Set(krelZero, krelZero, krelOne, krelOne);
     rcAbs.Set(0, 0, 0, 0);
@@ -497,7 +572,7 @@ bool STDIO::FSetMovie(PMVIE pmvie)
         goto LFail;
 
     //
-    // Create the view
+    // 3DMMv1.0: Create the view
     //
     gcb.Set(khidDdg, pgok, fgobNil, kginDefault, &rcAbs, &rcRel);
     pmvu = (PMVU)_pmvie->PddgNew(&gcb);
@@ -505,7 +580,7 @@ bool STDIO::FSetMovie(PMVIE pmvie)
         goto LFail;
     AssertPo(pmvu, 0);
 
-    // Set the movie title
+    // 3DMMv1.0: Set the movie title
     UpdateTitle(_pmvie->PstnTitle());
 
     _pmvie->SetThumbPalette(_pglclr);
@@ -543,10 +618,26 @@ LFail:
         ReleasePpo(&_pmvie);
     }
     vapp.EndLongOp();
+
+    // The old movie owns its own history window, so replacing the movie
+    // destroys that window.  Re-show the new movie's window only after the
+    // complete load/create handoff and long operation have finished.
+    if (fRet && fUndoHistory)
+        _pmvie->ShowUndoHistoryWindow();
+
+#if defined(KAUAI_WIN32)
+    // Normal File/Open keeps the same STDIO object and swaps only _pmvie via
+    // FLoadMovie()->FSetMovie().  APP::_FInitStudio therefore never sees that
+    // transition.  Notify Object Groups here, after the definitive successful
+    // handoff, so an already-open groups window rebuilds for every movie load.
+    if (fRet)
+        Queue4DMMObjectGroupsMovieRefresh();
+#endif // KAUAI_WIN32
+
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle XYAxis command
  *
@@ -582,7 +673,7 @@ bool STDIO::FCmdXYAxis(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle XZAxis command
  *
@@ -616,7 +707,7 @@ bool STDIO::FCmdXZAxis(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle changing the current tool.
  *
@@ -710,10 +801,18 @@ bool STDIO::FCmdSetTool(PCMD pcmd)
             break;
 
         case chttSceneChopFwd:
+            // Scene trim is an armed viewport tool: choose the tool here,
+            // then perform the edit only when the user clicks the viewport.
+            MVIE::MultiLog(_pmvie, "scene_trim_button after armed scene=%ld frame=%ld",
+                           (long)_pmvie->Iscen(),
+                           (long)(_pmvie->Pscen() != pvNil ? _pmvie->Pscen()->Nfrm() : -1));
             pmvu->SetTool(toolSceneChop);
             break;
 
         case chttSceneChopBack:
+            MVIE::MultiLog(_pmvie, "scene_trim_button before armed scene=%ld frame=%ld",
+                           (long)_pmvie->Iscen(),
+                           (long)(_pmvie->Pscen() != pvNil ? _pmvie->Pscen()->Nfrm() : -1));
             pmvu->SetTool(toolSceneChopBack);
             break;
 
@@ -758,7 +857,7 @@ bool STDIO::FCmdSetTool(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle Play command
  *
@@ -824,7 +923,7 @@ bool STDIO::FCmdPlay(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle New Scene command
  *
@@ -866,7 +965,7 @@ bool STDIO::FCmdNewScene(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle changing the respecting of ground.
  *
@@ -896,7 +995,7 @@ bool STDIO::FCmdRespectGround(PCMD pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Handle setting the pause.
  *
@@ -937,7 +1036,7 @@ bool STDIO::FCmdPause(PCMD pcmd)
     return (fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Open an existing or new chunky file for editing.
     Handles cidNew and cidOpen.
 ***************************************************************************/
@@ -977,7 +1076,7 @@ bool STDIO::FCmdOpen(PCMD pcmd)
         _fDisplayCast = fFalse;
         if (FGetFniMovieOpen(&fni))
         {
-            // User selected a file, so open it.
+            // 3DMMv1.0: User selected a file, so open it.
 
             FLoadMovie(&fni, cnoNil);
         }
@@ -989,7 +1088,7 @@ bool STDIO::FCmdOpen(PCMD pcmd)
     return (fTrue);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdScroll
         Handles scrollbar commands.
 
@@ -1006,14 +1105,14 @@ bool STDIO::FCmdScroll(PCMD pcmd)
     AssertVarMem(_psmcc);
     if (pvNil == _psmcc->Psscb())
     {
-        // absorb the cmd since there is no scrollbar
+        // 3DMMv1.0: absorb the cmd since there is no scrollbar
         return fTrue;
     }
 
     return _psmcc->Psscb()->FCmdScroll(pcmd);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdSooner
         Handles the soonering an actor
 
@@ -1045,7 +1144,7 @@ bool STDIO::FCmdSooner(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdSooner
         Handles the soonering an actor
 
@@ -1077,7 +1176,7 @@ bool STDIO::FCmdLater(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdNewSpletter
         Handles creating new spletters.
 
@@ -1096,10 +1195,10 @@ bool STDIO::FCmdNewSpletter(PCMD pcmd)
     THD thd;
 
     vapp.BeginLongOp();
-    vapp.GetStnProduct(&stn); // Default string for TDT easel is product name
+    stn.SetSz(PszLit("3DMM: Renaissance"));
 
-    // Find the first font available for this source, cache it, and use it
-    // as the default font for the TDT easel.
+    // 3DMMv1.0: Find the first font available for this source, cache it, and use it
+    // 3DMMv1.0: as the default font for the TDT easel.
     cki.ctg = kctgTfth;
     cki.cno = cnoNil;
     pbcl = BCL::PbclNew(pvNil, &cki, ctgNil, pvNil, fTrue);
@@ -1116,7 +1215,7 @@ bool STDIO::FCmdNewSpletter(PCMD pcmd)
     if (!vptagm->FCacheTagToHD(&tagTdf))
         return fTrue;
 
-    // Note: easels are self-managing, so we don't need to keep the PESLT
+    // 3DMMv1.0: Note: easels are self-managing, so we don't need to keep the PESLT
     ESLT::PesltNew(_pcrm, _pmvie, pvNil, &stn, tdtsNormal, &tagTdf);
 
     vapp.EndLongOp();
@@ -1124,7 +1223,7 @@ bool STDIO::FCmdNewSpletter(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     Start the sound recording easel
 ******************************************************************************/
 bool STDIO::FCmdOpenSoundRecord(PCMD pcmd)
@@ -1132,15 +1231,15 @@ bool STDIO::FCmdOpenSoundRecord(PCMD pcmd)
     AssertThis(0);
     AssertVarMem(pcmd);
 
-    bool fSpeech = FPure(pcmd->rglw[0]); // Speech or SFX browser?
+    bool fSpeech = FPure(pcmd->rglw[0]); // 3DMMv1.0: Speech or SFX browser?
 
-    // If default sound name is required then set it in stn here.
-    // Currently no default sound name required, so initialize it empty.
+    // 3DMMv1.0: If default sound name is required then set it in stn here.
+    // 3DMMv1.0: Currently no default sound name required, so initialize it empty.
     STN stn;
 
     vapp.BeginLongOp();
 
-    // Note: easels are self-managing, so we don't need to keep the PESLR
+    // 3DMMv1.0: Note: easels are self-managing, so we don't need to keep the PESLR
     ESLR::PeslrNew(_pcrm, _pmvie, fSpeech, &stn);
 
     vapp.EndLongOp();
@@ -1148,7 +1247,7 @@ bool STDIO::FCmdOpenSoundRecord(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     SceneChange
         Callback to handle a change of scene.
 
@@ -1159,7 +1258,7 @@ void STDIO::SceneChange(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Create a popup menu
  *
@@ -1262,7 +1361,7 @@ bool STDIO::FCmdCreatePopup(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Sets the text box background color
  *
@@ -1292,7 +1391,7 @@ bool STDIO::FCmdTextSetBkgdColor(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Sets the text box text color
  *
@@ -1322,7 +1421,7 @@ bool STDIO::FCmdTextSetColor(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdTextSetSize
         Command handler to set the font size for the active textbox
 
@@ -1346,7 +1445,7 @@ bool STDIO::FCmdTextSetSize(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdTextSetStyle
         Command handler to set the font Style for the active textbox
 
@@ -1377,7 +1476,7 @@ bool STDIO::FCmdTextSetStyle(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdTextSetFont
         Command handler to set the font face for the active textbox
 
@@ -1401,7 +1500,7 @@ bool STDIO::FCmdTextSetFont(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Load a cursor only.  Do not set the tool permanently.  Used for
     roll over cursors.
 ***************************************************************************/
@@ -1559,7 +1658,7 @@ void STDIO::SetCurs(int32_t tool)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Tell the play button to go back to Play
 ***************************************************************************/
 void STDIO::PlayStopped(void)
@@ -1587,7 +1686,7 @@ void STDIO::PlayStopped(void)
     vpappb->FSetProp(kpridToolTipDelay, _dtimToolTipDelay);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine changed the tool, now change the UI
 ***************************************************************************/
 void STDIO::ChangeTool(int32_t tool)
@@ -1647,7 +1746,7 @@ void STDIO::ChangeTool(int32_t tool)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine deleted the scene.
 ***************************************************************************/
 void STDIO::SceneNuked(void)
@@ -1672,7 +1771,7 @@ void STDIO::SceneNuked(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine Undeleted a scene.
 ***************************************************************************/
 void STDIO::SceneUnnuked(void)
@@ -1698,7 +1797,7 @@ void STDIO::SceneUnnuked(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine deleted an actor.
 ***************************************************************************/
 void STDIO::ActorNuked(void)
@@ -1711,7 +1810,7 @@ void STDIO::ActorNuked(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Enables/Disables the tools
 ***************************************************************************/
 void STDIO::_SetToolStates(void)
@@ -1730,7 +1829,7 @@ void STDIO::_SetToolStates(void)
     }
 
     //
-    // Enable everything, since we now have a scene.
+    // 3DMMv1.0: Enable everything, since we now have a scene.
     //
     if ((pgok != pvNil) && pgok->FIs(kclsGOK))
     {
@@ -1789,7 +1888,7 @@ void STDIO::_SetToolStates(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine inserted the first actor into the movie.
 ***************************************************************************/
 void STDIO::EnableActorTools(void)
@@ -1807,7 +1906,7 @@ void STDIO::EnableActorTools(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine inserted the first actor into the movie.
 ***************************************************************************/
 void STDIO::EnableTboxTools(void)
@@ -1825,7 +1924,7 @@ void STDIO::EnableTboxTools(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine has a new selected textbox.
 ***************************************************************************/
 void STDIO::TboxSelected(void)
@@ -1833,7 +1932,7 @@ void STDIO::TboxSelected(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine has a new undo buffer state
 ***************************************************************************/
 void STDIO::SetUndo(int32_t undo)
@@ -1851,7 +1950,7 @@ void STDIO::SetUndo(int32_t undo)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up the costume changer / 3-D Text easel.  Returns fTrue if user
     made changes, else fFalse.
 ***************************************************************************/
@@ -1864,7 +1963,7 @@ void STDIO::ActorEasel(bool *pfActrChanged)
     *pfActrChanged = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up the costume changer / 3-D Text easel.  Returns fTrue if user
     made changes, else fFalse.
 ***************************************************************************/
@@ -1879,8 +1978,8 @@ bool STDIO::FCmdActorEaselOpen(PCMD pcmd)
     vapp.BeginLongOp();
 
     //
-    // Start the easel.
-    // Note: easels are self-managing, so we don't need to keep the PESL
+    // 3DMMv1.0: Start the easel.
+    // 3DMMv1.0: Note: easels are self-managing, so we don't need to keep the PESL
     //
     if (pactr->Ptmpl()->FIsTdt())
     {
@@ -1895,7 +1994,7 @@ bool STDIO::FCmdActorEaselOpen(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     This frame has a pause type.
 ***************************************************************************/
 void STDIO::PauseType(WIT wit)
@@ -1938,7 +2037,7 @@ void STDIO::PauseType(WIT wit)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine is recording
 ***************************************************************************/
 void STDIO::Recording(bool fRecording, bool fRecord)
@@ -1973,7 +2072,7 @@ void STDIO::Recording(bool fRecording, bool fRecord)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine has an actor ready to be sooner/latered
 ***************************************************************************/
 void STDIO::StartSoonerLater(void)
@@ -2010,7 +2109,7 @@ void STDIO::StartSoonerLater(void)
     _fStartedSoonerLater = fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine has completed a sooner/later
 ***************************************************************************/
 void STDIO::EndSoonerLater(void)
@@ -2044,7 +2143,7 @@ void STDIO::EndSoonerLater(void)
     _fStartedSoonerLater = fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine has placed an actor.
 ***************************************************************************/
 void STDIO::NewActor(void)
@@ -2112,7 +2211,7 @@ void STDIO::NewActor(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The RollCall needs a mapping from Tmpl CNO's to the GOKD thumb cno
 ***************************************************************************/
 bool STDIO::FAddCmg(CNO cnoTmpl, CNO cnoGokd)
@@ -2132,14 +2231,14 @@ bool STDIO::FAddCmg(CNO cnoTmpl, CNO cnoGokd)
             return fTrue;
         }
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     cmg.cnoTmpl = cnoTmpl;
     cmg.cnoGokd = cnoGokd;
     return _pglcmg->FAdd(&cmg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the cnoGokd corres to the cnoTmpl
 ***************************************************************************/
 CNO STDIO::CnoGokdFromCnoTmpl(CNO cnoTmpl)
@@ -2159,7 +2258,7 @@ CNO STDIO::CnoGokdFromCnoTmpl(CNO cnoTmpl)
     return cnoNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine needs the action browser for the currently selected actor
 ***************************************************************************/
 void STDIO::StartActionBrowser(void)
@@ -2183,7 +2282,7 @@ void STDIO::StartActionBrowser(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start the listener easel
 ***************************************************************************/
 void STDIO::StartListenerEasel(void)
@@ -2193,7 +2292,7 @@ void STDIO::StartListenerEasel(void)
     vpcex->EnqueueCid(cidListenerEaselOpen);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start the listener easel
 ***************************************************************************/
 bool STDIO::FCmdListenerEaselOpen(PCMD pcmd)
@@ -2201,12 +2300,12 @@ bool STDIO::FCmdListenerEaselOpen(PCMD pcmd)
     AssertThis(0);
     AssertVarMem(pcmd);
 
-    // Note: easels are self-managing, so we don't need to keep the PESLL
+    // 3DMMv1.0: Note: easels are self-managing, so we don't need to keep the PESLL
     ESLL::PesllNew(_pcrm, _pmvie, _pmvie->Pscen()->PactrSelected());
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Try to exit the studio.  The fClearCache flag is fTrue by default,
     but should bet set to fFalse if the app is about to quit so we don't
     bother clearing the caches (since it's slow and requires the CD(s) to
@@ -2233,7 +2332,7 @@ bool STDIO::FShutdown(bool fClearCache)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static function to stop the action button animation
 ***************************************************************************/
 void STDIO::PauseActionButton(void)
@@ -2248,7 +2347,7 @@ void STDIO::PauseActionButton(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static function to resume the action button animation
 ***************************************************************************/
 void STDIO::ResumeActionButton(void)
@@ -2263,7 +2362,7 @@ void STDIO::ResumeActionButton(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine is using the tool, now play the sound
 ***************************************************************************/
 void STDIO::PlayUISound(int32_t tool, int32_t grfcust)
@@ -2468,7 +2567,7 @@ void STDIO::PlayUISound(int32_t tool, int32_t grfcust)
     }
 
     //
-    // Find the sound and play it
+    // 3DMMv1.0: Find the sound and play it
     //
     if ((pcrf = _pcrm->PcrfFindChunk(kctgWave, cno)) != pvNil)
     {
@@ -2476,7 +2575,7 @@ void STDIO::PlayUISound(int32_t tool, int32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The movie engine is done using the tool, now stop the sound
 ***************************************************************************/
 void STDIO::StopUISound(void)
@@ -2489,7 +2588,7 @@ void STDIO::StopUISound(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a Misc Studio stn
 ***************************************************************************/
 void STDIO::GetStnMisc(int32_t ids, PSTN pstn)
@@ -2498,7 +2597,7 @@ void STDIO::GetStnMisc(int32_t ids, PSTN pstn)
     AssertDo(_pgstMisc->FFindExtra(&ids, pstn), "Invalid studio.cht or ids");
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdToggleXY
         Command handler to toggle the XY button setting in the studio
 
@@ -2525,7 +2624,7 @@ bool STDIO::FCmdToggleXY(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdHelpBook
         Command handler to bring up the help book
 
@@ -2553,7 +2652,7 @@ bool STDIO::FCmdHelpBook(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdMovieGoto
         Command handler to force the movie to a specific scene and frame number
 
@@ -2567,13 +2666,13 @@ bool STDIO::FCmdMovieGoto(PCMD pcmd)
 {
     AssertThis(0);
     AssertVarMem(pcmd);
-    /* REVIEW seanse (peted): not good!  This allows script to pump whatever
+    /* 3DMMv1.0: REVIEW seanse (peted): not good!  This allows script to pump whatever
         number it feels like into our code, with no range checking. */
     _pmvie->LwSetMoviePos(pcmd->rglw[0], pcmd->rglw[1]);
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdSoundsEnabled
         Command handler to enabled/disable movie sounds.
 
@@ -2591,7 +2690,7 @@ bool STDIO::FCmdSoundsEnabled(PCMD pcmd)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FCmdCreateTbox
         Command handler to create a textbox.
 
@@ -2618,7 +2717,7 @@ bool STDIO::FCmdCreateTbox(PCMD pcmd)
     return fTrue;
 }
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Updates the title display
  *
  * Parameters:
@@ -2636,7 +2735,7 @@ void STDIO::UpdateTitle(PSTN pstnTitle)
     STN stnFontSize;
     int32_t dypFontSize;
 
-    // Set the movie title
+    // 3DMMv1.0: Set the movie title
     if (_ptgobTitle == pvNil)
     {
         _ptgobTitle = TGOB::PtgobCreate(kidName, idsStudioFont, tavCenter);
@@ -2660,7 +2759,7 @@ void STDIO::UpdateTitle(PSTN pstnTitle)
 }
 
 #ifdef DEBUG
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
         Tells the movie to write bitmaps as it plays, and plays the movie.
 ************************************************************ PETED ***********/
 bool STDIO::FCmdWriteBmps(PCMD pcmd)
@@ -2673,11 +2772,11 @@ bool STDIO::FCmdWriteBmps(PCMD pcmd)
     }
     return fTrue;
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifdef DEBUG
 
-/****************************************************
+/** 3DMMv1.0: **************************************************
  * Mark memory used by the STDIO
  *
  * Parameters:
@@ -2704,7 +2803,7 @@ void STDIO::MarkMem(void)
     TDT::MarkActionNames();
 
     //
-    // Mark browser objects
+    // 3DMMv1.0: Mark browser objects
     //
     int32_t ipbrcn;
     PBRCN pbrcn;
@@ -2719,7 +2818,7 @@ void STDIO::MarkMem(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Assert the validity of the STDIO.
  *
@@ -2744,16 +2843,16 @@ void STDIO::AssertValid(uint32_t grf)
     AssertNilOrPo(_ptgobTitle, 0);
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for SMCC.
 ***************************************************************************/
 SMCC::SMCC(int32_t dxp, int32_t dyp, int32_t cbCache, PSSCB psscb, PSTDIO pstdio) : MCC(dxp, dyp, cbCache)
 {
     AssertNilOrPo(psscb, 0);
-    // Note: Would like to do an AssertPo here but can't
-    // the studio isn't necessarily set up yet.
+    // 3DMMv1.0: Note: Would like to do an AssertPo here but can't
+    // 3DMMv1.0: the studio isn't necessarily set up yet.
     AssertBasePo(pstdio, 0);
 
     _psscb = psscb;
@@ -2763,7 +2862,7 @@ SMCC::SMCC(int32_t dxp, int32_t dyp, int32_t cbCache, PSSCB psscb, PSTDIO pstdio
     _dypTextTbox = 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
  *
  * Update RollCall
  *
@@ -2801,7 +2900,7 @@ void SMCC::UpdateRollCall(void)
         _pstdio->PbrwrProp()->FUpdate(aridSel, _pstdio);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     DypTextDef
         Retrieve a default text size for a textbox in a movie.
 ************************************************************ PETED ***********/
@@ -2818,7 +2917,7 @@ int32_t SMCC::DypTboxDef(void)
     return _dypTextTbox;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FQueryPurgeSounds
         Displays a query to the user, asking whether to purge unused imported
         sounds in the file.
@@ -2836,8 +2935,106 @@ bool SMCC::FQueryPurgeSounds(void)
     return vapp.TModal(vapp.PcrmAll(), ktpcQueryPurgeSounds, &stnMsg, bkYesNo) == tYes;
 }
 
-#ifdef DEBUG
 /***************************************************************************
+ *
+ * Align the current scene camera-track yaw to the selected object's longest
+ * transformed side.  The invisible scene-tab button sends this command.
+ *
+ **************************************************************************/
+bool STDIO::FCmdCameraTrackAlign(PCMD pcmd)
+{
+    AssertThis(0);
+    AssertVarMem(pcmd);
+
+    if (_pmvie != pvNil)
+        _pmvie->FAlignCameraTrackYawToSelectedActor();
+
+    return fTrue;
+}
+
+/***************************************************************************
+ *
+ * Toggle continue-animation-in-place.  This changes only the continue-action
+ * recording path; ordinary compose movement remains untouched.
+ *
+ **************************************************************************/
+bool STDIO::FCmdContinueInPlace(PCMD pcmd)
+{
+    AssertThis(0);
+    AssertVarMem(pcmd);
+
+    if (_pmvie != pvNil)
+    {
+        PMVU pmvu = (PMVU)_pmvie->PddgGet(0);
+        AssertPo(pmvu, 0);
+        pmvu->SetFContinueInPlace(FPure(pcmd->rglw[0]));
+    }
+
+    return fTrue;
+}
+
+
+/***************************************************************************
+ *
+ * Refresh or open the current scene's Depth Motion Tween editor.  rglw[0]
+ * is false when the Scene-tab GOB is created and true when it is clicked.
+ *
+ **************************************************************************/
+bool STDIO::FCmdDepthMotionTween(PCMD pcmd)
+{
+    AssertThis(0);
+    AssertVarMem(pcmd);
+
+    if (_pmvie != pvNil)
+    {
+        if (FPure(pcmd->rglw[0]))
+            _pmvie->FOpenDepthMotionTweenEditor();
+        if (_psmcc != pvNil && _psmcc->Psscb() != pvNil)
+            _psmcc->Psscb()->Update();
+    }
+
+    return fTrue;
+}
+
+
+/***************************************************************************
+ *
+ * Toggle Manual Camera mode.  Activation is refused while the selected
+ * frame lies inside a Depth Motion Tween.  The movie owns the authoritative
+ * mode state and deselects all scene objects when entering the mode.
+ *
+ **************************************************************************/
+bool STDIO::FCmdManualCamera(PCMD pcmd)
+{
+    AssertThis(0);
+    AssertVarMem(pcmd);
+
+    if (_pmvie != pvNil)
+    {
+        // The button's create script sends false solely to synchronize its
+        // indicator after the Scene tab is constructed.  Only a real click
+        // enters Manual Camera or opens the current frame editor.
+        if (FPure(pcmd->rglw[0]))
+        {
+            // The GOK action map distinguishes the two gestures at mouse-down
+            // time.  Do not sample Ctrl after the queued command arrives: by
+            // then Windows may already report it released.
+            bool fEdit = FPure(pcmd->rglw[1]);
+            if (fEdit && _pmvie->FManualCameraFrameActive())
+                _pmvie->FOpenManualCameraFrameEditor();
+            else if (!fEdit)
+                _pmvie->FSetManualCameraMode(fTrue);
+        }
+
+        if (_psmcc != pvNil && _psmcc->Psscb() != pvNil)
+            _psmcc->Psscb()->Update();
+    }
+
+    return fTrue;
+}
+
+#ifdef DEBUG
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the SMCC
 ***************************************************************************/
 void SMCC::AssertValid(uint32_t grf)
@@ -2846,7 +3043,7 @@ void SMCC::AssertValid(uint32_t grf)
     AssertPo(_psscb, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the SMCC
 ***************************************************************************/
 void SMCC::MarkMem(void)
@@ -2856,4 +3053,4 @@ void SMCC::MarkMem(void)
     MarkMemObj(_psscb);
 }
 
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG

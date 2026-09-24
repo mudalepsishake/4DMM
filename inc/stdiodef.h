@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Defines for all the studio placing, cids, etc.
 
@@ -12,27 +12,27 @@
 #ifndef STDIODEF_H
 #define STDIODEF_H
 
-// Define this flag to enable frame-per-second display code
-// #define SHOW_FPS
+// 3DMMv1.0: Define this flag to enable frame-per-second display code
+// 3DMMv1.0: #define SHOW_FPS
 
 #include "socdef.h"
 #include "utestres.h"
 
 //
-// Cache size needed for the studio
+// 3DMMv1.0: Cache size needed for the studio
 //
 #define kcbStudioCache (256 * 1024)
 
 //
-// Tooltip delay.
+// 3DMMv1.0: Tooltip delay.
 //
-//  The time below is in 60ths of a second (see clok.h in kauai -
-//    couldn't use kdtim... 'cause it's defined to be a const long )
+// 3DMMv1.0:  The time below is in 60ths of a second (see clok.h in kauai -
+// 3DMMv1.0:    couldn't use kdtim... 'cause it's defined to be a const long )
 
 #define kdtimToolTipDelay 90
 
 //
-// Cids for script->code communication
+// 3DMMv1.0: Cids for script->code communication
 //
 #define cidXYAxis 50000
 #define cidXZAxis 50001
@@ -148,8 +148,20 @@
 #define cidSceneThumb 50113
 #define cidQuerySaveDocResult 50114
 #define cidToggleFullscreen 50115
+#define cidCameraTrackAlign 50116
+#define cidContinueInPlace 50117
+#define cidDepthMotionTween 50118
+#define cidManualCamera 50119
+#define cidEaselPickColor 50120
+#define cidLightLab 50121
+#define cid4DMMSceneLights 50122
+#define cid4DMMHideLightObjects 50123
+#define cid4DMMSettings 50124
+#define cid4DMMObjectGroups 50125
+#define cid4DMMActorStudio 50126
+#define cid4DMMObj2Vxp2 50127
 
-// Misc Studio Strings
+// 3DMMv1.0: Misc Studio Strings
 #define idsBrowserPage 0
 #define idsSoundFont 7
 #define idsActionFont 8
@@ -161,10 +173,10 @@
 #define idsMovieNameDypFont 29
 
 //
-// String Registry Entries
+// 3DMMv1.0: String Registry Entries
 //
-#define kstidActor 0x00500 // Thru 504
-#define kstidProp 0x00510  // Thru 514
+#define kstidActor 0x00500 // 3DMMv1.0: Thru 504
+#define kstidProp 0x00510  // 3DMMv1.0: Thru 514
 #define kstidQuerySave 0x00525
 #define kstidQueryCD 0x00526
 #define kstidQuerySoundDelete 0x00527
@@ -172,11 +184,15 @@
 #define kstidGenericError 0x00529
 
 //
-// Ids for each gob within the studio
+// 3DMMv1.0: Ids for each gob within the studio
 //
 #define kidStudio 0x20000
 #define kidPalette 0x20001
 #define kidBackground 0x20002
+#define kidCameraTrackAlign 0x20F00
+#define kidDepthMotionTween 0x20F01
+#define kidActorsContinueInPlaceVisual 0x20F02
+#define kidManualCamera 0x20F03
 #define kidSettingsCover 0x20005
 #define kidActorsCover 0x20006
 #define kidSoundsCover 0x20007
@@ -275,27 +291,27 @@
 #define kidBrowserObj 0x2006A
 #define kidActorsRotateNorm 0x2006B
 #define kidActorsTransformNorm 0x2006C
-#define kidBrwsSceneFrame 0x2006D // CNO for Scene browser frame
-#define kidBrwsActorFrame 0x2006E // CNO for Actor browser frame
+#define kidBrwsSceneFrame 0x2006D // 3DMMv1.0: CNO for Scene browser frame
+#define kidBrwsActorFrame 0x2006E // 3DMMv1.0: CNO for Actor browser frame
 #define kidBrwsMaterial 0x2006F
 #define kidBrwsCMaterial 0x20070
 #define kidBrwsFonts 0x20071
 #define kidBrwsForeColor 0x20072
 #define kidBrwsBackColor 0x20073
 #define kidBrwsTextSize 0x20074
-#define kidActorsBrowser 0x20075       // the button itself
-#define kidActorsPropBrowser 0x20076   // the button itself
-#define kidActorsSpletters 0x20077     // the button itself
-#define kidSoundsEfxBrowser 0x20078    // the button itself
-#define kidSoundsMicBrowser 0x20079    // the button itself
-#define kidSoundsMusicBrowser 0x2007A  // the button itself
-#define kidActorsActionBrowser 0x2007B // the button itself
+#define kidActorsBrowser 0x20075       // 3DMMv1.0: the button itself
+#define kidActorsPropBrowser 0x20076   // 3DMMv1.0: the button itself
+#define kidActorsSpletters 0x20077     // 3DMMv1.0: the button itself
+#define kidSoundsEfxBrowser 0x20078    // 3DMMv1.0: the button itself
+#define kidSoundsMicBrowser 0x20079    // 3DMMv1.0: the button itself
+#define kidSoundsMusicBrowser 0x2007A  // 3DMMv1.0: the button itself
+#define kidActorsActionBrowser 0x2007B // 3DMMv1.0: the button itself
 #define kidBrwsCamera 0x2007C
-#define kidBrwsCameraFrame 0x2007D // CNO for Camera browser frame
-#define kidBrwsPropFrame 0x2007E   // CNO for Camera browser frame
-#define kidBrwsActionFrame 0x2007F // CNO for Camera browser frame
-#define kidBrwsActionPrev 0x20080  // The action preview frame.
-#define kidGenericGlass 0x20081    // Covers all the tools to protect them from clicks
+#define kidBrwsCameraFrame 0x2007D // 3DMMv1.0: CNO for Camera browser frame
+#define kidBrwsPropFrame 0x2007E   // 3DMMv1.0: CNO for Camera browser frame
+#define kidBrwsActionFrame 0x2007F // 3DMMv1.0: CNO for Camera browser frame
+#define kidBrwsActionPrev 0x20080  // 3DMMv1.0: The action preview frame.
+#define kidGenericGlass 0x20081    // 3DMMv1.0: Covers all the tools to protect them from clicks
 #define kidFrameBackground 0x20082
 #define kidFrameTitle 0x20083
 #define kidFrameText 0x20084
@@ -341,7 +357,7 @@
 #define kidCostOk 0x200AD
 #define kidCostPreviewFrame 0x200AE
 
-/* Scene sorter */
+/* 3DMMv1.0: Scene sorter */
 #define kidSSorterBackground 0x200AF
 #define khidSceneSorter 0x200B0
 #define kidSSorterOpen 0x200B1
@@ -350,10 +366,10 @@
 #define kidSSorterCancel 0x200B4
 #define kidSSorterOk 0x200B5
 #define kidSSorterHand 0x200B6
-/* NOTE: the thumb kids *must* be immediately before the frame kids;
+/* 3DMMv1.0: NOTE: the thumb kids *must* be immediately before the frame kids;
  they are used in reverse order, starting at kidSSorterFrame - 1 */
-#define kidSceneSortThumbMin 0x200B7 // Next 0x20 are reserved
-#define kidSSorterFrame 0x200D7      // Next 0x40 are reserved
+#define kidSceneSortThumbMin 0x200B7 // 3DMMv1.0: Next 0x20 are reserved
+#define kidSSorterFrame 0x200D7      // 3DMMv1.0: Next 0x40 are reserved
 #define kidSSorterNuke 0x20117
 #define kidTransition1 0x20118
 #define kidTransition2 0x20119
@@ -363,7 +379,9 @@
 #define kidBrwsTextCreate 0x2011D
 #define kidCTextsStory 0x2011E
 #define kidCTextsScroll 0x2011F
+#define kidSpltColorPickerHotspot 0x20120
 #define kidSpltEditBox 0x20121
+#define kidCostColorPickerHotspot 0x20122
 #define kidCostEditBox 0x20123
 #define kidSpltGlass 0x20124
 #define kidCostGlass 0x20125
@@ -444,31 +462,31 @@
 #define kidListenVolFXMMThumb 0x20170
 
 //
-// Browser Controls
-// Browser buttons require a range of kids
+// 3DMMv1.0: Browser Controls
+// 3DMMv1.0: Browser buttons require a range of kids
 //
 #define kidRollCallActorDownArrow 0x21000
 #define kidRollCallActorUpArrow 0x21001
 #define kidRollCallPropDownArrow 0x21002
 #define kidRollCallPropUpArrow 0x21003
-#define kidImportPageFwd 0x21004 // Sound import
+#define kidImportPageFwd 0x21004 // 3DMMv1.0: Sound import
 #define kidImportPageBack 0x21005
 #define kidImportOk 0x21006
 #define kidImportCancel 0x21007
 #define kidImportPageNum 0x21008
 #define kidReserveProjects 0x21009
 
-// The following ordering of the control buttons must be preserved
-#define kidBrowserPageFwd 0x21010 // Control buttons are ordered
+// 3DMMv1.0: The following ordering of the control buttons must be preserved
+#define kidBrowserPageFwd 0x21010 // 3DMMv1.0: Control buttons are ordered
 #define kidBrowserPageBack 0x21011
 #define kidBrowserOk 0x21012
 #define kidBrowserCancel 0x21013
 #define kidBrowserImport 0x21014
 #define kidBrowserRecord 0x21015
 #define kidBrowserPageNum 0x21016
-#define kidBrowserCtrlLim 0x21020 // Reserved for future controls
-// Browser Frames
-#define kidRollCallActorFrame 0x21100 // Reserving future frames
+#define kidBrowserCtrlLim 0x21020 // 3DMMv1.0: Reserved for future controls
+// 3DMMv1.0: Browser Frames
+#define kidRollCallActorFrame 0x21100 // 3DMMv1.0: Reserving future frames
 #define kidRollCallActorFrame1 0x21100
 #define kidRollCallActorFrame2 0x21101
 #define kidRollCallActorFrame3 0x21102
@@ -480,12 +498,12 @@
 #define kidRollCallPropFrame4 0x21113
 #define kidBrowserFrame 0x21120
 #define kidBrowserFrameLim 0x21200
-// Import Frames
+// 3DMMv1.0: Import Frames
 #define kidImportFrame 0x21301
 #define kidImportThumbLim 0x21500
 
 //
-// Ids for popdowns
+// 3DMMv1.0: Ids for popdowns
 //
 #define kidSpltsColor 0x21501
 #define kidSpltsColorBackground 0x21502
@@ -550,19 +568,19 @@
 #define kidTextBkgdColorFrame 0x21585
 #define kidTextBkgdColorFrameLim 0x21590
 
-// Action preview buttons
+// 3DMMv1.0: Action preview buttons
 #define kidBrowserActionBackCel 0x21591
 #define kidBrowserActionChangeCel 0x21592
 #define kidBrowserActionFwdCel 0x21593
 
-#define kidGenericDisableGlass 0x21594 // Covers all the tools to protect them from clicks
+#define kidGenericDisableGlass 0x21594 // 3DMMv1.0: Covers all the tools to protect them from clicks
 #define kidTextFontThumb 0x21595
 
 #define kidPressPageFwd 0x21596
 #define kidPressPageBack 0x21597
 
 //
-// Start tool tip CNOs
+// 3DMMv1.0: Start tool tip CNOs
 //
 #define kttGenericPageFwd 0x22300
 #define kttGenericPageBack 0x22301
@@ -672,14 +690,14 @@
 #define kttCTextsScroll 0x22369
 #define kttBrowserRecord 0x2236A
 #define kttBrowserImportFX 0x2236B
-#define kttRollCallActorFrame 0x2236C // Reserving future frames thru 2238B
+#define kttRollCallActorFrame 0x2236C // 3DMMv1.0: Reserving future frames thru 2238B
 #define kttRollCallActorFrame1 0x2236D
 #define kttRollCallActorFrame2 0x2236E
 #define kttRollCallActorFrame3 0x2236F
 #define kttRollCallActorFrame4 0x22370
 #define kttRollCallActorUpArrow 0x2238A
 #define kttRollCallActorDownArrow 0x2238B
-#define kttRollCallPropFrame 0x2238C // Reserving future frames thru 223AD
+#define kttRollCallPropFrame 0x2238C // 3DMMv1.0: Reserving future frames thru 223AD
 #define kttRollCallPropFrame1 0x2238D
 #define kttRollCallPropFrame2 0x2238E
 #define kttRollCallPropFrame3 0x2238F
@@ -687,8 +705,8 @@
 #define kttRollCallPropUpArrow 0x223AE
 #define kttRollCallPropDownArrow 0x223AF
 
-// Note: ***** - 6.19.95  --these ids conflicted with spletter easel #defines...
-//  any particular reason other than human error?
+// 3DMMv1.0: Note: ***** - 6.19.95  --these ids conflicted with spletter easel #defines...
+// 3DMMv1.0:  any particular reason other than human error?
 
 #define kttSceneBackground 0x223B0
 #define kttRollCallProps 0x223B1
@@ -742,9 +760,11 @@
 #define kttFrameSlider 0x223E1
 #define kttBrowserImportSpeech 0x223E2
 #define kttBrowserImportMidi 0x223E3
+#define kttManualCamera 0x223E4
+#define kttDepthMotionTween 0x223E5
 
 //
-// Sound CNOs
+// 3DMMv1.0: Sound CNOs
 //
 #define kcnoCoverWav 0x23001
 #define kcnoPBrowseWav 0x23002
@@ -830,33 +850,35 @@
 #define kcnoRecordWav 0x23054
 
 //
-// the following are id's for help topics used as labels
+// 3DMMv1.0: the following are id's for help topics used as labels
 //
 #define klabFrameCounter 0x22500
 #define klabSceneCounter 0x22501
 #define klabName 0x22502
 #define klabFps 0x22503
 
-// Where to go in building after leaving studio.  The temp variable is
-// used to fix the real variable if an aborted attempt to go to the building
-// is made from the map. (Bug #1010)
+// 3DMMv1.0: Where to go in building after leaving studio.  The temp variable is
+// 3DMMv1.0: used to fix the real variable if an aborted attempt to go to the building
+// 3DMMv1.0: is made from the map. (Bug #1010)
 #define kpridBuildingGob 0x23300
 #define kpridBuildingGobT 0x23301
 #define kpridBuildingState 0x23302
 #define kpridBuildingStateT 0x23303
+#define kpridPlaybackOnly 0x23304
+#define kpridUndoHistory 0x23305
 
-// the following are "Property Id's" for Browsers.
+// 3DMMv1.0: the following are "Property Id's" for Browsers.
 //
-// The property foobarDef indicates the id of a default item that should
-// show in the browser page the first time it's instantiated per session
-// This will differ by series member.
+// 3DMMv1.0: The property foobarDef indicates the id of a default item that should
+// 3DMMv1.0: show in the browser page the first time it's instantiated per session
+// 3DMMv1.0: This will differ by series member.
 //
-// The property foobarPref is maintained by the browser code and IS
-// OVERWRITEABLE from script.  Upon creation, the browser will search
-// its content list and display the page which contains this content
+// 3DMMv1.0: The property foobarPref is maintained by the browser code and IS
+// 3DMMv1.0: OVERWRITEABLE from script.  Upon creation, the browser will search
+// 3DMMv1.0: its content list and display the page which contains this content
 //
-// NOTE: the only ones that really matter for scripting are the
-// actor, prop, background and sound* browsers.
+// 3DMMv1.0: NOTE: the only ones that really matter for scripting are the
+// 3DMMv1.0: actor, prop, background and sound* browsers.
 
 #define kpridBrwsBackgroundDef 0x23400
 #define kpridBrwsBackgroundPref 0x23401
@@ -883,21 +905,21 @@
 #define kpridBrwsOverrideSidThum 0x23413
 #define kpridBrwsOverrideKidThum 0x23414
 
-// kprids for user's data (bio pages, etc)
+// 3DMMv1.0: kprids for user's data (bio pages, etc)
 #define kpridUserDataBase 0x23500
-// these two are used for BIO PAGES
+// 3DMMv1.0: these two are used for BIO PAGES
 #define kpridUserData0 0x23500
 #define kpridUserData1 0x23501
 
-// this one is used for Studio information
+// 3DMMv1.0: this one is used for Studio information
 #define kpridStudioFlags 0x23502
 #define kpridUserData2 0x23502
 
-// this one is used for maintaing audio help on /off status
+// 3DMMv1.0: this one is used for maintaing audio help on /off status
 #define kpridMcZeeAudio 0x23503
 #define kpridUserData3 0x23503
 
-// bit flags for suppressing the above audio,
+// 3DMMv1.0: bit flags for suppressing the above audio,
 #define kflgMcZeeAudio 0x01
 #define kflgMelAudio 0x02
 
@@ -912,7 +934,7 @@
 #define kidStudioLim 0x23600
 
 //
-// Width of screen and workspace
+// 3DMMv1.0: Width of screen and workspace
 //
 #define kdxpBackground 640
 #define kdypBackground 480
@@ -922,7 +944,7 @@
 #define khidStudio khidLimKidFrame + 5
 
 //
-// Current tool in use
+// 3DMMv1.0: Current tool in use
 //
 #define chttNone 0
 #define chttCompose 1
@@ -960,19 +982,19 @@
 #define chttListener 36
 
 //
-// States for kcrsors
+// 3DMMv1.0: States for kcrsors
 //
 #define fcustHand 0x10000
 #define fcustNuke 0x20000
 
 //
-// Types of text boxes
+// 3DMMv1.0: Types of text boxes
 //
 #define ktbxtScroll 0
 #define ktbxtStory 1
 
 //
-// States of buttons
+// 3DMMv1.0: States of buttons
 //
 #define kstDisabled kst1
 #define kstClosed kst2
@@ -980,8 +1002,8 @@
 
 #define kstDefault kst1
 #define kstSelected kst2
-#define kstRecording kst3 // for the play button to flash
-#define kstFreeze kst3    // for the action browser animation
+#define kstRecording kst3 // 3DMMv1.0: for the play button to flash
+#define kstFreeze kst3    // 3DMMv1.0: for the action browser animation
 
 #define kstSceneDoorsOpen kst2
 #define kstActorDoorsOpen kst3
@@ -1032,7 +1054,7 @@
 #define fgrfstBrowserScrollingSel fgrfst6
 
 //
-// Script IDs
+// 3DMMv1.0: Script IDs
 //
 #define kchidResetTools kchidScript2
 #define kchidSetPauseType kchidScript3
@@ -1048,21 +1070,21 @@
 #define kchidOpenDoorsAll kchidScript10
 #define kchidPopoutSceneTools kchidScript11
 
-// All possible open portfolio types
+// 3DMMv1.0: All possible open portfolio types
 #define kpfPortOpenMovie 1
 #define kpfPortOpenSound 2
 #define kpfPortOpenTexture 3
 
-// All possible save portfolio types
+// 3DMMv1.0: All possible save portfolio types
 #define kpfPortSaveMovie 1
 
-// To set portfolio initial dir if necessary
+// 3DMMv1.0: To set portfolio initial dir if necessary
 #define kpfPortDirUsers 1
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Sound classes
 ***************************************************************************/
 
 #define ksclUISound 10000
 
-#endif // STDIODEF
+#endif // 3DMMv1.0: STDIODEF

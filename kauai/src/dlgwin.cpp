@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -13,7 +13,7 @@
 #include "frame.h"
 ASSERTNAME
 
-// dialog init structure
+// 3DMMv1.0: dialog init structure
 struct DLGI
 {
     PDLG pdlg;
@@ -22,7 +22,7 @@ struct DLGI
 
 achar _szDlgProp[] = PszLit("DLG");
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the dialog resource and construct the GGDIT.
     The dialog resource consists of:
 
@@ -66,16 +66,16 @@ bool DLG::_FInit(void)
         return fFalse;
     }
 
-    // get and skip the dtm
+    // 3DMMv1.0: get and skip the dtm
     dtm = *(DLGTEMPLATE *)psw;
     psw = (int16_t *)PvAddBv(psw, SIZEOF(dtm));
 
-    // get the number of items and ensure space in the GGDIT
+    // 3DMMv1.0: get the number of items and ensure space in the GGDIT
     Assert(dtm.cdit > 0, "no items in this dialog");
     if (!FEnsureSpace(dtm.cdit, SIZEOF(int32_t), fgrpNil))
         goto LFail;
 
-    // skip over the menu field
+    // 3DMMv1.0: skip over the menu field
     if (*psw == -1)
         psw += 2;
     else
@@ -84,7 +84,7 @@ bool DLG::_FInit(void)
             ;
     }
 
-    // skip over the class field
+    // 3DMMv1.0: skip over the class field
     if (*psw == -1)
         psw += 2;
     else
@@ -93,32 +93,32 @@ bool DLG::_FInit(void)
             ;
     }
 
-    // skip over the title
+    // 3DMMv1.0: skip over the title
     while (*psw++ != 0)
         ;
 
     if (dtm.style & DS_SETFONT)
     {
-        // skip over the point size
+        // 3DMMv1.0: skip over the point size
         psw++;
 
-        // skip over the font name
+        // 3DMMv1.0: skip over the font name
         while (*psw++ != 0)
             ;
     }
 
-    // look at the items
+    // 3DMMv1.0: look at the items
     for (csit = dtm.cdit, idit = 0; csit > 0; csit--)
     {
-        // align to dword
+        // 3DMMv1.0: align to dword
         if ((uintptr_t)psw & 2)
             psw++;
 
-        // get and skip the ditm
+        // 3DMMv1.0: get and skip the ditm
         ditm = *(DLGITEMTEMPLATE *)psw;
         psw = (int16_t *)PvAddBv(psw, SIZEOF(ditm));
 
-        // get and skip the class
+        // 3DMMv1.0: get and skip the class
         if (*psw == -1)
         {
             swClass = psw[1];
@@ -131,7 +131,7 @@ bool DLG::_FInit(void)
                 ;
         }
 
-        // skip the title
+        // 3DMMv1.0: skip the title
         if (*psw == -1)
             psw += 2;
         else
@@ -140,11 +140,11 @@ bool DLG::_FInit(void)
                 ;
         }
 
-        // the next word is a size of extra stuff
+        // 3DMMv1.0: the next word is a size of extra stuff
         psw = (int16_t *)PvAddBv(psw, psw[0] + SIZEOF(int16_t));
 
-        // We should be at the end of this item (except for possible padding).
-        // Now figure out what to do with the item.
+        // 3DMMv1.0: We should be at the end of this item (except for possible padding).
+        // 3DMMv1.0: Now figure out what to do with the item.
 
         fAddDit = fTrue;
         switch (swClass)
@@ -153,28 +153,28 @@ bool DLG::_FInit(void)
             fAddDit = fFalse;
             break;
 
-        case 0x0080: // button, radio button or check box
+        case 0x0080: // 3DMMv1.0: button, radio button or check box
             switch (ditm.style & 0x000F)
             {
             case 0:
             case 1:
-                // button
+                // 3DMMv1.0: button
                 dit.ditk = ditkButton;
                 cbEntry = 0;
                 break;
 
             case 2:
             case 3:
-                // check box
+                // 3DMMv1.0: check box
                 dit.ditk = ditkCheckBox;
                 cbEntry = SIZEOF(int32_t);
                 break;
 
             case 4:
             case 9:
-                // radio button
-                // if the radio button has the WS_GROUP style or the last
-                // dit is not a radio group, start a new group.
+                // 3DMMv1.0: radio button
+                // 3DMMv1.0: if the radio button has the WS_GROUP style or the last
+                // 3DMMv1.0: dit is not a radio group, start a new group.
                 if (!(ditm.style & WS_GROUP) && idit > 0)
                 {
                     GetDit(idit - 1, &dit);
@@ -187,7 +187,7 @@ bool DLG::_FInit(void)
                     }
                 }
 
-                // new group
+                // 3DMMv1.0: new group
                 dit.ditk = ditkRadioGroup;
                 cbEntry = SIZEOF(int32_t);
                 break;
@@ -198,12 +198,12 @@ bool DLG::_FInit(void)
             }
             break;
 
-        case 0x0081: // edit item
+        case 0x0081: // 3DMMv1.0: edit item
             dit.ditk = ditkEditText;
             cbEntry = 0;
             break;
 
-        case 0x0085: // combo item
+        case 0x0085: // 3DMMv1.0: combo item
             dit.ditk = ditkCombo;
             cbEntry = 0;
             break;
@@ -217,7 +217,7 @@ bool DLG::_FInit(void)
             if (!FInsert(idit, cbEntry, pvNil, &dit))
                 goto LFail;
 
-            // zero the extra data
+            // 3DMMv1.0: zero the extra data
             if (cbEntry > 0)
                 ClearPb(QvGet(idit), cbEntry);
             idit++;
@@ -235,7 +235,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Windows dialog proc.
 ***************************************************************************/
 INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw)
@@ -246,7 +246,7 @@ INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw)
     RC rcDlg;
     RC rcDsp;
 
-    // this may return nil
+    // 3DMMv1.0: this may return nil
     pdlg = (PDLG)GetProp(hdlg, _szDlgProp);
 
     switch (msg)
@@ -262,20 +262,20 @@ INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw)
         DLGI *pdlgi;
         RECT rcs;
 
-        // the pdlgi should be in the lParam
+        // 3DMMv1.0: the pdlgi should be in the lParam
         pdlgi = (DLGI *)lw;
         pdlg = pdlgi->pdlg;
         AssertPo(pdlg, 0);
 
-        // set the DLG property so we can find the pdlg easily
+        // 3DMMv1.0: set the DLG property so we can find the pdlg easily
         if (!SetProp(hdlg, _szDlgProp, (HANDLE)pdlg))
             goto LFail;
 
-        // create a timer so we can do idle processing
+        // 3DMMv1.0: create a timer so we can do idle processing
         if (SetTimer(hdlg, (UINT_PTR)hdlg, 10, pvNil) == 0)
             goto LFail;
 
-        // create a container gob and attach the hdlg
+        // 3DMMv1.0: create a container gob and attach the hdlg
         pdlg->_pgob = NewObj GOB(khidDialog);
         if (pdlg->_pgob == pvNil)
             goto LFail;
@@ -287,7 +287,7 @@ INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw)
             goto LEndDialog;
         }
 
-        // set the dialog values
+        // 3DMMv1.0: set the dialog values
         pdlg->SetValues(0, pdlg->IvMac());
         if (ivNil != pdlgi->iditFocus)
             pdlg->SelectDit(pdlgi->iditFocus);
@@ -359,7 +359,7 @@ INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw)
             else
                 idit = ivNil;
 
-            // remove the pdlg property and kill the timer
+            // 3DMMv1.0: remove the pdlg property and kill the timer
             RemoveProp(hdlg, _szDlgProp);
             KillTimer(hdlg, (UINT_PTR)hdlg);
 
@@ -373,7 +373,7 @@ INT_PTR CALLBACK _FDlgCore(HWND hdlg, UINT msg, WPARAM w, LPARAM lw)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Actually put up the dialog and don't return until it comes down.
     Returns the idit that dismissed the dialog.  Returns ivNil on failure.
 ***************************************************************************/
@@ -389,7 +389,7 @@ int32_t DLG::IditDo(int32_t iditFocus)
     return idit;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make the given item the "focused" item and select its contents.  The
     item should be a text item or combo item.
 ***************************************************************************/
@@ -413,7 +413,7 @@ void DLG::SelectDit(int32_t idit)
     SendDlgItemMessage(hdlg, dit.sitMin, EM_SETSEL, GET_EM_SETSEL_MPS(0, -1));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the value of a radio group.
 ***************************************************************************/
 int32_t DLG::_LwGetRadioGroup(int32_t idit)
@@ -436,7 +436,7 @@ int32_t DLG::_LwGetRadioGroup(int32_t idit)
     return dit.sitLim - dit.sitMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change a radio group value.
 ***************************************************************************/
 void DLG::_SetRadioGroup(int32_t idit, int32_t lw)
@@ -453,7 +453,7 @@ void DLG::_SetRadioGroup(int32_t idit, int32_t lw)
     CheckRadioButton(hdlg, dit.sitMin, dit.sitLim - 1, dit.sitMin + lw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the current value of a check box.
 ***************************************************************************/
 bool DLG::_FGetCheckBox(int32_t idit)
@@ -470,7 +470,7 @@ bool DLG::_FGetCheckBox(int32_t idit)
     return FPure(IsDlgButtonChecked(hdlg, dit.sitMin));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Invert the value of a check box.
 ***************************************************************************/
 void DLG::_InvertCheckBox(int32_t idit)
@@ -478,7 +478,7 @@ void DLG::_InvertCheckBox(int32_t idit)
     _SetCheckBox(idit, !_FGetCheckBox(idit));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the value of a check box.
 ***************************************************************************/
 void DLG::_SetCheckBox(int32_t idit, bool fOn)
@@ -495,7 +495,7 @@ void DLG::_SetCheckBox(int32_t idit, bool fOn)
     CheckDlgButton(hdlg, dit.sitMin, FPure(fOn));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the text from an edit control or combo.
 ***************************************************************************/
 void DLG::_GetEditText(int32_t idit, PSTN pstn)
@@ -516,7 +516,7 @@ void DLG::_GetEditText(int32_t idit, PSTN pstn)
     *pstn = sz;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the text in an edit control or combo.
 ***************************************************************************/
 void DLG::_SetEditText(int32_t idit, PSTN pstn)
@@ -535,7 +535,7 @@ void DLG::_SetEditText(int32_t idit, PSTN pstn)
     SetDlgItemText(hdlg, dit.sitMin, pstn->Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a string to a combo item.
 ***************************************************************************/
 bool DLG::_FAddToList(int32_t idit, PSTN pstn)
@@ -561,7 +561,7 @@ bool DLG::_FAddToList(int32_t idit, PSTN pstn)
     return 0 <= (int32_t)SendMessage(hwndCombo, CB_ADDSTRING, 0, (LPARAM)pstn->Psz());
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Empty the list portion of the combo item.
 ***************************************************************************/
 void DLG::_ClearList(int32_t idit)

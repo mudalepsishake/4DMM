@@ -1,0 +1,254 @@
+diff --git a/core/v1db/modrend.c b/core/v1db/modrend.c
+index 8ff96f9..07dec9e 100644
+--- a/core/v1db/modrend.c
++++ b/core/v1db/modrend.c
+@@ -211,10 +211,31 @@ static struct br_model bounds_model = {
+ /*
+  * Fills in above cuboid mesh that represents the given bounding box
+  */
++static br_boolean boundsMatch(const br_bounds *a, const br_bounds *b)
++{
++    for(int i = 0; i < 3; ++i) {
++        if(a->min.v[i] != b->min.v[i] || a->max.v[i] != b->max.v[i])
++            return BR_FALSE;
++    }
++    return BR_TRUE;
++}
++
+ static struct br_model *makeMeshFromBounds(br_bounds *b)
+ {
+     int i;
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * glrend is stored-geometry-only. If a previous synthetic bounds mesh was
++     * uploaded and the requested bounds changed, discard that GL object before
++     * rewriting the shared prepared vertex array.
++     */
++    if(bounds_model.stored != NULL && !boundsMatch(&bounds_model.bounds, b)) {
++        ObjectFree(bounds_model.stored);
++        bounds_model.stored = NULL;
++    }
++#endif
++
+     /*
+      * Fill in vertices
+      */
+@@ -256,7 +277,31 @@ static void boundingBoxRenderPoints(br_actor *actor, br_model *model, br_materia
+  */
+ static void boundingBoxRenderEdges(br_actor *actor, br_model *model, br_material *material, void *render_data, br_uint_8 style, int on_screen)
+ {
+-    renderAll(makeMeshFromBounds(&model->bounds), material, BRT_LINE, on_screen);
++    br_model *box = makeMeshFromBounds(&model->bounds);
++
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * The historical software renderer could draw the static prepared bounds
++     * model through GeometryV1ModelRender(). glrend intentionally implements
++     * stored geometry only, so the old BR_RSTYLE_BOUNDING_EDGES path silently
++     * had nothing it could submit. Lazily upload the tiny synthetic cuboid and
++     * let the normal stored renderer draw its prepared unique edges.
++     */
++    if(box->stored == NULL && v1db.renderer != NULL && v1db.format_model != NULL) {
++        struct br_geometry_stored *sg = NULL;
++        br_token_value tv[] = {
++            {.t = BRT_CAN_SHARE_B, {.b = BR_TRUE}},
++            {.t = BR_NULL_TOKEN},
++        };
++
++        if(GeometryV1ModelStoredNew(v1db.format_model, v1db.renderer, &sg, box->prepared, BRT_TRIANGLE, tv) == BRE_OK)
++            box->stored = sg;
++        else
++            BrWarning("3DMM glrend could not create stored bounding-edge model");
++    }
++#endif
++
++    renderAll(box, material, BRT_LINE, on_screen);
+ }
+ 
+ /*
+diff --git a/drivers/glrend/gstored.h b/drivers/glrend/gstored.h
+index 79f2be3..f0727cd 100644
+--- a/drivers/glrend/gstored.h
++++ b/drivers/glrend/gstored.h
+@@ -37,10 +37,17 @@ typedef struct gl_groupinfo {
+     GLsizei count;
+ 
+     /*
+-     * Offset for glDrawElements()
++     * Offset for triangle glDrawElements().
+      */
+     void *offset;
+ 
++    /*
++     * Unique prepared-edge indices for BRT_LINE.  BRender edge id 0 marks
++     * internal/coplanar edges and is deliberately omitted.
++     */
++    GLsizei line_count;
++    void   *line_offset;
++
+     /*
+      * Byte offset of this group's first vertex in the VBO.
+      */
+diff --git a/drivers/glrend/gstored.c b/drivers/glrend/gstored.c
+index 2165662..4c3fb2d 100644
+--- a/drivers/glrend/gstored.c
++++ b/drivers/glrend/gstored.c
+@@ -92,34 +92,80 @@ static GLuint build_vbo(const GladGLContext *gl, const struct v11model *model, s
+ 
+ static GLuint build_ibo(const GladGLContext *gl, const struct v11model *model, size_t total_faces, gl_groupinfo *groups)
+ {
+-    br_uint_16 *idx = (br_uint_16 *)BrScratchAllocate(total_faces * 3 * sizeof(br_uint_16));
++    size_t total_edges = 0;
++    for(br_uint_16 i = 0; i < model->ngroups; ++i) {
++        const struct v11group *gp = model->groups + i;
++        if(gp->edges != NULL && gp->nedges > 1)
++            total_edges += gp->nedges - 1;
++    }
++
++    br_uint_16 *idx = (br_uint_16 *)BrScratchAllocate((total_faces * 3 + total_edges * 2) * sizeof(br_uint_16));
+     GLuint      buf;
+ 
+-    br_uint_16 *nextIdx     = idx;
+-    br_uint_16  offset      = 0;
+-    br_size_t   face_offset = 0;
++    br_uint_16 *nextIdx      = idx;
++    br_uint_16  vertex_base  = 0;
++    br_size_t   index_offset = 0;
+ 
+     for(br_uint_16 i = 0; i < model->ngroups; ++i) {
+         const struct v11group *gp = model->groups + i;
+-        for(br_uint_16 f = 0; f < gp->nfaces; ++f) {
+-            const br_vector3_u16 *fp = gp->vertex_numbers + f;
+-            *nextIdx++               = fp->v[0] + offset;
+-            *nextIdx++               = fp->v[1] + offset;
+-            *nextIdx++               = fp->v[2] + offset;
+-        }
+ 
+         groups[i].count  = (GLsizei)gp->nfaces * 3;
+-        groups[i].offset = (void *)(br_uintptr_t)face_offset;
++        groups[i].offset = (void *)(br_uintptr_t)index_offset;
+         groups[i].group  = model->groups + i;
+ 
+-        face_offset += (br_size_t)gp->nfaces * 3 * sizeof(br_uint_16);
++        for(br_uint_16 f = 0; f < gp->nfaces; ++f) {
++            const br_vector3_u16 *fp = gp->vertex_numbers + f;
++            *nextIdx++               = fp->v[0] + vertex_base;
++            *nextIdx++               = fp->v[1] + vertex_base;
++            *nextIdx++               = fp->v[2] + vertex_base;
++        }
++        index_offset += (br_size_t)groups[i].count * sizeof(br_uint_16);
++
++        groups[i].line_count  = 0;
++        groups[i].line_offset = (void *)(br_uintptr_t)index_offset;
++
++        if(gp->edges != NULL && gp->nedges > 1) {
++            br_uint_8 *seen = BrScratchAllocate(gp->nedges * sizeof(*seen));
++            memset(seen, 0, gp->nedges * sizeof(*seen));
++            seen[0] = 1; /* BRender reserves edge 0 for internal/coplanar edges. */
++
++            for(br_uint_16 f = 0; f < gp->nfaces; ++f) {
++                const br_vector3_u16 *fp = gp->vertex_numbers + f;
++                const br_vector3_u16 *ep = gp->edges + f;
++
++                for(br_uint_16 e = 0; e < 3; ++e) {
++                    const br_uint_16 edge_id = ep->v[e];
++                    if(edge_id >= gp->nedges || seen[edge_id])
++                        continue;
++
++                    switch(e) {
++                        case 0:
++                            *nextIdx++ = fp->v[0] + vertex_base;
++                            *nextIdx++ = fp->v[1] + vertex_base;
++                            break;
++                        case 1:
++                            *nextIdx++ = fp->v[1] + vertex_base;
++                            *nextIdx++ = fp->v[2] + vertex_base;
++                            break;
++                        default:
++                            *nextIdx++ = fp->v[2] + vertex_base;
++                            *nextIdx++ = fp->v[0] + vertex_base;
++                            break;
++                    }
++                    seen[edge_id] = 1;
++                    groups[i].line_count += 2;
++                }
++            }
++            BrScratchFree(seen);
++        }
+ 
+-        offset += model->groups[i].nvertices;
++        index_offset += (br_size_t)groups[i].line_count * sizeof(br_uint_16);
++        vertex_base += gp->nvertices;
+     }
+ 
+     gl->GenBuffers(1, &buf);
+     gl->BindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf);
+-    gl->BufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)face_offset, idx, GL_STATIC_DRAW);
++    gl->BufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)index_offset, idx, GL_STATIC_DRAW);
+     BrScratchFree(idx);
+     return buf;
+ }
+@@ -610,7 +656,7 @@ static br_error V1Model_RenderStored(br_geometry_stored *self, br_renderer *rend
+ 
+ static br_error BR_CMETHOD(br_geometry_stored_gl, render)(br_geometry_stored *self, br_renderer *renderer, br_token type)
+ {
+-    if(type != BRT_TRIANGLE && type != BRT_POINT)
++    if(type != BRT_TRIANGLE && type != BRT_POINT && type != BRT_LINE)
+         return BRE_FAIL;
+ 
+     return V1Model_RenderStored(self, renderer, type, BR_FALSE);
+@@ -618,7 +664,7 @@ static br_error BR_CMETHOD(br_geometry_stored_gl, render)(br_geometry_stored *se
+ 
+ static br_error BR_CMETHOD(br_geometry_stored_gl, renderOnScreen)(br_geometry_stored *self, br_renderer *renderer, br_token type)
+ {
+-    if(type != BRT_TRIANGLE && type != BRT_POINT)
++    if(type != BRT_TRIANGLE && type != BRT_POINT && type != BRT_LINE)
+         return BRE_FAIL;
+ 
+     return V1Model_RenderStored(self, renderer, type, BR_TRUE);
+diff --git a/drivers/glrend/v1model.c b/drivers/glrend/v1model.c
+index 899b7fb..61ce0e3 100644
+--- a/drivers/glrend/v1model.c
++++ b/drivers/glrend/v1model.c
+@@ -490,21 +490,34 @@ void RendererGLRenderGroup(br_renderer *self, br_geometry_stored *stored, const
+     switch(self->state.current->render_type) {
+         case BRT_POINT:
+             gl->DrawArrays(GL_POINTS, (GLint)(groupinfo->vertex_offset / sizeof(gl_vertex_f)), groupinfo->group->nvertices);
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++            RendererGL3DMMDiagDraw(gl, "point-group", groupinfo->group->nvertices, groupinfo->group->nvertices);
++#endif
++            self->stats.vertices_rendered_count += groupinfo->group->nvertices;
++            break;
++
++        case BRT_LINE:
++            if(groupinfo->line_count > 0)
++                gl->DrawElements(GL_LINES, groupinfo->line_count, GL_UNSIGNED_SHORT, groupinfo->line_offset);
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++            RendererGL3DMMDiagDraw(gl, "line-group", (br_uint_32)groupinfo->line_count / 2, (br_uint_32)groupinfo->line_count);
++#endif
++            self->stats.vertices_rendered_count += groupinfo->line_count;
+             break;
+ 
+         case BRT_TRIANGLE:
+         default:
+             gl->DrawElements(GL_TRIANGLES, groupinfo->count, GL_UNSIGNED_SHORT, groupinfo->offset);
+-    }
+-
+ #if BRENDER_LEGACY_3DMM_MODEL_ABI
+-    RendererGL3DMMDiagDraw(gl, "group", groupinfo->group->nfaces, groupinfo->group->nvertices);
++            RendererGL3DMMDiagDraw(gl, "triangle-group", groupinfo->group->nfaces, groupinfo->group->nvertices);
+ #endif
++            self->stats.triangles_rendered_count += groupinfo->group->nfaces;
++            self->stats.triangles_drawn_count += groupinfo->group->nfaces;
++            self->stats.vertices_rendered_count += groupinfo->group->nfaces * 3;
++            break;
++    }
+ 
+     self->stats.face_group_count++;
+-    self->stats.triangles_rendered_count += groupinfo->group->nfaces;
+-    self->stats.triangles_drawn_count += groupinfo->group->nfaces;
+-    self->stats.vertices_rendered_count += groupinfo->group->nfaces * 3;
+     self->stats.opaque_draw_count += 1;
+ }
+ 

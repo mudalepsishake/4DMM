@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -18,7 +18,7 @@ RTCLASS(GOKD)
 RTCLASS(GKDS)
 RTCLASS(WOKS)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read a GKDS from the CRF. This is a CRF object reader.
 ***************************************************************************/
 bool GKDS::FReadGkds(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -95,7 +95,7 @@ bool GKDS::FReadGkds(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a GKDS object.
 ***************************************************************************/
 GKDS::~GKDS(void)
@@ -104,7 +104,7 @@ GKDS::~GKDS(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a GKDS.
 ***************************************************************************/
 void GKDS::AssertValid(uint32_t grf)
@@ -120,7 +120,7 @@ void GKDS::AssertValid(uint32_t grf)
     Assert(qrglop[_clop - 1].hidPar == hidNil, "bad rglop in GKDS");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the GKDS.
 ***************************************************************************/
 void GKDS::MarkMem(void)
@@ -129,9 +129,9 @@ void GKDS::MarkMem(void)
     GKDS_PAR::MarkMem();
     MarkHq(_hqData);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the GOK kind id.
 ***************************************************************************/
 int32_t GKDS::Gokk(void)
@@ -140,7 +140,7 @@ int32_t GKDS::Gokk(void)
     return _gokk;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for a cursor map entry in this GKDS.
 ***************************************************************************/
 bool GKDS::FGetCume(uint32_t grfcust, int32_t sno, CUME *pcume)
@@ -167,7 +167,7 @@ bool GKDS::FGetCume(uint32_t grfcust, int32_t sno, CUME *pcume)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the location map entry from the parent id.
 ***************************************************************************/
 void GKDS::GetLop(int32_t hidPar, LOP *plop)
@@ -184,7 +184,7 @@ void GKDS::GetLop(int32_t hidPar, LOP *plop)
     *plop = *qlop;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a World of Kidspace GOB.
 ***************************************************************************/
 WOKS::WOKS(GCB *pgcb, PSTRG pstrg)
@@ -205,7 +205,7 @@ WOKS::WOKS(GCB *pgcb, PSTRG pstrg)
     _clokReset.Start(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for a kidspace world.
 ***************************************************************************/
 WOKS::~WOKS(void)
@@ -214,7 +214,7 @@ WOKS::~WOKS(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a WOKS.
 ***************************************************************************/
 void WOKS::AssertValid(uint32_t grf)
@@ -223,7 +223,7 @@ void WOKS::AssertValid(uint32_t grf)
     AssertPo(&_strg, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the WOKS.
 ***************************************************************************/
 void WOKS::MarkMem(void)
@@ -232,9 +232,9 @@ void WOKS::MarkMem(void)
     WOKS_PAR::MarkMem();
     MarkMemObj(&_strg);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the GOB is in this kidspace world.
 ***************************************************************************/
 bool WOKS::FGobIn(PGOB pgob)
@@ -251,7 +251,7 @@ bool WOKS::FGobIn(PGOB pgob)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get a GOKD from the given chunk.
 ***************************************************************************/
 PGOKD WOKS::PgokdFetch(CTG ctg, CNO cno, PRCA prca)
@@ -262,7 +262,7 @@ PGOKD WOKS::PgokdFetch(CTG ctg, CNO cno, PRCA prca)
     return (PGOKD)prca->PbacoFetch(ctg, cno, GKDS::FReadGkds);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new gob in this kidspace world.
 ***************************************************************************/
 PGOK WOKS::PgokNew(PGOB pgobPar, int32_t hid, CNO cnoGokd, PRCA prca)
@@ -276,7 +276,7 @@ PGOK WOKS::PgokNew(PGOB pgobPar, int32_t hid, CNO cnoGokd, PRCA prca)
         pgobPar = this;
     else if (!FGobIn(pgobPar))
     {
-        // parent isn't in this kidspace world
+        // 3DMMv1.0: parent isn't in this kidspace world
         Bug("Parent is not in this kidspace world");
         return pvNil;
     }
@@ -298,7 +298,7 @@ PGOK WOKS::PgokNew(PGOB pgobPar, int32_t hid, CNO cnoGokd, PRCA prca)
     return pgok;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new script interpreter for this kidspace world.
 ***************************************************************************/
 PSCEG WOKS::PscegNew(PRCA prca, PGOB pgob)
@@ -310,7 +310,7 @@ PSCEG WOKS::PscegNew(PRCA prca, PGOB pgob)
     return NewObj SCEG(this, prca, pgob);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new help balloon.
 ***************************************************************************/
 PHBAL WOKS::PhbalNew(PGOB pgobPar, PRCA prca, CNO cnoTopic, PHTOP phtop)
@@ -324,7 +324,7 @@ PHBAL WOKS::PhbalNew(PGOB pgobPar, PRCA prca, CNO cnoTopic, PHTOP phtop)
         pgobPar = this;
     else if (!FGobIn(pgobPar))
     {
-        // parent isn't in this kidspace world
+        // 3DMMv1.0: parent isn't in this kidspace world
         Bug("Parent is not in this kidspace world");
         return pvNil;
     }
@@ -332,7 +332,7 @@ PHBAL WOKS::PhbalNew(PGOB pgobPar, PRCA prca, CNO cnoTopic, PHTOP phtop)
     return HBAL::PhbalCreate(this, pgobPar, prca, cnoTopic, phtop);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the command handler for this hid.
 ***************************************************************************/
 PCMH WOKS::PcmhFromHid(int32_t hid)
@@ -354,7 +354,7 @@ PCMH WOKS::PcmhFromHid(int32_t hid)
     return PgobFromHid(hid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the clock having the given hid.
 ***************************************************************************/
 PCLOK WOKS::PclokFromHid(int32_t hid)
@@ -369,7 +369,7 @@ PCLOK WOKS::PclokFromHid(int32_t hid)
     return CLOK::PclokFromHid(hid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the parent gob of the given gob. This is here so a kidspace world
     can limit what scripts can get to.
 ***************************************************************************/
@@ -384,7 +384,7 @@ PGOB WOKS::PgobParGob(PGOB pgob)
     return pgob;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a file given a string.
 ***************************************************************************/
 bool WOKS::FFindFile(PSTN pstnSrc, PFNI pfni)
@@ -396,7 +396,7 @@ bool WOKS::FFindFile(PSTN pstnSrc, PFNI pfni)
     return pfni->FBuildFromPath(pstnSrc);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up an alert (and don't return until it is dismissed).
 ***************************************************************************/
 tribool WOKS::TGiveAlert(PSTN pstn, int32_t bk, int32_t cok)
@@ -406,7 +406,7 @@ tribool WOKS::TGiveAlert(PSTN pstn, int32_t bk, int32_t cok)
     return vpappb->TGiveAlertSz(pstn->Psz(), bk, cok);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Put up an alert (and don't return until it is dismissed).
 ***************************************************************************/
 void WOKS::Print(PSTN pstn)
@@ -414,14 +414,14 @@ void WOKS::Print(PSTN pstn)
     AssertThis(0);
     AssertPo(pstn, 0);
 
-    // REVIEW shonk: implement WOKS::Print better
+    // 3DMMv1.0: REVIEW shonk: implement WOKS::Print better
 #ifdef WIN
     OutputDebugString(pstn->Psz());
     OutputDebugString(PszLit("\n"));
-#endif // WIN
+#endif // 3DMMv1.0: WIN
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the current cursor state. This takes the frame cursor state from
     vpappb and the rest from this kidspace world.
 ***************************************************************************/
@@ -432,7 +432,7 @@ uint32_t WOKS::GrfcustCur(bool fAsynch)
     return GrfcustAdjust(vpappb->GrfcustCur(fAsynch));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Modify the current cursor state. This sets the frame values in vpappb
     and the rest in this kidspace world.
 ***************************************************************************/
@@ -440,14 +440,14 @@ void WOKS::ModifyGrfcust(uint32_t grfcustOr, uint32_t grfcustXor)
 {
     AssertThis(0);
 
-    // write all the bits to the app. Also adjust our internal _grfcust
+    // 3DMMv1.0: write all the bits to the app. Also adjust our internal _grfcust
     vpappb->ModifyGrfcust(grfcustOr, grfcustXor);
 
     _grfcust |= grfcustOr;
     _grfcust ^= grfcustXor;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adjust the given grfcust (take the Frame bits from it and combine with
     our other bits).
 ***************************************************************************/
@@ -460,7 +460,7 @@ uint32_t WOKS::GrfcustAdjust(uint32_t grfcust)
     return grfcust;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Do a modal help topic.
 ***************************************************************************/
 bool WOKS::FModalTopic(PRCA prca, CNO cnoTopic, int32_t *plwRet)

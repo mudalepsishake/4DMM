@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -14,7 +14,7 @@ ASSERTNAME
 
 RTCLASS(CURS)
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for the cursor class.
 ***************************************************************************/
 CURS::~CURS(void)
@@ -23,7 +23,7 @@ CURS::~CURS(void)
     _crs = pvNil;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Read a cursor out of a CRF.
 ***************************************************************************/
 bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -51,7 +51,7 @@ bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
         return fFalse;
     }
 
-    // SDL cursor size is always 32 pixels
+    // 3DMMEx: SDL cursor size is always 32 pixels
     dxp = dyp = 32;
 
     icurfBest = 0;
@@ -91,7 +91,7 @@ bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
 
     qrgb = (uint8_t *)pggcurf->QvGet(icurfBest);
 
-    // Convert the cursor to SDL's cursor format
+    // 3DMMEx: Convert the cursor to SDL's cursor format
     prgbAnd = qrgb;
     prgbXor = qrgb + LwMul(curf.dyp, cbRowSrc);
 
@@ -110,29 +110,29 @@ bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
 
                 if (!bAnd && !bXor)
                 {
-                    // Win32: both zero: black
-                    // SDL: data=1, mask=1: black
+                    // 3DMMEx: Win32: both zero: black
+                    // 3DMMEx: SDL: data=1, mask=1: black
                     *prgbDstData |= mask;
                     *prgbDstMask |= mask;
                 }
                 else if (!bAnd && bXor)
                 {
-                    // Win32: XOR only: white
-                    // data=0, mask=1: white
+                    // 3DMMEx: Win32: XOR only: white
+                    // 3DMMEx: data=0, mask=1: white
                     *prgbDstData &= ~mask;
                     *prgbDstMask |= mask;
                 }
                 else if (bAnd && !bXor)
                 {
-                    // Win32: AND only: screen (transparent)
-                    // SDL: data=0, mask=0: transparent
+                    // 3DMMEx: Win32: AND only: screen (transparent)
+                    // 3DMMEx: SDL: data=0, mask=0: transparent
                     *prgbDstData &= ~mask;
                     *prgbDstMask &= ~mask;
                 }
                 else if (bAnd && bXor)
                 {
-                    // Win32: AND and XOR: Reverse screen
-                    // data=1, mask=0: inverted color if possible, black if not.
+                    // 3DMMEx: Win32: AND and XOR: Reverse screen
+                    // 3DMMEx: data=1, mask=0: inverted color if possible, black if not.
                     *prgbDstData |= mask;
                     *prgbDstMask &= ~mask;
                 }
@@ -160,7 +160,7 @@ LFail:
     return pvNil != pcurs;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the cursor.
 ***************************************************************************/
 void CURS::Set(void)

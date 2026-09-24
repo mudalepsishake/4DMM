@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 This c file is compiled to a command-line exe which when run produces
 the 80386 asm version of the KCD2 decompression code.
 
@@ -322,7 +322,7 @@ void Literal(int32_t ibit, bool fDword, bool fSingle)
 
     if (ibit != 8)
     {
-        // get the low bits of the last byte
+        // 3DMMv1.0: get the low bits of the last byte
         fprintf(output, "	dec ecx\n");
         fprintf(output, "	mov edx,eax\n");
         fprintf(output, "	shr edx,%d\n", ibit);

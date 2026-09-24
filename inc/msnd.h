@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     msnd.h: Movie sound class
 
@@ -31,44 +31,44 @@
 #ifndef MSND_H
 #define MSND_H
 
-// Sound types
+// 3DMMv1.0: Sound types
 enum
 {
     styNil = 0,
-    styUnused, // Retain.  Existing content depends on subsequent values
+    styUnused, // 3DMMv1.0: Retain.  Existing content depends on subsequent values
     stySfx,
     stySpeech,
     styMidi,
     styLim
 };
 
-// Sound-class-number constants
+// 3DMMv1.0: Sound-class-number constants
 const int32_t sclNonLoop = 0;
 const int32_t sclLoopWav = 1;
 const int32_t sclLoopMidi = 2;
 
 #define vlmNil (-1)
 
-// Sound-queue-number constants
+// 3DMMv1.0: Sound-queue-number constants
 enum
 {
     sqnActr = 0x10000000,
     sqnBkgd = 0x20000000,
     sqnLim
 };
-#define ksqnStyShift 16; // Shift for the sqnsty
+#define ksqnStyShift 16; // 3DMMv1.0: Shift for the sqnsty
 
-// Sound Queue Delta times
-// Any sound times less than ksqdtimLong will be clocked & stopped
+// 3DMMv1.0: Sound Queue Delta times
+// 3DMMv1.0: Any sound times less than ksqdtimLong will be clocked & stopped
 const int32_t kdtimOffMsq = 0;
 const int32_t kdtimLongMsq = klwMax;
-const int32_t kdtim2Msq = ((kdtimSecond * 2) * 10) / 12; // adjustment -> 2 seconds
+const int32_t kdtim2Msq = ((kdtimSecond * 2) * 10) / 12; // 3DMMv1.0: adjustment -> 2 seconds
 const int32_t kSndSamplesPerSec = 22050;
 const int32_t kSndBitsPerSample = 8;
 const int32_t kSndBlockAlign = 1;
 const int32_t kSndChannels = 1;
 
-/****************************************
+/** 3DMMv1.0: **************************************
 
     Movie Sound on file
 
@@ -77,16 +77,16 @@ struct MSNDF
 {
     int16_t bo;
     int16_t osk;
-    int32_t sty;        // sound type
-    int32_t vlmDefault; // default volume
-    int32_t fInvalid;   // Invalid flag
+    int32_t sty;        // 3DMMv1.0: sound type
+    int32_t vlmDefault; // 3DMMv1.0: default volume
+    int32_t fInvalid;   // 3DMMv1.0: Invalid flag
 };
 VERIFY_STRUCT_SIZE(MSNDF, 16);
 const BOM kbomMsndf = 0x5FC00000;
 
-const CHID kchidSnd = 0; // Movie Sound sound/music
+const CHID kchidSnd = 0; // 3DMMv1.0: Movie Sound sound/music
 
-// Function to stop all movie sounds.
+// 3DMMv1.0: Function to stop all movie sounds.
 inline void StopAllMovieSounds(void)
 {
     vpsndm->StopAll(sqnNil, sclNonLoop);
@@ -94,7 +94,7 @@ inline void StopAllMovieSounds(void)
     vpsndm->StopAll(sqnNil, sclLoopMidi);
 }
 
-/****************************************
+/** 3DMMv1.0: **************************************
 
     The Movie Sound class
 
@@ -109,15 +109,15 @@ class MSND : public MSND_PAR
     MARKMEM
 
   protected:
-    // these are inherent to the msnd
-    CTG _ctgSnd;       // CTG of the WAV or MIDI chunk
-    CNO _cnoSnd;       // CNO of the WAV or MIDI chunk
-    PRCA _prca;        // file that the WAV/MIDI lives in
-    int32_t _sty;      // MIDI, speech, or sfx
-    int32_t _vlm;      // Volume of the sound
-    tribool _fNoSound; // Set if silent sound
-    STN _stn;          // Sound name
-    bool _fInvalid;    // Invalid flag
+    // 3DMMv1.0: these are inherent to the msnd
+    CTG _ctgSnd;       // 3DMMv1.0: CTG of the WAV or MIDI chunk
+    CNO _cnoSnd;       // 3DMMv1.0: CNO of the WAV or MIDI chunk
+    PRCA _prca;        // 3DMMv1.0: file that the WAV/MIDI lives in
+    int32_t _sty;      // 3DMMv1.0: MIDI, speech, or sfx
+    int32_t _vlm;      // 3DMMv1.0: Volume of the sound
+    tribool _fNoSound; // 3DMMv1.0: Set if silent sound
+    STN _stn;          // 3DMMv1.0: Sound name
+    bool _fInvalid;    // 3DMMv1.0: Invalid flag
 
   protected:
     bool _FInit(PCFL pcfl, CTG ctg, CNO cno);
@@ -170,7 +170,7 @@ class MSND : public MSND_PAR
         AssertThis(0);
         return _vlm;
     }
-    int32_t Spr(int32_t tool); // Return Priority
+    int32_t Spr(int32_t tool); // 3DMMv1.0: Return Priority
     tribool FNoSound(void)
     {
         AssertThis(0);
@@ -181,7 +181,7 @@ class MSND : public MSND_PAR
               uint32_t dtsStart = 0);
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
 
     Movie Sound Queue  (MSQ)
     Sounds to be played at one time.
@@ -193,19 +193,19 @@ typedef class MSQ *PMSQ;
 #define MSQ_PAR CMH
 #define kclsMSQ KLCONST3('M', 'S', 'Q')
 
-const int32_t kcsqeGrow = 10; // quantum growth for sqe
+const int32_t kcsqeGrow = 10; // 3DMMv1.0: quantum growth for sqe
 
-// Movie sound queue entry
+// 3DMMv1.0: Movie sound queue entry
 struct SQE
 {
-    int32_t objID;     // Unique identifier (actor id, eg)
-    bool fLoop;        // Looping sound flag
-    bool fQueue;       // Queued sound
-    int32_t vlmMod;    // Volume modification
-    int32_t spr;       // Priority
-    bool fActr;        // Actor vs Scene (to generate unique class)
-    PMSND pmsnd;       // PMSND
-    uint32_t dtsStart; // How far into the sound to start playing
+    int32_t objID;     // 3DMMv1.0: Unique identifier (actor id, eg)
+    bool fLoop;        // 3DMMv1.0: Looping sound flag
+    bool fQueue;       // 3DMMv1.0: Queued sound
+    int32_t vlmMod;    // 3DMMv1.0: Volume modification
+    int32_t spr;       // 3DMMv1.0: Priority
+    bool fActr;        // 3DMMv1.0: Actor vs Scene (to generate unique class)
+    PMSND pmsnd;       // 3DMMv1.0: PMSND
+    uint32_t dtsStart; // 3DMMv1.0: How far into the sound to start playing
 };
 
 class MSQ : public MSQ_PAR
@@ -216,8 +216,8 @@ class MSQ : public MSQ_PAR
     CMD_MAP_DEC(MSQ)
 
   protected:
-    PGL _pglsqe;   // Sound queue entries
-    int32_t _dtim; // Time sound allowed to play
+    PGL _pglsqe;   // 3DMMv1.0: Sound queue entries
+    int32_t _dtim; // 3DMMv1.0: Time sound allowed to play
     PCLOK _pclok;
 
   public:
@@ -230,11 +230,11 @@ class MSQ : public MSQ_PAR
 
     bool FEnqueue(PMSND pmsnd, int32_t objID, bool fLoop, bool fQueue, int32_t vlm, int32_t spr, bool fActr = fFalse,
                   uint32_t dtsStart = 0, bool fLowPri = fFalse);
-    void PlayMsq(void);  // Destroys queue as it plays
-    void FlushMsq(void); // Without playing the sounds
+    void PlayMsq(void);  // 3DMMv1.0: Destroys queue as it plays
+    void FlushMsq(void); // 3DMMv1.0: Without playing the sounds
     bool FCmdAlarm(PCMD pcmd);
 
-    // Sound on/off & duration control
+    // 3DMMv1.0: Sound on/off & duration control
     void SndOff(void)
     {
         AssertThis(0);
@@ -264,7 +264,7 @@ class MSQ : public MSQ_PAR
                       : vpsndm->FPlayingAll(sqnNil, sclNonLoop));
     }
 
-    // Save/Restore snd-on duration times
+    // 3DMMv1.0: Save/Restore snd-on duration times
     int32_t DtimSnd(void)
     {
         AssertThis(0);
@@ -277,4 +277,4 @@ class MSQ : public MSQ_PAR
     }
 };
 
-#endif // MSND_H
+#endif // 3DMMEx: MSND_H

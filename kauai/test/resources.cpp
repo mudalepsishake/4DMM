@@ -7,7 +7,7 @@ void GetTestResourcePath(PFNI pfniTestResourcePath)
 {
     AssertPo(pfniTestResourcePath, 0);
 
-    // Check for environment variable override first
+    // 3DMMEx: Check for environment variable override first
     STN stnTestResourcePath;
     SZ szEnv;
     FillPb(szEnv, SIZEOF(szEnv), 0);
@@ -17,7 +17,7 @@ void GetTestResourcePath(PFNI pfniTestResourcePath)
     }
     else
     {
-        // Use path defined at compile time
+        // 3DMMEx: Use path defined at compile time
         SZS szTestPath = KAUAI_TEST_RESOURCES_PATH;
         stnTestResourcePath.SetSzs(szTestPath);
     }

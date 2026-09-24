@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: scalar.h 1.20 1995/05/25 13:37:37 sam Exp $
@@ -39,19 +39,19 @@ extern "C"
 #define BASED_FIXED 1
 #endif
 
-    /**
+    /** BRender:
      ** Basic types - either fixed or float
      **/
 
 #if BASED_FIXED
 
-    /*
+    /* BRender:
      * Reference an external symbol to make sure
      * the right library is linked
      */
     extern int _BR_Fixed_Point_Scalar;
 
-    /*
+    /* BRender:
      * Fixed base types
      */
     typedef br_fixed_ls br_scalar;
@@ -62,14 +62,14 @@ extern "C"
 #define BR_SCALAR_MAX 0x7fffffff
 #define BR_SCALAR_MIN 0x80000000
 
-/*
+/* BRender:
  * Macros for static initialisation
  */
 #define BR_SCALAR(x) ((br_scalar)(BR_ONE_LS * (x)))
 #define BR_FRACTION(x) ((br_fraction)((BR_ONE_LSF * (x)) >= BR_ONE_LSF ? BR_ONE_LSF - 1 : BR_ONE_LSF * (x)))
 #define BR_UFRACTION(x) ((br_ufraction)((BR_ONE_LUF * (x)) >= BR_ONE_LUF ? BR_ONE_LUF - 1 : BR_ONE_LUF * (x)))
 
-/*
+/* BRender:
  * Macros for type conversion
  */
 #define BrFloatToScalar(f) ((br_scalar)((f) * (float)BR_ONE_LS))
@@ -87,7 +87,7 @@ extern "C"
 #define BrUFractionToScalar(f) ((br_scalar)(f))
 #define BrScalarToUFraction(s) ((br_ufraction)(s))
 
-/*
+/* BRender:
  * Various arithmetic operations
  */
 #define BR_ADD(a, b) ((a) + (b))
@@ -136,13 +136,13 @@ extern "C"
 
 #if BASED_FLOAT
 
-    /*
+    /* BRender:
      * Reference an external symbol to make sure
      * the right library is linked
      */
     extern int _BR_Floating_Point_Scalar;
 
-    /*
+    /* BRender:
      * Floating point base types
      */
     typedef float br_scalar;
@@ -153,14 +153,14 @@ extern "C"
 #define BR_SCALAR_MAX 3.402823466e+38f
 #define BR_SCALAR_MIN (-3.402823466e+38f)
 
-/*
+/* BRender:
  * Macros for static initialisation
  */
 #define BR_SCALAR(x) ((br_scalar)(x))
 #define BR_FRACTION(x) ((br_fraction)(x))
 #define BR_UFRACTION(x) ((br_ufraction)(x))
 
-/*
+/* BRender:
  * Macros for type conversion
  */
 #define BrFloatToScalar(f) (f)
@@ -195,7 +195,7 @@ extern "C"
 #endif
 #endif
 
-/*
+/* BRender:
  * Various arithmetic operations
  */
 #define BR_ADD(a, b) ((a) + (b))
@@ -242,7 +242,7 @@ extern "C"
 
 #endif
 
-/*
+/* BRender:
  * Make sure PI is defined
  */
 #ifndef PI

@@ -1,0 +1,308 @@
+#ifndef STATE_H_
+#define STATE_H_
+
+#include "drv.h"
+
+#define MAX_STATE_STACK       64
+#define MAX_STATE_LIGHTS      BR_MAX_LIGHTS
+#define MAX_STATE_CLIP_PLANES BR_MAX_CLIP_PLANES
+
+/* BRenderModern:
+ * State masks - these should match the BR_STATE_* enums.
+ */
+enum {
+    MASK_STATE_SURFACE   = BR_STATE_SURFACE,
+    MASK_STATE_MATRIX    = BR_STATE_MATRIX,
+    MASK_STATE_ENABLE    = BR_STATE_ENABLE,
+    MASK_STATE_LIGHT     = BR_STATE_LIGHT,
+    MASK_STATE_CLIP      = BR_STATE_CLIP,
+    MASK_STATE_BOUNDS    = BR_STATE_BOUNDS,
+    MASK_STATE_CULL      = BR_STATE_CULL,
+    MASK_STATE_OUTPUT    = BR_STATE_OUTPUT,
+    MASK_STATE_PRIMITIVE = BR_STATE_PRIMITIVE,
+
+    /* BRenderModern:
+     * Parts of state that are stored.
+     * This is also PARTS_MASK in prepmatl.c
+     */
+    MASK_STATE_STORED = (MASK_STATE_CULL | MASK_STATE_SURFACE | MASK_STATE_PRIMITIVE),
+};
+
+/* BRenderModern:
+ * Bits used for template masks to indicate actions when a template entry is triggered
+ */
+#define TM_PART           0x00001 /* BRenderModern: set timestamp for whole part								*/
+#define TM_INDEX          0x00002 /* BRenderModern: set timestamp for indexed part							*/
+#define TM_V2S_HINT       0x00004 /* BRenderModern: set timestamp for matrix.view_to_screen_hint				*/
+#define TM_M2V            0x00008 /* BRenderModern: set timestamp for matrix.model_to_view					*/
+#define TM_V2S            0x00010 /* BRenderModern: set timestamp for matrix.view_to_screen					*/
+#define TM_COPY_CACHE     0x00020 /* BRenderModern: set timestamp for anything that affects the copied cache	*/
+#define TM_CACHE          0x00040 /* BRenderModern: set timestamp for anything that affects the static cache	*/
+
+#define TM_CLEAR_M2V_HINT 0x00080 /* BRenderModern: set M2V_HINT to NONE										*/
+#define TM_CLEAR_V2S_HINT 0x00100 /* BRenderModern: set V2S_HINT to NONE										*/
+
+#define TM_INVALID_PS     0x01000 /* BRenderModern: set Update Per Scene										*/
+#define TM_INVALID_PM     0x02000 /* BRenderModern: set Update Per Model										*/
+#define TM_INVALID_V2M    0x04000 /* BRenderModern: set Update View To Model									*/
+#define TM_INVALID_M2S    0x08000 /* BRenderModern: set Update Model To Screen								*/
+#define TM_INVALID_CC     0x10000 /* BRenderModern: set Update Copied Cache									*/
+
+typedef struct state_clip {
+    br_token   type;
+    br_vector4 plane;
+} state_clip;
+
+typedef struct state_matrix {
+    br_matrix34 model_to_view;
+    br_matrix4  view_to_screen;
+    br_matrix34 view_to_environment;
+
+    br_token model_to_view_hint;
+    br_token view_to_screen_hint;
+    br_token view_to_environment_hint;
+
+    br_scalar hither_z;
+    br_scalar yon_z;
+} state_matrix;
+
+typedef struct state_cull {
+    br_token type;
+    br_token space;
+} state_cull;
+
+typedef struct state_surface {
+    br_colour colour;
+
+    br_scalar opacity;
+    br_scalar ka;
+    br_scalar kd;
+    br_scalar ks;
+    br_scalar power;
+
+    br_boolean lighting;
+    br_boolean prelighting;
+    br_boolean force_front;
+    br_boolean force_back;
+    br_scalar  depth_bias;
+
+    br_token colour_source;
+    br_token opacity_source;
+    br_token mapping_source;
+
+    br_matrix23 map_transform;
+} state_surface;
+
+typedef struct state_light {
+    br_token type;
+    br_token lighting_space;
+
+    br_vector3_f position;
+    br_vector3_f direction;
+
+    br_colour colour;
+
+    br_scalar spot_outer;
+    br_scalar spot_inner;
+
+    br_scalar radius_outer;
+    br_scalar radius_inner;
+
+    br_angle angle_outer;
+
+    br_scalar attenuation_l;
+    br_scalar attenuation_c;
+    br_scalar attenuation_q;
+
+    br_token attenuation_type;
+    br_token attenuation_hint;
+
+    br_boolean radius_cull;
+    br_boolean angle_cull;
+
+    br_light_volume volume;
+
+    br_boolean shadow;
+    br_matrix34 shadow_view_to_light;
+    br_vector4_f shadow_fit;        /* base: center_u, center_v, half_u, half_v */
+    br_vector4_f shadow_detail_fit; /* v254 camera-visible caster detail crop; zeros = legacy quarter */
+    br_boolean culled;
+} state_light;
+
+typedef void insert_cbfn(br_primitive *primitive, void *arg1, void *arg2, void *arg3, br_order_table *order_table, br_scalar *z);
+
+typedef struct state_hidden {
+    br_token           type;
+    br_token           divert;
+    br_order_table    *order_table;
+    br_primitive_heap *heap;
+    insert_cbfn       *insert_fn;
+    void              *insert_arg1;
+    void              *insert_arg2;
+    void              *insert_arg3;
+} state_hidden;
+
+/* BRenderModern:
+ * state.prim.flags
+ */
+enum {
+    /* BRenderModern:
+     * The public flags
+     */
+    PRIMF_DEPTH_WRITE_BIT,
+
+    PRIMF_BLEND_BIT,
+    PRIMF_MODULATE_BIT,
+    PRIMF_COLOUR_KEY_BIT,
+};
+
+enum {
+    PRIMF_DEPTH_WRITE  = (1 << PRIMF_DEPTH_WRITE_BIT),
+    PRIMF_BLEND        = (1 << PRIMF_BLEND_BIT),
+    PRIMF_MODULATE     = (1 << PRIMF_MODULATE_BIT),
+    PRIMF_COLOUR_KEY   = (1 << PRIMF_COLOUR_KEY_BIT),
+};
+
+struct br_buffer_stored;
+
+typedef struct state_primitive {
+    /* BRenderModern:
+     * flags
+     */
+    br_uint_32 flags;
+
+    /* BRenderModern:
+     * User selected ramp
+     */
+    br_int_32 index_base;
+    br_int_32 index_range;
+
+    /* BRenderModern:
+     * Type of colour
+     */
+    br_token colour_type;
+
+    br_token depth_test;
+
+    br_token blend_mode;
+
+    br_token map_width_limit;
+
+    br_token map_height_limit;
+
+    br_token shading_mode;
+
+    /* BRenderModern:
+     * Type of perspective correct rendering
+     */
+    br_token  perspective_type;
+    br_int_32 subdivide_tolerance;
+
+    /* BRenderModern:
+     * Current input buffers
+     */
+    struct br_buffer_stored *colour_map;
+    struct br_buffer_stored *index_shade;
+    struct br_buffer_stored *index_blend;
+    struct br_buffer_stored *index_fog;
+    struct br_buffer_stored *screendoor;
+    struct br_buffer_stored *lighting;
+    struct br_buffer_stored *bump;
+
+    /* BRenderModern: Texture filtering. BRT_NONE or BRT_LINEAR */
+    br_token filter;
+
+    /* BRenderModern: Mipmap filtering. BRT_NONE or BRT_LINEAR */
+    br_token mip_filter;
+
+    /* BRenderModern: Fog type. BRT_NONE or BRT_LINEAR */
+    br_token  fog_type;
+    br_scalar fog_min;
+    br_scalar fog_max;
+    br_colour fog_colour;
+    br_uint_8 fog_scale;
+} state_primitive;
+
+typedef struct state_output {
+    struct br_device_pixelmap *colour;
+    struct br_device_pixelmap *depth;
+    br_boolean                 shadow_pass;
+    br_boolean                 shadow_blocker_pass;
+    br_boolean                 shadow_detail_pass;
+    br_uint_32                 shadow_owner;
+    br_boolean                 shadow_model_to_light_valid;
+    br_matrix34                shadow_model_to_light;
+} state_output;
+
+typedef struct state_stack {
+    state_matrix matrix;
+
+    /* BRenderModern: Used for texture/materials */
+    state_clip      clip[MAX_STATE_CLIP_PLANES];
+    state_cull      cull;
+    state_surface   surface;
+    state_primitive prim;
+    state_output    output;
+    state_light     light[MAX_STATE_LIGHTS];
+    state_hidden    hidden;
+
+    br_uint_32 valid;
+
+    /* BRenderModern:
+     * Render type (BRT_POINT, BRT_LINE, BRT_TRIANGLE).
+     */
+    br_token render_type;
+
+    /* BRenderModern:
+     * Only for use when in the pool.
+     */
+    br_uint_32 num_refs;
+} state_stack;
+
+typedef struct {
+    GLuint fbo;
+
+    alignas(16) br_gl_main_data_scene scene;
+
+#if BRENDER_LEGACY_3DMM_MODEL_ABI
+    br_matrix34 shadow_view_to_light;
+    br_boolean shadow_view_to_light_valid;
+#endif
+
+    struct {
+        br_matrix4 p;
+        br_matrix4 mv;
+        br_matrix4 mvp;
+        br_matrix4 normal;
+        br_matrix4 environment;
+
+        br_matrix4 view_to_model; /* BRenderModern: Inverse of mv, needed for eye_model calc. */
+        br_vector4 eye_m;
+        br_scalar  mv_det3; /* BRenderModern: Determinate of the upper 3x3 of MV. */
+    } model;
+} state_cache;
+
+typedef struct state_all {
+    state_stack  default_;
+    state_stack *current;
+    state_stack  stack[MAX_STATE_STACK];
+    int          top;
+
+    state_cache cache;
+
+    struct {
+        struct br_tv_template *clip[MAX_STATE_CLIP_PLANES];
+        struct br_tv_template *matrix;
+        struct br_tv_template *cull;
+        struct br_tv_template *surface;
+        struct br_tv_template *prim;
+        struct br_tv_template *output;
+        struct br_tv_template *light[MAX_STATE_LIGHTS];
+        struct br_tv_template *hidden;
+    } templates;
+
+    void *res;
+
+} state_all;
+
+#endif /* BRenderModern: STATE_H_ */

@@ -1,5 +1,8 @@
 /* Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
+// 3DMM audio v1: rebuild VOICE macro with McZee suppression.
+
+// 3DMMEx -o theatre rebuild marker v26: force building.chk regen when theatre.cht changes.
 
 // ---------------------------------------------------------
 // main build script for Socrates

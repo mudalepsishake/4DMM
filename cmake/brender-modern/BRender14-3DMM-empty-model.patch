@@ -1,0 +1,44 @@
+diff --git a/core/v1db/regsupt.c b/core/v1db/regsupt.c
+index b7776c2..5fcd6b4 100644
+--- a/core/v1db/regsupt.c
++++ b/core/v1db/regsupt.c
+@@ -26,6 +26,18 @@ br_model *BR_PUBLIC_ENTRY BrModelAdd(br_model *model)
+ 
+     BrRegistryAdd(&v1db.reg_models, model);
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * 3DMM uses zero-vertex/zero-face models as legitimate placeholders.
++     * Historical BRender accepted them into the registry without requiring
++     * prepared geometry. Modern BRender's BrModelUpdate deliberately fails
++     * on NULL faces/vertices, so preserve the 3DMM placeholder semantics
++     * without weakening validation for partially-populated models.
++     */
++    if(model->nvertices == 0 && model->nfaces == 0)
++        return model;
++#endif
++
+     /*
+      * Preprocess model and generate stored info
+      */
+diff --git a/core/v1db/prepmesh.c b/core/v1db/prepmesh.c
+index bcc2bc4..d0d6dca 100644
+--- a/core/v1db/prepmesh.c
++++ b/core/v1db/prepmesh.c
+@@ -980,6 +980,16 @@ void BR_PUBLIC_ENTRY BrModelUpdate(br_model *model, br_uint_16 flags)
+     if(model->flags & BR_MODF_PREPREPARED)
+         return;
+ 
++#if BRENDER_LEGACY_3DMM_MODEL_ABI
++    /*
++     * 3DMM serializes true 0/0 placeholder models and may update them after
++     * registration. Keep those inert, while leaving malformed one-sided
++     * geometry on the normal Modern BRender failure path.
++     */
++    if(model->nvertices == 0 && model->nfaces == 0)
++        return;
++#endif
++
+     /*
+      * Choke if model has no faces or vertices
+      */

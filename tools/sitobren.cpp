@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     sitobren.cpp
     Main module for sitobren, a utility for converting SoftImage
@@ -120,7 +120,7 @@ ASSERTNAME
 #ifdef DEBUG
 bool _fEnableWarnings = fTrue;
 bool _fBreak = fFalse;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 int __cdecl main(int cpsz, achar *prgpsz[])
 {
@@ -219,7 +219,7 @@ int __cdecl main(int cpsz, achar *prgpsz[])
                 case ChLit('d'):
                     fDumpLex = !fDumpLex;
                     break;
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
                 case ChLit('?'):
                     goto LUsage;
                 default:
@@ -357,10 +357,10 @@ LUsage:
 #ifdef DEBUG
     UnmarkAllMem();
     UnmarkAllObjs();
-    MarkUtilMem(); // marks all util memory
+    MarkUtilMem(); // 3DMMv1.0: marks all util memory
     AssertUnmarkedMem();
     AssertUnmarkedObjs();
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     if (fUsage)
     {
@@ -417,10 +417,10 @@ void S2B::AssertValid(uint32_t grf)
     AssertNilOrPo(_pggtmapd, grf);
 #if HASH_FIXED
     AssertNilOrPvCb(_prgpbmdb, kcbrgpbmdb);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     AssertNilOrPo(_pglpbmdb, grf);
     AssertNilOrPo(_pglpbmatdb, grf);
-#endif /* HASH_FIXED */
+#endif /* 3DMMv1.0: HASH_FIXED */
     AssertValidBmhr(_pbmhr);
     AssertNilOrPvCb(_prgcps, size(CPS) * _cMesh);
 }
@@ -458,10 +458,10 @@ void S2B::MarkMem(void)
     MarkMemObj(_pggtmapd);
 #if HASH_FIXED
     MarkPv(_prgpbmdb);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     MarkMemObj(_pglpbmdb);
     MarkMemObj(_pglpbmatdb);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
     MarkPv(_prgcps);
     MarkBmhr(_pbmhr);
     MarkMemObj(&_chse);
@@ -471,9 +471,9 @@ void S2BLX::MarkMem(void)
 {
     S2BLX_PAR::MarkMem();
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	Ps2bNew
 |		Static instantiator for the S2B class.  Will attempt to allocate the
 |	S2BLX member and will fail if it cannot.
@@ -502,7 +502,7 @@ PS2B S2B::Ps2bNew(PFIL pfilSrc, bool fSwapHand, uint mdVerbose, int iRound, int 
     return ps2b;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	S2B
 |		Constructor for the S2B class.  Initializes the S2BLX and sets
 |	some pointers to pvNil.
@@ -529,10 +529,10 @@ S2B::S2B(bool fSwapHand, uint mdVerbose, int iRound, int iRoundXF, PSZ pszApp)
     _pggcl = pvNil;
 #if HASH_FIXED
     _prgpbmdb = pvNil;
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     _pglpbmdb = pvNil;
     _pglpbmatdb = pvNil;
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
     _InitCrcTable();
     _pbmhr = pvNil;
     _pglxf = pvNil;
@@ -588,7 +588,7 @@ S2B::S2B(bool fSwapHand, uint mdVerbose, int iRound, int iRoundXF, PSZ pszApp)
     }
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	~S2B
 |		Destructor for the S2B class.  Simply asserts that things have
 |	already been cleaned up properly.
@@ -599,13 +599,13 @@ S2B::~S2B(void)
 #ifdef DEBUG
     UnmarkAllMem();
     UnmarkAllObjs();
-    MarkMem();     // marks all S2B memory
-    MarkUtilMem(); // marks all util memory
+    MarkMem();     // 3DMMv1.0: marks all S2B memory
+    MarkUtilMem(); // 3DMMv1.0: marks all util memory
     AssertUnmarkedMem();
     AssertUnmarkedObjs();
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-    // All allocated objects should already be free
+    // 3DMMv1.0: All allocated objects should already be free
     Assert(_pglibactPar == pvNil, 0);
     Assert(_pglbs == pvNil, 0);
     Assert(_pglcmtld == pvNil, 0);
@@ -616,19 +616,19 @@ S2B::~S2B(void)
     Assert(_pggtmapd == pvNil, 0);
 #if HASH_FIXED
     Assert(_prgpbmdb == pvNil, 0);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     Assert(_pglpbmdb == pvNil, 0);
     Assert(_pglpbmatdb == pvNil, 0);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
     Assert(_prgcps == pvNil, 0);
     Assert(_pbmhr == pvNil, 0);
-    // Except these
+    // 3DMMv1.0: Except these
     ReleasePpo(&_pglcrng);
     ReleasePpo(&_pglclr);
     ReleasePpo(&_ps2blx);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _DumpHeader
         Dumps a customized "#ifdef"'d header for a chunk.  This allows
         sitobren-generate .cht files to only keep chunks named for those
@@ -684,7 +684,7 @@ void S2B::_DumpHeader(CTG ctg, CNO cno, PSTN pstnName, bool fPack)
     _chse.DumpHeader(ctg, cno, pstnName, fPack);
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	FConvertSI
 |		Reads commands from the current _s2blx file, and generates an
 |	appropriate Chunky source file.
@@ -724,11 +724,11 @@ bool S2B::FConvertSI(PMSNK pmsnkErr, PMSNK pmsnkDst, PFNI pfniInc, uint32_t grfs
 
 #if HASH_FIXED
     if (!FAllocPv((void **)&_prgpbmdb, kcbrgpbmdb, fmemClear, mprNormal))
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     if ((_pglpbmatdb = GL::PglNew(size(PBMATDB))) == pvNil)
         goto LFail;
     if ((_pglpbmdb = GL::PglNew(size(PBMDB))) == pvNil)
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
         goto LFail;
 
     fGotTok = _ps2blx->FGetS2btk(&_s2btk);
@@ -785,14 +785,14 @@ bool S2B::FConvertSI(PMSNK pmsnkErr, PMSNK pmsnkDst, PFNI pfniInc, uint32_t grfs
         for (ppbmdb = _prgpbmdb; ppbmdb < (_prgpbmdb + kcpbmdb); ppbmdb++)
             Assert(*ppbmdb == pvNil, "Didn't empty BMDL database!");
     }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     FreePpv((void **)&_prgpbmdb);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     Assert(_pglpbmdb->IvMac() == 0, "Didn't empty BMDL database");
     ReleasePpo(&_pglpbmdb);
     Assert(_pglpbmatdb->IvMac() == 0, "Didn't empty XF database");
     ReleasePpo(&_pglpbmatdb);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 
 LFail:
     if (_fFixWrap)
@@ -800,7 +800,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FReadCmdline
         General purpose script command reader.  With an array of parameter
     descriptions, and pointers to the appropriate variables to take the
@@ -828,7 +828,7 @@ bool S2B::_FReadCmdline(PSZ pszResult, bool *pfGotTok, const SCRP rgscrp[], ...)
     long cscrpMac = 0, iscrp, grfFound = 0, grfMatch = 0;
     void *rgpv[kcscrpMax];
 
-    /* Grab the arguments */
+    /* 3DMMv1.0: Grab the arguments */
     va_start(args, rgscrp);
     while (rgscrp[cscrpMac].pt != ptNil)
     {
@@ -840,7 +840,7 @@ bool S2B::_FReadCmdline(PSZ pszResult, bool *pfGotTok, const SCRP rgscrp[], ...)
     }
     va_end(args);
 
-    /* Try to read the data, quit when we get an unknown token */
+    /* 3DMMv1.0: Try to read the data, quit when we get an unknown token */
     while (*pfGotTok = _ps2blx->FGetS2btk(&_s2btk))
     {
         for (iscrp = 0; iscrp < cscrpMac; iscrp++)
@@ -911,7 +911,7 @@ const SCRP rgscrpActor[] = {{ptLong, ttCno, "missing CNO for actor"},
                             {ptLong, ttMaterials, ""},
                             {ptNil, ttNil, ""}};
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FDoTtActor
 |		Processes a token of type ttActor.  That is, the ttActor
 |	indicates the start of a new TMPL to create.  This handles all of
@@ -1004,7 +1004,7 @@ const SCRP rgscrpAction[] = {{ptString, ttCalled, "missing name for action"},
                              {ptBRS, ttStep, ""},
                              {ptNil, ttNil, ""}};
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FDoTtActionS2B
 |		Processes a token of type ttNameS2B.  That is, the ttNameS2B
 |	indicates the start of a new ACTN to create.  This handles all of
@@ -1026,7 +1026,7 @@ bool S2B::_FDoTtActionS2B(void)
     BRS brsScale = BrFloatToScalar(1.0), brsStep = BR_SCALAR(-1);
     BRS rgbrsDwr[3] = {BR_SCALAR(0), BR_SCALAR(0), BR_SCALAR(0)};
 
-    /* Read in all of the command data */
+    /* 3DMMv1.0: Read in all of the command data */
     if (!_FReadCmdline("action ignored", &fRet, rgscrpAction, &_stnActn, &stnFileBase, &iCelBase, &iCelMac, &grfactn,
                        &brsScale, &dCel, &stnSubmodel, &brsStep))
         goto LFail;
@@ -1048,7 +1048,7 @@ bool S2B::_FDoTtActionS2B(void)
     else if (brsStep == BR_SCALAR(-1))
         brsStep = BR_SCALAR(5.0);
 
-    /* Create the ACTN chunk itself */
+    /* 3DMMv1.0: Create the ACTN chunk itself */
     actnf.bo = kboCur;
     actnf.osk = koskCur;
     actnf.grfactn = grfactn;
@@ -1061,7 +1061,7 @@ bool S2B::_FDoTtActionS2B(void)
     _chse.DumpSz(PszLit("ENDCHUNK"));
     _chse.DumpSz(PszLit(""));
 
-    /* Process the model data files for this action */
+    /* 3DMMv1.0: Process the model data files for this action */
     for (iCel = 0; iCel < cCel && (fSuccess || _fContinue); iCel += dCel)
     {
         Model *pmodel;
@@ -1069,7 +1069,7 @@ bool S2B::_FDoTtActionS2B(void)
         CEL cel;
         long cbrgcps;
 
-        /* Get the SoftImage data */
+        /* 3DMMv1.0: Get the SoftImage data */
         AssertDo(stnFileAddon.FFormatSz(PszLit("-%d.hrc"), iCel + iCelBase), 0);
         _stnT = stnFileBase;
         if (!_stnT.FAppendStn(&stnFileAddon))
@@ -1083,9 +1083,9 @@ bool S2B::_FDoTtActionS2B(void)
             goto LFail;
         }
 
-        /* Convert the SoftImage data to Brender data */
+        /* 3DMMv1.0: Convert the SoftImage data to Brender data */
 
-        /* Determine step size for this cel */
+        /* 3DMMv1.0: Determine step size for this cel */
         cel.chidSnd = 0;
         if (grfactn & factnStatic)
             cel.dwr = brsStep;
@@ -1095,7 +1095,7 @@ bool S2B::_FDoTtActionS2B(void)
             cel.dwr = BrFloatToScalar(0.01);
         cel.dwr = BR_MUL(brsScale, cel.dwr);
 
-        /* Actually process the model hierarchy */
+        /* 3DMMv1.0: Actually process the model hierarchy */
         BrMatrix34Identity(&bmat34);
         _cFace = _cMesh = 0;
 
@@ -1121,9 +1121,9 @@ bool S2B::_FDoTtActionS2B(void)
                 continue;
         }
 
-        /* Create GGCL and GLXF for action */
+        /* 3DMMv1.0: Create GGCL and GLXF for action */
 
-        /* Also, generate GLPI if necessary, and accumulate BMDLs */
+        /* 3DMMv1.0: Also, generate GLPI if necessary, and accumulate BMDLs */
         if (_mdVerbose > kmdQuiet)
         {
             printf("Distance from previous cel is %5.2f\n", BrScalarToFloat(cel.dwr));
@@ -1163,13 +1163,13 @@ bool S2B::_FDoTtActionS2B(void)
 #ifdef DEBUG
         else
             Assert(_pbmhr == pvNil, "Didn't free model hierarchy");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
     }
 
     ReleasePpo(&_pglcmtld);
     if (fSuccess)
     {
-        /* Write out the GGCL and GLXF for the action*/
+        /* 3DMMv1.0: Write out the GGCL and GLXF for the action*/
         CnoNext();
         _stnT.FFormatSz(PszLit("%s %s Cels"), &_stnTmpl, &_stnActn);
         _DumpHeader(kctgGgcl, _cnoCur, &_stnT, fTrue);
@@ -1192,7 +1192,7 @@ bool S2B::_FDoTtActionS2B(void)
 LFail:
 
 #if !HASH_FIXED
-    /* Empty the XF database */
+    /* 3DMMv1.0: Empty the XF database */
     {
         PBMATDB pbmatdb, pbmatdbNext;
         long ipbmatdb = _pglpbmatdb->IvMac();
@@ -1225,7 +1225,7 @@ LFail:
         }
         Assert(_pglpbmatdb->IvMac() == 0, 0);
     }
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 
     if (!fSuccess)
     {
@@ -1239,7 +1239,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FInitGlpiCost
         Routine to setup the GLPI and Costume creation states.  By default,
         if either does not yet exist, we will create them.  The caller can
@@ -1299,7 +1299,7 @@ const SCRP rgscrpBackground[] = {{ptLong, ttCno, "missing CNO for background"},
                                  {ptLong, ttLength, ""},
                                  {ptNil, ttNil, ""}};
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FDoTtBackgroundS2B
         Handles a ttBackground command from the script.  Will generate the
     necessary .Zbmp files (Brender z-buffer), and output appropriate .cht
@@ -1320,12 +1320,12 @@ bool S2B::_FDoTtBackgroundS2B(void)
     ctgSav = _ctgPar;
     cnoSav = _cnoPar;
 
-    /* Get the command parameters */
+    /* 3DMMv1.0: Get the command parameters */
     if (!_FReadCmdline("background ignored", &fGotTok, rgscrpBackground, &cnoBkgd, &stnBkgd, &cLite, &cCam, &iPalBase,
                        &cPal))
         goto LFail;
 
-    /* Generate the BKGD chunk */
+    /* 3DMMv1.0: Generate the BKGD chunk */
     bkgdf.bo = kboCur;
     bkgdf.osk = koskCur;
     Assert(iPalBase >= 0 && iPalBase <= kbMax, "Palette base out of range");
@@ -1341,11 +1341,11 @@ bool S2B::_FDoTtBackgroundS2B(void)
     _chse.DumpSz(PszLit("ENDCHUNK"));
     _chse.DumpSz(PszLit(""));
 
-    /* Create the lights */
+    /* 3DMMv1.0: Create the lights */
     if (!_FDumpLites(cLite, &stnBkgd))
         goto LFail;
 
-    /* Create the cameras */
+    /* 3DMMv1.0: Create the cameras */
     if (!_FDumpCameras(cCam, &stnBkgd, iPalBase, cPal))
         goto LFail;
 
@@ -1367,7 +1367,7 @@ const SCRP rgscrpCostume[] = {{ptString, ttFilename, "missing filename for costu
                               {ptLong, ttUseSets, "no body part sets specified"},
                               {ptNil, ttNil, ""}};
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FDoTtCostume
         Handles a COSTUME script command.  Reads the specified .hrc file
         and extracts costume information from the file.
@@ -1383,11 +1383,11 @@ bool S2B::_FDoTtCostume(void)
     STN stnCostume;
     BMAT34 bmat34;
 
-    /* Read in all of the command data */
+    /* 3DMMv1.0: Read in all of the command data */
     if (!_FReadCmdline("costume ignored", &fRet, rgscrpCostume, &stnCostume, &ibpsCur))
         goto LFail;
 
-    /* Get list of body part sets to pay attention to */
+    /* 3DMMv1.0: Get list of body part sets to pay attention to */
     if ((_pglibps = GL::PglNew(size(long))) == pvNil)
         goto LOOM1;
     if (!_pglibps->FAdd(&ibpsCur))
@@ -1410,7 +1410,7 @@ bool S2B::_FDoTtCostume(void)
         goto LFail;
     }
 
-    /* Read and process the SoftImage .hrc file */
+    /* 3DMMv1.0: Read and process the SoftImage .hrc file */
     if (!_FInitGlpiCost(fTrue))
         goto LFail;
     _fCostumeOnly = fTrue;
@@ -1443,7 +1443,7 @@ LFail:
     if (!fSuccess)
     {
         long iibpsMac = _pglibps != pvNil ? _pglibps->IvMac() : 0;
-        long cchLine = 16; /* length of "        USE_SETS" */
+        long cchLine = 16; /* 3DMMv1.0: length of "        USE_SETS" */
 
         printf("Error occured during processing for command line:\n");
         printf("    COSTUME FILE \"%s\",\n", stnCostume.Psz());
@@ -1471,7 +1471,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FDumpLites
         Outputs the appropriate .cht data for light definitions.  Reads
     the necessary SoftImage ASCII light files, converts to Brender data,
@@ -1491,14 +1491,14 @@ bool S2B::_FDumpLites(int cLite, PSTN pstnBkgd)
     LITE lite;
     PGL pgllite;
 
-    /* Create a GL of LITEs */
+    /* 3DMMv1.0: Create a GL of LITEs */
     if ((pgllite = GL::PglNew(size(LITE))) == pvNil)
     {
         printf("Couldn't allocate GLLT\n");
         goto LFail;
     }
 
-    /* Read in the SoftImage lights, adding each to the GL */
+    /* 3DMMv1.0: Read in the SoftImage lights, adding each to the GL */
     for (iLite = 0; iLite < cLite; iLite++)
     {
         if (!_stnT.FFormatSz(kszLight, pstnBkgd, iLite + 1))
@@ -1517,7 +1517,7 @@ bool S2B::_FDumpLites(int cLite, PSTN pstnBkgd)
         }
     }
 
-    /* Emit the LITE chunk */
+    /* 3DMMv1.0: Emit the LITE chunk */
     CnoNext();
     _stnT.FFormatSz(PszLit("%s Lights"), pstnBkgd);
     _DumpHeader(kctgGllt, _cnoCur, &_stnT, fTrue);
@@ -1533,7 +1533,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FDumpCameras
         Outputs the necessary camera chunk data.  Reads in the appropriate
     SoftImage ASCII camera file, converts the data to Brender data, and
@@ -1555,7 +1555,7 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
     CAM cam;
     STN stnFile;
 
-    /* Cameras are kept as individual chunks;
+    /* 3DMMv1.0: Cameras are kept as individual chunks;
         read each file and create the chunk */
     for (iCam = 1; iCam <= cCam; iCam++)
     {
@@ -1563,7 +1563,7 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
         FNI fni;
         PGL pglapos = pvNil;
 
-        /* Get the file */
+        /* 3DMMv1.0: Get the file */
         if (!stnFile.FFormatSz(kszCam, pstnBkgd, iCam))
         {
             printf("Computed camera filename too long (" kszCam ")\n", pstnBkgd->Psz(), iCam);
@@ -1573,7 +1573,7 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
         cam.osk = koskCur;
         _ReadCam(&stnFile, &cam, &pglapos);
 
-        /* Process camera's background bitmap */
+        /* 3DMMv1.0: Process camera's background bitmap */
         if (!stnFile.FFormatSz(kszBmp, pstnBkgd, iCam))
         {
             printf("Computed bitmap filename too long (" kszBmp ")\n", pstnBkgd->Psz(), iCam);
@@ -1587,22 +1587,22 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
         }
         fni.GetStnPath(&stnFile);
 
-        /* Only extract the palette once */
+        /* 3DMMv1.0: Only extract the palette once */
         if (iCam == 1)
         {
             PGL pglclr;
 
-            /* Read the palette */
+            /* 3DMMv1.0: Read the palette */
             if (FReadBitmap(&fni, pvNil, &pglclr, &dxp, &dyp, pvNil))
             {
-                /* Chop off unneeded data from the palette */
+                /* 3DMMv1.0: Chop off unneeded data from the palette */
                 Assert(iPalBase + cPal <= pglclr->IvMac(), "Not enough colors in bitmap");
                 if (iPalBase > 0)
                     pglclr->Delete(0, iPalBase);
                 if (cPal < pglclr->IvMac())
                     pglclr->Delete(cPal, pglclr->IvMac() - cPal);
 
-                /* Generate the palette chunk */
+                /* 3DMMv1.0: Generate the palette chunk */
                 _stnT.FFormatSz(PszLit("%s Palette"), pstnBkgd);
                 _DumpHeader(kctgColorTable, _cnoCur, &_stnT, fTrue);
                 Assert(_ctgPar == kctgBkgd, "Odd parent for GLCR");
@@ -1620,7 +1620,7 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
             }
         }
 
-        /* Generate the camera chunk */
+        /* 3DMMv1.0: Generate the camera chunk */
         cnoCam = CnoNext();
         _stnT.FFormatSz(PszLit("%s Camera %d"), pstnBkgd, iCam);
         _DumpHeader(kctgCam, cnoCam, &_stnT, fTrue);
@@ -1642,7 +1642,7 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
         _chse.DumpSz(PszLit("ENDCHUNK"));
         _chse.DumpSz(PszLit(""));
 
-        /* Generate the background chunk */
+        /* 3DMMv1.0: Generate the background chunk */
         CnoNext();
         _stnT.FFormatSz(PszLit("%s Bitmap %d"), pstnBkgd, iCam);
         _DumpHeader(kctgMbmp, _cnoCur, &_stnT, fTrue);
@@ -1651,7 +1651,7 @@ bool S2B::_FDumpCameras(int cCam, PSTN pstnBkgd, int iPalBase, int cPal)
         _chse.DumpSz(PszLit("ENDCHUNK"));
         _chse.DumpSz(PszLit(""));
 
-        /* Generate the z-buffer chunk for the camera */
+        /* 3DMMv1.0: Generate the z-buffer chunk for the camera */
         if (!_FZbmpFromZpic(pstnBkgd, cnoCam, iCam, dxp, dyp, &cam))
             goto LFail;
     }
@@ -1661,7 +1661,7 @@ LFail:
     return fFalse;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FZbmpFromZpic
         Converts a SoftImage z-buffer data file into Brender z-buffer
     data.  If it can write the data to a new file, it will do so and
@@ -1691,7 +1691,7 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
     FNI fni;
     FIL *pfil = pvNil;
 
-    /* Try to find and open the SoftImage data file */
+    /* 3DMMv1.0: Try to find and open the SoftImage data file */
     if (!_stnT.FFormatSz(kszZpic, pstnBkgd, iCam))
     {
         printf("Computed z-buffer filename too long (" kszZpic ")\n", pstnBkgd->Psz(), iCam);
@@ -1712,7 +1712,7 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
             FP fpRead = 0;
             ZBMPF zbmpf;
 
-            /* Allocate buffer for Zbmp and buffer for reading */
+            /* 3DMMv1.0: Allocate buffer for Zbmp and buffer for reading */
             cbSw = cPix * size(short);
             if (!FAllocPv((void **)&prgsw, cbSw, fmemNil, mprNormal))
             {
@@ -1726,7 +1726,7 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
                 cbBuf = size(float);
             }
 
-            /* Read the available floats */
+            /* 3DMMv1.0: Read the available floats */
             cbLeft = pfil->FpMac();
             psw = prgsw;
             while (cbLeft && cPix)
@@ -1734,7 +1734,7 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
                 long cFl, cbRead;
                 float *pfl = prgfl;
 
-                /* Process a buffer's-worth of data */
+                /* 3DMMv1.0: Process a buffer's-worth of data */
                 cbRead = LwMin(cbBuf, cbLeft);
                 cFl = cbRead / size(float);
                 Assert(cFl * size(float) == cbRead, "Partial data at EOF");
@@ -1745,7 +1745,7 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
                 {
                     BRS brsZCam = BrFloatToScalar(*pfl++);
 
-                    /* Convert the SoftImage data to Brender data */
+                    /* 3DMMv1.0: Convert the SoftImage data to Brender data */
                     Assert(*(pfl - 1) < 0, "Non-negative zbuffer values");
                     if (BR_ABS(brsZCam) > pcam->zrYon)
                         *psw++ = -1;
@@ -1763,11 +1763,11 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
                 cbLeft -= cbRead;
             }
 
-            /* Fill in the rest with the max value */
+            /* 3DMMv1.0: Fill in the rest with the max value */
             while (cPix-- > 0)
                 *psw++ = -1;
 
-            /* Write the chunk */
+            /* 3DMMv1.0: Write the chunk */
             CnoNext();
             _stnT.FFormatSz(PszLit("%s Z-Buffer %d"), pstnBkgd, iCam);
             _DumpHeader(kctgZbmp, _cnoCur, &_stnT, fTrue);
@@ -1812,7 +1812,7 @@ bool S2B::_FZbmpFromZpic(PSTN pstnBkgd, CNO cnoPar, int iCam, long dxp, long dyp
             _chse.DumpSz(PszLit("ENDCHUNK"));
             _chse.DumpSz(PszLit(""));
 
-            /* Prevent us from freeing a local */
+            /* 3DMMv1.0: Prevent us from freeing a local */
             if (prgfl != &fl)
                 FreePpv((void **)&prgfl);
             FreePpv((void **)&prgsw);
@@ -1836,7 +1836,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FBvec3Read
         Reads a vector (triplet) from the given token stream
 
@@ -1866,7 +1866,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _Bmat34FromVec3
         Given a vector, will calculate a transformation matrix that rotates
     the actor's coordinate system so that the positive Z axis points along
@@ -1882,12 +1882,12 @@ void S2B::_Bmat34FromVec3(BVEC3 *pbvec3, BMAT34 *pbmat34)
     BRS brs, brsAdj, brsHyp;
     BRXFM brxfm;
 
-    /* Set up */
+    /* 3DMMv1.0: Set up */
     ClearPb(&brxfm, size(brxfm));
     brxfm.type = BR_TRANSFORM_EULER;
     brxfm.t.euler.e.order = BR_EULER_YXZ_R;
 
-    /* Calculate rotation about Y */
+    /* 3DMMv1.0: Calculate rotation about Y */
     brsHyp = BR_LENGTH2(pbvec3->v[0], pbvec3->v[2]);
     brs = BrAngleToScalar(BR_ACOS(BR_DIV(pbvec3->v[2], brsHyp)));
     if (pbvec3->v[0] < 0)
@@ -1896,7 +1896,7 @@ void S2B::_Bmat34FromVec3(BVEC3 *pbvec3, BMAT34 *pbmat34)
     brxfm.t.euler.e.a = BrScalarToAngle(brs);
     ;
 
-    /* Calculate rotation about X */
+    /* 3DMMv1.0: Calculate rotation about X */
     brsAdj = brsHyp;
     brsHyp = BR_LENGTH2(pbvec3->v[1], brsAdj);
     brs = BrAngleToScalar(BR_ACOS(BR_DIV(brsAdj, brsHyp)));
@@ -1905,12 +1905,12 @@ void S2B::_Bmat34FromVec3(BVEC3 *pbvec3, BMAT34 *pbmat34)
     Assert(brs >= 0 && BrScalarToFloat(brs) <= 1.0, "Bad angle");
     brxfm.t.euler.e.b = BrScalarToAngle(brs);
 
-    /* Actually perform the rotations */
+    /* 3DMMv1.0: Actually perform the rotations */
     brxfm.t.euler.e.c = BrScalarToAngle(BR_SCALAR(0));
     BrMatrix34Transform(pbmat34, &brxfm);
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _ReadLite
         Reads a SoftImage ASCII light file and fills in the LITE structure
     as appropriate.
@@ -1925,7 +1925,7 @@ void S2B::_ReadLite(PSTN pstnLite, LITE *plite)
     FNI fni;
     FIL *pfil;
 
-    /* Attempt to open the file */
+    /* 3DMMv1.0: Attempt to open the file */
     _ps2blx->GetFni(&fni);
     if (fni.FSetLeaf(pstnLite, kftgALite))
     {
@@ -1938,7 +1938,7 @@ void S2B::_ReadLite(PSTN pstnLite, LITE *plite)
             S2BLX s2blx(pfil, fFalse);
             S2BTK s2btk;
 
-            /* Parse the data in the file */
+            /* 3DMMv1.0: Parse the data in the file */
             fGotTok = s2blx.FGetS2btk(&s2btk);
             while (fGotTok)
             {
@@ -1951,7 +1951,7 @@ void S2B::_ReadLite(PSTN pstnLite, LITE *plite)
                         goto LFail;
                     }
 
-                    /* Read the vector */
+                    /* 3DMMv1.0: Read the vector */
                     if (!_FBvec3Read(&s2blx, &bvec3Pos, &s2btk))
                         goto LFail;
                     break;
@@ -1961,13 +1961,13 @@ void S2B::_ReadLite(PSTN pstnLite, LITE *plite)
                         printf("Error: Expected " DK_A_POS_STATIC_TOKEN " after " DK_A_LIGHT_INT_TOKEN "\n");
                         goto LFail;
                     }
-                    /* Read the vector */
+                    /* 3DMMv1.0: Read the vector */
                     if (!_FBvec3Read(&s2blx, &bvec3Int, &s2btk))
                         goto LFail;
 
-                    /* Generate vector for light's +Z axis */
+                    /* 3DMMv1.0: Generate vector for light's +Z axis */
                     BrVector3Sub(&bvec3Int, &bvec3Pos, &bvec3Int);
-                    /* Create light's transformation matrix */
+                    /* 3DMMv1.0: Create light's transformation matrix */
                     _Bmat34FromVec3(&bvec3Int, &plite->bmat34);
                     BrMatrix34PostTranslate(&plite->bmat34, bvec3Pos.v[0], bvec3Pos.v[1], bvec3Pos.v[2]);
                     break;
@@ -1987,7 +1987,7 @@ LFail:
     return;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _ReadCam
         Reads a SoftImage ASCII camera file and fills in the given CAM
     structure as appropriate.
@@ -2003,7 +2003,7 @@ void S2B::_ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos)
     FNI fni;
     FIL *pfil;
 
-    /* Attempt to open the camera file */
+    /* 3DMMv1.0: Attempt to open the camera file */
     _ps2blx->GetFni(&fni);
     if (fni.FSetLeaf(pstnCam, kftgACam))
     {
@@ -2016,7 +2016,7 @@ void S2B::_ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos)
             S2BLX s2blx(pfil, fFalse);
             S2BTK s2btk;
 
-            /* Parse the data in the camera file */
+            /* 3DMMv1.0: Parse the data in the camera file */
             fGotTok = s2blx.FGetS2btk(&s2btk);
             while (fGotTok)
             {
@@ -2028,7 +2028,7 @@ void S2B::_ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos)
                         printf("Error: Expected " DK_A_POS_STATIC_TOKEN " after " DK_A_CAMERA_POS_TOKEN "\n");
                         goto LFail;
                     }
-                    /* Read the position */
+                    /* 3DMMv1.0: Read the position */
                     if (!_FBvec3Read(&s2blx, &bvec3Pos, &s2btk))
                         goto LFail;
                     break;
@@ -2038,32 +2038,32 @@ void S2B::_ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos)
                         printf("Error: Expected " DK_A_POS_STATIC_TOKEN " after " DK_A_CAMERA_INT_TOKEN "\n");
                         goto LFail;
                     }
-                    /* Read the interest (where the camera's looking) */
+                    /* 3DMMv1.0: Read the interest (where the camera's looking) */
                     if (!_FBvec3Read(&s2blx, &bvec3Int, &s2btk))
                         goto LFail;
 
-                    /* Create vector for camera's positive X-axis (away from
+                    /* 3DMMv1.0: Create vector for camera's positive X-axis (away from
                         where it's looking */
                     BrVector3Sub(&bvec3Int, &bvec3Pos, &bvec3Int);
-                    /* Get transformation for camera */
+                    /* 3DMMv1.0: Get transformation for camera */
                     _Bmat34FromVec3(&bvec3Int, &pcam->bmat34Cam);
                     BrMatrix34PostTranslate(&pcam->bmat34Cam, bvec3Pos.v[0], bvec3Pos.v[1], bvec3Pos.v[2]);
                     break;
-                case ttNearCam: // Near plane
+                case ttNearCam: // 3DMMv1.0: Near plane
                     if (!(fGotTok = s2blx.FGetS2btk(&s2btk)) || !_FBrsFromS2btk(&s2btk, &pcam->zrHither))
                     {
                         printf("Error: Invalid " DK_A_CAMERA_NEAR_TOKEN " data\n");
                         goto LFail;
                     }
                     break;
-                case ttFarCam: // Far plane
+                case ttFarCam: // 3DMMv1.0: Far plane
                     if (!(fGotTok = s2blx.FGetS2btk(&s2btk)) || !_FBrsFromS2btk(&s2btk, &pcam->zrYon))
                     {
                         printf("Error: Invalid " DK_A_CAMERA_FAR_TOKEN " data\n");
                         goto LFail;
                     }
                     break;
-                case ttFovCam: // Field Of View
+                case ttFovCam: // 3DMMv1.0: Field Of View
                 {
                     BRS brs;
 
@@ -2092,7 +2092,7 @@ void S2B::_ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos)
                             APOS apos;
 
                             apos.bvec3Actor = bvec3Actor;
-                            (*ppglapos)->FAdd(&apos); // Ignore failure
+                            (*ppglapos)->FAdd(&apos); // 3DMMv1.0: Ignore failure
                         }
                     }
                     break;
@@ -2107,11 +2107,11 @@ void S2B::_ReadCam(PSTN pstnCam, CAM *pcam, PGL *ppglapos)
             {
                 BRS zrCam = kzrDefault;
 
-                /* Ensure depth of location is within the bounds of the cam */
+                /* 3DMMv1.0: Ensure depth of location is within the bounds of the cam */
                 if (BR_ABS(zrCam) > pcam->zrYon)
                     zrCam = BR_CONST_DIV(BR_ADD(pcam->zrYon, pcam->zrHither), -2);
 
-                /* Translate (0,0,zrCam) in cam coords into world coords */
+                /* 3DMMv1.0: Translate (0,0,zrCam) in cam coords into world coords */
                 pcam->apos.bvec3Actor.v[0] =
                     BR_ADD(BR_MUL(kzrDefault, pcam->bmat34Cam.m[2][0]), pcam->bmat34Cam.m[3][0]);
                 pcam->apos.bvec3Actor.v[1] = rZero;
@@ -2128,7 +2128,7 @@ LFail:
     return;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FProcessModel
 |		Converts a SoftImage model hierarchy into a tree of Brender models.
 |	Only mesh nodes are saved, but transformation information in propogated
@@ -2161,7 +2161,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
 
         pstnSubmodel = pvNil;
 
-        /* Include translation */
+        /* 3DMMv1.0: Include translation */
         brsX = BrFloatToFixed(pmodel->translation.x);
         brsY = BrFloatToFixed(pmodel->translation.y);
         brsZ = BrFloatToFixed(_iZsign * pmodel->translation.z);
@@ -2173,7 +2173,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
         }
         BrMatrix34PreTranslate(&bmat34Acc, brsX, brsY, brsZ);
 
-        /* Include rotation */
+        /* 3DMMv1.0: Include rotation */
         braX = BrRadianToAngle(BrFloatToFixed(pmodel->rotation.x));
         braY = BrRadianToAngle(BrFloatToFixed(pmodel->rotation.y));
         braZ = BrRadianToAngle(BrFloatToFixed(pmodel->rotation.z));
@@ -2187,7 +2187,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
         BrMatrix34PreRotateY(&bmat34Acc, braY);
         BrMatrix34PreRotateX(&bmat34Acc, braX);
 
-        /* Include scaling (comes last for SoftImage) */
+        /* 3DMMv1.0: Include scaling (comes last for SoftImage) */
         brsX = BrFloatToFixed(pmodel->scaling.x);
         brsY = BrFloatToFixed(pmodel->scaling.y);
         brsZ = BrFloatToFixed(pmodel->scaling.z);
@@ -2231,7 +2231,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
                 fAccessory = fFalse;
                 ibps = 0;
             }
-            /* Output info */
+            /* 3DMMv1.0: Output info */
             if (_fMakeGlpi && (_mdVerbose > kmdQuiet) || _mdVerbose > kmdHelpful)
             {
                 if (cLevel > 0)
@@ -2240,7 +2240,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
             }
             cLevel++;
 
-            /* create model node */
+            /* 3DMMv1.0: create model node */
             if ((pbmhrParent = _PbmhrFromModel(pmodel, &bmat34Acc, ppbmhr, pbmhrParent, ibps, fAccessory)) == pvNil)
             {
                 printf("Out of memory allocating model node\n");
@@ -2248,7 +2248,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
             }
             pbmhrParent->fAccessory = fAccessory;
 
-            /* Anchor this node */
+            /* 3DMMv1.0: Anchor this node */
             _cMesh++;
             _cFace += pbmhrParent->pmodlf->cfac;
             ppbmhr = &(pbmhrParent->pbmhrChild);
@@ -2258,7 +2258,7 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
             printf("Warning: mesh node \"%s\" has no body part set\n", pmodel->name);
     }
 
-    /* Descend and process any children */
+    /* 3DMMv1.0: Descend and process any children */
     while (pmodelChild != pvNil)
     {
         Assert(*ppbmhr == pvNil, "Non-nil parent pointer");
@@ -2271,13 +2271,13 @@ bool S2B::_FProcessModel(Model *pmodel, BMAT34 bmat34Acc, PBMHR *ppbmhr, PSTN ps
 
     return fTrue;
 
-    /* Clean up if we fail */
+    /* 3DMMv1.0: Clean up if we fail */
 LFail:
     _DisposeBmhr(&_pbmhr);
     return fFalse;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_PbmhrFromModel
 |		Converts a single SoftImage model node into a single Brender model
 |	node.  Adds the new node as a child to the parent node.
@@ -2307,13 +2307,13 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
     CRNG crng;
     BRCLR brclr;
 
-    /* Ignore geometry if it doesn't exist, or if we're only interested in
+    /* 3DMMv1.0: Ignore geometry if it doesn't exist, or if we're only interested in
         the material information.  Theoretically, we should really just not
         bother with the modlf at all if we're only making the costume, but
         we gain back most of the overhead with this simple change. */
     fMesh = pmesh != pvNil && (!_fCostumeOnly || fAccessory);
 
-    /* Allocate necessary pieces: BMHR, appropriately sized MODLF, and name */
+    /* 3DMMv1.0: Allocate necessary pieces: BMHR, appropriately sized MODLF, and name */
     if (fMesh)
     {
         Assert(pmodel->type == DK_MDL_MESH, "Data present in non-mesh model");
@@ -2346,21 +2346,21 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
 #ifdef DEBUG
     else
         Assert(pbmhrCur->pszName == pvNil, "Bad pointer");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
     pbmhrCur->pmodlf = pmodlf;
     _InitBmhr(pbmhrCur);
 
 #ifdef DEBUG
-    /* Just to be nice, keep siblings in same order as in SoftImage data */
-    /* This housework is done in FProcessModel now so as to avoid iterating
+    /* 3DMMv1.0: Just to be nice, keep siblings in same order as in SoftImage data */
+    /* 3DMMv1.0: This housework is done in FProcessModel now so as to avoid iterating
         over the sibling chain over and over */
     Assert(*ppbmhr == pvNil, "Improper call to _PbmhrFromModel");
     while (*ppbmhr != pvNil)
         ppbmhr = &((*ppbmhr)->pbmhrSibling);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-    /* Fill in MODLF */
+    /* 3DMMv1.0: Fill in MODLF */
     if (fMesh)
     {
         pmodlf->cver = (short)pmesh->nbVertices;
@@ -2369,7 +2369,7 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
         _CopyFaces(pmesh->polygons, PvAddBv(pmodlf, size(MODLF) + cbrgver), pmesh->nbPolygons,
                    (BRV *)PvAddBv(pmodlf, size(MODLF)), pmodlf->cver);
 
-        /* I considered having the _Copy... routines do the hashing, since
+        /* 3DMMv1.0: I considered having the _Copy... routines do the hashing, since
             they're already stepping through the bytes.  However, they do
             such little pieces at a time, I believe that the function-call
             overhead would obliterate any savings from doing so. */
@@ -2377,14 +2377,14 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
     else
         pmodlf->cver = pmodlf->cfac = 0;
 
-    /* Fill in BMHR */
+    /* 3DMMv1.0: Fill in BMHR */
     pbmhrCur->pmodlf = pmodlf;
     pbmhrCur->cbModlf = cb;
     pbmhrCur->bmat34 = *pbmat34;
     pbmhrCur->ibps = ibps;
     pbmhrCur->fFixWrap = fFalse;
 
-    /* Handle material information */
+    /* 3DMMv1.0: Handle material information */
     pmaterial = pmodel->materials;
     if (pmaterial != pvNil)
         _TextureFileFromModel(pmodel, pbmhrCur, !_fMakeCostume || _pglclr == pvNil);
@@ -2392,7 +2392,7 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
     if (_fMakeCostume && _pglclr != pvNil)
     {
         Assert(pmodel->currentMaterial == 0, "Using the wrong material");
-        /* Get material from this model, if it exists */
+        /* 3DMMv1.0: Get material from this model, if it exists */
         if (pmaterial != pvNil)
         {
             brclr = BR_DK_TO_BR(pmaterial->ambient);
@@ -2408,13 +2408,13 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
                 pbmhrCur->mtrlf.brufKs = BR_DKRGB_TO_FRGRAY(pmaterial->specular);
             goto LFinishMtrl;
         }
-        /* If this model has no material of its own and it has a parent,
+        /* 3DMMv1.0: If this model has no material of its own and it has a parent,
             get the parent's material */
         else if (pbmhrParent != pvNil)
         {
             Assert(!fMesh || pbmhrParent->fMtrlf, "Warning: mesh node has no material parent");
             pbmhrCur->mtrlf = pbmhrParent->mtrlf;
-            /* REVIEW peted: bogus...if an STN were derived from the BASE class,
+            /* 3DMMv1.0: REVIEW peted: bogus...if an STN were derived from the BASE class,
                 I could just AddRef it and copy the pointer here rather than
                 allocating a whole new STN */
             if (pbmhrParent->pstnMtrlFile != pvNil && (pbmhrCur->pstnMtrlFile = new STN()) != pvNil)
@@ -2423,7 +2423,7 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
             }
             pbmhrCur->fMtrlf = pbmhrParent->fMtrlf;
         }
-        /* If there's no parent, and no material, make something up */
+        /* 3DMMv1.0: If there's no parent, and no material, make something up */
         else
         {
             if (fMesh)
@@ -2435,26 +2435,26 @@ PBMHR S2B::_PbmhrFromModel(Model *pmodel, BMAT34 *pbmat34, PBMHR *ppbmhr, PBMHR 
             pbmhrCur->mtrlf.brufKd = BR_UFRACTION(1.0);
             pbmhrCur->mtrlf.brufKs = BR_UFRACTION(0);
 
-            /* Finish filling in the material information */
+            /* 3DMMv1.0: Finish filling in the material information */
         LFinishMtrl:
-            pbmhrCur->mtrlf.brc = 0; // unused by Socrates
+            pbmhrCur->mtrlf.brc = 0; // 3DMMv1.0: unused by Socrates
             Assert(crng.lwBase < kbMax, "Color index base too high");
             Assert(crng.lwRange < kbMax, "Color index range too high");
             pbmhrCur->mtrlf.bIndexBase = (uint8_t)crng.lwBase;
-            /* Brender color range is defined by max val rather than count */
+            /* 3DMMv1.0: Brender color range is defined by max val rather than count */
             pbmhrCur->mtrlf.cIndexRange = (uint8_t)crng.lwRange - 1;
-            pbmhrCur->mtrlf.rPower = BrIntToScalar(50); // REVIEW peted: need real val here
+            pbmhrCur->mtrlf.rPower = BrIntToScalar(50); // 3DMMv1.0: REVIEW peted: need real val here
         }
     }
     Assert(pbmhrCur->pbmhrChild == pvNil, 0);
 
-    /* Hook it in */
+    /* 3DMMv1.0: Hook it in */
     *ppbmhr = pbmhrCur;
 LFail:
     return pbmhrCur;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _TextureFileFromModel
         Extracts the base texture name from the file name given in a model's
         material information.  First looks in the model itself for a texture
@@ -2478,7 +2478,7 @@ void S2B::_TextureFileFromModel(Model *pmodel, PBMHR pbmhr, bool fWrapOnly)
     PSTN pstn = pvNil;
     Texture *ptexture;
 
-    /* Look for a texture in the model; if the model doesn't have one, check
+    /* 3DMMv1.0: Look for a texture in the model; if the model doesn't have one, check
         its first material */
     if (pmodel->nbTextures < 1)
     {
@@ -2532,7 +2532,7 @@ LNotexture:
     pbmhr->pstnMtrlFile = pstn;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FTmapFromBmp
         Given a texture name, adds the texture to the MTRL with the given CNO.
         If this texture has never been seen before, the .bmp file is converted
@@ -2560,7 +2560,7 @@ bool S2B::_FTmapFromBmp(PBMHR pbmhr, CNO cnoPar, PSTN pstnMtrl)
     TMAPD tmapd;
     PSTN pstnBmpFile = pbmhr->pstnMtrlFile;
 
-    /* Look for the bitmap file in our list */
+    /* 3DMMv1.0: Look for the bitmap file in our list */
     if (_pggtmapd == pvNil && (_pggtmapd = GG::PggNew(size(TMAPD))) == pvNil)
         goto LFail;
     itmapdMac = _pggtmapd->IvMac();
@@ -2594,7 +2594,7 @@ bool S2B::_FTmapFromBmp(PBMHR pbmhr, CNO cnoPar, PSTN pstnMtrl)
         if (!_pggtmapd->FAdd(size(CNO), pvNil, &cnoPar, &tmapd))
             goto LFailAdd;
 
-        /* Write the file out last; it's easier to remove the reference to a
+        /* 3DMMv1.0: Write the file out last; it's easier to remove the reference to a
             failed file than to delete a file that's not referenced :) */
         if (!ptmap->FWriteTmapChkFile(&fni, fTrue))
         {
@@ -2621,7 +2621,7 @@ bool S2B::_FTmapFromBmp(PBMHR pbmhr, CNO cnoPar, PSTN pstnMtrl)
         txxff.bo = kboCur;
         txxff.osk = koskCur;
 
-        /* Scaling is the ratio of the width and height of the bitmap left
+        /* 3DMMv1.0: Scaling is the ratio of the width and height of the bitmap left
             after removing the cropped areas to the width and height of the
             original bitmap.  The pixel u/vMax is included in the cropped
             and offset texture. */
@@ -2629,7 +2629,7 @@ bool S2B::_FTmapFromBmp(PBMHR pbmhr, CNO cnoPar, PSTN pstnMtrl)
         brsYScale = BR_DIV(BrIntToScalar(pbmhr->vMaxCrop - pbmhr->vMinCrop + 1), BrIntToScalar(tmapd.yp));
         BrMatrix23Scale(&txxff.bmat23, brsXScale, brsYScale);
 
-        /* Total offset is the specified offset, plus the necessary offset
+        /* 3DMMv1.0: Total offset is the specified offset, plus the necessary offset
             for any cropping */
         brsdu = BR_ADD(BrUFractionToScalar(pbmhr->brufrUOffset),
                        BR_DIV(BrIntToScalar(pbmhr->uMinCrop), BrIntToScalar(tmapd.xp)));
@@ -2637,7 +2637,7 @@ bool S2B::_FTmapFromBmp(PBMHR pbmhr, CNO cnoPar, PSTN pstnMtrl)
                        BrUFractionToScalar(pbmhr->brufrVOffset));
         BrMatrix23PostTranslate(&txxff.bmat23, brsdu, brsdv);
 
-        /* Dump out the TXXFF chunk for this material */
+        /* 3DMMv1.0: Dump out the TXXFF chunk for this material */
         pstnMtrl->FAppendSz(PszLit(" Texture transform"));
         CnoNext();
         _DumpHeader(kctgTxxf, _cnoCur, pstnMtrl, fTrue);
@@ -2653,7 +2653,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FFlushTmaps
         Actually writes out the TMAP definitions to the chunk source file.
         Each unique TMAP chunk is added once, with each MTRL that refers to
@@ -2682,7 +2682,7 @@ bool S2B::_FFlushTmaps(void)
 
         _pggtmapd->GetFixed(itmapd, &tmapd);
 
-        /* Generate the full filename for this texture */
+        /* 3DMMv1.0: Generate the full filename for this texture */
         _stnT = *tmapd.pstn;
         _ps2blx->GetFni(&fni);
         if (!fni.FSetLeaf(&_stnT, kftgTmapChkFile))
@@ -2691,19 +2691,19 @@ bool S2B::_FFlushTmaps(void)
             continue;
         }
 
-        /* Emit the header */
+        /* 3DMMv1.0: Emit the header */
         CnoNext();
         fni.GetLeaf(&_stnT);
         _DumpHeader(kctgTmap, _cnoCur, &_stnT, fFalse);
 
-        /* Dump out all the necessary PARENT declarations */
+        /* 3DMMv1.0: Dump out all the necessary PARENT declarations */
         for (icnoPar = 0; icnoPar < tmapd.ccnoPar; icnoPar++)
         {
             _pggtmapd->GetRgb(itmapd, icnoPar * size(CNO), size(CNO), &cnoPar);
             _chse.DumpParentCmd(kctgMtrl, cnoPar, 0);
         }
 
-        /* Finish up the chunk */
+        /* 3DMMv1.0: Finish up the chunk */
         fni.GetStnPath(&_stnT);
         _chse.DumpFileCmd(&_stnT, fTrue);
         _chse.DumpSz(PszLit("ENDCHUNK"));
@@ -2714,7 +2714,7 @@ bool S2B::_FFlushTmaps(void)
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _BrsdwrFromModel
         Computes a distance-between-cels for the given model, given the
     position of the last model.
@@ -2730,24 +2730,24 @@ BRS S2B::_BrsdwrFromModel(Model *pmodel, BRS rgbrsDwr[])
 {
     BRS brsDwr, brsX, brsY, brsZ;
 
-    /* Calculate difference */
+    /* 3DMMv1.0: Calculate difference */
     brsX = BrFloatToScalar(pmodel->translation.x);
     brsY = BrFloatToScalar(pmodel->translation.y);
     brsZ = BrFloatToScalar(pmodel->translation.z);
     brsDwr = BR_LENGTH3(BR_SUB(rgbrsDwr[0], brsX), BR_SUB(rgbrsDwr[1], brsY), BR_SUB(rgbrsDwr[2], brsZ));
 
-    /* Remember current model position */
+    /* 3DMMv1.0: Remember current model position */
     rgbrsDwr[0] = brsX;
     rgbrsDwr[1] = brsY;
     rgbrsDwr[2] = brsZ;
 
-    /* Set model back to origin */
+    /* 3DMMv1.0: Set model back to origin */
     pmodel->translation.x = pmodel->translation.y = pmodel->translation.z = (float)0.0;
 
     return brsDwr;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_CopyVertices
 |		Copy floating point vertices from the SoftImage data structure to
 |	Brender scalar vertices needed by the Brender data structure.
@@ -2805,7 +2805,7 @@ void S2B::_CopyVertices(DK_Vertex *vertices, void *pvDst, long cVertices)
     }
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_CopyFaces
 |		Copy all of the face data from the SoftImage list to the
 |	Brender list.
@@ -2826,7 +2826,7 @@ void S2B::_CopyFaces(DK_Polygon *polygons, void *pvDst, long cFaces, BRV rgbrv[]
         DK_PolyNode *ppolynode = polygons->nodes;
         br_uint_16 *pvtx = &pbrfc->vertices[0];
 
-        /* If we get an invalid node count, warn about it and then fill in
+        /* 3DMMv1.0: If we get an invalid node count, warn about it and then fill in
             if necessary (REVIEW peted: seems highly unlikely that we'll
             ever have too few vertices, seeing as how any less than 3
             gives a very uninteresting face indeed) */
@@ -2838,7 +2838,7 @@ void S2B::_CopyFaces(DK_Polygon *polygons, void *pvDst, long cFaces, BRV rgbrv[]
                 pvtx[i] = (br_uint_16)ppolynode->vertex;
         }
 
-        /* copy the vertices for this face */
+        /* 3DMMv1.0: copy the vertices for this face */
         for (; cNodes; cNodes--, ppolynode++, pvtx++)
         {
             *pvtx = (br_uint_16)ppolynode->vertex;
@@ -2855,7 +2855,7 @@ void S2B::_CopyFaces(DK_Polygon *polygons, void *pvDst, long cFaces, BRV rgbrv[]
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FDoBodyPart
         Handles a single body part.  Sets the Brender body part set for the
         given body part and stores that in the GL for the body part sets, and
@@ -2881,10 +2881,10 @@ bool S2B::_FDoBodyPart(PBMHR pbmhr, long ibp)
     CMTLD cmtld;
     long icmtld, icmtldMac, iibps, iibpsMac;
 
-    /* Find the appropriate CMTL */
+    /* 3DMMv1.0: Find the appropriate CMTL */
     if (fDoMtrl)
     {
-        /* We may be only making costumes for a subset of the body part sets */
+        /* 3DMMv1.0: We may be only making costumes for a subset of the body part sets */
         if (_pglibps != pvNil)
         {
             iibpsMac = _pglibps->IvMac();
@@ -2901,7 +2901,7 @@ bool S2B::_FDoBodyPart(PBMHR pbmhr, long ibp)
         else
             fUseMtrl = fTrue;
 
-        /* Go ahead and figure out the mapping from SI body part sets to
+        /* 3DMMv1.0: Go ahead and figure out the mapping from SI body part sets to
             Brender body part sets */
         icmtldMac = _pglcmtld->IvMac();
         for (icmtld = 0; icmtld < icmtldMac; icmtld++)
@@ -2923,17 +2923,17 @@ bool S2B::_FDoBodyPart(PBMHR pbmhr, long ibp)
     {
         Assert(!_fMakeGlpi || ibpGl == ibp, "Weird order for GLBS");
 
-        /* Handle material stuff, if we have color info */
+        /* 3DMMv1.0: Handle material stuff, if we have color info */
         if (fDoMtrl)
         {
             long ccmid;
 
-            /* Create the CMTL chunk if necessary */
+            /* 3DMMv1.0: Create the CMTL chunk if necessary */
             if (icmtld == icmtldMac)
             {
                 long icmtldT;
 
-                /* Add it to our list */
+                /* 3DMMv1.0: Add it to our list */
                 cmtld.cno = CnoNext();
                 cmtld.chidCur = 0;
                 cmtld.ibps = pbmhr->ibps;
@@ -2942,7 +2942,7 @@ bool S2B::_FDoBodyPart(PBMHR pbmhr, long ibp)
                     goto LFail;
                 Assert(icmtldT == icmtld, "Bogus icmtld");
 
-                /* Add it to the GGCM */
+                /* 3DMMv1.0: Add it to the GGCM */
                 Assert(ibps <= _pggcm->IvMac(), "ibps out of range");
                 if (ibps == _pggcm->IvMac())
                 {
@@ -2966,7 +2966,7 @@ bool S2B::_FDoBodyPart(PBMHR pbmhr, long ibp)
                     ccmid++;
                     _pggcm->PutFixed(ibps, &ccmid);
 
-                    /* Write a nice CMTL chunk */
+                    /* 3DMMv1.0: Write a nice CMTL chunk */
                     cmtlf.bo = kboCur;
                     cmtlf.osk = koskCur;
                     cmtlf.ibset = ibps;
@@ -2988,7 +2988,7 @@ bool S2B::_FDoBodyPart(PBMHR pbmhr, long ibp)
             else if (fUseMtrl)
                 _pggcm->GetFixed(ibps, &ccmid);
 
-            /* Write a nice MTRL chunk for this body part */
+            /* 3DMMv1.0: Write a nice MTRL chunk for this body part */
             if (fUseMtrl)
             {
                 if (ccmid == 1)
@@ -3052,7 +3052,7 @@ void S2B::_ApplyBmdlXF(PBMHR pbmhr)
     }
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FProcessBmhr
 |		Iterates through a Brender model hierarchy, creating the necessary
 |	chunk data as it goes.  The GLPI is made the first time, and then
@@ -3077,17 +3077,17 @@ bool S2B::_FProcessBmhr(PBMHR *ppbmhr, short ibpPar)
     {
         pbmhrNext = pbmhrCur->pbmhrSibling;
 
-        /* Create Cel Part Spec for this node */
+        /* 3DMMv1.0: Create Cel Part Spec for this node */
         ibpThis = _ibpCur++;
         if (!_fCostumeOnly)
         {
             if (!_FSetCps(pbmhrCur, &_prgcps[ibpThis]))
-                goto LFail; // _FSetCps already displayed the error
+                goto LFail; // 3DMMv1.0: _FSetCps already displayed the error
         }
         else
             Assert(_prgcps == pvNil, "Why is there an array of CPS allocated?");
 
-        /* Update or verify GLPI */
+        /* 3DMMv1.0: Update or verify GLPI */
         if (_fMakeGlpi)
         {
             long ibpGl;
@@ -3122,14 +3122,14 @@ bool S2B::_FProcessBmhr(PBMHR *ppbmhr, short ibpPar)
             ReleasePpo(&_pglcmtld);
         }
 
-        /* Process the children */
+        /* 3DMMv1.0: Process the children */
         if (!_FProcessBmhr(&pbmhrCur->pbmhrChild, ibpThis))
         {
             Assert(*ppbmhr == pbmhrCur, 0);
             goto LFail;
         }
 
-        /* Clean up and go to next sibling */
+        /* 3DMMv1.0: Clean up and go to next sibling */
         FreePpv((void **)&pbmhrCur->pmodlf);
         FreePpv((void **)&pbmhrCur->pszName);
         if ((*ppbmhr)->pstnMtrlFile != pvNil)
@@ -3143,7 +3143,7 @@ LFail:
     return fFalse;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FEnsureOneRoot
 |		Makes sure that the root of our Brender hierarchy has no siblings.
 |	Will create a new null root if required.  Will delete the entire tree
@@ -3161,7 +3161,7 @@ bool S2B::_FEnsureOneRoot(PBMHR *ppbmhr)
     MODLF *pmodlf;
     PBMHR pbmhr;
 
-    /* REVIEW peted: don't bother doing this, 'cause it messes up the material
+    /* 3DMMv1.0: REVIEW peted: don't bother doing this, 'cause it messes up the material
         stuff.  If we really care (which I'm not sure we do, since Socrates
         now handles multiple root-level nodes), we can fix this so that any
         automatically generated body part sets are also included in the list
@@ -3169,18 +3169,18 @@ bool S2B::_FEnsureOneRoot(PBMHR *ppbmhr)
         could handle not having a material for a body part set more gracefully */
     return fTrue;
 
-    /* If the tree's empty, fail since there's no use making a null model */
+    /* 3DMMv1.0: If the tree's empty, fail since there's no use making a null model */
     if (*ppbmhr == pvNil)
     {
         printf("Error: no valid nodes found in model\n");
         return fFalse;
     }
 
-    /* If the tree's already good, great! */
+    /* 3DMMv1.0: If the tree's already good, great! */
     if ((*ppbmhr)->pbmhrSibling == pvNil)
         return fTrue;
 
-    /* Allocate necessary structures.  The MODLF and the BMHR */
+    /* 3DMMv1.0: Allocate necessary structures.  The MODLF and the BMHR */
     if (!FAllocPv((void **)&pmodlf, size(MODLF), fmemClear, mprNormal))
         goto LFail;
     if (!FAllocPv((void **)&pbmhr, size(BMHR), fmemClear, mprNormal))
@@ -3191,16 +3191,16 @@ bool S2B::_FEnsureOneRoot(PBMHR *ppbmhr)
     pbmhr->pmodlf = pmodlf;
     _InitBmhr(pbmhr);
 
-    /* Fill in the MODLF; no faces or vertices */
+    /* 3DMMv1.0: Fill in the MODLF; no faces or vertices */
     Assert(pmodlf->cver == 0, "Didn't clear MODLF");
     Assert(pmodlf->cfac == 0, "Didn't clear MODLF");
 
-    /* Fill in the BMHR */
+    /* 3DMMv1.0: Fill in the BMHR */
     pbmhr->cbModlf = size(MODLF);
     BrMatrix34Identity(&pbmhr->bmat34);
     pbmhr->pbmhrSibling = pvNil;
 
-    /* Hook it in and count it */
+    /* 3DMMv1.0: Hook it in and count it */
     pbmhr->pbmhrChild = *ppbmhr;
     *ppbmhr = pbmhr;
     _cMesh++;
@@ -3211,7 +3211,7 @@ LFail:
     return fFalse;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _InitBmhr
         Initalize the chunk "F" structures for the BMHR
 
@@ -3225,9 +3225,9 @@ void S2B::_InitBmhr(PBMHR pbmhr)
     pbmhr->pmodlf->osk = pbmhr->mtrlf.osk = koskCur;
 }
 
-/* Wrap fixing code from Sam at Argonaut begins here */
+/* 3DMMv1.0: Wrap fixing code from Sam at Argonaut begins here */
 
-/*
+/* 3DMMv1.0:
  * Flags to ModelFixWrapping()
  */
 #define WRAP_U_0 0x40
@@ -3235,14 +3235,14 @@ void S2B::_InitBmhr(PBMHR pbmhr)
 #define WRAP_U_1 0x10
 #define WRAP_V_1 0x20
 
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: $
  * $Locker:  $
  */
 
-/*
+/* 3DMMv1.0:
  * Scratch structures used by ModelFixWrapping()
  */
 struct wrap_face_info
@@ -3260,14 +3260,14 @@ struct wrap_edge_info
     br_uint_8 vflags[2];
 };
 
-/*
+/* 3DMMv1.0:
  * Temp. workspace used to build new vertices
  */
 static br_vertex *WrapNewVertices;
 static int WrapTotalVertices;
 static int WrapNextVertex;
 
-/*
+/* 3DMMv1.0:
  * Adds a new vertex to model that has had it's
  * wrapping fixed
  */
@@ -3277,7 +3277,7 @@ static int WrapAddVertex(br_vertex *new_vp)
     int i;
     struct br_vertex *vp;
 
-    /*
+    /* 3DMMv1.0:
      * Try and find vertex in current set
      */
     vp = WrapNewVertices;
@@ -3289,7 +3289,7 @@ static int WrapAddVertex(br_vertex *new_vp)
             return i;
     }
 
-    /*
+    /* 3DMMv1.0:
      * Add to end of list
      */
     if (WrapNextVertex >= WrapTotalVertices)
@@ -3300,7 +3300,7 @@ static int WrapAddVertex(br_vertex *new_vp)
     return WrapNextVertex++;
 }
 
-/*
+/* 3DMMv1.0:
  * ModelFixWrapping()
  *
  * Processes a model and attempts to fix up seams where the texture
@@ -3323,22 +3323,22 @@ bool FModelFixWrapping(br_model *model, int *mask)
     br_vertex tempv;
     BRS brsMinDist0, brsMinDist1;
 
-    /* Ensure edge info */
+    /* 3DMMv1.0: Ensure edge info */
     BrModelPrepare(model, BR_MPREP_EDGES);
 
-    //	edge_info = BrMemCalloc(model->nedges,sizeof(*edge_info),BR_MEMORY_APPLICATION);
+    // 3DMMv1.0:	edge_info = BrMemCalloc(model->nedges,sizeof(*edge_info),BR_MEMORY_APPLICATION);
     if (!FAllocPv((void **)&edge_info, model->nedges * size(wrap_edge_info), fmemClear, mprNormal))
     {
         goto LFail;
     }
 
-    //	face_info = BrMemCalloc(model->nfaces,sizeof(*face_info),BR_MEMORY_APPLICATION);
+    // 3DMMv1.0:	face_info = BrMemCalloc(model->nfaces,sizeof(*face_info),BR_MEMORY_APPLICATION);
     if (!FAllocPv((void **)&face_info, model->nfaces * size(wrap_face_info), fmemClear, mprNormal))
     {
         goto LFail;
     }
 
-    /*
+    /* 3DMMv1.0:
      * Go through faces to build edge table
      */
     fp = model->faces;
@@ -3352,7 +3352,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
             eip->count++;
             if (eip->count == 1)
             {
-                /*
+                /* 3DMMv1.0:
                  * First time edge has been used
                  */
                 eip->vertices[0] = fp->vertices[e0];
@@ -3362,7 +3362,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
                 eip->old_vertices[1] = eip->vertices[1];
             }
 
-            /*
+            /* 3DMMv1.0:
              * See which direction edge is used
              */
             if (eip->vertices[0] == fp->vertices[e0] && eip->vertices[1] == fp->vertices[e1])
@@ -3378,7 +3378,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
         }
     }
 
-    /*
+    /* 3DMMv1.0:
      * For each edge - find if U or V wraps
      */
     num0_wraps = 0;
@@ -3407,7 +3407,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
 
                 brsDist = BR_SUB(BR_SCALAR(1.0), vp0->map.v[0]);
 
-                /* Put the new vertex colocated with whatever vertex is closest
+                /* 3DMMv1.0: Put the new vertex colocated with whatever vertex is closest
                     to the 0/1 boundary */
                 if (brsDist < vp1->map.v[0])
                     vf0 = WRAP_U_0;
@@ -3420,14 +3420,14 @@ bool FModelFixWrapping(br_model *model, int *mask)
 
                 brsDist = BR_SUB(BR_SCALAR(1.0), vp1->map.v[0]);
 
-                /* Ditto */
+                /* 3DMMv1.0: Ditto */
                 if (brsDist < vp0->map.v[0])
                     vf1 = WRAP_U_0;
                 else
                     vf0 = WRAP_U_1;
             }
 
-            /*
+            /* 3DMMv1.0:
              * Mark lower vertex as wrapping - keep a count
              * new wraps
              */
@@ -3447,7 +3447,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
                 else
                     num1_wraps++;
             }
-            /*
+            /* 3DMMv1.0:
              * mark face
              */
             eip->flags |= WRAP_U_0;
@@ -3463,7 +3463,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
                 eip->vflags[vw] |= WRAP_V;
                 num_wraps++;
             }
-            /*
+            /* 3DMMv1.0:
              * mark face
              */
             eip->flags |= WRAP_V;
@@ -3471,7 +3471,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
 #endif
     }
 
-    /*
+    /* 3DMMv1.0:
      * Go through faces and accumulate per face-vertex flags
      */
     fp = model->faces;
@@ -3494,7 +3494,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
         }
     }
 
-    /*
+    /* 3DMMv1.0:
      * Allocate a new vertex array (may be bigger than required)
      */
     WrapTotalVertices = model->nvertices + num1_wraps + num0_wraps;
@@ -3503,7 +3503,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
 
     WrapNextVertex = model->nvertices;
 
-    /*
+    /* 3DMMv1.0:
      * Go through faecs and generate new vertices
      */
     fp = model->faces;
@@ -3525,7 +3525,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
             Assert((fip->vflags[v] & (WRAP_U_0 | WRAP_U_1)) != (WRAP_U_0 | WRAP_U_1), "Both wrap flags set!");
             Assert(v0 == -1 || v1 == -1, "Already seen two bad vertices");
 
-            /*
+            /* 3DMMv1.0:
              * Make a copy of the vertex, and wrap
              * mapping coordinates
              */
@@ -3557,10 +3557,10 @@ bool FModelFixWrapping(br_model *model, int *mask)
 
 #ifdef NOT
             if (fip->vflags[v] & WRAP_U)
-                tempv.map.v[0] = /* tempv.map.v[0] + */ BR_SCALAR(1.0);
+                tempv.map.v[0] = /* 3DMMv1.0: tempv.map.v[0] + */ BR_SCALAR(1.0);
 
             if (fip->vflags[v] & WRAP_V)
-                tempv.map.v[1] = /* tempv.map.v[1] + */ BR_SCALAR(1.0);
+                tempv.map.v[1] = /* 3DMMv1.0: tempv.map.v[1] + */ BR_SCALAR(1.0);
 #endif
         }
 
@@ -3573,7 +3573,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
             br_vertex *pbrv_good, *pbrv_move;
             br_scalar brs_new_u;
 
-            /* Need to figure out which to actually move */
+            /* 3DMMv1.0: Need to figure out which to actually move */
             vbad ^= 0x07;
             Assert(!((vbad - 1) & vbad), "Should only have one bit set");
             for (v_good = 0; vbad > 1; v_good++, vbad >>= 1)
@@ -3581,7 +3581,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
             Assert(FIn(v_good, 0, 3), "vbad out of range");
             pbrv_good = &WrapNewVertices[fp->vertices[v_good]];
 
-            /* The good vertex will be within 0.5 of the new u value */
+            /* 3DMMv1.0: The good vertex will be within 0.5 of the new u value */
             if (pbrv_good->map.v[0] >= BR_SCALAR(0.5))
             {
                 brs_new_u = BR_SCALAR(1.0);
@@ -3611,7 +3611,7 @@ bool FModelFixWrapping(br_model *model, int *mask)
                 brs_new_u = BR_SCALAR(1.0);
             }
 
-            /* Possibly need to move both vertices over to new u value */
+            /* 3DMMv1.0: Possibly need to move both vertices over to new u value */
             if (v0 != -1)
             {
                 tempv = WrapNewVertices[fp->vertices[v0]];
@@ -3632,12 +3632,12 @@ bool FModelFixWrapping(br_model *model, int *mask)
         }
     }
 
-    //	BrMemFree(face_info);
+    // 3DMMv1.0:	BrMemFree(face_info);
     FreePpv((void **)&face_info);
-    //	BrMemFree(edge_info);
+    // 3DMMv1.0:	BrMemFree(edge_info);
     FreePpv((void **)&edge_info);
 
-    /*
+    /* 3DMMv1.0:
      * Connect new vertex array to faces
      */
     BrResFree(model->vertices);
@@ -3651,9 +3651,9 @@ LFail:
     return fRet;
 }
 
-/* Wrap fix code from Sam at Argonaut ends here */
+/* 3DMMv1.0: Wrap fix code from Sam at Argonaut ends here */
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FlushTmplKids
 |		Writes whatever the current template accumulators contain and
 |	resets them.
@@ -3664,7 +3664,7 @@ void S2B::_FlushTmplKids(void)
     int cBmdbTotal = 0, cBmdbChains = 0;
 #if HASH_FIXED
     PBMDB *ppbmdb;
-#endif /* HASH_FIXED */
+#endif /* 3DMMv1.0: HASH_FIXED */
     PBMDB pbmdb, pbmdbNext;
 
     if (_pglibactPar != pvNil)
@@ -3672,10 +3672,10 @@ void S2B::_FlushTmplKids(void)
 #if HASH_FIXED
         Assert(_prgpbmdb != pvNil, 0);
         PBMDB *ppbmdbMac = (_prgpbmdb + kcpbmdb);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
         Assert(_pglpbmdb != pvNil, 0);
         long ipbmdb = _pglpbmdb->IvMac();
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 
         Assert(_ctgPar == kctgTmpl, "Odd parent for body part chunks");
 
@@ -3687,7 +3687,7 @@ void S2B::_FlushTmplKids(void)
         _chse.DumpSz(PszLit("ENDCHUNK"));
         _chse.DumpSz(PszLit(""));
 
-        /* Create dummy GLBS if necessary */
+        /* 3DMMv1.0: Create dummy GLBS if necessary */
         if (_pglbs == pvNil)
         {
             short swZero = 0;
@@ -3700,14 +3700,14 @@ void S2B::_FlushTmplKids(void)
         }
         else
         {
-            /* Don't need this any more */
+            /* 3DMMv1.0: Don't need this any more */
             ReleasePpo(&_pglibactPar);
 
-            /* Do material stuff if we have the CMTL GL and there's valid
+            /* 3DMMv1.0: Do material stuff if we have the CMTL GL and there's valid
                 color info */
             if (_pggcm != pvNil && _pglclr != pvNil)
             {
-                /* Dump out GGCM */
+                /* 3DMMv1.0: Dump out GGCM */
                 Assert(_ctgPar == kctgTmpl, "Weird parent for GGCM");
                 CnoNext();
                 _stnT.FFormatSz(PszLit("%s Costumes"), &_stnTmpl);
@@ -3720,7 +3720,7 @@ void S2B::_FlushTmplKids(void)
 #ifdef DEBUG
             else if (_pggcm != pvNil)
                 Assert(_pggcm->IvMac() == 0, "Non-empty GGCM without any color info");
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
             ReleasePpo(&_pggcm);
 
             if (_pggtmapd != pvNil)
@@ -3742,21 +3742,21 @@ void S2B::_FlushTmplKids(void)
 
 #if HASH_FIXED
         for (ppbmdb = _prgpbmdb; ppbmdb < ppbmdbMac; ppbmdb++)
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
         while (ipbmdb > 0)
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
         {
             int cBmdbList = 0;
 
 #if HASH_FIXED
             pbmdb = *ppbmdb;
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
             ipbmdb--;
             _pglpbmdb->Get(ipbmdb, &pbmdb);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
             while (pbmdb != pvNil)
             {
-                /* Don't bother fixing up a model with no vertices; it wastes
+                /* 3DMMv1.0: Don't bother fixing up a model with no vertices; it wastes
                     time, and the Argonaut code doesn't handle that case
                     gracefully anyway */
                 if (_fFixWrap && pbmdb->pmodlf->cver > 0 && pbmdb->fFixWrap)
@@ -3823,9 +3823,9 @@ void S2B::_FlushTmplKids(void)
             }
 #if HASH_FIXED
             *ppbmdb = pvNil;
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
             _pglpbmdb->Delete(ipbmdb);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
         }
         if (_mdVerbose > kmdQuiet)
         {
@@ -3838,15 +3838,15 @@ void S2B::_FlushTmplKids(void)
     Assert(_pglcmtld == pvNil, 0);
 #if HASH_FIXED
     Assert(*_prgpbmdb == pvNil, 0);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     Assert(_pglpbmdb->IvMac() == 0, 0);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
     _chidActn = 0;
     _chidBmdl = 0;
     _chidCmtl = 0;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FModlfToBmdl
         Converts a MODLF structure to the corresponding Brender br_model
         structure (BMDL in Socrates nomenclature).  Simply allocates a
@@ -3885,7 +3885,7 @@ LFail:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FBmdlToModlf
         Converts a Brender br_model to a MODLF structure.  Ensures that the
         Brender model has been prepared and then copies all relevant
@@ -3913,7 +3913,7 @@ bool S2B::_FBmdlToModlf(PBMDL pbmdl, PMODLF *ppmodlf, long *pcb)
 
     BrModelPrepare(pbmdl, BR_MPREP_ALL);
 
-    /* REVIEW peted: is there an accepted way of determining if BrModelPrepare
+    /* 3DMMv1.0: REVIEW peted: is there an accepted way of determining if BrModelPrepare
         has failed?  Can it fail?  I think I can at least do the following... */
     if (pbmdl->nvertices > 0 && pbmdl->nprepared_vertices == 0)
         goto LFail;
@@ -3942,7 +3942,7 @@ LFail:
     return fRet;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FSetCps
 |		Sets a Cel Part Spec.
 |
@@ -3987,7 +3987,7 @@ LFail:
     return fFalse;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FChidFromModlf
 |		Looks up a given MODLF, and adds a new one to the MODLF database
 |	if necessary.
@@ -4008,7 +4008,7 @@ bool S2B::_FChidFromModlf(PBMHR pbmhr, CHID *pchid, PBMDB *ppbmdb)
 
 #if HASH_FIXED
     PBMDB *ppbmdb;
-#endif /* HASH_FIXED */
+#endif /* 3DMMv1.0: HASH_FIXED */
     PBMDB pbmdb;
     uint luHashList;
 
@@ -4016,7 +4016,7 @@ bool S2B::_FChidFromModlf(PBMHR pbmhr, CHID *pchid, PBMDB *ppbmdb)
     {
         if (FAllocPv((void **)&pbmdb, size(BMDB), fmemNil, mprNormal))
         {
-            /* Copy the pointers */
+            /* 3DMMv1.0: Copy the pointers */
             pbmdb->pmodlf = pbmhr->pmodlf;
             pbmhr->pmodlf = pvNil;
             pbmdb->pszName = pbmhr->pszName;
@@ -4037,7 +4037,7 @@ bool S2B::_FChidFromModlf(PBMHR pbmhr, CHID *pchid, PBMDB *ppbmdb)
 #if HASH_FIXED
             pbmdb->hshdb.phshdbNext = (PHSHDB) * (ppbmdb = (_prgpbmdb + luHashList));
             *ppbmdb = pbmdb;
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
             Assert(pbmdb == (PBMDB)&pbmdb->hshdb, "Bad struct definition for BMDB");
             if (!_FInsertPhshdb(&pbmdb->hshdb, _pglpbmdb))
             {
@@ -4045,7 +4045,7 @@ bool S2B::_FChidFromModlf(PBMHR pbmhr, CHID *pchid, PBMDB *ppbmdb)
                 printf("Couldn't add node to model database\n");
                 return fFalse;
             }
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
         }
         else
         {
@@ -4087,7 +4087,7 @@ LFail:
 
 #if !HASH_FIXED
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FInsertPhshdb
         Inserts an hash database entry into a sparse, sorted hash table
 
@@ -4116,7 +4116,7 @@ bool S2B::_FInsertPhshdb(PHSHDB phshdb, PGL pglphshdb)
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _FIphshdbFromLuHash
         Determines the position that a given hash value does, or should be,
         located in the given sparse, sorted hash table.
@@ -4158,9 +4158,9 @@ bool S2B::_FIphshdbFromLuHash(uint luHash, long *piphshdb, PGL pglphshdb)
     return fRet;
 }
 
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _PbmdbFindModlf
         Given a MODLF, look for an identical one in our hash table.
 
@@ -4177,16 +4177,16 @@ PBMDB S2B::_PbmdbFindModlf(MODLF *pmodlf, long cbModlf, uint *pluHashList)
     PBMDB pbmdb;
 #if !HASH_FIXED
     long ipbmdb;
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 
     *pluHashList = _LuHashBytes(kluHashInit, pmodlf, cbModlf);
 #if HASH_FIXED
     pbmdb = *(_prgpbmdb + *pluHashList);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     if (!_FIphshdbFromLuHash(*pluHashList, &ipbmdb, _pglpbmdb))
         return pvNil;
     _pglpbmdb->Get(ipbmdb, &pbmdb);
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
     while (pbmdb != pvNil)
     {
         if (pbmdb->cbModlf == cbModlf && (FcmpCompareRgb(pbmdb->pmodlf, pmodlf, cbModlf) == fcmpEq))
@@ -4199,7 +4199,7 @@ PBMDB S2B::_PbmdbFindModlf(MODLF *pmodlf, long cbModlf, uint *pluHashList)
 uint _rgluHashCrc[256];
 Debug(bool _fTableValid = fFalse;)
 
-    /******************************************************************************
+    /** 3DMMv1.0: ****************************************************************************
         _InitCrcTable
             Initialize the 8-bit hash value look-up table
 
@@ -4208,7 +4208,7 @@ Debug(bool _fTableValid = fFalse;)
 {
     int icrc;
 
-    /* Compute the hash value for each 8-bit byte value */
+    /* 3DMMv1.0: Compute the hash value for each 8-bit byte value */
     for (icrc = 0; icrc < 256; icrc++)
     {
         uint8_t bcrc = (uint8_t)icrc;
@@ -4219,7 +4219,7 @@ Debug(bool _fTableValid = fFalse;)
     Debug(_fTableValid = fTrue;)
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _LuHashBytesNoTable
         Compute a hash value the hard way.
 
@@ -4248,7 +4248,7 @@ uint S2B::_LuHashBytesNoTable(uint luHash, void *pv, long cb)
     return luHash;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     _LuHashBytes
         Compute a hash value using the lookup table
 
@@ -4275,7 +4275,7 @@ uint S2B::_LuHashBytes(uint luHash, void *pv, long cb)
     return luHash;
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_FImat34GetBmat34
 |		Looks up a given BMAT34 in the transformation database, and returns
 |	with the index for the found or created transformation.  (NOTE: for now,
@@ -4295,11 +4295,11 @@ bool S2B::_FImat34GetBmat34(BMAT34 *pbmat34, long *pimat34)
     BMAT34 *pbmat34T;
 #if HASH_FIXED
     long i, iMac = _pglxf->IvMac();
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     long ipbmatdb;
     uint luHash;
     PBMATDB pbmatdb;
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 
 #if HASH_FIXED
     for (i = 0; i < iMac; i++)
@@ -4312,7 +4312,7 @@ bool S2B::_FImat34GetBmat34(BMAT34 *pbmat34, long *pimat34)
         }
     }
     return _pglxf->FAdd(pbmat34, pimat34);
-#else  /* HASH_FIXED */
+#else  /* 3DMMv1.0: HASH_FIXED */
     luHash = _LuHashBytes(kluHashInit, pbmat34, size(BMAT34));
 
     if (!_FIphshdbFromLuHash(luHash, &ipbmatdb, _pglpbmatdb))
@@ -4329,7 +4329,7 @@ bool S2B::_FImat34GetBmat34(BMAT34 *pbmat34, long *pimat34)
     if (pbmatdb == pvNil)
     {
     LAddXF:
-        /* Add the XF to the GL and to the database */
+        /* 3DMMv1.0: Add the XF to the GL and to the database */
         if (_pglxf->FAdd(pbmat34, pimat34))
         {
             if (FAllocPv((void **)&pbmatdb, size(BMATDB), fmemNil, mprNormal))
@@ -4357,10 +4357,10 @@ bool S2B::_FImat34GetBmat34(BMAT34 *pbmat34, long *pimat34)
     return fTrue;
 LFail:
     return fFalse;
-#endif /* !HASH_FIXED */
+#endif /* 3DMMv1.0: !HASH_FIXED */
 }
 
-/*-----------------------------------------------------------------------------
+/* 3DMMv1.0: -----------------------------------------------------------------------------
 |	_DisposeBmhr
 |		Deletes the entire tree of Brender model nodes.
 |
@@ -4385,7 +4385,7 @@ void S2B::_DisposeBmhr(PBMHR *ppbmhr)
     }
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     PglcrngFromPal
         Will attempt to extract color ranges from a palette.  May be
     obsolete.
@@ -4410,7 +4410,7 @@ PGL PglcrngFromPal(PGL pglclr)
 
     for (lwCur = 0, lwStart = 0; lwCur < lwMac; lwCur++)
     {
-        /* Get a normalized color */
+        /* 3DMMv1.0: Get a normalized color */
         pglclr->Get(lwCur, &brclr);
         brsR = BrIntToScalar(BR_RED(brclr));
         brsG = BrIntToScalar(BR_GRN(brclr));
@@ -4423,10 +4423,10 @@ PGL PglcrngFromPal(PGL pglclr)
             brsB = BR_ROUND(BR_DIV(brsB, brsNorm), 2);
         }
 
-        /* Is it possible that we can include it in our range? */
+        /* 3DMMv1.0: Is it possible that we can include it in our range? */
         if (lwCur > 0 && brsNorm > 0)
         {
-            /* If the potential starting entry was 0,0,0 then set it to
+            /* 3DMMv1.0: If the potential starting entry was 0,0,0 then set it to
                 the current normalized color, and continue */
             if (brsRLast == 0 && brsGLast == 0 && brsBLast == 0)
             {
@@ -4436,7 +4436,7 @@ PGL PglcrngFromPal(PGL pglclr)
                 continue;
             }
 
-            /* Well, at least this criteria catches exactly the ranges we
+            /* 3DMMv1.0: Well, at least this criteria catches exactly the ranges we
                 currently define.  I have no idea how well it will fare with
                 the final ranges. */
             if (brsRLast == brsGLast && brsR == brsG)
@@ -4447,7 +4447,7 @@ PGL PglcrngFromPal(PGL pglclr)
                 continue;
         }
 
-        /* Should we add this range to our list? */
+        /* 3DMMv1.0: Should we add this range to our list? */
         if ((lwCur - lwStart) > 2)
         {
             crng.lwBase = lwStart;
@@ -4469,7 +4469,7 @@ LFail:
     return pglcrng;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     LwcrngNearestBrclr
         Given a Brender color, find the color range that the color will most
     accurately fit into.
@@ -4490,23 +4490,23 @@ long LwcrngNearestBrclr(BRCLR brclr, PGL pglclr, PGL pglcrng)
     CRNG crng;
     BRCLR brclrT, brclrNear;
 
-    /* For each color range */
+    /* 3DMMv1.0: For each color range */
     for (lwcrng = 0; lwcrng < lwcrngMac; lwcrng++)
     {
         pglcrng->Get(lwcrng, &crng);
         lwclrMac = crng.lwBase + crng.lwRange;
         Assert(crng.lwRange > 0 && lwclrMac <= pglclr->IvMac(), "Invalid range");
 
-        /* For each color in the given range */
+        /* 3DMMv1.0: For each color in the given range */
         for (lwclr = crng.lwBase; lwclr < lwclrMac; lwclr++)
         {
-            /* Calculate a city-block distance for the color */
+            /* 3DMMv1.0: Calculate a city-block distance for the color */
             pglclr->Get(lwclr, &brclrT);
             dclrT = LwAbs(BR_RED(brclrT) - BR_RED(brclr));
             dclrT += LwAbs(BR_GRN(brclrT) - BR_GRN(brclr));
             dclrT += LwAbs(BR_BLU(brclrT) - BR_BLU(brclr));
 
-            /* If it's closer than what we've found so far, remember it */
+            /* 3DMMv1.0: If it's closer than what we've found so far, remember it */
             if (dclrT < dclrNear)
             {
                 lwclrNear = lwclr;
@@ -4518,18 +4518,18 @@ long LwcrngNearestBrclr(BRCLR brclr, PGL pglclr, PGL pglcrng)
             }
         }
 
-        /* If we found an exact match, look no further */
+        /* 3DMMv1.0: If we found an exact match, look no further */
         if (dclrT == 0)
             break;
     }
 
-    /* Report and return */
+    /* 3DMMv1.0: Report and return */
     if (dclrT != 0)
         printf("Didn't find exact match for color %06x; nearest was %06x\n", brclr, brclrNear);
     return lwcrngNear;
 }
 
-/* Array of keywords known by our simple script interpreter */
+/* 3DMMv1.0: Array of keywords known by our simple script interpreter */
 static KEYTT _rgkeyttS2B[] = {"ACTOR",
                               ttActor,
                               "ACTION",
@@ -4595,7 +4595,7 @@ static KEYTT _rgkeyttS2B[] = {"ACTOR",
 
 #define kckeyttS2B (size(_rgkeyttS2B) / size(_rgkeyttS2B[0]))
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read a number.  The first character is passed in ch.  lwBase is the base
     of the number (must be <= 10).
 ***************************************************************************/
@@ -4615,7 +4615,7 @@ void S2BLX::_ReadNumTok(PTOK ptok, achar ch, long lwBase, long cchMax)
     }
     if (ch == ChLit('.'))
     {
-        /* HACK: if we didn't read any non-zero digits yet, and we hit
+        /* 3DMMv1.0: HACK: if we didn't read any non-zero digits yet, and we hit
             a decimal point, assume we're really reading lwBase 10 */
         if (lw == 0)
             lwBase = 10;
@@ -4637,7 +4637,7 @@ void S2BLX::_ReadNumTok(PTOK ptok, achar ch, long lwBase, long cchMax)
         ptok->lw = lw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reads in the next token.  Resolves certain names to keyword tokens.
 ***************************************************************************/
 bool S2BLX::FGetS2btk(PS2BTK ps2btk)
@@ -4653,7 +4653,7 @@ bool S2BLX::FGetS2btk(PS2BTK ps2btk)
 
     if (fRet)
     {
-        /* Ignore minus signs, unless they precede a number */
+        /* 3DMMv1.0: Ignore minus signs, unless they precede a number */
         if (ptok->tt == ttSub)
         {
             if (!(fRet = S2BLX_PAR::FGetTok(ptok)))
@@ -4674,7 +4674,7 @@ bool S2BLX::FGetS2btk(PS2BTK ps2btk)
         if (ptok->tt != ttName)
             goto LDone;
 
-        // check for a keyword
+        // 3DMMv1.0: check for a keyword
         for (ikeytt = 0; ikeytt < kckeyttS2B; ikeytt++)
         {
             if (ptok->stn.FEqualUserSz(_rgkeyttS2B[ikeytt].pszKeyword))
@@ -4692,7 +4692,7 @@ LDone:
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FGetTok
         Gets a base TOK.  Will filter out ttFloat.
 
@@ -4711,7 +4711,7 @@ bool S2BLX::FGetTok(PTOK ptok)
     if (fRet)
     {
         *ptok = s2btk.tok;
-        /* Convert token if necessary */
+        /* 3DMMv1.0: Convert token if necessary */
         if (ptok->tt == ttFloat)
         {
             ptok->lw = (long)_fl;
@@ -4721,7 +4721,7 @@ bool S2BLX::FGetTok(PTOK ptok)
     return fRet;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FTextFromTt
         Sets an STN to the text string that corresponds to the given token.
 
@@ -4743,14 +4743,14 @@ bool S2BLX::FTextFromTt(long tt, PSTN pstn)
             break;
 
     if (ikeytt == kckeyttS2B)
-        //		return S2BLX_PAR::FTextFromTt(tt, pstn);
+        // 3DMMv1.0:		return S2BLX_PAR::FTextFromTt(tt, pstn);
         return fFalse;
 
     pstn->SetSz(_rgkeyttS2B[ikeytt].pszKeyword);
     return fTrue;
 }
 
-/******************************************************************************
+/** 3DMMv1.0: ****************************************************************************
     FTextFromS2btk
         Fills in the given STN with text that represents the given token.
 
@@ -4778,7 +4778,7 @@ bool S2BLX::FTextFromS2btk(PS2BTK ps2btk, PSTN pstn)
         return fTrue;
     }
 
-    //	return FTextFromTok(&ps2btk->tok, pstn);
+    // 3DMMv1.0:	return FTextFromTok(&ps2btk->tok, pstn);
     PTOK ptok = &ps2btk->tok;
 
     switch (ptok->tt)
@@ -4790,7 +4790,7 @@ bool S2BLX::FTextFromS2btk(PS2BTK ps2btk, PSTN pstn)
         *pstn = ptok->stn;
         return fTrue;
     case ttString:
-        /* Creating the string this way will guarantee the double-quotes will
+        /* 3DMMv1.0: Creating the string this way will guarantee the double-quotes will
             make it into the string; the source string *may* be truncated by
             a character or two. */
         *pstn = PszLit("\"");
@@ -4803,7 +4803,7 @@ bool S2BLX::FTextFromS2btk(PS2BTK ps2btk, PSTN pstn)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Warning proc called by Warn() macro
 
@@ -4819,7 +4819,7 @@ void WarnProc(PSZ pszFile, long lwLine, PSZ pszMessage)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     Returning true breaks into the debugger.
 

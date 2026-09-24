@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: pool.h 1.7 1995/02/22 21:37:18 sam Exp $
@@ -34,12 +34,12 @@ extern "C"
 #endif
     } br_pool;
 
-/*
+/* BRender:
  * Speedup macros
  */
 #if 0
 #if !POOL_DEBUG
-br_pool_block *__bp; /* Hmm, this global is not optimizer friendly */
+br_pool_block *__bp; /* BRender: Hmm, this global is not optimizer friendly */
 
 #define BrPoolAllocate(pool)                                                                                           \
     (void *)(((pool)->free ? 0 : BrPoolAddChunk(pool)), (__bp = (pool)->free), ((pool)->free = __bp->next, __bp))

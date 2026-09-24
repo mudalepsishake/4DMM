@@ -8,7 +8,7 @@ void FrameMain(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Main routine.  Returns non-zero iff there's an error.
 ***************************************************************************/
 int __cdecl main(int cpszs, char *prgpszs[])
@@ -29,9 +29,9 @@ int __cdecl main(int cpszs, char *prgpszs[])
 
 #ifdef UNICODE
     fprintf(stderr, "\nPBM to MBMP Utility (Unicode; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#else  //! UNICODE
+#else  //! 3DMMEx: UNICODE
     fprintf(stderr, "\nPBM to MBMPUtility (Ansi; " Debug("Debug; ") __DATE__ "; " __TIME__ ")\n");
-#endif //! UNICODE
+#endif //! 3DMMEx: UNICODE
 
     floSrc.pfil = pvNil;
     if (cpszs != 4)
@@ -143,7 +143,7 @@ int __cdecl main(int cpszs, char *prgpszs[])
     return 0;
 
 LUsage:
-    // print usage
+    // 3DMMEx: print usage
     fprintf(stderr, "%s", "Usage:  pbmtobmp <srcFile> <dstFile> <palette.bmp>\n\n");
 
 LFail:

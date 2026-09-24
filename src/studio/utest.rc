@@ -1,28 +1,28 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-//Microsoft Visual C++ generated resource script.
+// 3DMMv1.0: Microsoft Visual C++ generated resource script.
 //
 #include "utestres.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Generated from the TEXTINCLUDE 2 resource.
+// 3DMMv1.0: Generated from the TEXTINCLUDE 2 resource.
 //
 #define APSTUDIO_HIDDEN_SYMBOLS
 #include "windows.h"
 #undef APSTUDIO_HIDDEN_SYMBOLS
 #include "framedef.h"
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 
 #ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// TEXTINCLUDE
+// 3DMMv1.0: TEXTINCLUDE
 //
 
 1 TEXTINCLUDE DISCARDABLE 
@@ -46,27 +46,27 @@ BEGIN
     "\0"
 END
 
-/////////////////////////////////////////////////////////////////////////////
-#endif    // APSTUDIO_INVOKED
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
+#endif    // 3DMMv1.0: APSTUDIO_INVOKED
 
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Accelerator
+// 3DMMv1.0: Accelerator
 //
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Icon
+// 3DMMv1.0: Icon
 //
 
 IDI_APP                 ICON    DISCARDABLE     "studio\\bmp\\app.ico"
 IDI_DOC                 ICON    DISCARDABLE     "studio\\bmp\\doc.ico"
 IDI_CD                  ICON    DISCARDABLE     "studio\\bmp\\cd.ico"
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Dialog
+// 3DMMv1.0: Dialog
 //
 
 dlidBadOS DIALOG DISCARDABLE  0, 0, 185, 92
@@ -266,9 +266,9 @@ BEGIN
 END
 
 
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// String Table
+// 3DMMv1.0: String Table
 //
 
 STRINGTABLE DISCARDABLE
@@ -279,7 +279,7 @@ BEGIN
 
     stidInstallDriverWin95  "You do not have a multimedia driver needed by this application.  We will now try to to install the driver for you.  Once it is installed, you will need to restart the application."
     stidInstallDriverNT     "You do not have a multimedia driver needed by this application.  To install, select the drivers applet in the control panel. Press the ADD button and select the driver named above."
-    stidInstallCmdLine      "RunDll.exe setupx.dll,InstallHinfSection " // <section> <reboot mode> <inf name>
+    stidInstallCmdLine      "RunDll.exe setupx.dll,InstallHinfSection " // 3DMMv1.0: <section> <reboot mode> <inf name>
 
     stidSectionName         "MCIWAVE"
     stidSectionName + 1     "MCIAVI"
@@ -298,13 +298,13 @@ END
 
 
 #ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
 //
-// Generated from the TEXTINCLUDE 3 resource.
+// 3DMMv1.0: Generated from the TEXTINCLUDE 3 resource.
 //
 #include "frame.rc"
 #include "utest.rc2"
 
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
+/// 3DMMv1.0: //////////////////////////////////////////////////////////////////////////
+#endif    // 3DMMv1.0: not APSTUDIO_INVOKED
 

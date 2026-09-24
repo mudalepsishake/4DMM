@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -22,7 +22,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Byte stream in memory.  The entire stream is in contiguous memory.
 ***************************************************************************/
 typedef class BSM *PBSM;
@@ -61,7 +61,7 @@ class BSM : public BSM_PAR
     bool FWriteRgb(PBLCK pblck, int32_t ib = 0);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Byte stream on file.  Parts of the stream may be in files.
 ***************************************************************************/
 typedef class BSF *PBSF;
@@ -100,4 +100,4 @@ class BSF : public BSF_PAR
     bool FCompact(void);
 };
 
-#endif //! STREAM_H
+#endif //! 3DMMv1.0: STREAM_H

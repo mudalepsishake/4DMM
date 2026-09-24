@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,13 +16,13 @@
 #ifndef UTILMEM_H
 #define UTILMEM_H
 
-// used for asserts and limiting memory
-const uint8_t kbGarbage = 0xA3;    // new blocks are filled with this
-const int32_t kcbMax = 0x08000000; // 128 Megabytes
+// 3DMMv1.0: used for asserts and limiting memory
+const uint8_t kbGarbage = 0xA3;    // 3DMMv1.0: new blocks are filled with this
+const int32_t kcbMax = 0x08000000; // 3DMMv1.0: 128 Megabytes
 const int16_t kswMagicMem = (int16_t)0xA253;
 const int32_t klwMagicMem = (int32_t)0xA253A253;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     When an allocation fails, vpfnlib is called to free some memory (if it's
     not nil).
 ***************************************************************************/
@@ -30,19 +30,19 @@ typedef int32_t (*PFNLIB)(int32_t cb, int32_t mpr);
 extern PFNLIB vpfnlib;
 extern bool _fInAlloc;
 
-/****************************************
+/** 3DMMv1.0: **************************************
     OS memory handles and management
 ****************************************/
 #ifdef MAC
 typedef Handle HN;
-// version of SetHandleSize that returns an error code
+// 3DMMv1.0: version of SetHandleSize that returns an error code
 inline int16_t ErrSetHandleSize(HN hn, Size cb)
 {
     SetHandleSize(hn, cb);
     return MemError();
 }
 
-// address stipper
+// 3DMMv1.0: address stipper
 class ADST
 {
   private:
@@ -62,25 +62,25 @@ extern ADST vadst;
 typedef HGLOBAL HN;
 #endif
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Moveable/resizeable memory management
 ****************************************/
 typedef void *HQ;
 #define hNil 0
 #define hqNil ((HQ)0)
 
-// memory request priority
+// 3DMMv1.0: memory request priority
 enum
 {
-    // lower priority
+    // 3DMMv1.0: lower priority
     mprDebug,
     mprForSpeed,
     mprNormal,
     mprCritical,
-    // higher priority
+    // 3DMMv1.0: higher priority
 };
 
-// memory allocation options
+// 3DMMv1.0: memory allocation options
 enum
 {
     fmemNil = 0,
@@ -96,18 +96,18 @@ void UnlockHq(HQ hq);
 
 #ifdef DEBUG
 
-// debug memory allocator globals
-// enter vmutxMem before modifying these...
+// 3DMMv1.0: debug memory allocator globals
+// 3DMMv1.0: enter vmutxMem before modifying these...
 struct DMAGL
 {
-    int32_t cv;    // number of allocations
-    int32_t cvTot; // total number of allocations over all time
-    int32_t cvRun; // running max of cv
-    int32_t cb;    // total size of allocations
-    int32_t cbRun; // running max of cb
+    int32_t cv;    // 3DMMv1.0: number of allocations
+    int32_t cvTot; // 3DMMv1.0: total number of allocations over all time
+    int32_t cvRun; // 3DMMv1.0: running max of cv
+    int32_t cb;    // 3DMMv1.0: total size of allocations
+    int32_t cbRun; // 3DMMv1.0: running max of cb
 
-    int32_t cactDo;   // number of times to succeed before failing
-    int32_t cactFail; // number of times to fail
+    int32_t cactDo;   // 3DMMv1.0: number of times to succeed before failing
+    int32_t cactFail; // 3DMMv1.0: number of times to fail
 
     bool FFail(void);
     void Allocate(int32_t cbT);
@@ -115,12 +115,12 @@ struct DMAGL
     void Free(int32_t cbT);
 };
 
-// debug memory globals
+// 3DMMv1.0: debug memory globals
 struct DMGLOB
 {
-    DMAGL dmaglBase; // for NewObj
-    DMAGL dmaglHq;   // for HQs
-    DMAGL dmaglPv;   // for FAllocPv, etc
+    DMAGL dmaglBase; // 3DMMv1.0: for NewObj
+    DMAGL dmaglHq;   // 3DMMv1.0: for HQs
+    DMAGL dmaglPv;   // 3DMMv1.0: for FAllocPv, etc
 };
 extern DMGLOB vdmglob;
 
@@ -137,9 +137,9 @@ void MarkHq(HQ hq);
 #ifdef MAC
 void _AssertUnmarkedHqs(void);
 void _UnmarkAllHqs(void);
-#endif // MAC
+#endif // 3DMMv1.0: MAC
 
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 
 #define FAllocHqDebug(phq, cb, grfmem, mpr, pszsFile, luLine) FAllocHq(phq, cb, grfmem, mpr)
 bool FAllocHq(HQ *phq, int32_t cb, uint32_t grfmem, int32_t mpr);
@@ -158,24 +158,24 @@ inline void *QvFromHq(HQ hq)
 #define AssertHq(hq)
 #define MarkHq(hq)
 
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Fixed (non-moveable) memory.
 ****************************************/
 #ifdef DEBUG
 
-// allocation routine
+// 3DMMv1.0: allocation routine
 bool FAllocPvDebug(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr, schar *pszsFile, int32_t lwLine,
                    DMAGL *pdmagl);
 #define FAllocPv(ppv, cb, grfmem, mpr) FAllocPvDebug(ppv, cb, grfmem, mpr, __szsFile, __LINE__, &vdmglob.dmaglPv)
 
-// resizing routine - not MAC
+// 3DMMEx: resizing routine - not MAC
 #ifndef MAC
 bool _FResizePpvDebug(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int32_t mpr, DMAGL *pdmagl);
 #endif
 
-// freeing routine
+// 3DMMv1.0: freeing routine
 void FreePpvDebug(void **ppv, DMAGL *pdmagl);
 #define FreePpv(ppv) FreePpvDebug(ppv, &vdmglob.dmaglPv)
 
@@ -184,22 +184,22 @@ void AssertUnmarkedMem(void);
 void UnmarkAllMem(void);
 void MarkPv(void *pv);
 
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 
 #define SuspendCheckPointers()
 #define ResumeCheckPointers()
 
-// allocation routine
+// 3DMMv1.0: allocation routine
 #define FAllocPvDebug(ppv, cb, grfmem, mpr, pszsFile, luLine, pdmagl) FAllocPv(ppv, cb, grfmem, mpr)
 bool FAllocPv(void **ppv, int32_t cb, uint32_t grfmem, int32_t mpr);
 
-// resizing routine - WIN only
+// 3DMMv1.0: resizing routine - WIN only
 #ifndef MAC
 #define _FResizePpvDebug(ppv, cbNew, cbOld, grfmem, mpr, pdmagl) _FResizePpv(ppv, cbNew, cbOld, grfmem, mpr)
 bool _FResizePpv(void **ppv, int32_t cbNew, int32_t cbOld, uint32_t grfmem, int32_t mpr);
-#endif // !MAC
+#endif // 3DMMEx: !MAC
 
-// freeing routine
+// 3DMMv1.0: freeing routine
 #define FreePpvDebug(ppv, pdmagl) FreePpv(ppv)
 void FreePpv(void **ppv);
 
@@ -207,9 +207,9 @@ void FreePpv(void **ppv);
 #define AssertUnmarkedMem()
 #define UnmarkAllMem()
 #define MarkPv(pv)
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Memory trashing
 ****************************************/
 #ifdef DEBUG
@@ -235,16 +235,16 @@ void FreePpv(void **ppv);
     else                                                                                                               \
         (void)0
 
-#else //! DEBUG
+#else //! 3DMMv1.0: DEBUG
 
 #define TrashVar(pfoo)
 #define TrashVarIf(f, pfoo)
 #define TrashPvCb(pv, cb)
 #define TrashPvCbIf(f, pv, cb)
 
-#endif //! DEBUG
+#endif //! 3DMMv1.0: DEBUG
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Pointer arithmetic
 ****************************************/
 inline void *PvAddBv(void *pv, int32_t bv)
@@ -264,4 +264,4 @@ inline int32_t BvSubPvs(void *pv1, void *pv2)
 
 extern MUTX vmutxMem;
 
-#endif //! UTILMEM_H
+#endif //! 3DMMv1.0: UTILMEM_H

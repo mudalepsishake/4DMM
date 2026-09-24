@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -76,7 +76,7 @@
 #include "util.h"
 ASSERTNAME
 
-/* HISTORY of CFL version numbers
+/* 3DMMv1.0: HISTORY of CFL version numbers
 
     1	ShonK: instantiated, 10/28/93
     2	ShonK: added compression support, 2/14/95
@@ -86,21 +86,21 @@ ASSERTNAME
 
 */
 
-// A file written by this version of chunk.cpp receives this cvn.  Any
-// file with this cvn value has exactly the same file format
+// 3DMMv1.0: A file written by this version of chunk.cpp receives this cvn.  Any
+// 3DMMv1.0: file with this cvn value has exactly the same file format
 const int16_t kcvnCur = 5;
 
-// A file written by this version of chunk.cpp can be read by any version
-// of chunk.cpp whose kcvnCur is >= to this (this should be <= kcvnCur)
+// 3DMMv1.0: A file written by this version of chunk.cpp can be read by any version
+// 3DMMv1.0: of chunk.cpp whose kcvnCur is >= to this (this should be <= kcvnCur)
 const int16_t kcvnBack = 4;
 
-// A file whose cvn is less than kcvnMin cannot be directly read by
-// this version of chunk.cpp (maybe a converter will read it).
-// (this should be <= kcvnCur)
-// NOTE: (ShonK, 3/30/95): if this is >= 3, the fOldNames handling in
-// _FReadIndex can be removed!
-// NOTE: (ShonK, 8/21/95): if this is >= 4, the fOldIndex handling in
-// _FReadIndex can be removed!
+// 3DMMv1.0: A file whose cvn is less than kcvnMin cannot be directly read by
+// 3DMMv1.0: this version of chunk.cpp (maybe a converter will read it).
+// 3DMMv1.0: (this should be <= kcvnCur)
+// 3DMMv1.0: NOTE: (ShonK, 3/30/95): if this is >= 3, the fOldNames handling in
+// 3DMMv1.0: _FReadIndex can be removed!
+// 3DMMv1.0: NOTE: (ShonK, 8/21/95): if this is >= 4, the fOldIndex handling in
+// 3DMMv1.0: _FReadIndex can be removed!
 const int16_t kcvnMin = 1;
 
 const auto kcvnMinStnNames = 3;
@@ -109,29 +109,29 @@ const auto kcvnMinSmallIndex = 4;
 const auto kcvnMinForest = 5;
 
 const int32_t klwMagicChunky =
-    BigLittle(KLCONST4('C', 'H', 'N', '2'), KLCONST4('2', 'N', 'H', 'C')); // chunky file signature
+    BigLittle(KLCONST4('C', 'H', 'N', '2'), KLCONST4('2', 'N', 'H', 'C')); // 3DMMv1.0: chunky file signature
 
-// chunky file prefix
+// 3DMMv1.0: chunky file prefix
 struct CFP
 {
-    int32_t lwMagic; // identifies this as a chunky file
-    CTG ctgCreator;  // program that created this file
-    DVER dver;       // chunky file version
-    int16_t bo;      // byte order
-    int16_t osk;     // which system wrote this
+    int32_t lwMagic; // 3DMMv1.0: identifies this as a chunky file
+    CTG ctgCreator;  // 3DMMv1.0: program that created this file
+    DVER dver;       // 3DMMv1.0: chunky file version
+    int16_t bo;      // 3DMMv1.0: byte order
+    int16_t osk;     // 3DMMv1.0: which system wrote this
 
-    FP fpMac;        // logical end of file
-    FP fpIndex;      // location of chunky index
-    int32_t cbIndex; // size of chunky index
-    FP fpMap;        // location of free space map
-    int32_t cbMap;   // size of free space map (may be 0)
+    FP fpMac;        // 3DMMv1.0: logical end of file
+    FP fpIndex;      // 3DMMv1.0: location of chunky index
+    int32_t cbIndex; // 3DMMv1.0: size of chunky index
+    FP fpMap;        // 3DMMv1.0: location of free space map
+    int32_t cbMap;   // 3DMMv1.0: size of free space map (may be 0)
 
-    int32_t rglwReserved[23]; // reserved for future use - should be zero
+    int32_t rglwReserved[23]; // 3DMMv1.0: reserved for future use - should be zero
 };
 VERIFY_STRUCT_SIZE(CFP, 128);
 const BOM kbomCfp = 0xB55FFC00L;
 
-// free space map entry
+// 3DMMv1.0: free space map entry
 struct FSM
 {
     FP fp;
@@ -143,35 +143,35 @@ const BOM kbomFsm = 0xF0000000L;
 enum
 {
     fcrpNil = 0,
-    fcrpOnExtra = 0x01, // data is on the extra file
-    fcrpLoner = 0x02,   // the chunk can stand (may also be a child)
-    fcrpPacked = 0x04,  // the data is compressed
-    fcrpMarkT = 0x08,   // used for consistency checks (see _TValidIndex)
-    fcrpForest = 0x10,  // the chunk contains a forest of chunks
+    fcrpOnExtra = 0x01, // 3DMMv1.0: data is on the extra file
+    fcrpLoner = 0x02,   // 3DMMv1.0: the chunk can stand (may also be a child)
+    fcrpPacked = 0x04,  // 3DMMv1.0: the data is compressed
+    fcrpMarkT = 0x08,   // 3DMMv1.0: used for consistency checks (see _TValidIndex)
+    fcrpForest = 0x10,  // 3DMMv1.0: the chunk contains a forest of chunks
 };
 
-// Chunk Representation (big version) - fixed element in pggcrp
-// variable part of group element is an rgkid and stn data (the name)
+// 3DMMv1.0: Chunk Representation (big version) - fixed element in pggcrp
+// 3DMMv1.0: variable part of group element is an rgkid and stn data (the name)
 const int32_t kcbMaxCrpbg = klwMax;
 struct CRPBG
 {
-    CKI cki;         // chunk id
-    FP fp;           // location on file
-    int32_t cb;      // size of data on file
-    int32_t ckid;    // number of owned chunks
-    int32_t ccrpRef; // number of owners of this chunk
-    int32_t rti;     // run-time id
+    CKI cki;         // 3DMMv1.0: chunk id
+    FP fp;           // 3DMMv1.0: location on file
+    int32_t cb;      // 3DMMv1.0: size of data on file
+    int32_t ckid;    // 3DMMv1.0: number of owned chunks
+    int32_t ccrpRef; // 3DMMv1.0: number of owners of this chunk
+    int32_t rti;     // 3DMMv1.0: run-time id
     union {
         struct
         {
-            // for cvn <= kcvnMinGrfcrp
-            uint8_t fOnExtra; // fcrpOnExtra
-            uint8_t fLoner;   // fcrpLoner
-            uint8_t fPacked;  // fcrpPacked
-            uint8_t bT;       // fcrpMarkT
+            // 3DMMv1.0: for cvn <= kcvnMinGrfcrp
+            uint8_t fOnExtra; // 3DMMv1.0: fcrpOnExtra
+            uint8_t fLoner;   // 3DMMv1.0: fcrpLoner
+            uint8_t fPacked;  // 3DMMv1.0: fcrpPacked
+            uint8_t bT;       // 3DMMv1.0: fcrpMarkT
         };
 
-        // for cvn >= kcvnMinGrfcrp
+        // 3DMMv1.0: for cvn >= kcvnMinGrfcrp
         uint32_t grfcrp;
     };
 
@@ -213,18 +213,18 @@ VERIFY_STRUCT_SIZE(CRPBG, 32);
 const BOM kbomCrpbgGrfcrp = 0xFFFF0000L;
 const BOM kbomCrpbgBytes = 0xFFFE0000L;
 
-// Chunk Representation (small version) - fixed element in pggcrp
-// variable part of group element is an rgkid and stn data (the name)
+// 3DMMv1.0: Chunk Representation (small version) - fixed element in pggcrp
+// 3DMMv1.0: variable part of group element is an rgkid and stn data (the name)
 const int32_t kcbMaxCrpsm = 0x00FFFFFF;
 const int32_t kcbitGrfcrp = 8;
 const uint32_t kgrfcrpAll = (1 << kcbitGrfcrp) - 1;
 struct CRPSM
 {
-    CKI cki;             // chunk id
-    FP fp;               // location on file
-    uint32_t luGrfcrpCb; // low byte is the grfcrp, high 3 bytes is cb
-    uint16_t ckid;       // number of owned chunks
-    uint16_t ccrpRef;    // number of owners of this chunk
+    CKI cki;             // 3DMMv1.0: chunk id
+    FP fp;               // 3DMMv1.0: location on file
+    uint32_t luGrfcrpCb; // 3DMMv1.0: low byte is the grfcrp, high 3 bytes is cb
+    uint16_t ckid;       // 3DMMv1.0: number of owned chunks
+    uint16_t ccrpRef;    // 3DMMv1.0: number of owners of this chunk
 
     int32_t BvRgch(void)
     {
@@ -272,7 +272,7 @@ typedef int32_t CKID;
 const int32_t kckidMax = kcbMax;
 const BOM kbomCrpsm = kbomCrpbgGrfcrp;
 
-#else //! CHUNK_BIG_INDEX
+#else //! 3DMMv1.0: CHUNK_BIG_INDEX
 
 typedef CRPSM CRP;
 typedef CRPBG CRPOTH;
@@ -281,11 +281,11 @@ typedef uint16_t CKID;
 const int32_t kckidMax = ksuMax;
 const BOM kbomCrp = kbomCrpsm;
 
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 
 #define _BvKid(ikid) LwMul(ikid, SIZEOF(KID))
 
-const int32_t rtiNil = 0; // no rti assigned
+const int32_t rtiNil = 0; // 3DMMv1.0: no rti assigned
 int32_t CFL::_rtiLast = rtiNil;
 PCFL CFL::_pcflFirst;
 
@@ -294,7 +294,7 @@ bool vfDumpChunkRequests = fTrue;
 PFIL _pfilStats;
 FP _fpStats;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to dump a string to the chunk stats file
 ***************************************************************************/
 void CFL::DumpStn(PSTN pstn, PFIL pfil)
@@ -322,22 +322,22 @@ void CFL::DumpStn(PSTN pstn, PFIL pfil)
     _pfilStats->FWriteRgbSeq(pstn->Prgch(), LwMul(pstn->Cch(), SIZEOF(achar)), &_fpStats);
     _pfilStats->FWriteRgbSeq(PszLit("\xD\xA"), MacWin(SIZEOF(achar), 2 * SIZEOF(achar)), &_fpStats);
 }
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
 
 RTCLASS(CFL)
 RTCLASS(CGE)
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for CFL - private.
 ***************************************************************************/
 CFL::CFL(void)
 {
-    // add it to the linked list
+    // 3DMMv1.0: add it to the linked list
     _Attach(&_pcflFirst);
     AssertBaseThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close the associated files.  Private.
 ***************************************************************************/
 CFL::~CFL(void)
@@ -350,10 +350,10 @@ CFL::~CFL(void)
     ReleasePpo(&_pggcrp);
 #ifndef CHUNK_BIG_INDEX
     ReleasePpo(&_pglrtie);
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: open an existing file as a chunky file.  Increments the
     open count.
 ***************************************************************************/
@@ -389,13 +389,13 @@ PCFL CFL::PcflOpen(FNI *pfni, uint32_t grfcfl)
     }
     AssertDo(pcfl->FSetGrfcfl(grfcfl), 0);
 
-    // We don't assert with fcflGraph, because we've already
-    // called _TValidIndex.
+    // 3DMMv1.0: We don't assert with fcflGraph, because we've already
+    // 3DMMv1.0: called _TValidIndex.
     AssertPo(pcfl, fcflFull);
     return pcfl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the file is read-only, toss the index and extra file and re-read
     the index.
 ***************************************************************************/
@@ -406,7 +406,7 @@ bool CFL::FReopen(void)
     PGG pggcrp;
 #ifndef CHUNK_BIG_INDEX
     PGL pglrtie;
-#endif // CHUNK_BIG_INDEX
+#endif // 3DMMv1.0: CHUNK_BIG_INDEX
     bool fFreeMapNotRead;
     bool fRet;
 
@@ -419,7 +419,7 @@ bool CFL::FReopen(void)
 #ifndef CHUNK_BIG_INDEX
     pglrtie = _pglrtie;
     _pglrtie = pvNil;
-#endif // CHUNK_BIG_INDEX
+#endif // 3DMMv1.0: CHUNK_BIG_INDEX
 
     fFreeMapNotRead = _fFreeMapNotRead;
     _fFreeMapNotRead = fFalse;
@@ -438,7 +438,7 @@ bool CFL::FReopen(void)
         SwapVars(&_pggcrp, &pggcrp);
 #ifndef CHUNK_BIG_INDEX
         SwapVars(&_pglrtie, &pglrtie);
-#endif // CHUNK_BIG_INDEX
+#endif // 3DMMv1.0: CHUNK_BIG_INDEX
         SwapVars(&_csto, &csto);
         SwapVars(&_cstoExtra, &cstoExtra);
         _fFreeMapNotRead = FPure(fFreeMapNotRead);
@@ -446,7 +446,7 @@ bool CFL::FReopen(void)
     ReleasePpo(&pggcrp);
 #ifndef CHUNK_BIG_INDEX
     ReleasePpo(&pglrtie);
-#endif // CHUNK_BIG_INDEX
+#endif // 3DMMv1.0: CHUNK_BIG_INDEX
     ReleasePpo(&csto.pfil);
     ReleasePpo(&csto.pglfsm);
     ReleasePpo(&cstoExtra.pfil);
@@ -456,7 +456,7 @@ bool CFL::FReopen(void)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to get file options corresponding to the given chunky
     file options.
 ***************************************************************************/
@@ -473,7 +473,7 @@ uint32_t CFL::_GrffilFromGrfcfl(uint32_t grfcfl)
     return grffil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: create a new file.  Increments the open count.
 ***************************************************************************/
 PCFL CFL::PcflCreate(FNI *pfni, uint32_t grfcfl)
@@ -509,7 +509,7 @@ PCFL CFL::PcflCreate(FNI *pfni, uint32_t grfcfl)
     return pcfl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a temporary chunky file in the same directory as
     *pfni and with the same ftg.  If pfni is nil, the file is created in
     the standard place with a temp ftg.
@@ -535,7 +535,7 @@ PCFL CFL::PcflCreateTemp(FNI *pfni)
     return PcflCreate(&fni, fcflTemp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: if we have the chunky file indicated by fni open, returns
     the pcfl, otherwise returns pvNil.  Doesn't affect the open count.
 ***************************************************************************/
@@ -556,7 +556,7 @@ PCFL CFL::PcflFromFni(FNI *pfni)
     return pcfl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Embedded chunk descriptor on file. Chunks and their subtrees can
     be combined into a single stream by the following rules:
 
@@ -587,7 +587,7 @@ struct ECDF
 VERIFY_STRUCT_SIZE(ECDF, 24);
 const BOM kbomEcdf = 0x5FFC0000L;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Combine the indicated chunk and its children into an embedded chunk.
     If pfil is pvNil, just computes the size.
 ***************************************************************************/
@@ -621,7 +621,7 @@ bool CFL::FWriteChunkTree(CTG ctg, CNO cno, PFIL pfilDst, FP fpDst, int32_t *pcb
 
         if (pvNil != pfilDst)
         {
-            // write the data
+            // 3DMMv1.0: write the data
             ecdf.bo = kboCur;
             ecdf.osk = koskCur;
             ecdf.ctg = kid.cki.ctg;
@@ -653,7 +653,7 @@ bool CFL::FWriteChunkTree(CTG ctg, CNO cno, PFIL pfilDst, FP fpDst, int32_t *pcb
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to read a serialized chunk stream (as written by a series
     of calls to FWriteChunkTree) and create a CFL around it. If fCopyData
     is false, we construct the CFL to use pointers to the data in the FLO.
@@ -664,7 +664,7 @@ PCFL CFL::PcflReadForestFromFlo(PFLO pflo, bool fCopyData)
     AssertVarMem(pflo);
     AssertPo(pflo->pfil, 0);
 
-    // embedded chunk stack descriptor
+    // 3DMMv1.0: embedded chunk stack descriptor
     struct ECSD
     {
         CTG ctg;
@@ -755,7 +755,7 @@ PCFL CFL::PcflReadForestFromFlo(PFLO pflo, bool fCopyData)
         {
             Assert(ecsdCur.ckid > 0, 0);
 
-            // Make this a child
+            // 3DMMv1.0: Make this a child
             if (!pcfl->FAdoptChild(ecsdCur.ctg, ecsdCur.cno, ecdf.ctg, ecsdT.cno, ecdf.chid))
             {
                 goto LFail;
@@ -765,8 +765,8 @@ PCFL CFL::PcflReadForestFromFlo(PFLO pflo, bool fCopyData)
 
         if (ecdf.ckid > 0)
         {
-            // This one has children, so we need to push the current ecsd and
-            // make this the current one
+            // 3DMMv1.0: This one has children, so we need to push the current ecsd and
+            // 3DMMv1.0: make this the current one
             ecsdT.ctg = ecdf.ctg;
             ecsdT.ckid = ecdf.ckid;
 
@@ -777,8 +777,8 @@ PCFL CFL::PcflReadForestFromFlo(PFLO pflo, bool fCopyData)
         }
         else
         {
-            // pop up while there are no more children and there's something
-            // to pop.
+            // 3DMMv1.0: pop up while there are no more children and there's something
+            // 3DMMv1.0: to pop.
             while (ecsdCur.ckid <= 0 && pglecsd->IvMac() > 0)
                 pglecsd->FPop(&ecsdCur);
         }
@@ -787,7 +787,7 @@ PCFL CFL::PcflReadForestFromFlo(PFLO pflo, bool fCopyData)
     if (pglecsd->IvMac() > 0 || ecsdCur.ckid != 0)
     {
     LFail:
-        // something failed or the data was bad
+        // 3DMMv1.0: something failed or the data was bad
         ReleasePpo(&pcfl);
     }
 
@@ -797,7 +797,7 @@ PCFL CFL::PcflReadForestFromFlo(PFLO pflo, bool fCopyData)
     return pcfl;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the chunk contains a forest of subchunks.
 ***************************************************************************/
 bool CFL::FForest(CTG ctg, CNO cno)
@@ -816,7 +816,7 @@ bool CFL::FForest(CTG ctg, CNO cno)
     return FPure(qcrp->Grfcrp(fcrpForest));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set or clear the "forest" flag.
 ***************************************************************************/
 void CFL::SetForest(CTG ctg, CNO cno, bool fForest)
@@ -842,7 +842,7 @@ void CFL::SetForest(CTG ctg, CNO cno, bool fForest)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Read the chunk's data as an embedded forest and construct a CFL around
     the data.
 ***************************************************************************/
@@ -866,7 +866,7 @@ PCFL CFL::PcflReadForest(CTG ctg, CNO cno, bool fCopyData)
     return PcflReadForestFromFlo(&flo, fCopyData);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: clear the marks for chunky files.
 ***************************************************************************/
 void CFL::ClearMarks(void)
@@ -880,7 +880,7 @@ void CFL::ClearMarks(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: close any chunky files that are unmarked and have 0
     open count.
 ***************************************************************************/
@@ -897,7 +897,7 @@ void CFL::CloseUnmarked(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the grfcfl options.  This sets or clears fcflTemp and only sets
     (never clears) fcflMark, fcflWriteEnable and fcflAddToExtra.  This
     can only fail if fcflWriteEnable is specified and we can't make
@@ -914,21 +914,21 @@ bool CFL::FSetGrfcfl(uint32_t grfcfl, uint32_t grfcflMask)
 
     if ((grffil ^ _csto.pfil->GrffilCur()) & grffilMask)
     {
-        // need to change some file properties
+        // 3DMMv1.0: need to change some file properties
         if (_fInvalidMainFile || !_csto.pfil->FSetGrffil(grffil, grffilMask))
             return fFalse;
     }
 
-    // If we're becoming write enabled and we haven't read the free map yet,
-    // do so now.  Reading the free map is non-critical.
+    // 3DMMv1.0: If we're becoming write enabled and we haven't read the free map yet,
+    // 3DMMv1.0: do so now.  Reading the free map is non-critical.
     if ((grfcfl & fcflWriteEnable) && _fFreeMapNotRead)
         _ReadFreeMap();
 
-    // don't clear the mark field if it's already set
+    // 3DMMv1.0: don't clear the mark field if it's already set
     if (grfcfl & fcflMark)
         _fMark = fTrue;
 
-    // don't clear the _fAddToExtra field if it's already set
+    // 3DMMv1.0: don't clear the _fAddToExtra field if it's already set
     if ((grfcfl & fcflAddToExtra) || ((grfcfl ^ grfcflMask) & fcflWriteEnable))
         _fAddToExtra = fTrue;
 
@@ -938,7 +938,7 @@ bool CFL::FSetGrfcfl(uint32_t grfcfl, uint32_t grfcflMask)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the level of error that we've encountered for this chunky file.
 ***************************************************************************/
 int32_t CFL::ElError(void)
@@ -952,7 +952,7 @@ int32_t CFL::ElError(void)
     return elT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the el level on both files is at or below el.
 ***************************************************************************/
 void CFL::ResetEl(int32_t el)
@@ -967,7 +967,7 @@ void CFL::ResetEl(int32_t el)
         _cstoExtra.pfil->SetEl(el);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrement the open count.  If it is zero and the chunky file isn't
     marked, the file is closed.
 ***************************************************************************/
@@ -984,7 +984,7 @@ void CFL::Release(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the chunky file.  If fcflFull, does some checking
     of the index.  If fcflGraph, does fcflFull and checks the graph structure
     for cycles.
@@ -1029,18 +1029,18 @@ void CFL::AssertValid(uint32_t grfcfl)
 
 #ifndef CHUNK_BIG_INDEX
     AssertNilOrPo(_pglrtie, 0);
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 
     if (!(grfcfl & (fcflFull | fcflGraph)))
         return;
 
     SuspendAssertValid();
 
-    // Verify that the index and free map(s) are in sorted order.
-    // Would be nice to verify ccrpRef and that crp's don't overlap,
-    // but this is hard, so instead we verify that the sum of ccrpRef
-    // values is correct and that the total length of all blocks is not
-    // too big.
+    // 3DMMv1.0: Verify that the index and free map(s) are in sorted order.
+    // 3DMMv1.0: Would be nice to verify ccrpRef and that crp's don't overlap,
+    // 3DMMv1.0: but this is hard, so instead we verify that the sum of ccrpRef
+    // 3DMMv1.0: values is correct and that the total length of all blocks is not
+    // 3DMMv1.0: too big.
     fFirstCrp = fTrue;
     for (icrp = _pggcrp->IvMac(); icrp-- != 0;)
     {
@@ -1051,7 +1051,7 @@ void CFL::AssertValid(uint32_t grfcfl)
         AssertIn(crp.ckid, 0, kckidMax + 1);
         AssertIn(cbRgch, 0, kcbMaxDataStn + 1);
 
-        // we use this in checking the graph structure
+        // 3DMMv1.0: we use this in checking the graph structure
         Assert(!crp.Grfcrp(fcrpMarkT), "fcrpMarkT set");
 
         ckiNew = crp.cki;
@@ -1060,9 +1060,9 @@ void CFL::AssertValid(uint32_t grfcfl)
 
 #ifdef CHUNK_BIG_INDEX
         AssertIn(crp.rti, 0, _rtiLast + 1);
-#endif // CHUNK_BIG_INDEX
+#endif // 3DMMv1.0: CHUNK_BIG_INDEX
 
-        // assert that the file storage (fp,cb) is OK
+        // 3DMMv1.0: assert that the file storage (fp,cb) is OK
         if (crp.Grfcrp(fcrpOnExtra))
         {
             Assert(_cstoExtra.pfil != pvNil, "fcrpOnExtra wrong");
@@ -1078,7 +1078,7 @@ void CFL::AssertValid(uint32_t grfcfl)
             cbTot += crp.Cb();
         }
 
-        // assert that this crp is in order
+        // 3DMMv1.0: assert that this crp is in order
         AssertVar(fFirstCrp || ckiNew.ctg < ckiOld.ctg || ckiNew.ctg == ckiOld.ctg && ckiNew.cno < ckiOld.cno,
                   "crp not in order", &ckiNew);
         ckiOld = ckiNew;
@@ -1141,7 +1141,7 @@ void CFL::AssertValid(uint32_t grfcfl)
         Assert(_TValidIndex() != tNo, "bad index");
 
 #ifndef CHUNK_BIG_INDEX
-    // verify that the _pglrtie is in sorted order and all the chunks exist
+    // 3DMMv1.0: verify that the _pglrtie is in sorted order and all the chunks exist
     if (pvNil != _pglrtie && _pglrtie->IvMac() > 0)
     {
         int32_t irtie;
@@ -1160,12 +1160,12 @@ void CFL::AssertValid(uint32_t grfcfl)
             Assert(rtie.ctg < rtiePrev.ctg || rtie.ctg == rtiePrev.ctg && rtie.cno < rtiePrev.cno, "RTIE out of order");
         }
     }
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 
     ResumeAssertValid();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the CFL
 ***************************************************************************/
 void CFL::MarkMem(void)
@@ -1177,18 +1177,18 @@ void CFL::MarkMem(void)
     MarkMemObj(_cstoExtra.pglfsm);
 #ifndef CHUNK_BIG_INDEX
     MarkMemObj(_pglrtie);
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Checks for cycles and other consistency in the chunky index.  If
     we find something wrong, return tNo.  If a memory error occurs,
     return tMaybe.  If it's AOK, return tYes.
 ***************************************************************************/
 tribool CFL::_TValidIndex(void)
 {
-    // WARNING: this is called by a full CFL::AssertValid().
+    // 3DMMv1.0: WARNING: this is called by a full CFL::AssertValid().
     int32_t icrp, icrpT;
     CRP *qcrp;
     CGE cge;
@@ -1198,7 +1198,7 @@ tribool CFL::_TValidIndex(void)
     int32_t ccrpRefTot;
     int32_t ckidTot;
 
-    // first clear all fcrpMarkT fields
+    // 3DMMv1.0: first clear all fcrpMarkT fields
     ccrpRefTot = ckidTot = 0;
     for (icrp = _pggcrp->IvMac(); icrp-- != 0;)
     {
@@ -1217,17 +1217,17 @@ tribool CFL::_TValidIndex(void)
     SuspendAssertValid();
     SuspendCheckPointers();
 
-    // now enumerate over root level graphs, marking descendents on the
-    // pre-pass and unmarking on the post pass - this catches cycles
-    // NOTE: we must do this before checking for orphan subgraphs, so we don't
-    // end up in an infinite loop in the orphan check.
+    // 3DMMv1.0: now enumerate over root level graphs, marking descendents on the
+    // 3DMMv1.0: pre-pass and unmarking on the post pass - this catches cycles
+    // 3DMMv1.0: NOTE: we must do this before checking for orphan subgraphs, so we don't
+    // 3DMMv1.0: end up in an infinite loop in the orphan check.
     for (icrp = _pggcrp->IvMac(); icrp-- != 0;)
     {
         qcrp = (CRP *)_pggcrp->QvFixedGet(icrp);
         if (qcrp->ccrpRef > 0 || qcrp->ckid == 0)
             continue;
 
-        // this is not a child node and has children, so enum its subgraph
+        // 3DMMv1.0: this is not a child node and has children, so enum its subgraph
         cge.Init(this, qcrp->cki.ctg, qcrp->cki.cno);
         while (cge.FNextKid(&kid, pvNil, &grfcge, fcgeNil))
         {
@@ -1248,7 +1248,7 @@ tribool CFL::_TValidIndex(void)
             {
                 if (qcrp->Grfcrp(fcrpMarkT))
                 {
-                    // has a cycle here
+                    // 3DMMv1.0: has a cycle here
                     ResumeAssertValid();
                     ResumeCheckPointers();
                     return tNo;
@@ -1263,15 +1263,15 @@ tribool CFL::_TValidIndex(void)
         }
     }
 
-    // now enumerate over root level graphs, marking all descendents
-    // this will find orphan subgraphs and validate (ccrpRef > 0).
+    // 3DMMv1.0: now enumerate over root level graphs, marking all descendents
+    // 3DMMv1.0: this will find orphan subgraphs and validate (ccrpRef > 0).
     for (icrp = _pggcrp->IvMac(); icrp-- != 0;)
     {
         qcrp = (CRP *)_pggcrp->QvFixedGet(icrp);
         if (qcrp->ccrpRef > 0 || qcrp->ckid == 0)
             continue;
 
-        // this is not a child node and has some children, so enum its subgraph
+        // 3DMMv1.0: this is not a child node and has some children, so enum its subgraph
         cge.Init(this, qcrp->cki.ctg, qcrp->cki.cno);
         grfcgeIn = fcgeNil;
         while (cge.FNextKid(&kid, pvNil, &grfcge, grfcgeIn))
@@ -1300,7 +1300,7 @@ tribool CFL::_TValidIndex(void)
         }
     }
 
-    // make sure the fcrpMarkT fields are set iff (ccrpRef > 0)
+    // 3DMMv1.0: make sure the fcrpMarkT fields are set iff (ccrpRef > 0)
     for (icrp = _pggcrp->IvMac(); icrp-- != 0;)
     {
         qcrp = (CRP *)_pggcrp->QvFixedGet(icrp);
@@ -1318,7 +1318,7 @@ tribool CFL::_TValidIndex(void)
     return tYes;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Verifies that this is a chunky file and reads the index into memory.
     Sets the _fpFreeMap and _cbFreeMap fields and sets the _fFreeMapNotRead
     flag. The free map is read separately by _ReadFreeMap. This is to avoid
@@ -1340,25 +1340,25 @@ bool CFL::_FReadIndex(void)
     int32_t cbFixed;
     BOM bom;
 
-    // used for old name stuff
+    // 3DMMv1.0: used for old name stuff
     SZS szsName;
     STN stn;
     bool fOldNames;
 
-    // used for old index stuff
+    // 3DMMv1.0: used for old index stuff
     bool fOldIndex;
 
     Assert(_pggcrp == pvNil && _csto.pglfsm == pvNil && _cstoExtra.pfil == pvNil && _cstoExtra.pglfsm == pvNil,
            "cfl has wrong non-nil entries");
 
-    // verify that this is a chunky file
+    // 3DMMv1.0: verify that this is a chunky file
     if ((fpMac = _csto.pfil->FpMac()) < SIZEOF(CFP))
         return fFalse;
 
     if (!_csto.pfil->FReadRgb(&cfp, SIZEOF(cfp), 0))
         return fFalse;
 
-    // check the magic number and byte order indicator
+    // 3DMMv1.0: check the magic number and byte order indicator
     if (cfp.lwMagic != klwMagicChunky || cfp.bo != kboCur && cfp.bo != kboOther)
     {
         return fFalse;
@@ -1367,18 +1367,18 @@ bool CFL::_FReadIndex(void)
     if (cfp.bo == kboOther)
         SwapBytesBom(&cfp, kbomCfp);
 
-    // check the version numbers
+    // 3DMMv1.0: check the version numbers
     if (!cfp.dver.FReadable(kcvnCur, kcvnMin))
         return fFalse;
 
-    // if the file has old style chunk names, translate them
+    // 3DMMv1.0: if the file has old style chunk names, translate them
     fOldNames = cfp.dver._swCur < kcvnMinStnNames;
 
-    // whether the index needs converted
+    // 3DMMv1.0: whether the index needs converted
     fOldIndex = cfp.dver._swCur < kcvnMinGrfcrp;
 
-    // verify the fp's and cb's
-    // the index and map should be last
+    // 3DMMv1.0: verify the fp's and cb's
+    // 3DMMv1.0: the index and map should be last
     if (!FIn(cfp.fpMac, SIZEOF(cfp), fpMac + 1) || !FIn(cfp.fpIndex, SIZEOF(cfp), cfp.fpMac + 1) ||
         !FIn(cfp.cbIndex, 1, cfp.fpMac - cfp.fpIndex + 1) || cfp.fpMap != cfp.fpIndex + cfp.cbIndex ||
         cfp.fpMap + cfp.cbMap != cfp.fpMac)
@@ -1386,7 +1386,7 @@ bool CFL::_FReadIndex(void)
         return fFalse;
     }
 
-    // read and validate the index
+    // 3DMMv1.0: read and validate the index
     if ((_pggcrp = GG::PggRead(_csto.pfil, cfp.fpIndex, cfp.cbIndex, &bo, &osk)) == pvNil)
     {
         return fFalse;
@@ -1396,13 +1396,13 @@ bool CFL::_FReadIndex(void)
     if (cbFixed != SIZEOF(CRPBG) && (fOldIndex || cbFixed != SIZEOF(CRPSM)))
         return fFalse;
 
-    // Clean the index
+    // 3DMMv1.0: Clean the index
     AssertBomRglw(kbomKid, SIZEOF(KID));
     _pggcrp->Lock();
 
     if (cbFixed == SIZEOF(CRPBG))
     {
-        // Big index
+        // 3DMMv1.0: Big index
         CRPBG *pcrpbg;
 
         bom = (bo != kboCur) ? (fOldIndex ? kbomCrpbgBytes : kbomCrpbgGrfcrp) : bomNil;
@@ -1411,12 +1411,12 @@ bool CFL::_FReadIndex(void)
         {
             pcrpbg = (CRPBG *)_pggcrp->QvFixedGet(icrp, &cbVar);
 #ifndef CHUNK_BIG_INDEX
-            // make sure we can convert this CRP to a small index CRP
+            // 3DMMv1.0: make sure we can convert this CRP to a small index CRP
             if (pcrpbg->cb > kcbMaxCrpsm || pcrpbg->ckid > kckidMax || pcrpbg->ccrpRef > kckidMax)
             {
                 goto LBadFile;
             }
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
             if (!FIn(cbVar, 0, kcbMax))
                 goto LBadFile;
             if (bomNil != bom)
@@ -1451,7 +1451,7 @@ bool CFL::_FReadIndex(void)
             AssertIn(cbRgch, 0, kcbMaxDataStn + 1);
             if (fOldNames && cbRgch > 0)
             {
-                // translate the name
+                // 3DMMv1.0: translate the name
                 int32_t bvRgch = pcrpbg->BvRgch();
 
                 if (cbRgch < SIZEOF(szsName))
@@ -1480,7 +1480,7 @@ bool CFL::_FReadIndex(void)
                 }
                 else
                 {
-                    // just nuke the name
+                    // 3DMMv1.0: just nuke the name
                     _pggcrp->Unlock();
                 LNukeName:
                     _pggcrp->DeleteRgb(icrp, bvRgch, cbRgch);
@@ -1491,7 +1491,7 @@ bool CFL::_FReadIndex(void)
     }
     else
     {
-        // Small index
+        // 3DMMv1.0: Small index
         Assert(SIZEOF(CRPSM) == cbFixed, 0);
         CRPSM *pcrpsm;
 
@@ -1526,7 +1526,7 @@ bool CFL::_FReadIndex(void)
 
     if (SIZEOF(CRP) != cbFixed)
     {
-        // need to convert the index (from big to small or small to big)
+        // 3DMMv1.0: need to convert the index (from big to small or small to big)
         PGG pggcrp;
         CRPOTH *pcrpOld;
         CRP crp;
@@ -1545,7 +1545,7 @@ bool CFL::_FReadIndex(void)
             crp.AssignGrfcrp(pcrpOld->Grfcrp());
 #ifdef CHUNK_BIG_INDEX
             crp.rti = rtiNil;
-#endif // CHUNK_BIG_INDEX
+#endif // 3DMMv1.0: CHUNK_BIG_INDEX
 
             if (!pggcrp->FInsert(icrp, _pggcrp->Cb(icrp), _pggcrp->QvGet(icrp), &crp))
             {
@@ -1571,7 +1571,7 @@ bool CFL::_FReadIndex(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert that the free map hasn't been read (and doesn't exist).  Read
     the free map from the file.  This _cannot_ be called after chunk
     data has been added to the main file (as opposed to the extra file).
@@ -1587,8 +1587,8 @@ void CFL::_ReadFreeMap(void)
     int16_t osk;
     int32_t cfsm;
 
-    // clear this even if reading the free map fails - so we don't try to
-    // read again
+    // 3DMMv1.0: clear this even if reading the free map fails - so we don't try to
+    // 3DMMv1.0: read again
     _fFreeMapNotRead = fFalse;
 
     if (_csto.pglfsm != pvNil)
@@ -1602,11 +1602,11 @@ void CFL::_ReadFreeMap(void)
         if ((_csto.pglfsm = GL::PglRead(_csto.pfil, _fpFreeMap, _cbFreeMap, &bo, &osk)) == pvNil ||
             _csto.pglfsm->CbEntry() != SIZEOF(FSM))
         {
-            // it failed, but so what
+            // 3DMMv1.0: it failed, but so what
             ReleasePpo(&_csto.pglfsm);
             return;
         }
-        // swap bytes
+        // 3DMMv1.0: swap bytes
         AssertBomRglw(kbomFsm, SIZEOF(FSM));
         if (bo != kboCur && (cfsm = _csto.pglfsm->IvMac()) > 0)
         {
@@ -1615,7 +1615,7 @@ void CFL::_ReadFreeMap(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If we have don't have write permission or there's an extra file,
     write out a new file and do the rename stuff.  If not, just write
     the index and free map.
@@ -1654,14 +1654,14 @@ bool CFL::FSave(CTG ctgCreator, FNI *pfni)
 
     if (!_fAddToExtra && _cstoExtra.pfil == pvNil && pfni == pvNil)
     {
-        // just write the index
+        // 3DMMv1.0: just write the index
         Assert(!_fFreeMapNotRead, "why hasn't the free map been read?");
         if (!_FWriteIndex(ctgCreator))
             goto LError;
         return fTrue;
     }
 
-    // get a temp name in the same directory as the target
+    // 3DMMv1.0: get a temp name in the same directory as the target
     if ((floDst.pfil = FIL::PfilCreateTemp(&fni)) == pvNil)
         goto LError;
     if (!floDst.pfil->FSetFpMac(SIZEOF(CFP)))
@@ -1686,7 +1686,7 @@ bool CFL::FSave(CTG ctgCreator, FNI *pfni)
         floDst.fp += floDst.cb;
     }
 
-    // All the data has been copied.  Update the index to point to the new file.
+    // 3DMMv1.0: All the data has been copied.  Update the index to point to the new file.
     floSrc.fp = SIZEOF(CFP);
     for (icrp = 0; icrp < ccrp; icrp++)
     {
@@ -1697,7 +1697,7 @@ bool CFL::FSave(CTG ctgCreator, FNI *pfni)
     }
     Assert(floSrc.fp == floDst.fp, "what happened? - file messed up");
 
-    // update the csto's and write the index
+    // 3DMMv1.0: update the csto's and write the index
     pfilOld = _csto.pfil;
     ReleasePpo(&_csto.pglfsm);
     _fFreeMapNotRead = fFalse;
@@ -1712,14 +1712,14 @@ bool CFL::FSave(CTG ctgCreator, FNI *pfni)
         ReleasePpo(&_cstoExtra.pglfsm);
     }
 
-    // write the index
+    // 3DMMv1.0: write the index
     if (!_FWriteIndex(ctgCreator))
         goto LIndexFail;
 
     if (pfni != pvNil)
     {
-        // delete any existing file with this name, then rename our output
-        // file to the given name
+        // 3DMMv1.0: delete any existing file with this name, then rename our output
+        // 3DMMv1.0: file to the given name
         if (pfni->TExists() != tNo)
             pfni->FDelete();
         if (!_csto.pfil->FRename(pfni))
@@ -1731,12 +1731,12 @@ bool CFL::FSave(CTG ctgCreator, FNI *pfni)
     LIndexFail:
         if (_fInvalidMainFile)
         {
-            // we can just use the new file now.
-            ReleasePpo(&pfilOld); // release our claim on the old file
+            // 3DMMv1.0: we can just use the new file now.
+            ReleasePpo(&pfilOld); // 3DMMv1.0: release our claim on the old file
         }
         else
         {
-            // restore the original csto and make floDst.pfil the extra file
+            // 3DMMv1.0: restore the original csto and make floDst.pfil the extra file
             _csto.pfil = pfilOld;
             _csto.fpMac = SIZEOF(CFP);
             for (icrp = 0; icrp < ccrp; icrp++)
@@ -1755,16 +1755,16 @@ bool CFL::FSave(CTG ctgCreator, FNI *pfni)
         return fFalse;
     }
 
-    // everything worked
+    // 3DMMv1.0: everything worked
     if (pfni == pvNil)
         pfilOld->SetTemp(fTrue);
 
-    ReleasePpo(&pfilOld); // release our claim on the old file
+    ReleasePpo(&pfilOld); // 3DMMv1.0: release our claim on the old file
     AssertThis(fcflFull | fcflGraph);
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the chunky index and free map to the end of the file.
 ***************************************************************************/
 bool CFL::_FWriteIndex(CTG ctgCreator)
@@ -1801,7 +1801,7 @@ bool CFL::_FWriteIndex(CTG ctgCreator)
     return _csto.pfil->FWriteRgb(&cfp, SIZEOF(cfp), 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save a copy of the chunky file out to *pfni.  The CFL and its FIL
     are untouched.
 ***************************************************************************/
@@ -1818,11 +1818,11 @@ bool CFL::FSaveACopy(CTG ctgCreator, FNI *pfni)
     if (pvNil == (pcflDst = CFL::PcflCreate(pfni, fcflWriteEnable)))
         goto LError;
 
-    // initialize the destination FLO.
+    // 3DMMv1.0: initialize the destination FLO.
     floDst.pfil = pcflDst->_csto.pfil;
     floDst.fp = SIZEOF(CFP);
 
-    // need to lock the _pggcrp for the FInsert operations below
+    // 3DMMv1.0: need to lock the _pggcrp for the FInsert operations below
     ccrp = _pggcrp->IvMac();
     _pggcrp->Lock();
 
@@ -1831,20 +1831,20 @@ bool CFL::FSaveACopy(CTG ctgCreator, FNI *pfni)
         pcrp = (CRP *)_pggcrp->QvFixedGet(icrp);
         crp = *pcrp;
 
-        // get the source and destination FLOs
+        // 3DMMv1.0: get the source and destination FLOs
         floSrc.pfil = pcrp->Grfcrp(fcrpOnExtra) ? _cstoExtra.pfil : _csto.pfil;
         floSrc.fp = pcrp->fp;
         floDst.cb = floSrc.cb = pcrp->Cb();
 
-        // copy the data
+        // 3DMMv1.0: copy the data
         if (!floSrc.FCopy(&floDst))
         {
             _pggcrp->Unlock();
             goto LFail;
         }
 
-        // create the index entry - the only things that change are the
-        // (fp, cb) and the fcrpOnExtra flag.
+        // 3DMMv1.0: create the index entry - the only things that change are the
+        // 3DMMv1.0: (fp, cb) and the fcrpOnExtra flag.
         crp.fp = floDst.fp;
         crp.SetCb(floDst.cb);
         crp.ClearGrfcrp(fcrpOnExtra);
@@ -1856,7 +1856,7 @@ bool CFL::FSaveACopy(CTG ctgCreator, FNI *pfni)
     }
     _pggcrp->Unlock();
 
-    // set the fpMac of the destination CFL
+    // 3DMMv1.0: set the fpMac of the destination CFL
     pcflDst->_csto.fpMac = floDst.fp;
 
     if (!pcflDst->FSave(ctgCreator))
@@ -1873,7 +1873,7 @@ bool CFL::FSaveACopy(CTG ctgCreator, FNI *pfni)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether the chunk's data is on the extra file.
 ***************************************************************************/
 bool CFL::FOnExtra(CTG ctg, CNO cno)
@@ -1889,7 +1889,7 @@ bool CFL::FOnExtra(CTG ctg, CNO cno)
     return FPure(qcrp->Grfcrp(fcrpOnExtra));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the given chunk's data is on the extra file. Fails iff the
     chunk doesn't exist or copying the data failed.
 ***************************************************************************/
@@ -1904,7 +1904,7 @@ bool CFL::FEnsureOnExtra(CTG ctg, CNO cno)
     return _FEnsureOnExtra(icrp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the given chunk's data is on the extra file. Optionally get
     the flo for the data.
 ***************************************************************************/
@@ -1939,7 +1939,7 @@ bool CFL::_FEnsureOnExtra(int32_t icrp, FLO *pflo)
                           qcrp->fp, qcrp->Cb());
             DumpStn(&stn, _csto.pfil);
         }
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
 
         floSrc.pfil = _csto.pfil;
         floSrc.fp = qcrp->fp;
@@ -1970,12 +1970,12 @@ bool CFL::_FEnsureOnExtra(int32_t icrp, FLO *pflo)
                       qcrp->fp, qcrp->Cb());
         DumpStn(&stn, _csto.pfil);
     }
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the FLO from the chunk.
 ***************************************************************************/
 void CFL::_GetFlo(int32_t icrp, PFLO pflo)
@@ -2003,12 +2003,12 @@ void CFL::_GetFlo(int32_t icrp, PFLO pflo)
                           qcrp->fp, qcrp->Cb());
             DumpStn(&stn, _csto.pfil);
         }
-#endif // CHUNK_STATS
+#endif // 3DMMv1.0: CHUNK_STATS
     }
     AssertPo(pflo->pfil, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the BLCK from the chunk.
 ***************************************************************************/
 void CFL::_GetBlck(int32_t icrp, PBLCK pblck)
@@ -2024,7 +2024,7 @@ void CFL::_GetBlck(int32_t icrp, PBLCK pblck)
     pblck->Set(&flo, qcrp->Grfcrp(fcrpPacked));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map the (ctg, cno) to a BLCK.
 ***************************************************************************/
 bool CFL::FFind(CTG ctg, CNO cno, BLCK *pblck)
@@ -2047,7 +2047,7 @@ bool CFL::FFind(CTG ctg, CNO cno, BLCK *pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Map the (ctg, cno) to a pflo.
 ***************************************************************************/
 bool CFL::FFindFlo(CTG ctg, CNO cno, PFLO pflo)
@@ -2067,7 +2067,7 @@ bool CFL::FFindFlo(CTG ctg, CNO cno, PFLO pflo)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Reads the chunk (if it exists) into an hq.  Returns false if the
     chunk doesn't exist or something failed, in which case *phq is set
     to hqNil.  Doesn't unpack the data if it's packed.
@@ -2078,11 +2078,11 @@ bool CFL::FReadHq(CTG ctg, CNO cno, HQ *phq)
     AssertVarMem(phq);
     BLCK blck;
 
-    *phq = hqNil; // in case FFind fails
+    *phq = hqNil; // 3DMMv1.0: in case FFind fails
     return FFind(ctg, cno, &blck) && blck.FReadHq(phq, fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the packed flag is set or clear according to fPacked.
     This doesn't affect the data at all.
 ***************************************************************************/
@@ -2109,7 +2109,7 @@ void CFL::SetPacked(CTG ctg, CNO cno, bool fPacked)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the value of the packed flag.
 ***************************************************************************/
 bool CFL::FPacked(CTG ctg, CNO cno)
@@ -2128,7 +2128,7 @@ bool CFL::FPacked(CTG ctg, CNO cno)
     return FPure(qcrp->Grfcrp(fcrpPacked));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the data for the chunk is packed, unpack it.
 ***************************************************************************/
 bool CFL::FUnpackData(CTG ctg, CNO cno)
@@ -2145,7 +2145,7 @@ bool CFL::FUnpackData(CTG ctg, CNO cno)
     return FPutBlck(&blck, ctg, cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the data isn't already packed, pack it.
 ***************************************************************************/
 bool CFL::FPackData(CTG ctg, CNO cno)
@@ -2162,7 +2162,7 @@ bool CFL::FPackData(CTG ctg, CNO cno)
     return FPutBlck(&blck, ctg, cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the extra file.  Note: the extra file doesn't have a CFP -
     just raw data.
 ***************************************************************************/
@@ -2179,7 +2179,7 @@ bool CFL::_FCreateExtra(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find a place to put a block the given size.
 ***************************************************************************/
 bool CFL::_FAllocFlo(int32_t cb, PFLO pflo, bool fForceOnExtra)
@@ -2213,7 +2213,7 @@ bool CFL::_FAllocFlo(int32_t cb, PFLO pflo, bool fForceOnExtra)
         pcsto = &_csto;
     }
 
-    // set the file and cb - just need to find an fp
+    // 3DMMv1.0: set the file and cb - just need to find an fp
     AssertPo(pcsto->pfil, 0);
     pflo->pfil = pcsto->pfil;
     pflo->cb = cb;
@@ -2221,11 +2221,11 @@ bool CFL::_FAllocFlo(int32_t cb, PFLO pflo, bool fForceOnExtra)
     if (cb <= 0)
     {
         pflo->fp = 0;
-        pflo->cb = 0; // for safety
+        pflo->cb = 0; // 3DMMv1.0: for safety
         return fTrue;
     }
 
-    // look for a free spot in the free space map
+    // 3DMMv1.0: look for a free spot in the free space map
     if (pcsto->pglfsm != pvNil && (cfsm = pcsto->pglfsm->IvMac()) > 0)
     {
         qfsm = (FSM *)pcsto->pglfsm->QvGet(0);
@@ -2233,7 +2233,7 @@ bool CFL::_FAllocFlo(int32_t cb, PFLO pflo, bool fForceOnExtra)
         {
             if (qfsm->cb >= cb)
             {
-                // can put it here
+                // 3DMMv1.0: can put it here
                 pflo->fp = qfsm->fp;
                 if (qfsm->cb == cb)
                     pcsto->pglfsm->Delete(ifsm);
@@ -2247,7 +2247,7 @@ bool CFL::_FAllocFlo(int32_t cb, PFLO pflo, bool fForceOnExtra)
         }
     }
 
-    // put it at the end of the file
+    // 3DMMv1.0: put it at the end of the file
     if (pcsto->fpMac + cb > pcsto->pfil->FpMac() && !pcsto->pfil->FSetFpMac(pcsto->fpMac + cb))
     {
         TrashVar(pflo);
@@ -2259,15 +2259,15 @@ bool CFL::_FAllocFlo(int32_t cb, PFLO pflo, bool fForceOnExtra)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for the (ctg, cno) pair.  Fills *picrp with where it should be.
     Returns whether or not it was found.  Assumes the _pggcrp is sorted
     by (ctg, cno).  Does a binary search.
 ***************************************************************************/
 bool CFL::_FFindCtgCno(CTG ctg, CNO cno, int32_t *picrp)
 {
-    // WARNING:  this is called by CFL::AssertValid, so be careful about
-    // asserting stuff in here
+    // 3DMMv1.0: WARNING:  this is called by CFL::AssertValid, so be careful about
+    // 3DMMv1.0: asserting stuff in here
     AssertBaseThis(0);
     AssertVarMem(picrp);
     AssertPo(_pggcrp, 0);
@@ -2305,7 +2305,7 @@ bool CFL::_FFindCtgCno(CTG ctg, CNO cno, int32_t *picrp)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find an unused cno for the given ctg.  Fill in *picrp and *pcno.
 ***************************************************************************/
 void CFL::_GetUniqueCno(CTG ctg, int32_t *picrp, CNO *pcno)
@@ -2324,7 +2324,7 @@ void CFL::_GetUniqueCno(CTG ctg, int32_t *picrp, CNO *pcno)
         return;
     }
 
-    // 0 already exists so do a linear search for the first useable slot
+    // 3DMMv1.0: 0 already exists so do a linear search for the first useable slot
     ccrp = _pggcrp->IvMac();
     for (icrp = *picrp + 1, cno = 1; icrp < ccrp; icrp++, cno++)
     {
@@ -2336,7 +2336,7 @@ void CFL::_GetUniqueCno(CTG ctg, int32_t *picrp, CNO *pcno)
     *pcno = cno;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a new chunk.
 ***************************************************************************/
 bool CFL::FAdd(int32_t cb, CTG ctg, CNO *pcno, PBLCK pblck)
@@ -2358,7 +2358,7 @@ bool CFL::FAdd(int32_t cb, CTG ctg, CNO *pcno, PBLCK pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a new chunk and write the pv to it.
 ***************************************************************************/
 bool CFL::FAddPv(const void *pv, int32_t cb, CTG ctg, CNO *pcno)
@@ -2380,7 +2380,7 @@ bool CFL::FAddPv(const void *pv, int32_t cb, CTG ctg, CNO *pcno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a new chunk and write the hq to it.
 ***************************************************************************/
 bool CFL::FAddHq(HQ hq, CTG ctg, CNO *pcno)
@@ -2403,7 +2403,7 @@ bool CFL::FAddHq(HQ hq, CTG ctg, CNO *pcno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a new chunk and write the block to it.
 ***************************************************************************/
 bool CFL::FAddBlck(PBLCK pblckSrc, CTG ctg, CNO *pcno)
@@ -2429,7 +2429,7 @@ bool CFL::FAddBlck(PBLCK pblckSrc, CTG ctg, CNO *pcno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds the chunk and makes it a child of (ctgPar, cnoPar). The loner flag
     of the new chunk will be clear.
 ***************************************************************************/
@@ -2452,7 +2452,7 @@ bool CFL::FAddChild(CTG ctgPar, CNO cnoPar, CHID chid, int32_t cb, CTG ctg, CNO 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds the chunk and makes it a child of (ctgPar, cnoPar).  The child's
     loner flag will be clear.
 ***************************************************************************/
@@ -2469,7 +2469,7 @@ bool CFL::FAddChildPv(CTG ctgPar, CNO cnoPar, CHID chid, void *pv, int32_t cb, C
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds the chunk and makes it a child of (ctgPar, cnoPar).  The child's
     loner flag will be clear.
 ***************************************************************************/
@@ -2486,7 +2486,7 @@ bool CFL::FAddChildHq(CTG ctgPar, CNO cnoPar, CHID chid, HQ hq, CTG ctg, CNO *pc
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Low level add.  Sets the loner flag.
 ***************************************************************************/
 bool CFL::_FAdd(int32_t cb, CTG ctg, CNO cno, int32_t icrp, PBLCK pblck)
@@ -2531,7 +2531,7 @@ bool CFL::_FAdd(int32_t cb, CTG ctg, CNO cno, int32_t icrp, PBLCK pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace or create a chunk of a particular cno.
 ***************************************************************************/
 bool CFL::FPut(int32_t cb, CTG ctg, CNO cno, PBLCK pblck)
@@ -2542,7 +2542,7 @@ bool CFL::FPut(int32_t cb, CTG ctg, CNO cno, PBLCK pblck)
     return _FPut(cb, ctg, cno, pblck, pvNil, pvNil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace or create a chunk with the given cno and put the data in it.
 ***************************************************************************/
 bool CFL::FPutPv(const void *pv, int32_t cb, CTG ctg, CNO cno)
@@ -2554,7 +2554,7 @@ bool CFL::FPutPv(const void *pv, int32_t cb, CTG ctg, CNO cno)
     return _FPut(cb, ctg, cno, pvNil, pvNil, pv);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace or create a chunk with the given cno and put the hq's
     data in it.
 ***************************************************************************/
@@ -2572,7 +2572,7 @@ bool CFL::FPutHq(HQ hq, CTG ctg, CNO cno)
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Replace or create a chunk with the given cno and put the block's
     data in it.  Set the packed flag as in the block.
 ***************************************************************************/
@@ -2587,7 +2587,7 @@ bool CFL::FPutBlck(PBLCK pblckSrc, CTG ctg, CNO cno)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Low level put.  Writes data from pblckSrc or pv (or neither).  If the
     chunk doesn't already exist, this has the same affect as doing an add.
     If it does exist, this doesn't change the fcrpLoner flag or anything
@@ -2677,7 +2677,7 @@ bool CFL::_FPut(int32_t cb, CTG ctg, CNO cno, PBLCK pblck, PBLCK pblckSrc, const
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swaps the data for the two chunks.  This allows a "safe save" of
     individual chunks (create a temp chunk, write the data, swap the data,
     delete the temp chunk).  Doesn't affect child/parent relationships
@@ -2708,7 +2708,7 @@ void CFL::SwapData(CTG ctg1, CNO cno1, CTG ctg2, CNO cno2)
     qcrp1->SetCb(qcrp2->Cb());
     qcrp2->SetCb(cb);
 
-    // swap the bits of grfcrp in grfcrpMask
+    // 3DMMv1.0: swap the bits of grfcrp in grfcrpMask
     grfcrpT = qcrp1->Grfcrp(kgrfcrpMask);
     qcrp1->AssignGrfcrp(qcrp2->Grfcrp(kgrfcrpMask), kgrfcrpMask);
     qcrp2->AssignGrfcrp(grfcrpT, kgrfcrpMask);
@@ -2719,7 +2719,7 @@ void CFL::SwapData(CTG ctg1, CNO cno1, CTG ctg2, CNO cno2)
     AssertThis(fcflFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Swaps the children for the two chunks.  This allows a "safe save" of
     chunk graphs (create a temp chunk, write the data, swap the data,
     swap the children, delete the temp chunk).  Doesn't affect the data
@@ -2738,16 +2738,16 @@ void CFL::SwapChildren(CTG ctg1, CNO cno1, CTG ctg2, CNO cno2)
         return;
     }
 
-    // Swap the child lists.
+    // 3DMMv1.0: Swap the child lists.
     qcrp1 = (CRP *)_pggcrp->QvFixedGet(icrp1);
     qcrp2 = (CRP *)_pggcrp->QvFixedGet(icrp2);
     cb1 = LwMul(qcrp1->ckid, SIZEOF(KID));
     cb2 = LwMul(qcrp2->ckid, SIZEOF(KID));
     SwapVars(&qcrp1->ckid, &qcrp2->ckid);
 
-    // These FMoveRgb calls won't fail, because no padding is necessary for
-    // child entries. (FMoveRgb can fail only if the number of bytes being
-    // moved is not a multiple of SIZEOF(int32_t)).
+    // 3DMMv1.0: These FMoveRgb calls won't fail, because no padding is necessary for
+    // 3DMMv1.0: child entries. (FMoveRgb can fail only if the number of bytes being
+    // 3DMMEx: moved is not a multiple of SIZEOF(int32_t)).
     if (0 < cb1)
         AssertDo(_pggcrp->FMoveRgb(icrp1, 0, icrp2, cb2, cb1), 0);
     if (0 < cb2)
@@ -2756,7 +2756,7 @@ void CFL::SwapChildren(CTG ctg1, CNO cno1, CTG ctg2, CNO cno2)
     AssertThis(fcflFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the chunk from (ctg, cno) to (ctgNew, cnoNew).  Asserts that there
     is not already a chunk labelled (ctgNew, cnoNew).  If the chunk has
     parents, updates the parent links to point to (ctgNew, cnoNew).
@@ -2791,13 +2791,13 @@ void CFL::Move(CTG ctg, CNO cno, CTG ctgNew, CNO cnoNew)
 
     if (ccrpRef > 0)
     {
-        // chunk has some parents
+        // 3DMMv1.0: chunk has some parents
         CRP crp;
         int32_t icrp, ikid, ikidNew;
         KID *qkid, *qrgkid;
 
-        // In debug, increment ccrpRef so we'll traverse the entire
-        // index.  In ship, we'll stop once we changed ccrpRef KIDs.
+        // 3DMMv1.0: In debug, increment ccrpRef so we'll traverse the entire
+        // 3DMMv1.0: index.  In ship, we'll stop once we changed ccrpRef KIDs.
         Debug(ccrpRef++;) for (icrp = _pggcrp->IvMac(); icrp-- > 0 && ccrpRef > 0;)
         {
             _pggcrp->GetFixed(icrp, &crp);
@@ -2811,10 +2811,10 @@ void CFL::Move(CTG ctg, CNO cno, CTG ctgNew, CNO cnoNew)
                     continue;
                 }
 
-                // replace this kid
+                // 3DMMv1.0: replace this kid
                 AssertDo(!_FFindChild(icrp, ctgNew, cnoNew, qkid->chid, &ikidNew), "already a child");
 
-                // refresh the qkid and qrgkid pointers
+                // 3DMMv1.0: refresh the qkid and qrgkid pointers
                 qkid = (qrgkid = (KID *)_pggcrp->QvGet(icrp)) + ikid;
                 qkid->cki.ctg = ctgNew;
                 qkid->cki.cno = cnoNew;
@@ -2824,7 +2824,7 @@ void CFL::Move(CTG ctg, CNO cno, CTG ctgNew, CNO cnoNew)
             }
         }
         Assert(ccrpRef == 1, "corrupt chunky index");
-        // in ship, ccrpRef should be 0 here
+        // 3DMMv1.0: in ship, ccrpRef should be 0 here
     }
 
     if (rtiNil != rti && ctgNew == ctg)
@@ -2833,7 +2833,7 @@ void CFL::Move(CTG ctg, CNO cno, CTG ctgNew, CNO cnoNew)
     AssertThis(fcflFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the given chunk.  Handles deleting child chunks that are
     no longer referenced.  If the chunk has the loner flag set, this clears
     it.  If the chunk has no parents, the chunk is also physically deleted
@@ -2876,12 +2876,12 @@ void CFL::Delete(CTG ctg, CNO cno)
         }
         if (grfcge & fcgePost)
         {
-            // actually delete the node
+            // 3DMMv1.0: actually delete the node
             if (grfcge & fcgeError)
             {
                 Warn("memory failure in CFL::Delete - adjusting ref counts");
-                // memory failure - adjust the ref counts of this chunk's
-                // children, but don't try to delete them
+                // 3DMMv1.0: memory failure - adjust the ref counts of this chunk's
+                // 3DMMv1.0: children, but don't try to delete them
                 int32_t ikid, icrpChild;
                 KID kid;
 
@@ -2903,7 +2903,7 @@ void CFL::Delete(CTG ctg, CNO cno)
     AssertThis(fcflFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make sure the loner flag is set or clear according to fLoner.  If
     fLoner is false and (ctg, cno) is not currently the child of anything,
     it will be deleted.
@@ -2927,7 +2927,7 @@ void CFL::SetLoner(CTG ctg, CNO cno, bool fLoner)
         Delete(ctg, cno);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the value of the loner flag.
 ***************************************************************************/
 bool CFL::FLoner(CTG ctg, CNO cno)
@@ -2945,7 +2945,7 @@ bool CFL::FLoner(CTG ctg, CNO cno)
     return FPure(qcrp->Grfcrp(fcrpLoner));
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Returns the number of parents of this chunk
 ***************************************************************************/
 int32_t CFL::CckiRef(CTG ctg, CNO cno)
@@ -2963,7 +2963,7 @@ int32_t CFL::CckiRef(CTG ctg, CNO cno)
     return qcrp->ccrpRef;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determines if (ctgSub, cnoSub) is in the chunk subgraph of (ctg, cno).
     Returns tMaybe on error.
 ***************************************************************************/
@@ -2988,7 +2988,7 @@ tribool CFL::TIsDescendent(CTG ctg, CNO cno, CTG ctgSub, CNO cnoSub)
     return tNo;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete the given child chunk.  Handles deleting child chunks that are
     no longer referenced and don't have the fcrpLoner flag set.
 ***************************************************************************/
@@ -3009,21 +3009,21 @@ void CFL::DeleteChild(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID c
         return;
     }
 
-    // remove the reference
+    // 3DMMv1.0: remove the reference
     qcrp = (CRP *)_pggcrp->QvFixedGet(icrpPar);
     qcrp->ckid--;
     _pggcrp->DeleteRgb(icrpPar, _BvKid(ikid), SIZEOF(KID));
 
-    // now decrement the ref count and nuke it if the ref count is zero
+    // 3DMMv1.0: now decrement the ref count and nuke it if the ref count is zero
     if (_FDecRefCount(icrpChild))
     {
-        // delete the chunk
+        // 3DMMv1.0: delete the chunk
         Delete(ctgChild, cnoChild);
     }
     AssertThis(fcflFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Decrements the reference count on the chunk.  Return true if the ref
     count becomes zero (after decrementing) and fcrpLoner is not set.
 ***************************************************************************/
@@ -3041,7 +3041,7 @@ bool CFL::_FDecRefCount(int32_t icrp)
     return --(qcrp->ccrpRef) == 0 && !qcrp->Grfcrp(fcrpLoner);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove entry icrp from _pggcrp and add the file space to the free map.
 ***************************************************************************/
 void CFL::_DeleteCore(int32_t icrp)
@@ -3057,7 +3057,7 @@ void CFL::_DeleteCore(int32_t icrp)
     _pggcrp->Delete(icrp);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the (fp, cb) to the free map.
 ***************************************************************************/
 void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
@@ -3071,11 +3071,11 @@ void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
     FSM fsm, fsmT;
     CSTO *pcsto;
 
-    // no space allocated to the chunk
+    // 3DMMv1.0: no space allocated to the chunk
     if (cb == 0)
         return;
 
-    // if the free map hasn't been read yet, read it now
+    // 3DMMv1.0: if the free map hasn't been read yet, read it now
     if (!fOnExtra && _fFreeMapNotRead)
         _ReadFreeMap();
 
@@ -3086,8 +3086,8 @@ void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
 
     if (fp + cb >= pcsto->fpMac)
     {
-        // it's at the end of the file, just change fpMac and
-        // compact the free map if possible
+        // 3DMMv1.0: it's at the end of the file, just change fpMac and
+        // 3DMMv1.0: compact the free map if possible
         pcsto->fpMac = fp;
         if (pglfsm == pvNil || (ifsm = pglfsm->IvMac()) == 0)
             return;
@@ -3095,8 +3095,8 @@ void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
         pglfsm->Get(ifsm, &fsm);
         if (fsm.fp + fsm.cb >= pcsto->fpMac)
         {
-            // fsm extends to the new end of the file, so delete the fsm
-            // and adjust fpMac
+            // 3DMMv1.0: fsm extends to the new end of the file, so delete the fsm
+            // 3DMMv1.0: and adjust fpMac
             Assert(fsm.fp + fsm.cb == pcsto->fpMac, "bad fsm?");
             pglfsm->Delete(ifsm);
             pcsto->fpMac = fsm.fp;
@@ -3104,11 +3104,11 @@ void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
         return;
     }
 
-    // Chunk is not at the end of the file.  We need to add it
-    // to the free map.
+    // 3DMMv1.0: Chunk is not at the end of the file.  We need to add it
+    // 3DMMv1.0: to the free map.
     if (pglfsm == pvNil && (pglfsm = pcsto->pglfsm = GL::PglNew(SIZEOF(FSM), 1)) == pvNil)
     {
-        // can't create the free map, just drop the space
+        // 3DMMv1.0: can't create the free map, just drop the space
         return;
     }
 
@@ -3126,21 +3126,21 @@ void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
     ifsmLim = pglfsm->IvMac();
     if (ifsmMin > 0)
     {
-        // check for adjacency to previous free block
+        // 3DMMv1.0: check for adjacency to previous free block
         pglfsm->Get(ifsmMin - 1, &fsm);
         Assert(fsm.fp < fp, "bad ifsmMin");
         if (fsm.fp + fsm.cb >= fp)
         {
-            // extend the previous free block
+            // 3DMMv1.0: extend the previous free block
             Assert(fsm.fp + fsm.cb == fp, "overlap");
             fsm.cb = fp + cb - fsm.fp;
             if (ifsmMin < ifsmLim)
             {
-                // check for adjacency to next free block
+                // 3DMMv1.0: check for adjacency to next free block
                 pglfsm->Get(ifsmMin, &fsmT);
                 if (fsmT.fp <= fsm.fp + fsm.cb)
                 {
-                    // merge the two
+                    // 3DMMv1.0: merge the two
                     Assert(fsmT.fp == fsm.fp + fsm.cb, "overlap");
                     fsm.cb = fsmT.fp + fsmT.cb - fsm.fp;
                     pglfsm->Delete(ifsmMin);
@@ -3168,11 +3168,11 @@ void CFL::_FreeFpCb(bool fOnExtra, FP fp, int32_t cb)
     fsm.fp = fp;
     fsm.cb = cb;
 
-    // if it fails, we lose some space - so what
+    // 3DMMv1.0: if it fails, we lose some space - so what
     pglfsm->FInsert(ifsmMin, &fsm);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the name of the chunk.
 ***************************************************************************/
 bool CFL::FSetName(CTG ctg, CNO cno, PSTN pstn)
@@ -3196,7 +3196,7 @@ bool CFL::FSetName(CTG ctg, CNO cno, PSTN pstn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the name of the chunk at the given index.
 ***************************************************************************/
 bool CFL::_FSetName(int32_t icrp, PSTN pstn)
@@ -3234,7 +3234,7 @@ bool CFL::_FSetName(int32_t icrp, PSTN pstn)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Retrieve the name of the chunk.  Returns whether the string is
     non-empty.
 ***************************************************************************/
@@ -3255,7 +3255,7 @@ bool CFL::FGetName(CTG ctg, CNO cno, PSTN pstn)
     return _FGetName(icrp, pstn);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Retrieve the name of the chunk at the given index.  Returns whether
     the string is non-empty.
 ***************************************************************************/
@@ -3286,7 +3286,7 @@ bool CFL::_FGetName(int32_t icrp, PSTN pstn)
     return pstn->Cch() > 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make a node a child of another node.  If fClearLoner is set, the loner
     flag of the child is cleared.
 ***************************************************************************/
@@ -3302,7 +3302,7 @@ bool CFL::FAdoptChild(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID c
         return fFalse;
     }
     if (_FFindChild(icrpPar, ctgChild, cnoChild, chid, &ikid))
-        return fTrue; // already a child
+        return fTrue; // 3DMMv1.0: already a child
 
     if (!_FAdoptChild(icrpPar, ikid, ctgChild, cnoChild, chid, fClearLoner))
     {
@@ -3314,7 +3314,7 @@ bool CFL::FAdoptChild(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID c
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make (ctgChild, cnoChild) a child of icrpPar.
 ***************************************************************************/
 bool CFL::_FAdoptChild(int32_t icrpPar, int32_t ikid, CTG ctgChild, CNO cnoChild, CHID chid, bool fClearLoner)
@@ -3369,7 +3369,7 @@ bool CFL::_FAdoptChild(int32_t icrpPar, int32_t ikid, CTG ctgChild, CNO cnoChild
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Changes the chid value of the given child link.  Assert that
     (ctgChild, cnoChild, chidOld) is a child of (ctgPar, cnoPar) and that
     (ctgChild, cnoChild, chidNew) is not currently a child.
@@ -3403,7 +3403,7 @@ void CFL::ChangeChid(CTG ctgPar, CNO cnoPar, CTG ctgChild, CNO cnoChild, CHID ch
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the total number of chunks.
 ***************************************************************************/
 int32_t CFL::Ccki(void)
@@ -3412,7 +3412,7 @@ int32_t CFL::Ccki(void)
     return _pggcrp->IvMac();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the icki'th chunk.  If there is such a chunk (icki isn't too big),
     fills in *pcki and *pckid and returns true.  Otherwise, returns fFalse.
 ***************************************************************************/
@@ -3444,7 +3444,7 @@ bool CFL::FGetCki(int32_t icki, CKI *pcki, int32_t *pckid, PBLCK pblck)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the icki corresponding to the given (ctg, cno).  If the (ctg, cno)
     is not in the CFL, fills *picki with where it would be.
 ***************************************************************************/
@@ -3455,7 +3455,7 @@ bool CFL::FGetIcki(CTG ctg, CNO cno, int32_t *picki)
     return _FFindCtgCno(ctg, cno, picki);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the total number of chunks of the given type in the file.
 ***************************************************************************/
 int32_t CFL::CckiCtg(CTG ctg)
@@ -3471,7 +3471,7 @@ int32_t CFL::CckiCtg(CTG ctg)
     _FFindCtgCno(ctg, 0, &icrpMin);
     if (ctg + 1 < ctg)
     {
-        // ctg is the largest possible ctg!
+        // 3DMMv1.0: ctg is the largest possible ctg!
         return icrpMac - icrpMin;
     }
 
@@ -3479,7 +3479,7 @@ int32_t CFL::CckiCtg(CTG ctg)
     return icrpLim - icrpMin;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the icki'th chunk of type ctg.  If there is such a chunk,
     fills in *pcki and returns true.  Otherwise, returns fFalse.
 ***************************************************************************/
@@ -3522,7 +3522,7 @@ bool CFL::FGetCkiCtg(CTG ctg, int32_t icki, CKI *pcki, int32_t *pckid, PBLCK pbl
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of children of the given chunk.
 ***************************************************************************/
 int32_t CFL::Ckid(CTG ctg, CNO cno)
@@ -3541,7 +3541,7 @@ int32_t CFL::Ckid(CTG ctg, CNO cno)
     return qcrp->ckid;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If ikid is less than number of children of the given chunk,
     fill *pkid and return true.  Otherwise, return false.
 ***************************************************************************/
@@ -3572,7 +3572,7 @@ bool CFL::FGetKid(CTG ctg, CNO cno, int32_t ikid, KID *pkid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for a child of (ctgPar, cnoPar) with the given chid value.  If one
     is found, fill in *pkid and return true; else return false.  Kid's are
     sorted by (chid, ctg, cno).
@@ -3584,7 +3584,7 @@ bool CFL::FGetKidChid(CTG ctgPar, CNO cnoPar, CHID chid, KID *pkid)
     return _FFindChidCtg(ctgPar, cnoPar, chid, (CTG)0, pkid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for a child of (ctgPar, cnoPar) with the given chid and ctg value.
     If one is found, fill in *pkid and return true; else return false.
     Kid's are sorted by (chid, ctg, cno).
@@ -3594,8 +3594,8 @@ bool CFL::FGetKidChidCtg(CTG ctgPar, CNO cnoPar, CHID chid, CTG ctg, KID *pkid)
     AssertThis(0);
     AssertVarMem(pkid);
 
-    // the kid returned from _FFindChidCtg should have ctg >= the given ctg,
-    // but not necessarily equal
+    // 3DMMv1.0: the kid returned from _FFindChidCtg should have ctg >= the given ctg,
+    // 3DMMv1.0: but not necessarily equal
     if (!_FFindChidCtg(ctgPar, cnoPar, chid, ctg, pkid) || pkid->cki.ctg != ctg)
     {
         TrashVar(pkid);
@@ -3604,7 +3604,7 @@ bool CFL::FGetKidChidCtg(CTG ctgPar, CNO cnoPar, CHID chid, CTG ctg, KID *pkid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the first child with the given chid and with ctg >= the given ctg.
     Returns true iff there is such a child and fills in the *pkid.
 ***************************************************************************/
@@ -3660,7 +3660,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Finds the ikid value associated with the given child (ctg, cno, chid) of
     the given chunk.  If the (ctg, cno, chid) is not a child of
     (ctgPar, cnoPar), fills *pikid with where it would be if it were.
@@ -3681,7 +3681,7 @@ bool CFL::FGetIkid(CTG ctgPar, CNO cnoPar, CTG ctg, CNO cno, CHID chid, int32_t 
     return _FFindChild(icrp, ctg, cno, chid, pikid);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If (ctgChild, cnoChild, chid) is a child of icrpPar, return true and put
     the index in *pikid.  If not set *pikid to where to insert it.  Kids are
     sorted by (chid, ctg, cno).
@@ -3733,7 +3733,7 @@ bool CFL::_FFindChild(int32_t icrpPar, CTG ctgChild, CNO cnoChild, CHID chid, in
     return fFalse;
 }
 
-// cno map entry
+// 3DMMv1.0: cno map entry
 struct CNOM
 {
     CTG ctg;
@@ -3744,7 +3744,7 @@ struct CNOM
 bool _FFindCnom(PGL pglcnom, CTG ctg, CNO cno, CNOM *pcnom = pvNil, int32_t *picnom = pvNil);
 bool _FAddCnom(PGL *ppglcnom, CNOM *pcnom);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for a cnom for the given (ctg, cno). Whether or not it exists,
     fill *picnom with where it would go in the pglcnom.
 ***************************************************************************/
@@ -3792,7 +3792,7 @@ bool _FFindCnom(PGL pglcnom, CTG ctg, CNO cno, CNOM *pcnom, int32_t *picnom)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add a cnom to the *ppglcnom. Allocated *ppglcnom if it is nil.
 ***************************************************************************/
 bool _FAddCnom(PGL *ppglcnom, CNOM *pcnom)
@@ -3809,7 +3809,7 @@ bool _FAddCnom(PGL *ppglcnom, CNOM *pcnom)
     return (*ppglcnom)->FInsert(icnom, pcnom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy a chunk (ctgSrc, cnoSrc) from this chunky file to pcflDst.
     The new cno is put in *pcno.  The destination chunk is marked as a
     loner. If possible, the cno in the destination file will be the same
@@ -3851,7 +3851,7 @@ bool CFL::_FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst, bool fClone
         return fTrue;
     }
 
-    // copy chunks to the destination CFL
+    // 3DMMv1.0: copy chunks to the destination CFL
     cge.Init(this, ctgSrc, cnoSrc);
     grfcgeIn = fcgeNil;
     while (cge.FNextKid(&kid, &ckiPar, &grfcge, grfcgeIn))
@@ -3860,29 +3860,29 @@ bool CFL::_FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst, bool fClone
         if (grfcge & fcgeError)
             goto LFail;
 
-        // do pre-order handling only
+        // 3DMMv1.0: do pre-order handling only
         if (!(grfcge & fcgePre))
             continue;
 
         if (_FFindCnom(pglcnom, kid.cki.ctg, kid.cki.cno, &cnom))
         {
-            // chunk has already been copied - just link it to the parent
-            // and skip to its sibling
+            // 3DMMv1.0: chunk has already been copied - just link it to the parent
+            // 3DMMv1.0: and skip to its sibling
             Assert(!(grfcge & fcgeRoot), "how can the root already have been copied?");
             grfcgeIn = fcgeSkipToSib;
         }
         else if (rtiNil != (rtiSrc = _Rti(kid.cki.ctg, kid.cki.cno)) && !fClone &&
                  _FFindMatch(kid.cki.ctg, kid.cki.cno, pcflDst, &cnom.cnoDst))
         {
-            // chunk and its subgraph exists in the destination, just link it
-            // to the parent and skip to its sibling
+            // 3DMMv1.0: chunk and its subgraph exists in the destination, just link it
+            // 3DMMv1.0: to the parent and skip to its sibling
             grfcgeIn = fcgeSkipToSib;
         }
         else
         {
-            // must copy the chunk
+            // 3DMMv1.0: must copy the chunk
 
-            // assign the source chunk an rti (if it doesn't have one)
+            // 3DMMv1.0: assign the source chunk an rti (if it doesn't have one)
             if (rtiNil == rtiSrc && _FSetRti(kid.cki.ctg, kid.cki.cno, _rtiLast + 1))
             {
                 rtiSrc = ++_rtiLast;
@@ -3891,17 +3891,17 @@ bool CFL::_FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst, bool fClone
             cnom.ctg = kid.cki.ctg;
             cnom.cnoSrc = kid.cki.cno;
 
-            // find the source icrp
+            // 3DMMv1.0: find the source icrp
             AssertDo(_FFindCtgCno(kid.cki.ctg, kid.cki.cno, &icrpSrc), 0);
 
-            // get the source blck
+            // 3DMMv1.0: get the source blck
             _GetBlck(icrpSrc, &blckSrc);
 
-            // allocate the dst chunk and copy the data - use the source cno
-            // if possible
+            // 3DMMv1.0: allocate the dst chunk and copy the data - use the source cno
+            // 3DMMv1.0: if possible
             if (this != pcflDst && !pcflDst->FFind(kid.cki.ctg, kid.cki.cno))
             {
-                // can preserve cno
+                // 3DMMv1.0: can preserve cno
                 cnom.cnoDst = kid.cki.cno;
                 if (!pcflDst->FPutBlck(&blckSrc, kid.cki.ctg, cnom.cnoDst))
                     goto LFail;
@@ -3918,7 +3918,7 @@ bool CFL::_FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst, bool fClone
 
             AssertDo(pcflDst->_FFindCtgCno(kid.cki.ctg, cnom.cnoDst, &icrpDst), "_FFindCtgCno doesn't work");
 
-            // make sure the forest flags match
+            // 3DMMv1.0: make sure the forest flags match
             qcrp = (CRP *)_pggcrp->QvFixedGet(icrpSrc);
             if (qcrp->Grfcrp(fcrpForest))
             {
@@ -3926,7 +3926,7 @@ bool CFL::_FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst, bool fClone
                 qcrp->SetGrfcrp(fcrpForest);
             }
 
-            // set the dst name and rti to the src name and rti
+            // 3DMMv1.0: set the dst name and rti to the src name and rti
             if (_FGetName(icrpSrc, &stn) && !pcflDst->_FSetName(icrpDst, &stn))
             {
                 pcflDst->Delete(kid.cki.ctg, cnom.cnoDst);
@@ -3940,17 +3940,17 @@ bool CFL::_FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst, bool fClone
             fFreeDstOnFailure = fTrue;
         }
 
-        // if it's the root, it has no parent and we need to set *pcnoDst
+        // 3DMMv1.0: if it's the root, it has no parent and we need to set *pcnoDst
         if (grfcge & fcgeRoot)
         {
             *pcnoDst = cnom.cnoDst;
             continue;
         }
 
-        // get the source parent's cnom
+        // 3DMMv1.0: get the source parent's cnom
         AssertDo(_FFindCnom(pglcnom, ckiPar.ctg, ckiPar.cno, &cnomPar), 0);
 
-        // make sure the dst child is a child of the dst parent
+        // 3DMMv1.0: make sure the dst child is a child of the dst parent
         if (!pcflDst->FAdoptChild(ckiPar.ctg, cnomPar.cnoDst, kid.cki.ctg, cnom.cnoDst, kid.chid, grfcgeIn == fcgeNil))
         {
             if (grfcgeIn == fcgeNil)
@@ -3973,7 +3973,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if there is a subgraph of pcflDst matching the subgraph at
     (ctgSrc, cnoSrc). Subgraphs match if there is one-to-one correspondence
     of nodes and arcs of the two subgraphs and the rti's of corresponding
@@ -4000,7 +4000,7 @@ bool CFL::_FFindMatch(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst)
     ckidSrc = Ckid(ctgSrc, cnoSrc);
     for (cnoDst = cnoMin = 0;; cnoMin = cnoDst + 1)
     {
-        // get the next chunk with the same rti
+        // 3DMMv1.0: get the next chunk with the same rti
         if (cnoDst == (CNO)(-1) || !pcflDst->_FFindCtgRti(ctgSrc, rtiSrc, cnoMin, &cnoDst))
         {
             return fFalse;
@@ -4013,28 +4013,28 @@ bool CFL::_FFindMatch(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst)
         cgeDst.Init(pcflDst, ctgSrc, cnoDst);
         for (;;)
         {
-            // get the next element of the the source graph
+            // 3DMMv1.0: get the next element of the the source graph
             fKidSrc = cgeSrc.FNextKid(&kidSrc, &ckiParSrc, &grfcgeSrc, fcgeNil);
 
-            // if the source chunk doesn't have an rti, there's no hope
+            // 3DMMv1.0: if the source chunk doesn't have an rti, there's no hope
             if (fKidSrc && rtiNil == (rtiKid = _Rti(kidSrc.cki.ctg, kidSrc.cki.cno)))
             {
                 return fFalse;
             }
 
-            // get the next element of the destination graph
+            // 3DMMv1.0: get the next element of the destination graph
             fKidDst = cgeDst.FNextKid(&kidDst, &ckiParDst, &grfcgeDst, fcgeNil);
 
             if (FPure(fKidSrc) != FPure(fKidDst))
             {
-                // the two graphs have different numbers of nodes, so they
-                // don't match
+                // 3DMMv1.0: the two graphs have different numbers of nodes, so they
+                // 3DMMv1.0: don't match
                 break;
             }
 
             if (!fKidSrc)
             {
-                // we're finished with the enumeration and everything matched
+                // 3DMMv1.0: we're finished with the enumeration and everything matched
                 *pcnoDst = cnoDst;
                 return fTrue;
             }
@@ -4046,14 +4046,14 @@ bool CFL::_FFindMatch(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst)
                 rtiKid != pcflDst->_Rti(kidDst.cki.ctg, kidDst.cki.cno) ||
                 Ckid(kidSrc.cki.ctg, kidSrc.cki.cno) != pcflDst->Ckid(kidDst.cki.ctg, kidDst.cki.cno))
             {
-                // children don't match
+                // 3DMMv1.0: children don't match
                 break;
             }
         }
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Looks for a chunk of the given type with assigned rti and cno at least
     cnoMin.
 ***************************************************************************/
@@ -4073,17 +4073,17 @@ bool CFL::_FFindCtgRti(CTG ctg, int32_t rti, CNO cnoMin, CNO *pcno)
     {
         qcrp = (CRP *)_pggcrp->QvFixedGet(icrp);
         if (qcrp->cki.ctg != ctg)
-            break; // done
+            break; // 3DMMv1.0: done
         if (qcrp->rti == rti)
         {
-            // found one
+            // 3DMMv1.0: found one
             if (pcno != pvNil)
                 *pcno = qcrp->cki.cno;
             return fTrue;
         }
     }
 
-#else //! CHUNK_BIG_INDEX
+#else //! 3DMMv1.0: CHUNK_BIG_INDEX
 
     int32_t irtie, crtie;
     RTIE rtie;
@@ -4095,10 +4095,10 @@ bool CFL::_FFindCtgRti(CTG ctg, int32_t rti, CNO cnoMin, CNO *pcno)
         {
             _pglrtie->Get(irtie, &rtie);
             if (rtie.ctg != ctg)
-                break; // done
+                break; // 3DMMv1.0: done
             if (rtie.rti == rti)
             {
-                // found one
+                // 3DMMv1.0: found one
                 if (pcno != pvNil)
                     *pcno = rtie.cno;
                 return fTrue;
@@ -4106,13 +4106,13 @@ bool CFL::_FFindCtgRti(CTG ctg, int32_t rti, CNO cnoMin, CNO *pcno)
         }
     }
 
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 
     TrashVar(pcno);
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Copy a chunk (ctgSrc, cnoSrc) from this chunky file to pcflDst.
     The new cno is put in *pcno.  The destination chunk is marked as a
     loner. If possible, the cno in the destination file will be the same
@@ -4123,7 +4123,7 @@ bool CFL::FCopy(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst)
     return _FCopy(ctgSrc, cnoSrc, pcflDst, pcnoDst, fFalse);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Clone a chunk subgraph from this chunky file to pcflDst. This will
     make a copy of the the chunk and its descendents without using any
     previously existing chunks in the destination. The new cno is put in
@@ -4136,7 +4136,7 @@ bool CFL::FClone(CTG ctgSrc, CNO cnoSrc, PCFL pcflDst, CNO *pcnoDst)
     return _FCopy(ctgSrc, cnoSrc, pcflDst, pcnoDst, fTrue);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the run time id of the given chunk.
 ***************************************************************************/
 int32_t CFL::_Rti(CTG ctg, CNO cno)
@@ -4154,7 +4154,7 @@ int32_t CFL::_Rti(CTG ctg, CNO cno)
     qcrp = (CRP *)_pggcrp->QvFixedGet(icrp, &cbVar);
     return qcrp->rti;
 
-#else //! CHUNK_BIG_INDEX
+#else //! 3DMMv1.0: CHUNK_BIG_INDEX
 
     RTIE rtie;
 
@@ -4163,10 +4163,10 @@ int32_t CFL::_Rti(CTG ctg, CNO cno)
 
     return rtie.rti;
 
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the run time id of the given chunk.
 ***************************************************************************/
 bool CFL::_FSetRti(CTG ctg, CNO cno, int32_t rti)
@@ -4185,7 +4185,7 @@ bool CFL::_FSetRti(CTG ctg, CNO cno, int32_t rti)
     qcrp->rti = rti;
     return fTrue;
 
-#else //! CHUNK_BIG_INDEX
+#else //! 3DMMv1.0: CHUNK_BIG_INDEX
 
     RTIE rtie;
     int32_t irtie;
@@ -4213,11 +4213,11 @@ bool CFL::_FSetRti(CTG ctg, CNO cno, int32_t rti)
 
     return _pglrtie->FInsert(irtie, &rtie);
 
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 }
 
 #ifndef CHUNK_BIG_INDEX
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Look for an RTIE entry for the given (ctg, cno).
 ***************************************************************************/
 bool CFL::_FFindRtie(CTG ctg, CNO cno, RTIE *prtie, int32_t *pirtie)
@@ -4265,9 +4265,9 @@ bool CFL::_FFindRtie(CTG ctg, CNO cno, RTIE *prtie, int32_t *pirtie)
     TrashVar(prtie);
     return fFalse;
 }
-#endif //! CHUNK_BIG_INDEX
+#endif //! 3DMMv1.0: CHUNK_BIG_INDEX
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for chunk graph enumerator.
 ***************************************************************************/
 CGE::CGE(void)
@@ -4279,7 +4279,7 @@ CGE::CGE(void)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for chunk graph enumerator.
 ***************************************************************************/
 CGE::~CGE(void)
@@ -4289,7 +4289,7 @@ CGE::~CGE(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the cge
 ***************************************************************************/
 void CGE::AssertValid(uint32_t grf)
@@ -4305,7 +4305,7 @@ void CGE::AssertValid(uint32_t grf)
         Assert(_pgldps == pvNil, "_pgldps not nil");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the cge.
 ***************************************************************************/
 void CGE::MarkMem(void)
@@ -4314,9 +4314,9 @@ void CGE::MarkMem(void)
     CGE_PAR::MarkMem();
     MarkMemObj(_pgldps);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Start a new enumeration.
 ***************************************************************************/
 void CGE::Init(PCFL pcfl, CTG ctg, CNO cno)
@@ -4333,7 +4333,7 @@ void CGE::Init(PCFL pcfl, CTG ctg, CNO cno)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Fetch the next node in the graph enumeration.  Generally, parent nodes
     are returned twice (once with fcgePre and again with fcgePost).  Nodes
     without children are returned only once (with both fcgePre and fcgePost
@@ -4366,8 +4366,8 @@ bool CGE::FNextKid(KID *pkid, CKI *pckiPar, uint32_t *pgrfcgeOut, uint32_t grfcg
     switch (_es)
     {
     case esStart:
-        // starting the enumeration
-        // hit the node on the way down
+        // 3DMMv1.0: starting the enumeration
+        // 3DMMv1.0: hit the node on the way down
         *pgrfcgeOut |= fcgePre | fcgeRoot;
         if (_pcfl->Ckid(_dps.kid.cki.ctg, _dps.kid.cki.cno) == 0)
             goto LPost;
@@ -4381,17 +4381,17 @@ bool CGE::FNextKid(KID *pkid, CKI *pckiPar, uint32_t *pgrfcgeOut, uint32_t grfcg
         {
             goto LDone;
         }
-        // fall through
+        // 3DMMv1.0: fall through
     case esGoNoSkip:
         if (!_pcfl->FGetKid(_dps.kid.cki.ctg, _dps.kid.cki.cno, _dps.ikid++, pkid))
         {
         LPost:
-            // no more children, hit the node on the way up
+            // 3DMMv1.0: no more children, hit the node on the way up
             *pgrfcgeOut |= fcgePost;
             *pkid = _dps.kid;
             if (_pgldps == pvNil || !_pgldps->FPop(&_dps))
             {
-                // this is the root
+                // 3DMMv1.0: this is the root
                 *pgrfcgeOut |= fcgeRoot;
                 _es = esDone;
                 ReleasePpo(&_pgldps);
@@ -4405,15 +4405,15 @@ bool CGE::FNextKid(KID *pkid, CKI *pckiPar, uint32_t *pgrfcgeOut, uint32_t grfcg
             break;
         }
 
-        // hit the child
+        // 3DMMv1.0: hit the child
         if (pckiPar != pvNil)
             *pckiPar = _dps.kid.cki;
         if (_pcfl->Ckid(pkid->cki.ctg, pkid->cki.cno) > 0)
         {
-            // child has children, need to push the dps
+            // 3DMMv1.0: child has children, need to push the dps
             if (_pgldps == pvNil && (_pgldps = GL::PglNew(SIZEOF(DPS), 10)) == pvNil || !_pgldps->FPush(&_dps))
             {
-                // mem failure, pretend it has no children
+                // 3DMMv1.0: mem failure, pretend it has no children
                 *pgrfcgeOut |= fcgeError;
                 goto LNoChildren;
             }
@@ -4425,7 +4425,7 @@ bool CGE::FNextKid(KID *pkid, CKI *pckiPar, uint32_t *pgrfcgeOut, uint32_t grfcg
         else
         {
         LNoChildren:
-            // child doesn't have children, just handle it
+            // 3DMMv1.0: child doesn't have children, just handle it
             *pgrfcgeOut |= fcgePost | fcgePre;
             _es = esGoNoSkip;
         }

@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -17,15 +17,15 @@
 #ifndef CMD_H
 #define CMD_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command id, options and command struct
 ***************************************************************************/
 
-// command handler forward declaration
+// 3DMMv1.0: command handler forward declaration
 class CMH;
 typedef CMH *PCMH;
 
-// command enable-disable status flags
+// 3DMMv1.0: command enable-disable status flags
 enum
 {
     fedsNil = 0,
@@ -37,33 +37,33 @@ enum
 };
 const uint32_t kgrfedsMark = fedsUncheck | fedsCheck | fedsBullet;
 
-// command
-#define kclwCmd 4 // if this ever changes, change the CMD_TYPE macro also
+// 3DMMv1.0: command
+#define kclwCmd 4 // 3DMMv1.0: if this ever changes, change the CMD_TYPE macro also
 struct CMD
 {
     ASSERT
 
-    PCMH pcmh;             // the target of the command - may be nil
-    int32_t cid;           // the command id
-    PGG pgg;               // additional parameters for the command
-    int32_t rglw[kclwCmd]; // standard parameters
+    PCMH pcmh;             // 3DMMv1.0: the target of the command - may be nil
+    int32_t cid;           // 3DMMv1.0: the command id
+    PGG pgg;               // 3DMMv1.0: additional parameters for the command
+    int32_t rglw[kclwCmd]; // 3DMMv1.0: standard parameters
 };
 typedef CMD *PCMD;
 
-// command on file - for saving recorded macros
+// 3DMMv1.0: command on file - for saving recorded macros
 struct CMDF
 {
     int32_t cid;
     int32_t hid;
     int32_t cact;
-    CHID chidGg; // child id of the pgg, 0 if none
+    CHID chidGg; // 3DMMv1.0: child id of the pgg, 0 if none
     int32_t rglw[kclwCmd];
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Custom command types
 ***************************************************************************/
-// used to define a new CMD structure.  Needs a trailing semicolon.
+// 3DMMv1.0: used to define a new CMD structure.  Needs a trailing semicolon.
 #define CMD_TYPE(foo, a, b, c, d)                                                                                      \
     struct CMD_##foo                                                                                                   \
     {                                                                                                                  \
@@ -74,11 +74,11 @@ struct CMDF
     };                                                                                                                 \
     typedef CMD_##foo *PCMD_##foo
 
-CMD_TYPE(KEY, ch, vk, grfcust, cact);   // defines CMD_KEY and PCMD_KEY
-CMD_TYPE(BADKEY, ch, vk, grfcust, hid); // defines CMD_BADKEY and PCMD_BADKEY
-CMD_TYPE(MOUSE, xp, yp, grfcust, cact); // defines CMD_MOUSE and PCMD_MOUSE
+CMD_TYPE(KEY, ch, vk, grfcust, cact);   // 3DMMv1.0: defines CMD_KEY and PCMD_KEY
+CMD_TYPE(BADKEY, ch, vk, grfcust, hid); // 3DMMv1.0: defines CMD_BADKEY and PCMD_BADKEY
+CMD_TYPE(MOUSE, xp, yp, grfcust, cact); // 3DMMv1.0: defines CMD_MOUSE and PCMD_MOUSE
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command Map stuff.  To attach a command map to a subclass of CMH,
     put a CMD_MAP_DEC(cls) in the definition of the class.  Then in the
     .cpp file, use BEGIN_CMD_MAP, ON_CID and END_CMD_MAP to define the
@@ -93,7 +93,7 @@ enum
 };
 const uint32_t kgrfcmmAll = fcmmThis | fcmmNobody | fcmmOthers;
 
-// for including a command map in this class
+// 3DMMv1.0: for including a command map in this class
 #define CMD_MAP_DEC(cls)                                                                                               \
   private:                                                                                                             \
     static CMME _rgcmme##cls[];                                                                                        \
@@ -116,7 +116,7 @@ const uint32_t kgrfcmmAll = fcmmThis | fcmmNobody | fcmmOthers;
         return &_cmm##cls;                                                                                             \
     }
 
-// for defining the command map in a .cpp file
+// 3DMMv1.0: for defining the command map in a .cpp file
 #define BEGIN_CMD_MAP_BASE(cls)                                                                                        \
     cls::CMM cls::_cmm##cls = {pvNil, cls::_rgcmme##cls};                                                              \
     cls::CMME cls::_rgcmme##cls[] = {
@@ -142,7 +142,7 @@ const uint32_t kgrfcmmAll = fcmmThis | fcmmNobody | fcmmOthers;
     }                                                                                                                  \
     ;
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command handler class
 ***************************************************************************/
 #define CMH_PAR BASE
@@ -153,17 +153,17 @@ class CMH : public CMH_PAR
     ASSERT
 
   private:
-    static int32_t _hidLast; // for HidUnique
-    int32_t _hid;            // handler id
+    static int32_t _hidLast; // 3DMMv1.0: for HidUnique
+    int32_t _hid;            // 3DMMv1.0: handler id
 
   protected:
-    // command function
+    // 3DMMv1.0: command function
     typedef bool (CMH::*PFNCMD)(PCMD pcmd);
 
-    // command enabler function
+    // 3DMMv1.0: command enabler function
     typedef bool (CMH::*PFNEDS)(PCMD pcmd, uint32_t *pgrfeds);
 
-    // command map entry
+    // 3DMMv1.0: command map entry
     struct CMME
     {
         int32_t cid;
@@ -172,7 +172,7 @@ class CMH : public CMH_PAR
         uint32_t grfcmm;
     };
 
-    // command map
+    // 3DMMv1.0: command map
     struct CMM
     {
         CMM *pcmmBase;
@@ -188,7 +188,7 @@ class CMH : public CMH_PAR
     CMH(int32_t hid);
     ~CMH(void);
 
-    // return indicates whether the command was handled, not success
+    // 3DMMv1.0: return indicates whether the command was handled, not success
     virtual bool FDoCmd(PCMD pcmd);
     virtual bool FEnableCmd(PCMD pcmd, uint32_t *pgrfeds);
 
@@ -200,10 +200,10 @@ class CMH : public CMH_PAR
     static int32_t HidUnique(int32_t ccmh = 1);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Command execution manager (dispatcher)
 ***************************************************************************/
-// command stream recording error codes.
+// 3DMMv1.0: command stream recording error codes.
 enum
 {
     recNil,
@@ -225,7 +225,7 @@ class CEX : public CEX_PAR
     NOCOPY(CEX)
 
   protected:
-    // an entry in the command handler list
+    // 3DMMv1.0: an entry in the command handler list
     struct CMHE
     {
         PCMH pcmh;
@@ -233,7 +233,7 @@ class CEX : public CEX_PAR
         uint32_t grfcmm;
     };
 
-    // command recording/playback state
+    // 3DMMv1.0: command recording/playback state
     enum
     {
         rsNormal,
@@ -242,42 +242,42 @@ class CEX : public CEX_PAR
         rsLim
     };
 
-    // recording and playback
-    int32_t _rs;    // recording/playback state
-    int32_t _rec;   // recording/playback errors
-    PCFL _pcfl;     // the file we are recording to or playing from
-    PGL _pglcmdf;   // the command stream
-    CNO _cno;       // which macro is being played
-    int32_t _icmdf; // current command for recording or playback
-    CHID _chidLast; // last chid used for recording
-    int32_t _cact;  // number of times on this command
-    CMD _cmd;       // previous command recorded or played
+    // 3DMMv1.0: recording and playback
+    int32_t _rs;    // 3DMMv1.0: recording/playback state
+    int32_t _rec;   // 3DMMv1.0: recording/playback errors
+    PCFL _pcfl;     // 3DMMv1.0: the file we are recording to or playing from
+    PGL _pglcmdf;   // 3DMMv1.0: the command stream
+    CNO _cno;       // 3DMMv1.0: which macro is being played
+    int32_t _icmdf; // 3DMMv1.0: current command for recording or playback
+    CHID _chidLast; // 3DMMv1.0: last chid used for recording
+    int32_t _cact;  // 3DMMv1.0: number of times on this command
+    CMD _cmd;       // 3DMMv1.0: previous command recorded or played
 
-    // dispatching
-    CMD _cmdCur;        // command being dispatched
-    int32_t _icmheNext; // next command handler to dispatch to
-    PGOB _pgobTrack;    // the gob that is tracking the mouse
+    // 3DMMv1.0: dispatching
+    CMD _cmdCur;        // 3DMMv1.0: command being dispatched
+    int32_t _icmheNext; // 3DMMv1.0: next command handler to dispatch to
+    PGOB _pgobTrack;    // 3DMMv1.0: the gob that is tracking the mouse
 #ifdef KAUAI_WIN32
-    HWND _hwndCapture;    // the hwnd that we captured the mouse with
-#endif                    // KAUAI_WIN32
-    CMD _cmdLastTrack;    // Last cidTrackMouse command
-    int32_t _tsLastTrack; // Time since last cidTrackMouse command
+    HWND _hwndCapture;    // 3DMMv1.0: the hwnd that we captured the mouse with
+#endif                    // 3DMMEx: KAUAI_WIN32
+    CMD _cmdLastTrack;    // 3DMMEx: Last cidTrackMouse command
+    int32_t _tsLastTrack; // 3DMMEx: Time since last cidTrackMouse command
 
 #ifdef KAUAI_SDL
     bool _fTrackingMouse;
-#endif // KAUAI_SDL
+#endif // 3DMMEx: KAUAI_SDL
 
-    // filter list and command queue
-    PGL _pglcmhe;       // the command filter list
-    PGL _pglcmd;        // the command queue
-    bool _fDispatching; // whether we're currently in FDispatchNextCmd
+    // 3DMMv1.0: filter list and command queue
+    PGL _pglcmhe;       // 3DMMv1.0: the command filter list
+    PGL _pglcmd;        // 3DMMv1.0: the command queue
+    bool _fDispatching; // 3DMMv1.0: whether we're currently in FDispatchNextCmd
 
-    // Modal filtering
+    // 3DMMv1.0: Modal filtering
     PGOB _pgobModal;
 
 #ifdef DEBUG
-    int32_t _ccmdMax; // running max
-#endif                // DEBUG
+    int32_t _ccmdMax; // 3DMMv1.0: running max
+#endif                // 3DMMv1.0: DEBUG
 
     CEX(void);
 
@@ -290,14 +290,14 @@ class CEX : public CEX_PAR
     virtual void _CleanUpCmd(void);
     virtual bool _FEnableCmd(PCMH pcmh, PCMD pcmd, uint32_t *pgrfeds);
 
-    // command recording and playback
+    // 3DMMv1.0: command recording and playback
     bool _FReadCmd(PCMD pcmd);
 
   public:
     static PCEX PcexNew(int32_t ccmdInit, int32_t ccmhInit);
     ~CEX(void);
 
-    // recording and play back
+    // 3DMMv1.0: recording and play back
     bool FRecording(void)
     {
         return _rs == rsRecording;
@@ -313,12 +313,12 @@ class CEX : public CEX_PAR
 
     void RecordCmd(PCMD pcmd);
 
-    // managing the filter list
+    // 3DMMv1.0: managing the filter list
     virtual bool FAddCmh(PCMH pcmh, int32_t cmhl, uint32_t grfcmm = fcmmNobody);
     virtual void RemoveCmh(PCMH pcmh, int32_t cmhl);
     virtual void BuryCmh(PCMH pcmh);
 
-    // queueing and dispatching
+    // 3DMMv1.0: queueing and dispatching
     virtual void EnqueueCmd(PCMD pcmd);
     virtual void PushCmd(PCMD pcmd);
     virtual void EnqueueCid(int32_t cid, PCMH pcmh = pvNil, PGG pgg = pvNil, int32_t lw0 = 0, int32_t lw1 = 0,
@@ -330,18 +330,22 @@ class CEX : public CEX_PAR
     virtual bool FCidIn(int32_t cid);
     virtual void FlushCid(int32_t cid);
 
-    // menu marking
+    // 3DMMv1.0: menu marking
     virtual uint32_t GrfedsForCmd(PCMD pcmd);
     virtual uint32_t GrfedsForCid(int32_t cid, PCMH pcmh = pvNil, PGG pgg = pvNil, int32_t lw0 = 0, int32_t lw1 = 0,
                                   int32_t lw2 = 0, int32_t lw3 = 0);
 
-    // mouse tracking
+    // 3DMMv1.0: mouse tracking
     virtual void TrackMouse(PGOB pgob);
     virtual void EndMouseTracking(void);
     virtual PGOB PgobTracking(void);
+    PGOB PgobModal(void)
+    {
+        return _pgobModal;
+    }
 
     virtual void Suspend(bool fSuspend = fTrue);
     virtual void SetModalGob(PGOB pgob);
 };
 
-#endif //! CMD_H
+#endif //! 3DMMv1.0: CMD_H

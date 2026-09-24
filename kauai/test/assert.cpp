@@ -1,11 +1,11 @@
-/**
+/** 3DMMEx:
  * @brief Kauai assert procedures
  **/
 
 #include <gtest/gtest.h>
 #include "util.h"
 
-/**
+/** 3DMMEx:
  * @brief Kauai assertion handler that causes a Google Test failure on assert
  *
  * @param pszsFile Source file name
@@ -21,7 +21,7 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t 
     return fFalse;
 }
 
-/**
+/** 3DMMEx:
  * @brief Kauai warning log handler
  *
  * @param pszsFile Source file name
@@ -31,7 +31,7 @@ bool FAssertProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t 
 void WarnProc(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg)
 {
 #ifdef WIN32
-    // Log warnings to debugger if attached
+    // 3DMMEx: Log warnings to debugger if attached
     OutputDebugStringA(pszsMsg);
-#endif // WIN32
+#endif // 3DMMEx: WIN32
 }

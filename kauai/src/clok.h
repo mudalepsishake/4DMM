@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -34,7 +34,7 @@ class CLOK : public CLOK_PAR
     CMD_MAP_DEC(CLOK)
 
   protected:
-    // alarm descriptor
+    // 3DMMv1.0: alarm descriptor
     struct ALAD
     {
         PCMH pcmh;
@@ -47,11 +47,11 @@ class CLOK : public CLOK_PAR
     PCLOK _pclokNext;
     uint32_t _tsBase;
     uint32_t _timBase;
-    uint32_t _timCur;    // current time
-    uint32_t _dtimAlarm; // processing alarms up to _timCur + _dtimAlarm
-    uint32_t _timNext;   // next alarm time to process (for speed)
+    uint32_t _timCur;    // 3DMMv1.0: current time
+    uint32_t _dtimAlarm; // 3DMMv1.0: processing alarms up to _timCur + _dtimAlarm
+    uint32_t _timNext;   // 3DMMv1.0: next alarm time to process (for speed)
     uint32_t _grfclok;
-    PGL _pglalad; // the registered alarms
+    PGL _pglalad; // 3DMMv1.0: the registered alarms
 
   public:
     CLOK(int32_t hid, uint32_t grfclok = fclokNil);
@@ -70,12 +70,12 @@ class CLOK : public CLOK_PAR
 
     bool FSetAlarm(int32_t dtim, PCMH pcmhNotify = pvNil, int32_t lwUser = 0, bool fAdjustForDelay = fFalse);
 
-    // idle handling
+    // 3DMMv1.0: idle handling
     virtual bool FCmdAll(PCMD pcmd);
 
 #ifdef DEBUG
     static void MarkAllCloks(void);
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 };
 
-#endif //! CLOK_H
+#endif //! 3DMMv1.0: CLOK_H

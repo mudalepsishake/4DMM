@@ -1,4 +1,4 @@
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: Ben Stone
     Project: Kauai
     Reviewed:
@@ -16,20 +16,20 @@ ASSERTNAME
 
 WIG vwig;
 
-// Number of milliseconds to wait for events before doing idle processing
+// 3DMMEx: Number of milliseconds to wait for events before doing idle processing
 const uint32_t kdtsIdleTimer = 1;
 
-// Number of milliseconds for a double click
-// FUTURE: Get this from the system
+// 3DMMEx: Number of milliseconds for a double click
+// 3DMMEx: FUTURE: Get this from the system
 const uint32_t kdtsDoubleClick = 500;
 
 static SDL_Cursor *vpsdlcursWait = pvNil;
 static SDL_Cursor *vpsdlcursArrow = pvNil;
 
-// SDL Event number used for sending Kauai commands from other threads
+// 3DMMEx: SDL Event number used for sending Kauai commands from other threads
 static uint32_t _sdlevttypeEnqueueCmd = 0;
 
-// SDL_Event extension to support sending a Kauai command
+// 3DMMEx: SDL_Event extension to support sending a Kauai command
 typedef struct SDL_Event_KauaiCmd_t
 {
     SDL_CommonEvent common;
@@ -37,12 +37,12 @@ typedef struct SDL_Event_KauaiCmd_t
 } SDL_Event_KauaiCmd;
 static_assert(SIZEOF(SDL_Event_KauaiCmd) < SIZEOF(SDL_Event), "Event extension does not fit in SDL_Event");
 
-/*
+/* 3DMMEx:
  * Create debug console window and wire up std streams
  */
 void APPB::CreateConsole()
 {
-    // This is only needed on Windows
+    // 3DMMEx: This is only needed on Windows
 #ifdef WIN32
     if (!AllocConsole())
     {
@@ -53,24 +53,24 @@ void APPB::CreateConsole()
     freopen_s(&fDummy, "CONOUT$", "w", stdout);
     freopen_s(&fDummy, "CONOUT$", "w", stderr);
     freopen_s(&fDummy, "CONIN$", "r", stdin);
-#endif // WIN32
+#endif // 3DMMEx: WIN32
     std::cout.clear();
     std::clog.clear();
     std::cerr.clear();
     std::cin.clear();
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Shutdown immediately.
 ***************************************************************************/
 void APPB::Abort(void)
 {
-    // Cleanup SDL
+    // 3DMMEx: Cleanup SDL
     SDL_Quit();
     exit(1);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Do OS specific initialization.
 ***************************************************************************/
 bool APPB::_FInitOS(void)
@@ -80,10 +80,10 @@ bool APPB::_FInitOS(void)
     PCSZ pszAppWndCls = PszLit("APP");
     int ret = 0, sdlerr = 0;
 
-    // get the app name
+    // 3DMMEx: get the app name
     GetStnAppName(&stnApp);
 
-    // Initialize SDL
+    // 3DMMEx: Initialize SDL
     ret = SDL_Init(SDL_INIT_EVERYTHING);
     Assert(ret >= 0, "SDLInit failed");
     if (ret < 0)
@@ -92,7 +92,7 @@ bool APPB::_FInitOS(void)
         return fFalse;
     }
 
-    // Register a custom SDL event to allow other threads to send commands
+    // 3DMMEx: Register a custom SDL event to allow other threads to send commands
     _sdlevttypeEnqueueCmd = SDL_RegisterEvents(1);
     if (_sdlevttypeEnqueueCmd == ((uint32_t)-1))
     {
@@ -113,13 +113,13 @@ bool APPB::_FInitOS(void)
 
     vwig.hwndApp = wnd;
 
-    // FUTURE: Turn this off when Win32 stuff is removed
+    // 3DMMEx: FUTURE: Turn this off when Win32 stuff is removed
     SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Initialize the sound manager.  Default is to return true whether or not
     we could create the sound manager.
 ***************************************************************************/
@@ -131,18 +131,18 @@ bool APPB::_FInitSound(int32_t wav)
     if (pvNil != vpsndm)
         return fTrue;
 
-    // create the Sound manager
+    // 3DMMEx: create the Sound manager
     if (pvNil == (vpsndm = SNDM::PsndmNew()))
         return fTrue;
 
-    // Add Miniaudio sound device
+    // 3DMMEx: Add Miniaudio sound device
     if (pvNil != (psndv = MiniaudioDevice::PmadevNew()))
     {
         vpsndm->FAddDevice(kctgWave, psndv);
         ReleasePpo(&psndv);
     }
 
-    // create the midi playback device - use the stream one
+    // 3DMMEx: create the midi playback device - use the stream one
     if (pvNil != (psndv = MDPS::PmdpsNew()))
     {
         vpsndm->FAddDevice(kctgMidi, psndv);
@@ -152,7 +152,7 @@ bool APPB::_FInitSound(int32_t wav)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the next event from the OS event queue. Return true iff it's a
     real event (not just an idle type event).
 ***************************************************************************/
@@ -164,14 +164,14 @@ bool APPB::_FGetNextEvt(PEVT pevt)
     bool fHasEvt = fFalse;
     if (SDL_WaitEventTimeout(pevt, kdtsIdleTimer))
     {
-        // If this is a mouse move event, process it and return fFalse so idle processing is performed.
+        // 3DMMEx: If this is a mouse move event, process it and return fFalse so idle processing is performed.
         if (pevt->type == SDL_MOUSEMOTION)
         {
             _DispatchEvt(pevt);
         }
         else
         {
-            // We have an event to process
+            // 3DMMEx: We have an event to process
             fHasEvt = fTrue;
         }
     }
@@ -179,7 +179,7 @@ bool APPB::_FGetNextEvt(PEVT pevt)
     return fHasEvt;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     The given GOB is tracking the mouse. See if there are any relevant
     mouse events in the system event queue. Fill in *ppt with the location
     of the mouse relative to pgob. Also ensure that GrfcustCur() will
@@ -197,12 +197,12 @@ void APPB::TrackMouse(PGOB pgob, PT *ppt)
 
     SDL_Event evt;
 
-    // Check if there are any mouse move events. Other events will be enqueued for processing later.
+    // 3DMMEx: Check if there are any mouse move events. Other events will be enqueued for processing later.
     SDL_PumpEvents();
     ret = SDL_PeepEvents(&evt, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEMOTION);
     if (ret == 1)
     {
-        // Found a mouse move event
+        // 3DMMEx: Found a mouse move event
         xp = evt.motion.x;
         yp = evt.motion.y;
         if ((evt.motion.state & SDL_BUTTON_LMASK) != 0)
@@ -212,7 +212,7 @@ void APPB::TrackMouse(PGOB pgob, PT *ppt)
     }
     else if (ret == 0)
     {
-        // No mouse move events: just get the current position instead
+        // 3DMMEx: No mouse move events: just get the current position instead
         int state = SDL_GetMouseState(&xp, &yp);
         SDL_Renderer *rdr = SDL_GetRenderer((SDL_Window *)vwig.hwndApp);
         float flx, fly;
@@ -226,7 +226,7 @@ void APPB::TrackMouse(PGOB pgob, PT *ppt)
     }
     else
     {
-        // SDL_PeepEvents Failed
+        // 3DMMEx: SDL_PeepEvents Failed
         Assert(ret >= 0, "SDL_PeepEvents shouldn't return an error");
         xp = 0;
         yp = 0;
@@ -239,7 +239,7 @@ void APPB::TrackMouse(PGOB pgob, PT *ppt)
     _grfcust = grfcust;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Dispatch an OS level event to someone that knows what to do with it.
 ***************************************************************************/
 void APPB::_DispatchEvt(PEVT pevt)
@@ -264,7 +264,7 @@ void APPB::_DispatchEvt(PEVT pevt)
         {
             Assert(pevt->text.type == SDL_TEXTINPUT, "incorrect message type");
 
-            // Convert text input from UTF-8
+            // 3DMMEx: Convert text input from UTF-8
             static_assert((SDL_TEXTINPUTEVENT_TEXT_SIZE + 1) < kcchTotUtf8Sz,
                           "UTF8 string type not big enough for SDL text input");
             U8SZ u8szInput;
@@ -274,7 +274,7 @@ void APPB::_DispatchEvt(PEVT pevt)
             STN stnInput;
             stnInput.SetUtf8Sz(u8szInput);
 
-            // Create cidKey events for each character
+            // 3DMMEx: Create cidKey events for each character
             for (int32_t ich = 0; ich < stnInput.Cch(); ich++)
             {
                 achar ch = stnInput.Psz()[ich];
@@ -308,9 +308,9 @@ void APPB::_DispatchEvt(PEVT pevt)
             if (!FIn(lwT, wcidMinApp, wcidLimApp))
                 break;
 
-            // FUTURE: menu bar support
-            // if (pvNil != vpmubCur)
-            //     vpmubCur->EnqueueWcid(lwT);
+            // 3DMMEx: FUTURE: menu bar support
+            // 3DMMEx: if (pvNil != vpmubCur)
+            // 3DMMEx:     vpmubCur->EnqueueWcid(lwT);
             else if (pvNil != vpcex)
                 vpcex->EnqueueCid(lwT);
         }
@@ -319,22 +319,22 @@ void APPB::_DispatchEvt(PEVT pevt)
     case SDL_MOUSEBUTTONDOWN:
         ResetToolTip();
 
-        // Ignore other mouse buttons for now
+        // 3DMMEx: Ignore other mouse buttons for now
         if (pevt->button.button != SDL_BUTTON_LEFT)
             break;
 
         xp = pevt->button.x;
         yp = pevt->button.y;
 
-        // GrfcustCur() may not always have fcustMouse set when the message is processed.
+        // 3DMMEx: GrfcustCur() may not always have fcustMouse set when the message is processed.
         grfcust = GrfcustCur();
         grfcust |= fcustMouse;
 
         pgob = vpcex->PgobTracking();
         if (pgob != pvNil)
         {
-            // A GOB is tracking the mouse.
-            // Send a cidTrackMouse message instead of a cidMouseDown message.
+            // 3DMMEx: A GOB is tracking the mouse.
+            // 3DMMEx: Send a cidTrackMouse message instead of a cidMouseDown message.
 
             CMD_MOUSE cmd;
             cmd.pcmh = pgob;
@@ -349,17 +349,17 @@ void APPB::_DispatchEvt(PEVT pevt)
         }
         else
         {
-            // Find GOB at this point
-            // note: we only support one window in SDL
+            // 3DMMEx: Find GOB at this point
+            // 3DMMEx: note: we only support one window in SDL
             pgob = GOB::PgobScreen()->PgobFromPt(xp, yp, &pt);
 
             if (pvNil != pgob)
             {
                 int32_t ts;
 
-                // compute the multiplicity of the click - don't use Windows'
-                // guess, since it can be wrong for our GOBs. It's even wrong
-                // at the HWND level! (Try double-clicking the maximize button).
+                // 3DMMEx: compute the multiplicity of the click - don't use Windows'
+                // 3DMMEx: guess, since it can be wrong for our GOBs. It's even wrong
+                // 3DMMEx: at the HWND level! (Try double-clicking the maximize button).
                 ts = pevt->common.timestamp;
                 if (_pgobMouse == pgob && FIn(ts - _tsMouse, 0, kdtsDoubleClick))
                 {
@@ -400,12 +400,12 @@ void APPB::_DispatchEvt(PEVT pevt)
             vpcex->EnqueueCmd(&pevtKauaiCmd->cmd);
         }
 
-        // ignore event
+        // 3DMMEx: ignore event
         break;
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Translate an OS level key down event to a CMD. This returns false if
     the key maps to a menu item.
 ***************************************************************************/
@@ -440,7 +440,7 @@ bool APPB::_FTranslateKeyEvt(PEVT pevt, PCMD_KEY pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Look at the next system event and if it's a key, fill in the *pcmd with
     the relevant info.
 ***************************************************************************/
@@ -449,11 +449,11 @@ bool APPB::FGetNextKeyFromOsQueue(PCMD_KEY pcmd)
     AssertThis(0);
     AssertVarMem(pcmd);
 
-    // FUTURE: implement if needed
+    // 3DMMEx: FUTURE: implement if needed
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Flush user generated events from the system event queue.
 ***************************************************************************/
 void APPB::FlushUserEvents(uint32_t grfevt)
@@ -466,24 +466,24 @@ void APPB::FlushUserEvents(uint32_t grfevt)
 
     if (grfevt & fevtMouse)
     {
-        // Flush mouse events
+        // 3DMMEx: Flush mouse events
         while ((ret = SDL_PeepEvents(&sdlevt, 1, SDL_GETEVENT, SDL_MOUSEMOTION, SDL_MOUSEWHEEL)) > 0)
         {
-            // do nothing
+            // 3DMMEx: do nothing
         }
     }
     if (grfevt & fevtKey)
     {
-        // Flush keyboard events
+        // 3DMMEx: Flush keyboard events
         while ((ret = SDL_PeepEvents(&sdlevt, 1, SDL_GETEVENT, SDL_KEYDOWN, SDL_TEXTEDITING_EXT)) > 0)
         {
-            // do nothing
+            // 3DMMEx: do nothing
         }
     }
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Debug initialization.
 ***************************************************************************/
 bool APPB::_FInitDebug(void)
@@ -494,7 +494,7 @@ bool APPB::_FInitDebug(void)
 
 MUTX _mutxAssert;
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     The assert proc. Returning true breaks into the debugger.
 ***************************************************************************/
 bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv, int32_t cb)
@@ -518,7 +518,7 @@ bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv,
 
     _fInAssert = fTrue;
 
-    // build the main assert message with file name and line number
+    // 3DMMEx: build the main assert message with file name and line number
     if (pszsMsg == pvNil || *pszsMsg == 0)
         psz = PszLit("Assert (%s line %d)");
     else
@@ -533,7 +533,7 @@ bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv,
     stn0.FFormatSz(psz, &stn1, lwLine, &stn2);
 
 #if defined(WIN) && defined(IN_80386)
-    // call stack - follow the EBP chain....
+    // 3DMMEx: call stack - follow the EBP chain....
     __asm { mov plw,ebp }
     for (ilw = 0; ilw < kclwChain; ilw++)
     {
@@ -550,11 +550,11 @@ bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv,
     }
 #else
     ClearPb(rglw, SIZEOF(rglw));
-#endif // WIN && IN_80386
+#endif // 3DMMEx: WIN && IN_80386
 
     for (cact = 0; cact < 2; cact++)
     {
-        // format data
+        // 3DMMEx: format data
         if (pv != pvNil && cb > 0)
         {
             uint8_t *pb = (uint8_t *)pv;
@@ -617,7 +617,7 @@ bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv,
         OutputDebugString(stn2.Psz());
         OutputDebugString(PszLit("\n"));
     }
-#else  // !WIN
+#else  // 3DMMEx: !WIN
     U8SZ u8szT;
     stn0.GetUtf8Sz(u8szT);
     fprintf(stderr, "%s\n", u8szT);
@@ -631,7 +631,7 @@ bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv,
         stn2.GetUtf8Sz(u8szT);
         fprintf(stderr, "%s\n", u8szT);
     }
-#endif // WIN
+#endif // 3DMMEx: WIN
 
     stn0.FAppendSz(PszLit("\n"));
     stn0.FAppendStn(&stn1);
@@ -666,25 +666,25 @@ bool APPB::FAssertProcApp(PSZS pszsFile, int32_t lwLine, PSZS pszsMsg, void *pv,
     switch (tmc)
     {
     case 0:
-        // ignore
+        // 3DMMEx: ignore
         return fFalse;
 
     case 1:
-        // break into debugger
+        // 3DMMEx: break into debugger
         return fTrue;
 
     case 2:
-        // abort
-        Abort(); // shouldn't return
+        // 3DMMEx: abort
+        Abort(); // 3DMMEx: shouldn't return
         Debugger();
         break;
     }
 
     return fFalse;
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Put an alert up. Return which button was hit. Returns tYes for yes
     or ok; tNo for no; tMaybe for cancel.
 ***************************************************************************/
@@ -697,7 +697,7 @@ tribool APPB::TGiveAlertSz(const PCSZ psz, int32_t bk, int32_t cok)
     SDL_MessageBoxButtonData rgbutton[3];
     ClearPb(rgbutton, SIZEOF(rgbutton));
 
-    // OK/Yes button
+    // 3DMMEx: OK/Yes button
     if (bk == bkYesNo || bk == bkYesNoCancel)
     {
         rgbutton[ibutton].text = "Yes";
@@ -710,7 +710,7 @@ tribool APPB::TGiveAlertSz(const PCSZ psz, int32_t bk, int32_t cok)
     rgbutton[ibutton].buttonid = tYes;
     ibutton++;
 
-    // No button
+    // 3DMMEx: No button
     if (bk == bkYesNo || bk == bkYesNoCancel)
     {
         rgbutton[ibutton].text = "No";
@@ -718,7 +718,7 @@ tribool APPB::TGiveAlertSz(const PCSZ psz, int32_t bk, int32_t cok)
         ibutton++;
     }
 
-    // Cancel button
+    // 3DMMEx: Cancel button
     if (bk == bkOkCancel || bk == bkYesNoCancel)
     {
         rgbutton[ibutton].text = "Cancel";
@@ -743,7 +743,7 @@ tribool APPB::TGiveAlertSz(const PCSZ psz, int32_t bk, int32_t cok)
         break;
     }
 
-    // Convert message to UTF-8
+    // 3DMMEx: Convert message to UTF-8
     U8SZ u8szMessage;
     STN stnMessage;
     stnMessage.SetSz(psz);
@@ -768,7 +768,7 @@ tribool APPB::TGiveAlertSz(const PCSZ psz, int32_t bk, int32_t cok)
     return (tribool)buttonid;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Get the current cursor/modifier state.  If fAsync is set, the key state
     returned is the actual current values at the hardware level, ie, not
     synchronized with the command stream.
@@ -804,7 +804,7 @@ uint32_t APPB::GrfcustCur(bool fAsync)
     return _grfcust;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Hide the cursor
 ***************************************************************************/
 void APPB::HideCurs(void)
@@ -814,7 +814,7 @@ void APPB::HideCurs(void)
     SDL_ShowCursor(SDL_DISABLE);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Show the cursor
 ***************************************************************************/
 void APPB::ShowCurs(void)
@@ -824,7 +824,7 @@ void APPB::ShowCurs(void)
     SDL_ShowCursor(SDL_ENABLE);
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Warp the cursor to (xpScreen, ypScreen)
 ***************************************************************************/
 void APPB::PositionCurs(int32_t xpScreen, int32_t ypScreen)
@@ -834,9 +834,9 @@ void APPB::PositionCurs(int32_t xpScreen, int32_t ypScreen)
     int xp, yp;
     PT pt;
 
-    // Convert coordinates back from screen (global) coordinates to local (window)
-    // coordinates and use SDL_WarpMouseInWindow() instead of SDL_WarpMouseGlobal()
-    // so we can apply the logical to window coordinate transformation.
+    // 3DMMEx: Convert coordinates back from screen (global) coordinates to local (window)
+    // 3DMMEx: coordinates and use SDL_WarpMouseInWindow() instead of SDL_WarpMouseGlobal()
+    // 3DMMEx: so we can apply the logical to window coordinate transformation.
     pt.xp = xpScreen;
     pt.yp = ypScreen;
     GOB::PgobScreen()->MapPt(&pt, cooGlobal, cooLocal);
@@ -846,11 +846,11 @@ void APPB::PositionCurs(int32_t xpScreen, int32_t ypScreen)
 
     if (_fFlushCursor)
     {
-        // Flush all mouse events
+        // 3DMMEx: Flush all mouse events
         SDL_FlushEvents(SDL_MOUSEMOTION, SDL_MOUSEWHEEL);
     }
 }
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Make sure the current cursor is being used by the system.
 ***************************************************************************/
 void APPB::RefreshCurs(void)
@@ -888,7 +888,7 @@ void APPB::RefreshCurs(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Return fTrue if the main app window is maximized.
 ***************************************************************************/
 bool APPB::FIsMaximized()
@@ -896,7 +896,7 @@ bool APPB::FIsMaximized()
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Maximize the window if fMaximized is true.
 ***************************************************************************/
 bool APPB::FSetMaximized(bool fMaximized)
@@ -914,44 +914,44 @@ bool APPB::FSetMaximized(bool fMaximized)
     }
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Translate a key code from the current platform to a Win32 virtual key
 ***************************************************************************/
 int32_t APPB::Win32VkFromVk(int32_t vk)
 {
-    // Only translate key codes that are used in scripts
+    // 3DMMEx: Only translate key codes that are used in scripts
     switch (vk)
     {
     case SDL_KeyCode::SDLK_ESCAPE:
-        vk = 0x1b; // VK_ESCAPE
+        vk = 0x1b; // 3DMMEx: VK_ESCAPE
         break;
     case SDL_KeyCode::SDLK_BACKSPACE:
-        vk = 8; // VK_BACK
+        vk = 8; // 3DMMEx: VK_BACK
         break;
     case SDL_KeyCode::SDLK_LEFT:
-        vk = 0x25; // VK_LEFT
+        vk = 0x25; // 3DMMEx: VK_LEFT
         break;
     case SDL_KeyCode::SDLK_UP:
-        vk = 0x26; // VK_UP
+        vk = 0x26; // 3DMMEx: VK_UP
         break;
     case SDL_KeyCode::SDLK_RIGHT:
-        vk = 0x27; // VK_RIGHT
+        vk = 0x27; // 3DMMEx: VK_RIGHT
         break;
     case SDL_KeyCode::SDLK_DOWN:
-        vk = 0x28; // VK_DOWN
+        vk = 0x28; // 3DMMEx: VK_DOWN
         break;
     case SDL_KeyCode::SDLK_DELETE:
-        vk = 0x2e; // VK_DELETE
+        vk = 0x2e; // 3DMMEx: VK_DELETE
         break;
     default:
-        // Not translated
+        // 3DMMEx: Not translated
         break;
     }
 
     return vk;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Enqueue a Kauai command using the SDL Event queue.
 ***************************************************************************/
 void SDLEnqueueCmd(PCMD pcmd)
@@ -968,7 +968,7 @@ void SDLEnqueueCmd(PCMD pcmd)
     AssertDo(SDL_PushEvent(&evt) > 0, SDL_GetError());
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the application window's icon
 ***************************************************************************/
 bool APPB::FSetWindowIcon(const uint8_t *prgb, int32_t cb)

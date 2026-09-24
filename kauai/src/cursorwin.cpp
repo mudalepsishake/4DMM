@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -15,7 +15,7 @@ ASSERTNAME
 
 RTCLASS(CURS)
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Destructor for the cursor class.
 ***************************************************************************/
 CURS::~CURS(void)
@@ -23,10 +23,10 @@ CURS::~CURS(void)
 #ifdef WIN
     if (hNil != _hcrs)
         DestroyCursor(_hcrs);
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Read a cursor out of a CRF.
 ***************************************************************************/
 bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb)
@@ -53,11 +53,11 @@ bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
 
 #ifdef MAC
     dxp = dyp = 16;
-#endif // MAC
+#endif // 3DMMEx: MAC
 #ifdef WIN
     dxp = GetSystemMetrics(SM_CXCURSOR);
     dyp = GetSystemMetrics(SM_CYCURSOR);
-#endif // WIN
+#endif // 3DMMEx: WIN
 
     icurfBest = 0;
     dzpBest = klwMax;
@@ -107,7 +107,7 @@ bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
     pcurs->_hcrs = CreateCursor(vwig.hinst, curf.xp, curf.yp, dxp, dyp, prgb, prgb + LwMul(dxp, cbRowDst));
     if (hNil == pcurs->_hcrs)
         ReleasePpo(&pcurs);
-#endif // WIN
+#endif // 3DMMEx: WIN
 #ifdef MAC
     Assert(dxp == 16, 0);
     int32_t *plwAnd, *plwXor;
@@ -122,7 +122,7 @@ bool CURS::FReadCurs(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, in
         ((int32_t *)pcurs->_crs.mask)[ilw] = ~*plwAnd;
         ((int32_t *)pcurs->_crs.data)[ilw] = ~*plwAnd++ ^ *plwXor++;
     }
-#endif // MAC
+#endif // 3DMMEx: MAC
 
 LFail:
     FreePpv((void **)&prgb);
@@ -132,15 +132,15 @@ LFail:
     return pvNil != pcurs;
 }
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Set the cursor.
 ***************************************************************************/
 void CURS::Set(void)
 {
 #ifdef WIN
     SetCursor(_hcrs);
-#endif // WIN
+#endif // 3DMMEx: WIN
 #ifdef MAC
     SetCursor(&_crs);
-#endif // MAC
+#endif // 3DMMEx: MAC
 }

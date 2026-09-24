@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,21 +16,21 @@
 #ifndef FRAME_H
 #define FRAME_H
 
-#include "frameres.h" //frame resource id's
+#include "frameres.h" // 3DMMv1.0: frame resource id's
 #include "util.h"
 #include "keys.h"
 
-class GPT;  // graphics port
-class GNV;  // graphics environment
-class CMH;  // command handler
-class GOB;  // graphic object
-class MUB;  // menu bar
-class DOCB; // base document
-class DMD;  // document mdi window
-class DMW;  // main document window
-class DSG;  // document scroll gob
-class DDG;  // document display gob
-class SNDM; // sound manager
+class GPT;  // 3DMMv1.0: graphics port
+class GNV;  // 3DMMv1.0: graphics environment
+class CMH;  // 3DMMv1.0: command handler
+class GOB;  // 3DMMv1.0: graphic object
+class MUB;  // 3DMMv1.0: menu bar
+class DOCB; // 3DMMv1.0: base document
+class DMD;  // 3DMMv1.0: document mdi window
+class DMW;  // 3DMMv1.0: main document window
+class DSG;  // 3DMMv1.0: document scroll gob
+class DDG;  // 3DMMv1.0: document display gob
+class SNDM; // 3DMMv1.0: sound manager
 
 typedef class GPT *PGPT;
 typedef class GNV *PGNV;
@@ -58,7 +58,7 @@ typedef class SNDM *PSNDM;
 #include "sndm.h"
 #include "video.h"
 
-// these are optional
+// 3DMMv1.0: these are optional
 #include "dlg.h"
 #include "clip.h"
 #include "docb.h"
@@ -73,4 +73,4 @@ typedef class SNDM *PSNDM;
 #include "mididev2.h"
 #include "accelerator.h"
 
-#endif //! FRAME_H
+#endif //! 3DMMv1.0: FRAME_H

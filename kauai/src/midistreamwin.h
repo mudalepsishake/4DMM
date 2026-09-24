@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -23,15 +23,15 @@ class WMSB : public WMSB_PAR
     RTCLASS_DEC
 
   protected:
-    HMS _hms;          // the midi stream handle
-    PFNMIDI _pfnCall;  // call back function
-    uintptr_t _luUser; // user data to send back
+    HMS _hms;          // 3DMMEx: the midi stream handle
+    PFNMIDI _pfnCall;  // 3DMMEx: call back function
+    uintptr_t _luUser; // 3DMMEx: user data to send back
 
-    // system volume level - to be saved and restored. The volume we set
-    // is always relative to this
-    tribool _tBogusDriver; // to indicate whether midiOutGetVolume really works
+    // 3DMMEx: system volume level - to be saved and restored. The volume we set
+    // 3DMMEx: is always relative to this
+    tribool _tBogusDriver; // 3DMMEx: to indicate whether midiOutGetVolume really works
     DWORD _luVolSys;
-    int32_t _vlmBase; // our current volume relative to _luVolSys.
+    int32_t _vlmBase; // 3DMMEx: our current volume relative to _luVolSys.
 
     WMSB(PFNMIDI pfn, uintptr_t luUser);
 
@@ -54,4 +54,4 @@ class WMSB : public WMSB_PAR
     virtual void StopPlaying(void) = 0;
 };
 
-#endif //! MIDISTREAMWIN_H
+#endif //! 3DMMEx: MIDISTREAMWIN_H

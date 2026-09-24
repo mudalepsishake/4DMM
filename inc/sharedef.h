@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
  *
  *  SHAREDEF.H
  *
@@ -25,31 +25,31 @@
 #ifndef SHAREDEF_H
 #define SHAREDEF_H
 
-/*****************************************************************************
+/** 3DMMv1.0: ***************************************************************************
  *                                                                            *
  *                              Constants                                     *
  *                                                                            *
  *****************************************************************************/
 
-// -----------------------------------------------------
-// Shared constants.
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Shared constants.
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kmaxVolume 0x00010000
 
-// Script to run in shared.chk to initialize utils.
+// 3DMMv1.0: Script to run in shared.chk to initialize utils.
 #define kcnoInitShared 0x00050001
 
-// -----------------------------------------------------
-// Cursor Definitions
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Cursor Definitions
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kcrsHand 0x00000001
-#define kcrsHand1 0x00000001 // Different names in Studio, Building
+#define kcrsHand1 0x00000001 // 3DMMv1.0: Different names in Studio, Building
 #define kcrsArrow 0x00000002
-#define kcrsArrow1 0x00000002 // Different names in Studio, Building
+#define kcrsArrow1 0x00000002 // 3DMMv1.0: Different names in Studio, Building
 #define kcrsWand1 0x00000003
-#define kcrsActionBrowser 0x00000003 // Different names in Studio, Building
+#define kcrsActionBrowser 0x00000003 // 3DMMv1.0: Different names in Studio, Building
 #define kcrsStar 0x00000004
 #define kcrsLeft 0x00000005
 #define kcrsRight 0x00000006
@@ -57,25 +57,25 @@
 #define kcrsUp 0x00000008
 #define kcrsTurn1 0x00000009
 
-// -----------------------------------------------------
-// Shared Object Definitions
-// -----------------------------------------------------
+// 3DMMv1.0: -----------------------------------------------------
+// 3DMMv1.0: Shared Object Definitions
+// 3DMMv1.0: -----------------------------------------------------
 
 #define kgobMapMain 0x00012000
 
 #define kwavDing                                                                                                       \
-    0x00010004 // Wave file used when adjusting
-               // master volume.
+    0x00010004 // 3DMMv1.0: Wave file used when adjusting
+               // 3DMMv1.0: master volume.
 #define kwavPortOpenMovie 0x00010005
 #define kwavPortSaveMovie 0x00010006
 #define kwavPortOpenSound 0x00010007
 #define kwavMapObject 0x00010008
 #define kwavMapOpen 0x00010009
 
-// For error help
+// 3DMMv1.0: For error help
 #define kgobBalloonError 0x00016050
 #define ktpcErrorScript 0x00016051
 #define kgobErrorMessageGlass 0x00016052
 #define kcnoErrorMessage 0x00016053
 
-#endif // !SHAREDEF_H
+#endif // 3DMMv1.0: !SHAREDEF_H

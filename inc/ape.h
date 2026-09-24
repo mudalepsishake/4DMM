@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     ape.h: Actor preview entity
 
@@ -14,33 +14,33 @@
 #ifndef APE_H
 #define APE_H
 
-// APE tool types
+// 3DMMv1.0: APE tool types
 enum
 {
     aptNil = 0,
-    aptIncCmtl,      // Increment CMTL
-    aptIncAccessory, // Increment Accessory
-    aptGms,          // Material (MTRL or CMTL)
+    aptIncCmtl,      // 3DMMv1.0: Increment CMTL
+    aptIncAccessory, // 3DMMv1.0: Increment Accessory
+    aptGms,          // 3DMMv1.0: Material (MTRL or CMTL)
     aptLim
 };
 
-// Generic material spec
+// 3DMMv1.0: Generic material spec
 struct GMS
 {
-    bool fValid; // if fFalse, ignore this GMS
-    bool fMtrl;  // if fMtrl is fTrue, tagMtrl is valid.  Else cmid is valid
+    bool fValid; // 3DMMv1.0: if fFalse, ignore this GMS
+    bool fMtrl;  // 3DMMv1.0: if fMtrl is fTrue, tagMtrl is valid.  Else cmid is valid
     int32_t cmid;
     TAG tagMtrl;
 };
 
-// Actor preview entity tool
+// 3DMMv1.0: Actor preview entity tool
 struct APET
 {
     int32_t apt;
     GMS gms;
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     Actor preview entity class
 ****************************************/
 typedef class APE *PAPE;
@@ -54,20 +54,21 @@ class APE : public APE_PAR
     CMD_MAP_DEC(APE)
 
   protected:
-    PBWLD _pbwld;          // BRender world to draw actor in
-    PTMPL _ptmpl;          // Template (or TDT) of the actor being previewed
-    PBODY _pbody;          // Body of the actor being previewed
-    APET _apet;            // Currently selected tool
-    PGL _pglgms;           // What materials are attached to what body part sets
-    int32_t _celn;         // Current cel of action
-    CLOK _clok;            // To time cel cycling
-    BLIT _blit;            // BRender light data
-    BACT _bact;            // BRender light actor
-    int32_t _anid;         // Current action ID
-    int32_t _iview;        // Current camera view
-    bool _fCycleCels;      // If cycling cels
-    PRCA _prca;            // resource source (for cursors)
-    int32_t _ibsetOnlyAcc; // ibset of accessory, if only one (else ivNil)
+    PBWLD _pbwld;          // 3DMMv1.0: BRender world to draw actor in
+    PTMPL _ptmpl;          // 3DMMv1.0: Template (or TDT) of the actor being previewed
+    PBODY _pbody;          // 3DMMv1.0: Body of the actor being previewed
+    APET _apet;            // 3DMMv1.0: Currently selected tool
+    PGL _pglgms;           // 3DMMv1.0: What materials are attached to what body part sets
+    int32_t _celn;         // 3DMMv1.0: Current cel of action
+    CLOK _clok;            // 3DMMv1.0: To time cel cycling
+    BLIT _blit;            // 3DMMv1.0: BRender light data
+    BACT _bact;            // 3DMMv1.0: BRender light actor
+    int32_t _anid;         // 3DMMv1.0: Current action ID
+    int32_t _iview;        // 3DMMv1.0: Current camera view
+    bool _fCycleCels;      // 3DMMv1.0: If cycling cels
+    bool _fModernFirstDrawRefresh; // rerender after final easel layout in Modern mode
+    PRCA _prca;            // 3DMMv1.0: resource source (for cursors)
+    int32_t _ibsetOnlyAcc; // 3DMMv1.0: ibset of accessory, if only one (else ivNil)
 
   protected:
     APE(PGCB pgcb) : GOB(pgcb), _clok(CMH::HidUnique())
@@ -101,6 +102,7 @@ class APE : public APE_PAR
 
     bool FChangeTdt(PSTN pstn, int32_t tdts, PTAG ptagTdf);
     bool FSetTdtMtrl(PTAG ptagMtrl);
+    bool FApplyMtrlToBset(int32_t ibset, PTAG ptagMtrl);
     bool FGetTdtMtrlCno(CNO *pcno);
 
     void GetTdtInfo(PSTN pstn, int32_t *ptdts, PTAG ptagTdf);
@@ -123,8 +125,8 @@ class APE : public APE_PAR
         return _pbody->Cbset();
     }
 
-    // Returns fTrue if a material was applied to this ibset
+    // 3DMMv1.0: Returns fTrue if a material was applied to this ibset
     bool FGetMaterial(int32_t ibset, tribool *pfMtrl, int32_t *pcmid, TAG *ptagMtrl);
 };
 
-#endif // APE_H
+#endif // 3DMMEx: APE_H

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
     Portfolio interface.
 
@@ -10,7 +10,7 @@
 
 ***************************************************************************/
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
 
  FPortDisplayWithIds: Display the portfolio to open or save a file. Portfolio
                     title and filters generated using supplied string ids.

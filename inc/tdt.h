@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
 
     tdt.h: Three-D Text class
 
@@ -14,7 +14,7 @@
 #ifndef TDT_H
 #define TDT_H
 
-// 3-D Text Shapes - the positions and orientations of the letters
+// 3DMMv1.0: 3-D Text Shapes - the positions and orientations of the letters
 enum
 {
     tdtsNil = -1,
@@ -31,30 +31,30 @@ enum
     tdtsLim
 };
 
-// 3-D Actions
+// 3DMMv1.0: 3-D Actions
 enum
 {
     tdaNil = -1,
     tdaRest = 0,
-    tdaLetterRotX, // each letter rotates around its own X axis
+    tdaLetterRotX, // 3DMMv1.0: each letter rotates around its own X axis
     tdaLetterRotY,
     tdaLetterRotZ,
-    tdaSwingX, // letters skew right, then left, then back to normal
+    tdaSwingX, // 3DMMv1.0: letters skew right, then left, then back to normal
     tdaSwingY,
     tdaSwingZ,
-    tdaPulse,    // letters grow 10%, then shrink back to normal
-    tdaWordRotX, // (rotate entire word around X axis)
+    tdaPulse,    // 3DMMv1.0: letters grow 10%, then shrink back to normal
+    tdaWordRotX, // 3DMMv1.0: (rotate entire word around X axis)
     tdaWordRotY,
     tdaWordRotZ,
-    tdaWave,    // a bump ripples through the letters
-    tdaReveal,  // letters slowly grow from zero height
-    tdaWalk,    // walk (word hops forward as if walking)
-    tdaHop,     // letters hop up and down
-    tdaStretch, // stretch in X
+    tdaWave,    // 3DMMv1.0: a bump ripples through the letters
+    tdaReveal,  // 3DMMv1.0: letters slowly grow from zero height
+    tdaWalk,    // 3DMMv1.0: walk (word hops forward as if walking)
+    tdaHop,     // 3DMMv1.0: letters hop up and down
+    tdaStretch, // 3DMMv1.0: stretch in X
     tdaLim
 };
 
-/****************************************
+/** 3DMMv1.0: **************************************
     3-D Text class
 ****************************************/
 typedef class TDT *PTDT;
@@ -67,13 +67,23 @@ class TDT : public TDT_PAR
     MARKMEM
 
   protected:
-    static PGST _pgstAction; // Action names
+    static PGST _pgstAction; // 3DMMv1.0: Action names
 
-    int32_t _tdts;       // TDT shape
-    TAG _tagTdf;         // Tag to Three-D Font
-    PMTRL _pmtrlDefault; // MTRL for TDT's default costume
-    PACTN _pactnCache;   // Last-used action
-    int32_t _tdaCache;   // Action in pactnCache
+    int32_t _tdts;       // 3DMMv1.0: TDT shape
+    TAG _tagTdf;         // 3DMMv1.0: Tag to Three-D Font
+    PMTRL _pmtrlDefault; // 3DMMv1.0: MTRL for TDT's default costume
+    PACTN _pactnCache;   // 3DMMv1.0: Last-used action
+    int32_t _tdaCache;   // 3DMMv1.0: Action in pactnCache
+
+    // actorlight28: cache the true-colour tessellated MODL for each character
+    // position.  TDT action playback asks for the same glyph model every cel;
+    // rebuilding and BrModelAdd'ing that generated mesh every frame was the
+    // 636/frame model-preparation storm seen by the profiler.  Keep this cache
+    // actor/TDT-local so no BRender model state is shared between actors.
+    enum { kcmodlLitCache = 256 };
+    PMODL _rgpmodlLitCache[kcmodlLitCache];
+
+    void _ReleaseLitModelCache(void);
 
   protected:
     virtual bool _FInit(PCFL pcfl, CTG ctgTmpl, CNO cnoTmpl) override;
@@ -92,6 +102,7 @@ class TDT : public TDT_PAR
                      BRS dyrMax, BRS dyrTotal);
 
   public:
+    TDT(void);
     static bool FSetActionNames(PGST pgstAction);
 #ifdef DEBUG
     static void MarkActionNames(void);
@@ -111,4 +122,4 @@ class TDT : public TDT_PAR
     virtual bool FGetActnName(int32_t anid, PSTN pstn) override;
 };
 
-#endif // TDT_H
+#endif // 3DMMv1.0: TDT_H

@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMEx: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMEx: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -12,7 +12,7 @@
 #include "frame.h"
 #ifdef WIN
 #include "mciavi.h"
-#endif // WIN
+#endif // 3DMMEx: WIN
 ASSERTNAME
 
 RTCLASS(GVID)
@@ -22,7 +22,7 @@ RTCLASS(GVDW)
 BEGIN_CMD_MAP_BASE(GVDS)
 END_CMD_MAP(&GVDS::FCmdAll, pvNil, kgrfcmmAll)
 
-const int32_t kcmhlGvds = kswMin; // put videos at the head of the list
+const int32_t kcmhlGvds = kswMin; // 3DMMEx: put videos at the head of the list
 
 PGVID GVID::PgvidNew(PFNI pfni, PGOB pgobBase, bool fHwndBased, int32_t hid)
 {
@@ -45,7 +45,7 @@ GVDS::GVDS(int32_t hid) : GVDS_PAR(hid)
 
 #ifdef WIN
     AVIFileInit();
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
 GVDS::~GVDS(void)
@@ -63,7 +63,7 @@ GVDS::~GVDS(void)
         AVIFileRelease(_pavif);
 
     AVIFileExit();
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
 bool GVDS::_FInit(PFNI pfni, PGOB pgobBase)
@@ -114,10 +114,10 @@ bool GVDS::_FInit(PFNI pfni, PGOB pgobBase)
     _nfrCur = 0;
     _nfrMarked = -1;
     return fTrue;
-#else  //! WIN
+#else  //! 3DMMEx: WIN
     RawRtn();
     return fFalse;
-#endif //! WIN
+#endif //! 3DMMEx: WIN
 }
 
 PGVDS GVDS::PgvdsNew(PFNI pfni, PGOB pgobBase, int32_t hid)
@@ -181,7 +181,7 @@ bool GVDS::FPlay(RC *prc)
 
 #ifdef WIN
     _tsPlay = TsCurrent() - AVIStreamSampleToTime(_pavis, _nfrCur + _dnfr);
-#endif // WIN
+#endif // 3DMMEx: WIN
 
     return fTrue;
 }
@@ -216,14 +216,14 @@ bool GVDS::FCmdAll(PCMD pcmd)
         return fFalse;
     }
 
-    // update _nfrCur
+    // 3DMMEx: update _nfrCur
 #ifdef WIN
     _nfrCur = AVIStreamTimeToSample(_pavis, TsCurrent() - _tsPlay) - _dnfr;
     if (_nfrCur >= _nfrMac)
         _nfrCur = _nfrMac - 1;
     else if (_nfrCur < 0)
         _nfrCur = 0;
-#endif // WIN
+#endif // 3DMMEx: WIN
 
     if (_nfrCur != _nfrMarked)
     {
@@ -252,7 +252,7 @@ void GVDS::Draw(PGNV pgnv, RC *prc)
     }
 
     pgnv->DrawDib(_hdd, pbi, prc);
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
 void GVDS::GetRc(RC *prc)
@@ -268,9 +268,9 @@ void GVDS::AssertValid(uint32_t grf)
 {
     GVDS_PAR::AssertValid(0);
     AssertPo(_pgobBase, 0);
-    // REVIEW shonk: fill in GVDS::AssertValid
+    // 3DMMEx: REVIEW shonk: fill in GVDS::AssertValid
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG
 
 PGVDW GVDW::PgvdwNew(PFNI pfni, PGOB pgobBase, int32_t hid)
 {
@@ -313,7 +313,7 @@ GVDW::~GVDW(void)
             psndv->Suspend(fFalse);
         }
     }
-#endif // WIN
+#endif // 3DMMEx: WIN
 }
 
 bool GVDW::_FInit(PFNI pfni, PGOB pgobBase)
@@ -349,10 +349,10 @@ bool GVDW::_FInit(PFNI pfni, PGOB pgobBase)
         psndv->Suspend(fTrue);
     }
 
-    // get the hwnd
+    // 3DMMEx: get the hwnd
     ClearPb(&mciStatus, SIZEOF(mciStatus));
-    // REVIEW shonk: mmsystem.h defines MCI_ANIM_STATUS_HWND as 0x00004003,
-    // which doesn't give us the hwnd. 4001 does!
+    // 3DMMEx: REVIEW shonk: mmsystem.h defines MCI_ANIM_STATUS_HWND as 0x00004003,
+    // 3DMMEx: which doesn't give us the hwnd. 4001 does!
     mciStatus.dwItem = 0x00004001;
     if (0 != mciSendCommand(_lwDevice, MCI_STATUS, MCI_STATUS_ITEM, (DWORD_PTR)&mciStatus))
     {
@@ -360,7 +360,7 @@ bool GVDW::_FInit(PFNI pfni, PGOB pgobBase)
     }
     _hwndMovie = (HWND)mciStatus.dwReturn;
 
-    // get the length
+    // 3DMMEx: get the length
     ClearPb(&mciStatus, SIZEOF(mciStatus));
     mciStatus.dwItem = MCI_STATUS_LENGTH;
     mciStatus.dwTrack = 1;
@@ -370,7 +370,7 @@ bool GVDW::_FInit(PFNI pfni, PGOB pgobBase)
     }
     _nfrMac = mciStatus.dwReturn;
 
-    // get the rectangle
+    // 3DMMEx: get the rectangle
     if (0 != mciSendCommand(_lwDevice, MCI_WHERE, MCI_ANIM_WHERE_SOURCE, (DWORD_PTR)&mciRect))
     {
         goto LFail;
@@ -385,11 +385,11 @@ bool GVDW::_FInit(PFNI pfni, PGOB pgobBase)
     return fTrue;
 
 LFail:
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement GVDW::_FInit
-#endif        // MAC
+    RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::_FInit
+#endif        // 3DMMEx: MAC
 
     PushErc(ercCantOpenVideo);
     return fFalse;
@@ -409,7 +409,7 @@ int32_t GVDW::NfrCur(void)
 #ifdef WIN
     MCI_STATUS_PARMS mciStatus;
 
-    // get the position
+    // 3DMMEx: get the position
     ClearPb(&mciStatus, SIZEOF(mciStatus));
     mciStatus.dwItem = MCI_STATUS_POSITION;
     mciStatus.dwTrack = 1;
@@ -419,12 +419,12 @@ int32_t GVDW::NfrCur(void)
         return 0;
     }
     return mciStatus.dwReturn;
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement GVDW::NfrCur
+    RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::NfrCur
     return 0;
-#endif // MAC
+#endif // 3DMMEx: MAC
 }
 
 void GVDW::GotoNfr(int32_t nfr)
@@ -441,11 +441,11 @@ void GVDW::GotoNfr(int32_t nfr)
     {
         Warn("seeking failed");
     }
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement GVDW::GotoNfr
-#endif        // MAC
+    RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::GotoNfr
+#endif        // 3DMMEx: MAC
 }
 
 bool GVDW::FPlaying(void)
@@ -458,7 +458,7 @@ bool GVDW::FPlaying(void)
 #ifdef WIN
     MCI_STATUS_PARMS mciStatus;
 
-    // get the mode
+    // 3DMMEx: get the mode
     ClearPb(&mciStatus, SIZEOF(mciStatus));
     mciStatus.dwItem = MCI_STATUS_MODE;
     mciStatus.dwTrack = 1;
@@ -467,11 +467,11 @@ bool GVDW::FPlaying(void)
     {
         _fPlaying = fFalse;
     }
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement GVDW::NfrCur
-#endif        // MAC
+    RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::NfrCur
+#endif        // 3DMMEx: MAC
 
     return _fPlaying;
 }
@@ -486,13 +486,13 @@ bool GVDW::FPlay(RC *prc)
 #ifdef WIN
     MCI_ANIM_PLAY_PARMS mciPlay;
 
-    // get the play rectangle
+    // 3DMMEx: get the play rectangle
     SetRcPlay(prc);
 
-    // position the hwnd
+    // 3DMMEx: position the hwnd
     _SetRc();
 
-    // start the movie playing
+    // 3DMMEx: start the movie playing
     ClearPb(&mciPlay, SIZEOF(mciPlay));
     if (0 != mciSendCommand(_lwDevice, MCI_PLAY, MCI_MCIAVI_PLAY_WINDOW, (DWORD_PTR)&mciPlay))
     {
@@ -501,12 +501,12 @@ bool GVDW::FPlay(RC *prc)
     _fPlaying = fTrue;
 
     return fTrue;
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement GVDW::NfrCur
+    RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::NfrCur
     return fFalse;
-#endif // MAC
+#endif // 3DMMEx: MAC
 }
 
 void GVDW::SetRcPlay(RC *prc)
@@ -532,11 +532,11 @@ void GVDW::Stop(void)
 
     ClearPb(&mciPause, SIZEOF(mciPause));
     mciSendCommand(_lwDevice, MCI_PAUSE, 0, (DWORD_PTR)&mciPause);
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-    RawRtn(); // REVIEW shonk: Mac: implement GVDW::Stop
-#endif        // MAC
+    RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::Stop
+#endif        // 3DMMEx: MAC
     _fPlaying = fFalse;
 }
 
@@ -565,17 +565,17 @@ void GVDW::_SetRc(void)
         {
             MCI_ANIM_WINDOW_PARMS mciWindow;
 
-            // show the playback window
+            // 3DMMEx: show the playback window
             ClearPb(&mciWindow, SIZEOF(mciWindow));
             mciWindow.nCmdShow = SW_SHOW;
             mciSendCommand(_lwDevice, MCI_WINDOW, MCI_ANIM_WINDOW_STATE, (DWORD_PTR)&mciWindow);
             _fVisible = fTrue;
         }
-#endif // WIN
+#endif // 3DMMEx: WIN
 
 #ifdef MAC
-        RawRtn(); // REVIEW shonk: Mac: implement GVDW::_SetRc
-#endif            // MAC
+        RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::_SetRc
+#endif            // 3DMMEx: MAC
         _rc = rc;
     }
 
@@ -583,10 +583,10 @@ void GVDW::_SetRc(void)
     {
 #ifdef WIN
         mciSendCommand(_lwDevice, MCI_REALIZE, MCI_ANIM_REALIZE_BKGD, 0);
-#endif // WIN
+#endif // 3DMMEx: WIN
 #ifdef MAC
-        RawRtn(); // REVIEW shonk: Mac: implement GVDW::_SetRc
-#endif            // MAC
+        RawRtn(); // 3DMMEx: REVIEW shonk: Mac: implement GVDW::_SetRc
+#endif            // 3DMMEx: MAC
         _cactPal = vcactRealize;
     }
 }
@@ -606,4 +606,4 @@ void GVDW::AssertValid(uint32_t grf)
     Assert(_hwndMovie != hNil, 0);
     AssertPo(_pgobBase, 0);
 }
-#endif // DEBUG
+#endif // 3DMMEx: DEBUG

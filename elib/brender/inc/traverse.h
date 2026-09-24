@@ -1,4 +1,4 @@
-/*
+/* 3DMMv1.0:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: traverse.h 1.2 1995/02/22 21:37:24 sam Exp $
@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-    /*
+    /* 3DMMv1.0:
      * The system traversal types
      */
     enum
@@ -26,13 +26,13 @@ extern "C"
         BR_TRAVERSE_FIND = 0x0010,
         BR_TRAVERSE_BOUNDS = 0x0020,
 
-        /*
+        /* 3DMMv1.0:
          * Starting point for user defined values
          */
         BR_TRAVERSE_USER_0 = 0x0100,
     };
 
-    /*
+    /* 3DMMv1.0:
      * Return flags from actor.traverse callback
      */
     enum

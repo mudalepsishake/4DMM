@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef DOCB_H
 #define DOCB_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     base undo class
 ***************************************************************************/
 typedef class UNDB *PUNDB;
@@ -33,23 +33,24 @@ class UNDB : public UNDB_PAR
     }
 
   public:
-    // General undo funtionality
+    // 3DMMv1.0: General undo funtionality
     virtual bool FUndo(PDOCB pdocb) = 0;
     virtual bool FDo(PDOCB pdocb) = 0;
+    virtual void GetUndoName(PSTN pstn);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     base document class
 ***************************************************************************/
 enum
 {
     fdocNil = 0,
     fdocSibling = 1,
-    fdocForceClose = 2, // for FQueryClose, etc
-    fdocAssumeYes = 4,  // for FQueryClose, etc
+    fdocForceClose = 2, // 3DMMv1.0: for FQueryClose, etc
+    fdocAssumeYes = 4,  // 3DMMv1.0: for FQueryClose, etc
 
-    fdocUpdate = 8, // update associated DDGs
-    fdocInval = 16, // invalidate associated DDGs
+    fdocUpdate = 8, // 3DMMv1.0: update associated DDGs
+    fdocInval = 16, // 3DMMv1.0: invalidate associated DDGs
 };
 
 #define DOCB_PAR CMH
@@ -70,15 +71,28 @@ class DOCB : public DOCB_PAR
     PDOCB _pdocbSib;
     PDOCB _pdocbChd;
 
-    int32_t _cactUntitled; // 0 if titled
+    int32_t _cactUntitled; // 3DMMv1.0: 0 if titled
     bool _fDirty : 1;
     bool _fFreeing : 1;
     bool _fInternal : 1;
-    PGL _pglpddg; // keep track of the DDGs based on this doc
+    PGL _pglpddg; // 3DMMv1.0: keep track of the DDGs based on this doc
 
-    PGL _pglpundb; // keep track of undo items
+    PGL _pglpundb; // 3DMMv1.0: keep track of undo items
     int32_t _ipundbLimDone;
     int32_t _cundbMax;
+
+#if defined(KAUAI_WIN32)
+    HWND _hwndUndoHistory;
+    HWND _hwndUndoList;
+    bool _fUndoHistoryEnabled;
+    bool _fUpdatingUndoHistory;
+
+    static LRESULT CALLBACK _LresultUndoHistoryWndProc(HWND hwnd, UINT wm, WPARAM wParam, LPARAM lParam);
+    bool _FEnsureUndoHistoryWindow(void);
+    bool _FSetUndoHistoryPosition(int32_t ipundbLimDone);
+    void _UpdateUndoHistoryWindow(void);
+    void _DestroyUndoHistoryWindow(void);
+#endif // KAUAI_WIN32
 
     bool _FFindDdg(PDDG pddg, int32_t *pipddg);
     virtual tribool _TQuerySave(bool fForce);
@@ -109,22 +123,22 @@ class DOCB : public DOCB_PAR
 
     virtual void Release(void) override;
 
-    // high level call to create a new MDI window based on the doc.
+    // 3DMMv1.0: high level call to create a new MDI window based on the doc.
     virtual PDMD PdmdNew(void);
     void ActivateDmd(void);
 
-    // low level calls - generally not for public consumption
+    // 3DMMv1.0: low level calls - generally not for public consumption
     virtual PDMW PdmwNew(PGCB pgcb);
     virtual PDSG PdsgNew(PDMW pdwm, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel);
     virtual PDDG PddgNew(PGCB pgcb);
 
-    // DDG management - only to be called by DDGs
+    // 3DMMv1.0: DDG management - only to be called by DDGs
     bool FAddDdg(PDDG pddg);
     void RemoveDdg(PDDG pddg);
     void MakeFirstDdg(PDDG pddg);
     void CloseAllDdg(void);
 
-    // General DDG management
+    // 3DMMv1.0: General DDG management
     int32_t Cddg(void)
     {
         return pvNil == _pglpddg ? 0 : _pglpddg->IvMac();
@@ -150,7 +164,7 @@ class DOCB : public DOCB_PAR
         _fDirty = FPure(fDirty);
     }
 
-    // General undo funtionality
+    // 3DMMv1.0: General undo funtionality
     virtual bool FUndo(void);
     virtual bool FRedo(void);
     virtual bool FAddUndo(PUNDB pundb);
@@ -160,6 +174,8 @@ class DOCB : public DOCB_PAR
     virtual int32_t CundbMax(void);
     virtual int32_t CundbUndo(void);
     virtual int32_t CundbRedo(void);
+    virtual void EnableUndoHistoryWindow(bool fEnable = fTrue);
+    virtual void ShowUndoHistoryWindow(void);
 
     bool FInternal(void);
     void SetAsClipboard(void);
@@ -169,16 +185,16 @@ class DOCB : public DOCB_PAR
     virtual bool FGetFormat(int32_t cls, PDOCB *ppdocb = pvNil);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     document tree enumerator
 ***************************************************************************/
 enum
 {
-    // inputs
+    // 3DMMv1.0: inputs
     fdteNil = 0,
-    fdteSkipToSib = 1, // legal to FNextDoc
+    fdteSkipToSib = 1, // 3DMMv1.0: legal to FNextDoc
 
-    // outputs
+    // 3DMMv1.0: outputs
     fdtePre = 2,
     fdtePost = 4,
     fdteRoot = 8
@@ -192,7 +208,7 @@ class DTE : public DTE_PAR
     ASSERT
 
   private:
-    // enumeration states
+    // 3DMMv1.0: enumeration states
     enum
     {
         esStart,
@@ -211,7 +227,7 @@ class DTE : public DTE_PAR
     bool FNextDoc(PDOCB *ppdocb, uint32_t *pgrfdteOut, uint32_t grfdteIn = fdteNil);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     document display gob - normally a child of a DSG but can be a child
     of any gob (for doc previewing, etc)
 ***************************************************************************/
@@ -227,7 +243,7 @@ class DDG : public DDG_PAR
   protected:
     PDOCB _pdocb;
     bool _fActive;
-    int32_t _scvVert; // scroll values
+    int32_t _scvVert; // 3DMMv1.0: scroll values
     int32_t _scvHorz;
 
     DDG(PDOCB pdocb, PGCB pgcb);
@@ -237,13 +253,13 @@ class DDG : public DDG_PAR
     virtual void _Activate(bool fActive);
     virtual void _NewRc(void) override;
 
-    // scrolling support
+    // 3DMMv1.0: scrolling support
     virtual int32_t _ScvMax(bool fVert);
     virtual void _SetScrollValues(void);
     virtual void _Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz = 0, int32_t scvVert = 0);
     virtual void _ScrollDxpDyp(int32_t dxp, int32_t dyp);
 
-    // clipboard support
+    // 3DMMv1.0: clipboard support
     virtual bool _FCopySel(PDOCB *ppdocb = pvNil);
     virtual void _ClearSel(void);
     virtual bool _FPaste(PCLIP pclip, bool fDoIt, int32_t cid);
@@ -257,14 +273,14 @@ class DDG : public DDG_PAR
     }
     PDMD Pdmd(void);
 
-    // activation
+    // 3DMMv1.0: activation
     virtual void Activate(bool fActive);
     bool FActive(void)
     {
         return _fActive;
     }
 
-    // members of GOB
+    // 3DMMv1.0: members of GOB
     virtual void Draw(PGNV pgnv, RC *prcClip) override;
     virtual bool FCmdActivateSel(PCMD pcmd) override;
 
@@ -276,7 +292,7 @@ class DDG : public DDG_PAR
     virtual bool FCmdUndo(PCMD pcmd);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Document mdi window - this communicates with the docb to coordinate
     closing and querying the user about saving
 ***************************************************************************/
@@ -304,7 +320,7 @@ class DMD : public DMD_PAR
     virtual bool FCmdCloseWnd(PCMD pcmd) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Document main window
     provides basic pane management - including splitting, etc
 ***************************************************************************/
@@ -317,20 +333,20 @@ class DMW : public DMW_PAR
     MARKMEM
 
   protected:
-    // DSG edge struct - these form a locally-balanced binary tree
-    // with DSGs as the leafs.  Locally-balanced means that a node has a left
-    // child iff it has a right child.
+    // 3DMMv1.0: DSG edge struct - these form a locally-balanced binary tree
+    // 3DMMv1.0: with DSGs as the leafs.  Locally-balanced means that a node has a left
+    // 3DMMv1.0: child iff it has a right child.
     struct DSED
     {
-        bool fVert;  // splits its parent vertically, so the edge is horizontal
-        int32_t rel; // where it splits its parent
-        RC rcRel;    // current relative rectangle (in the DMW)
+        bool fVert;  // 3DMMv1.0: splits its parent vertically, so the edge is horizontal
+        int32_t rel; // 3DMMv1.0: where it splits its parent
+        RC rcRel;    // 3DMMv1.0: current relative rectangle (in the DMW)
         int32_t idsedLeft;
         int32_t idsedRight;
         int32_t idsedPar;
         PDSG pdsg;
     };
-    PAL _paldsed; // the tree of DSEDs
+    PAL _paldsed; // 3DMMv1.0: the tree of DSEDs
     int32_t _idsedRoot;
     PDOCB _pdocb;
 
@@ -368,7 +384,7 @@ class DMW : public DMW_PAR
     virtual void Release(void) override;
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     document scroll gob - child gob of a DMW
     holds any scroll bars, splitter boxes and split movers
     dialogs tightly with DMW and DDG
@@ -384,7 +400,7 @@ class DSG : public DSG_PAR
     friend DMW;
 
   private:
-    int32_t _dsno; // this is how the DMW refers to this DSG
+    int32_t _dsno; // 3DMMv1.0: this is how the DMW refers to this DSG
     PDDG _pddg;
 
   protected:
@@ -409,12 +425,12 @@ class DSG : public DSG_PAR
 enum
 {
     fdsgNil = 0,
-    fdsgVert = 1, // for splitting and PdsgNew
-    fdsgHorz = 2, // for splitting and PdsgNew
-    fdsgAfter = 4 // for PdsgNew
+    fdsgVert = 1, // 3DMMv1.0: for splitting and PdsgNew
+    fdsgHorz = 2, // 3DMMv1.0: for splitting and PdsgNew
+    fdsgAfter = 4 // 3DMMv1.0: for PdsgNew
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     document scroll window splitter - must be a child of a DSG
 ***************************************************************************/
 typedef class DSSP *PDSSP;
@@ -449,7 +465,7 @@ enum
     fdsspHorz = 2
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     document scroll split mover - must be a child of a DSG
 ***************************************************************************/
 typedef class DSSM *PDSSM;
@@ -475,4 +491,4 @@ class DSSM : public DSSM_PAR
     tribool TVert(void);
 };
 
-#endif //! DOCB_H
+#endif //! 3DMMv1.0: DOCB_H

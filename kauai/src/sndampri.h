@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -16,7 +16,7 @@
 #ifndef SNDAMPRI_H
 #define SNDAMPRI_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     IStream interface for a BLCK.
 ***************************************************************************/
 typedef class STBL *PSTBL;
@@ -35,12 +35,12 @@ class STBL : public STBL_PAR
     ~STBL(void);
 
   public:
-    // IUnknown methods
+    // 3DMMv1.0: IUnknown methods
     STDMETHODIMP QueryInterface(REFIID riid, void **ppv);
     STDMETHODIMP_(ULONG) AddRef(void);
     STDMETHODIMP_(ULONG) Release(void);
 
-    // IStream methods
+    // 3DMMv1.0: IStream methods
     STDMETHODIMP Read(void *pv, ULONG cb, ULONG *pcb);
     STDMETHODIMP Write(VOID const *pv, ULONG cb, ULONG *pcb)
     {
@@ -98,7 +98,7 @@ class STBL : public STBL_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Cached AudioMan Sound.
 ***************************************************************************/
 typedef class CAMS *PCAMS;
@@ -111,7 +111,7 @@ class CAMS : public CAMS_PAR
     MARKMEM
 
   protected:
-    // this is just so we can do a MarkMemObj on it while AudioMan has it
+    // 3DMMv1.0: this is just so we can do a MarkMemObj on it while AudioMan has it
     PSTBL _pstbl;
 
     CAMS(void);
@@ -120,7 +120,7 @@ class CAMS : public CAMS_PAR
     ~CAMS(void);
     static PCAMS PcamsNewLoop(PCAMS pcamsSrc, int32_t cactPlay);
 
-    IAMSound *psnd; // the sound to use
+    IAMSound *psnd; // 3DMMv1.0: the sound to use
 
     static bool FReadCams(PCRF pcrf, CTG ctg, CNO cno, PBLCK pblck, PBACO *ppbaco, int32_t *pcb);
     bool FInMemory(void)
@@ -129,10 +129,10 @@ class CAMS : public CAMS_PAR
     }
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Notify sink class.
 ***************************************************************************/
-typedef class AMQUE *PAMQUE; // forward declaration
+typedef class AMQUE *PAMQUE; // 3DMMv1.0: forward declaration
 
 typedef class AMNOT *PAMNOT;
 #define AMNOT_PAR IAMNotifySink
@@ -142,15 +142,15 @@ class AMNOT : public AMNOT_PAR
 
   protected:
     int32_t _cactRef;
-    PAMQUE _pamque; // the amque to notify
+    PAMQUE _pamque; // 3DMMv1.0: the amque to notify
 
   public:
-    // IUnknown methods
+    // 3DMMv1.0: IUnknown methods
     STDMETHODIMP QueryInterface(REFIID riid, void **ppv);
     STDMETHODIMP_(ULONG) AddRef(void);
     STDMETHODIMP_(ULONG) Release(void);
 
-    // IAMNotifySink methods
+    // 3DMMv1.0: IAMNotifySink methods
     STDMETHODIMP_(void) OnStart(LPSOUND pSound, DWORD dwPosition)
     {
     }
@@ -166,7 +166,7 @@ class AMNOT : public AMNOT_PAR
     void Set(PAMQUE pamque);
 };
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Audioman queue.
 ***************************************************************************/
 #define AMQUE_PAR SNQUE
@@ -177,10 +177,10 @@ class AMQUE : public AMQUE_PAR
     ASSERT
 
   protected:
-    MUTX _mutx;         // restricts access to member variables
-    IAMChannel *_pchan; // the audioman channel
-    uint32_t _tsStart;  // when we started the current sound
-    AMNOT _amnot;       // notify sink
+    MUTX _mutx;         // 3DMMv1.0: restricts access to member variables
+    IAMChannel *_pchan; // 3DMMv1.0: the audioman channel
+    uint32_t _tsStart;  // 3DMMv1.0: when we started the current sound
+    AMNOT _amnot;       // 3DMMv1.0: notify sink
 
     AMQUE(void);
 
@@ -200,4 +200,4 @@ class AMQUE : public AMQUE_PAR
     void Notify(LPSOUND psnd);
 };
 
-#endif //! SNDAMPRI_H
+#endif //! 3DMMv1.0: SNDAMPRI_H

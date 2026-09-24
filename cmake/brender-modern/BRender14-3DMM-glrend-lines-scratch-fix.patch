@@ -1,0 +1,29 @@
+diff --git a/drivers/glrend/gstored.c b/drivers/glrend/gstored.c
+index 4c3fb2d..c35aedf 100644
+--- a/drivers/glrend/gstored.c
++++ b/drivers/glrend/gstored.c
+@@ -125,7 +125,14 @@ static GLuint build_ibo(const GladGLContext *gl, const struct v11model *model, s
+         groups[i].line_offset = (void *)(br_uintptr_t)index_offset;
+ 
+         if(gp->edges != NULL && gp->nedges > 1) {
+-            br_uint_8 *seen = BrScratchAllocate(gp->nedges * sizeof(*seen));
++            /*
++             * build_ibo() already owns BRender's single global scratchpad in
++             * idx. A second BrScratchAllocate() here fatals immediately with
++             * "Scratchpad not available" while BrRendererBegin() stores the
++             * first model. This short-lived edge bitmap is independent of
++             * idx, so use the ordinary allocator instead of nesting scratch.
++             */
++            br_uint_8 *seen = BrMemAllocate(gp->nedges * sizeof(*seen), BR_MEMORY_SCRATCH);
+             memset(seen, 0, gp->nedges * sizeof(*seen));
+             seen[0] = 1; /* BRender reserves edge 0 for internal/coplanar edges. */
+ 
+@@ -156,7 +163,7 @@ static GLuint build_ibo(const GladGLContext *gl, const struct v11model *model, s
+                     groups[i].line_count += 2;
+                 }
+             }
+-            BrScratchFree(seen);
++            BrMemFree(seen);
+         }
+ 
+         index_offset += (br_size_t)groups[i].line_count * sizeof(br_uint_16);

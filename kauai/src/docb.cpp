@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Reviewed:
@@ -11,6 +11,11 @@
 
 ***************************************************************************/
 #include "frame.h"
+#if defined(KAUAI_WIN32)
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#endif // 3DMMEx: KAUAI_WIN32
 ASSERTNAME
 
 #define dsnoNil 0
@@ -42,7 +47,90 @@ RTCLASS(DSSP)
 RTCLASS(DSSM)
 RTCLASS(UNDB)
 
+#if defined(KAUAI_WIN32)
+static const char kszUndoHistoryWndClass[] = "3DMMExUndoHistoryWindow";
+static const int32_t kidUndoHistoryList = 1001;
+
+// Keep the native Object Groups tool synchronized with changes made through
+// either the ordinary Undo/Redo commands or the external Undo History window.
+// The movie-load refresh has different semantics (it deliberately discards UI
+// selection/expansion state), so undo/redo uses its own lightweight message.
+static const char ksz4DMMObjectGroupsWndClass[] = "4DMMObjectGroupsWindow";
+static const UINT kwm4DMMObjectGroupsUndoRefresh = WM_APP + 0x4D1;
+
+static void _Queue4DMMObjectGroupsUndoRefresh(void)
+{
+    HWND hwndGroups = FindWindowA(ksz4DMMObjectGroupsWndClass, pvNil);
+    if (hwndGroups != hNil && IsWindow(hwndGroups))
+        PostMessageA(hwndGroups, kwm4DMMObjectGroupsUndoRefresh, 0, 0);
+}
+
+static HWND _Hwnd4DMMUndoHistoryOwner(void)
+{
+    if (vwig.hwndApp != hNil && IsWindow(vwig.hwndApp))
+    {
+        HWND hwndScale = (HWND)GetPropA(vwig.hwndApp, "4DMMUiScaleWindow");
+        if (GetPropA(vwig.hwndApp, "4DMMUiScaleSuspended") == pvNil &&
+            hwndScale != hNil && IsWindow(hwndScale))
+        {
+            return hwndScale;
+        }
+        return vwig.hwndApp;
+    }
+    return hNil;
+}
+
 /***************************************************************************
+    Append one flushed diagnostic line next to 3dmovie.exe.  The log exists
+    only when the -u code path calls these functions.
+***************************************************************************/
+static void _LogUndoHistory(const char *pszFormat, ...)
+{
+    char szPath[MAX_PATH];
+    DWORD cch = GetModuleFileNameA(GetModuleHandleA(pvNil), szPath, (DWORD)SIZEOF(szPath));
+    if (cch == 0 || cch >= (DWORD)SIZEOF(szPath))
+        return;
+
+    char *pchSlash = strrchr(szPath, '\\');
+    if (pchSlash == pvNil)
+        pchSlash = strrchr(szPath, '/');
+    if (pchSlash != pvNil)
+        *(pchSlash + 1) = chNil;
+    else
+        szPath[0] = chNil;
+
+    if (strcat_s(szPath, SIZEOF(szPath), "undo_history.log") != 0)
+        return;
+
+    FILE *pfile = pvNil;
+    if (fopen_s(&pfile, szPath, "a") != 0 || pfile == pvNil)
+        return;
+
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    fprintf_s(pfile, "%04u-%02u-%02u %02u:%02u:%02u.%03u  ", (unsigned)st.wYear, (unsigned)st.wMonth,
+              (unsigned)st.wDay, (unsigned)st.wHour, (unsigned)st.wMinute, (unsigned)st.wSecond,
+              (unsigned)st.wMilliseconds);
+
+    va_list args;
+    va_start(args, pszFormat);
+    vfprintf_s(pfile, pszFormat, args);
+    va_end(args);
+    fputc('\n', pfile);
+    fclose(pfile);
+}
+#endif // 3DMMEx: KAUAI_WIN32
+
+/***************************************************************************
+    Default plain-English name for an undo record.
+***************************************************************************/
+void UNDB::GetUndoName(PSTN pstn)
+{
+    AssertPo(pstn, 0);
+    pstn->SetSz(PszLit("Edit"));
+}
+
+/** 3DMMv1.0: *************************************************************************
     Constructor for DOCB
 ***************************************************************************/
 DOCB::DOCB(PDOCB pdocb, uint32_t grfdoc) : CMH(khidDoc)
@@ -70,10 +158,16 @@ DOCB::DOCB(PDOCB pdocb, uint32_t grfdoc) : CMH(khidDoc)
     }
 
     _cundbMax = 10;
+#if defined(KAUAI_WIN32)
+    _hwndUndoHistory = hNil;
+    _hwndUndoList = hNil;
+    _fUndoHistoryEnabled = fFalse;
+    _fUpdatingUndoHistory = fFalse;
+#endif // 3DMMEx: KAUAI_WIN32
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     First calls Release on all direct child docb's of this DOCB.
     Finally calls delete on itself.
 ***************************************************************************/
@@ -85,6 +179,10 @@ void DOCB::Release(void)
 
     if (--_cactRef > 0)
         return;
+
+#if defined(KAUAI_WIN32)
+    _DestroyUndoHistoryWindow();
+#endif // 3DMMEx: KAUAI_WIN32
 
     Assert(Cddg() == 0, "why are there still DDG's open on this DOCB?");
     Assert(!_fFreeing, "we're recursing into the DOCB::Release!");
@@ -103,8 +201,8 @@ void DOCB::Release(void)
         pdocb->CloseAllDdg();
         if (pdocb == _pdocbChd)
         {
-            // REVIEW shonk: Release: is this the right thing to do?  What if
-            // someone else has a reference count to this child DOCB?
+            // 3DMMv1.0: REVIEW shonk: Release: is this the right thing to do?  What if
+            // 3DMMv1.0: someone else has a reference count to this child DOCB?
             Bug("why wasn't this child doc released?");
             ReleasePpo(&pdocb);
         }
@@ -113,7 +211,7 @@ void DOCB::Release(void)
     delete this;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Close all DDGs on this DOCB.
 ***************************************************************************/
 void DOCB::CloseAllDdg(void)
@@ -123,25 +221,25 @@ void DOCB::CloseAllDdg(void)
 
     if (pvNil != _pglpddg)
     {
-        // the pddg's are removed from _hplpddg in RemoveDdg
-        // Note that freeing one DMD may end up nuking more than
-        // one DDG.
-        // REVIEW shonk: this assumes that no one else has a
-        // reference count open on one of these DMDs or DDGs.
-        AddRef(); // so we aren't freed in the loop
+        // 3DMMv1.0: the pddg's are removed from _hplpddg in RemoveDdg
+        // 3DMMv1.0: Note that freeing one DMD may end up nuking more than
+        // 3DMMv1.0: one DDG.
+        // 3DMMv1.0: REVIEW shonk: this assumes that no one else has a
+        // 3DMMv1.0: reference count open on one of these DMDs or DDGs.
+        AddRef(); // 3DMMv1.0: so we aren't freed in the loop
         while (_pglpddg->IvMac() > 0)
         {
             _pglpddg->Get(0, &pddg);
             if (pvNil != (pdmd = pddg->Pdmd()))
-                ReleasePpo(&pdmd); // close the MDI window
+                ReleasePpo(&pdmd); // 3DMMv1.0: close the MDI window
             else
-                ReleasePpo(&pddg); // close just the DDG
+                ReleasePpo(&pddg); // 3DMMv1.0: close just the DDG
         }
-        Release(); // balance our AddRef
+        Release(); // 3DMMv1.0: balance our AddRef
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for the document class.
 ***************************************************************************/
 DOCB::~DOCB(void)
@@ -156,14 +254,14 @@ DOCB::~DOCB(void)
     if (vpclip->FDocIsClip(this))
     {
         Bug("The clipboard document is going away!");
-        // these AddRef's are so our destructor doesn't get called when the
-        // clipboard releases us!
+        // 3DMMv1.0: these AddRef's are so our destructor doesn't get called when the
+        // 3DMMv1.0: clipboard releases us!
         AddRef();
         AddRef();
         vpclip->Set();
     }
 
-    // remove it from the sibling list
+    // 3DMMv1.0: remove it from the sibling list
     for (ppdocb = pvNil != _pdocbPar ? &_pdocbPar->_pdocbChd : &_pdocbFirst; *ppdocb != this && pvNil != *ppdocb;
          ppdocb = &(*ppdocb)->_pdocbSib)
     {
@@ -176,7 +274,7 @@ DOCB::~DOCB(void)
     ReleasePpo(&_pglpddg);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: calls FQueryClose on all open docs.
 ***************************************************************************/
 bool DOCB::FQueryCloseAll(uint32_t grfdoc)
@@ -191,7 +289,7 @@ bool DOCB::FQueryCloseAll(uint32_t grfdoc)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the document is dirty, ask the user if they want to save changes
     (and save if they do).  Return false if the user cancels the operation.
     Don't allow cancel if fdocForceClose is set.  Don't ask about saving
@@ -229,7 +327,7 @@ bool DOCB::FQueryClose(uint32_t grfdoc)
     return true;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ask the user if they want to save the document before closing it.
 ***************************************************************************/
 tribool DOCB::_TQuerySave(bool fForce)
@@ -239,7 +337,7 @@ tribool DOCB::_TQuerySave(bool fForce)
     return vpappb->TQuerySaveDoc(this, fForce);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If the document is dirty, and this is the only DMD displaying the doc,
     ask the user if they want to save changes (and save if they do).
     Return false if the user cancels the operation or the save fails.
@@ -263,7 +361,7 @@ bool DOCB::FQueryCloseDmd(PDMD pdmd)
         pdmdT = pddg->Pdmd();
         if (pdmdT != pdmd && pdmdT != pvNil)
         {
-            // there's another window on this doc, so let this one close
+            // 3DMMv1.0: there's another window on this doc, so let this one close
             return fTrue;
         }
     }
@@ -271,7 +369,7 @@ bool DOCB::FQueryCloseDmd(PDMD pdmd)
     return FQueryClose(fdocNil);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return whether this is an internal document.
 ***************************************************************************/
 bool DOCB::FInternal(void)
@@ -280,7 +378,7 @@ bool DOCB::FInternal(void)
     return _fInternal || vpclip->FDocIsClip(this);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Change this document's internal status.
 ***************************************************************************/
 void DOCB::SetInternal(bool fInternal)
@@ -289,7 +387,7 @@ void DOCB::SetInternal(bool fInternal)
     _fInternal = FPure(fInternal);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to return the DOC open on this fni (if there is one).
 ***************************************************************************/
 PDOCB DOCB::PdocbFromFni(FNI *pfni)
@@ -308,7 +406,7 @@ PDOCB DOCB::PdocbFromFni(FNI *pfni)
     return pvNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the current FNI for the doc.  Return false if the doc is not
     currently based on an FNI (it's a new doc or an internal one).
 ***************************************************************************/
@@ -317,7 +415,7 @@ bool DOCB::FGetFni(FNI *pfni)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     High level save.
 ***************************************************************************/
 bool DOCB::FSave(int32_t cid)
@@ -333,7 +431,7 @@ bool DOCB::FSave(int32_t cid)
     case cidSave:
         if (FGetFni(&fni))
             break;
-        // fall through
+        // 3DMMv1.0: fall through
     case cidSaveAs:
     case cidSaveCopy:
         if (!FGetFniSave(&fni))
@@ -351,7 +449,7 @@ bool DOCB::FSave(int32_t cid)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Save the document and optionally set this fni as the current one.
     If the doc is currently based on an FNI, pfni may be nil, indicating
     that this is a normal save (not save as).  If pfni is not nil and
@@ -363,7 +461,7 @@ bool DOCB::FSaveToFni(FNI *pfni, bool fSetFni)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Ask the user what file they want to save to.  On Mac, assumes saving
     to a text file.
 ***************************************************************************/
@@ -382,7 +480,7 @@ bool DOCB::FGetFniSave(FNI *pfni)
 #endif
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the DDG to the list of DDGs displaying this document
 ***************************************************************************/
 bool DOCB::FAddDdg(PDDG pddg)
@@ -400,7 +498,7 @@ bool DOCB::FAddDdg(PDDG pddg)
     return fT;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the position of the pddg in the DOCB's list.
 ***************************************************************************/
 bool DOCB::_FFindDdg(PDDG pddg, int32_t *pipddg)
@@ -429,7 +527,7 @@ LFail:
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove the pddg from the list of DDGs for this doc.
 ***************************************************************************/
 void DOCB::RemoveDdg(PDDG pddg)
@@ -442,7 +540,7 @@ void DOCB::RemoveDdg(PDDG pddg)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make this DDG the first one in the DOCB's list.
 ***************************************************************************/
 void DOCB::MakeFirstDdg(PDDG pddg)
@@ -459,7 +557,7 @@ void DOCB::MakeFirstDdg(PDDG pddg)
         _pglpddg->Move(ipddg, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the iddg'th DDG displaying this doc.  If iddg is too big,
     return pvNil.
 ***************************************************************************/
@@ -476,7 +574,7 @@ PDDG DOCB::PddgGet(int32_t iddg)
     return pddg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If there is an active DDG for this doc, return it.
 ***************************************************************************/
 PDDG DOCB::PddgActive(void)
@@ -490,7 +588,7 @@ PDDG DOCB::PddgActive(void)
     return pddg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new mdi window for this document.
 ***************************************************************************/
 PDMD DOCB::PdmdNew(void)
@@ -498,14 +596,14 @@ PDMD DOCB::PdmdNew(void)
     AssertThis(fobjAssertFull);
 #if defined(KAUAI_WIN32)
     return DMD::PdmdNew(this);
-#else  // !KAUAI_WIN32
-    // MDI document windows aren't used in 3DMM
+#else  // 3DMMEx: !KAUAI_WIN32
+    // 3DMMEx: MDI document windows aren't used in 3DMM
     Bug("MDI document windows not implemented!");
     return pvNil;
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this DOCB has a DMD, make it the activate hwnd.
 ***************************************************************************/
 void DOCB::ActivateDmd(void)
@@ -526,7 +624,7 @@ void DOCB::ActivateDmd(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a DMW for the document.
 ***************************************************************************/
 PDMW DOCB::PdmwNew(PGCB pgcb)
@@ -534,13 +632,13 @@ PDMW DOCB::PdmwNew(PGCB pgcb)
     AssertThis(fobjAssertFull);
 #if defined(KAUAI_WIN32)
     return DMW::PdmwNew(this, pgcb);
-#else  // !KAUAI_WIN32
+#else  // 3DMMEx: !KAUAI_WIN32
     Bug("Default document window not implemented!");
     return pvNil;
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DSG for the doc in the given DMW.
 ***************************************************************************/
 PDSG DOCB::PdsgNew(PDMW pdmw, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
@@ -548,13 +646,13 @@ PDSG DOCB::PdsgNew(PDMW pdmw, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
     AssertThis(fobjAssertFull);
 #if defined(KAUAI_WIN32)
     return DSG::PdsgNew(pdmw, pdsgSplit, grfdsg, rel);
-#else  // !KAUAI_WIN32
+#else  // 3DMMEx: !KAUAI_WIN32
     Bug("Document scroll GOB not implemented!");
     return pvNil;
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create a new DDG for the doc in the given DSG.
 ***************************************************************************/
 PDDG DOCB::PddgNew(PGCB pgcb)
@@ -562,13 +660,13 @@ PDDG DOCB::PddgNew(PGCB pgcb)
     AssertThis(fobjAssertFull);
 #if defined(KAUAI_WIN32)
     return DDG::PddgNew(this, pgcb);
-#else  // !KAUAI_WIN32
+#else  // 3DMMEx: !KAUAI_WIN32
     Bug("Document display GOB not implemented!");
     return pvNil;
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the name of a default (untitled) document.
 ***************************************************************************/
 void DOCB::GetName(PSTN pstn)
@@ -577,7 +675,7 @@ void DOCB::GetName(PSTN pstn)
     AssertPo(pstn, 0);
     FNI fni;
 
-    // REVIEW shonk: clipboard constant string.
+    // 3DMMv1.0: REVIEW shonk: clipboard constant string.
     if (vpclip->FDocIsClip(this))
         *pstn = PszLit("Clipboard");
     else if (FGetFni(&fni))
@@ -590,7 +688,7 @@ void DOCB::GetName(PSTN pstn)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Makes sure all windows displaying this document have the correct title.
 ***************************************************************************/
 void DOCB::UpdateName(void)
@@ -617,7 +715,7 @@ void DOCB::UpdateName(void)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Does a single Undo off the undo list.
 ***************************************************************************/
 bool DOCB::FUndo()
@@ -626,16 +724,35 @@ bool DOCB::FUndo()
     PUNDB pundb;
 
     if (pvNil == _pglpundb || _ipundbLimDone <= 0)
+    {
+#if defined(KAUAI_WIN32)
+        if (_fUndoHistoryEnabled)
+            _LogUndoHistory("FUndo ignored doc=%p undo=0 redo=%d", (void *)this, CundbRedo());
+#endif // 3DMMEx: KAUAI_WIN32
         return fFalse;
+    }
 
     _pglpundb->Get(_ipundbLimDone - 1, &pundb);
     if (!pundb->FUndo(this))
+    {
+#if defined(KAUAI_WIN32)
+        if (_fUndoHistoryEnabled)
+            _LogUndoHistory("FUndo FAILED doc=%p index=%d", (void *)this, _ipundbLimDone - 1);
+#endif // 3DMMEx: KAUAI_WIN32
         return fFalse;
+    }
     _ipundbLimDone--;
+#if defined(KAUAI_WIN32)
+    if (_fUndoHistoryEnabled)
+        _LogUndoHistory("FUndo success doc=%p undo=%d redo=%d", (void *)this, CundbUndo(), CundbRedo());
+    _UpdateUndoHistoryWindow();
+    if (!_fUpdatingUndoHistory)
+        _Queue4DMMObjectGroupsUndoRefresh();
+#endif // 3DMMEx: KAUAI_WIN32
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Redoes a single undo off the undo list.
 ***************************************************************************/
 bool DOCB::FRedo()
@@ -644,16 +761,35 @@ bool DOCB::FRedo()
     PUNDB pundb;
 
     if (pvNil == _pglpundb || _ipundbLimDone >= _pglpundb->IvMac())
+    {
+#if defined(KAUAI_WIN32)
+        if (_fUndoHistoryEnabled)
+            _LogUndoHistory("FRedo ignored doc=%p undo=%d redo=0", (void *)this, CundbUndo());
+#endif // 3DMMEx: KAUAI_WIN32
         return fFalse;
+    }
 
     _pglpundb->Get(_ipundbLimDone, &pundb);
     if (!pundb->FDo(this))
+    {
+#if defined(KAUAI_WIN32)
+        if (_fUndoHistoryEnabled)
+            _LogUndoHistory("FRedo FAILED doc=%p index=%d", (void *)this, _ipundbLimDone);
+#endif // 3DMMEx: KAUAI_WIN32
         return fFalse;
+    }
     _ipundbLimDone++;
+#if defined(KAUAI_WIN32)
+    if (_fUndoHistoryEnabled)
+        _LogUndoHistory("FRedo success doc=%p undo=%d redo=%d", (void *)this, CundbUndo(), CundbRedo());
+    _UpdateUndoHistoryWindow();
+    if (!_fUpdatingUndoHistory)
+        _Queue4DMMObjectGroupsUndoRefresh();
+#endif // 3DMMEx: KAUAI_WIN32
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Adds a single undo to the undo list, removing any Redo items.  Increments
     the ref count on the pundb if we keep a reference to it.  Assumes
     the action has already been done.
@@ -690,11 +826,21 @@ bool DOCB::FAddUndo(PUNDB pundb)
         pundb->AddRef();
 
     _ipundbLimDone = _pglpundb->IvMac();
+#if defined(KAUAI_WIN32)
+    if (_fUndoHistoryEnabled)
+    {
+        STN stnName;
+        pundb->GetUndoName(&stnName);
+        _LogUndoHistory("FAddUndo doc=%p name=%s undo=%d redo=%d", (void *)this, stnName.Psz(), CundbUndo(),
+                        CundbRedo());
+    }
+    _UpdateUndoHistoryWindow();
+#endif // 3DMMEx: KAUAI_WIN32
     AssertThis(fobjAssertFull);
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete all undo and redo records.
 ***************************************************************************/
 void DOCB::ClearUndo(void)
@@ -707,9 +853,12 @@ void DOCB::ClearUndo(void)
     while (_pglpundb->FPop(&pundb))
         ReleasePpo(&pundb);
     _ipundbLimDone = 0;
+#if defined(KAUAI_WIN32)
+    _UpdateUndoHistoryWindow();
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Delete all redo records.
 ***************************************************************************/
 void DOCB::ClearRedo(void)
@@ -724,9 +873,12 @@ void DOCB::ClearRedo(void)
         AssertDo(_pglpundb->FPop(&pundb), 0);
         ReleasePpo(&pundb);
     }
+#if defined(KAUAI_WIN32)
+    _UpdateUndoHistoryWindow();
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the maximum allowable number of undoable operations.
 ***************************************************************************/
 void DOCB::SetCundbMax(int32_t cundbMax)
@@ -755,10 +907,13 @@ void DOCB::SetCundbMax(int32_t cundbMax)
         _ipundbLimDone--;
         ReleasePpo(&pundb);
     }
+#if defined(KAUAI_WIN32)
+    _UpdateUndoHistoryWindow();
+#endif // 3DMMEx: KAUAI_WIN32
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the maximum number of undoable operations for this doc
 ***************************************************************************/
 int32_t DOCB::CundbMax(void)
@@ -767,7 +922,7 @@ int32_t DOCB::CundbMax(void)
     return _cundbMax;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of operations that can currently be undone.
 ***************************************************************************/
 int32_t DOCB::CundbUndo(void)
@@ -776,7 +931,7 @@ int32_t DOCB::CundbUndo(void)
     return _ipundbLimDone;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of operations that can currently be redone.
 ***************************************************************************/
 int32_t DOCB::CundbRedo(void)
@@ -787,6 +942,277 @@ int32_t DOCB::CundbRedo(void)
 }
 
 /***************************************************************************
+    Enable the external undo history window for this document.
+***************************************************************************/
+void DOCB::EnableUndoHistoryWindow(bool fEnable)
+{
+#if defined(KAUAI_WIN32)
+    _fUndoHistoryEnabled = FPure(fEnable);
+    _LogUndoHistory("EnableUndoHistoryWindow doc=%p enabled=%d max=%d", (void *)this, _fUndoHistoryEnabled,
+                    _cundbMax);
+    if (!_fUndoHistoryEnabled)
+        _DestroyUndoHistoryWindow();
+#else  // 3DMMEx: !KAUAI_WIN32
+    TrashVar(&fEnable);
+#endif // 3DMMEx: KAUAI_WIN32
+}
+
+/***************************************************************************
+    Show and refresh the external undo history window.
+***************************************************************************/
+void DOCB::ShowUndoHistoryWindow(void)
+{
+#if defined(KAUAI_WIN32)
+    _LogUndoHistory("ShowUndoHistoryWindow doc=%p enabled=%d hwnd=%p", (void *)this, _fUndoHistoryEnabled,
+                    (void *)_hwndUndoHistory);
+    if (!_fUndoHistoryEnabled || !_FEnsureUndoHistoryWindow())
+    {
+        _LogUndoHistory("ShowUndoHistoryWindow aborted doc=%p lastError=%lu", (void *)this, GetLastError());
+        return;
+    }
+
+    ShowWindow(_hwndUndoHistory, SW_SHOWNA);
+    UpdateWindow(_hwndUndoHistory);
+    _UpdateUndoHistoryWindow();
+    SetWindowPos(_hwndUndoHistory, HWND_TOP, 0, 0, 0, 0,
+                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+    _LogUndoHistory("ShowUndoHistoryWindow visible=%d rect-ready hwnd=%p owner=%p",
+                    IsWindowVisible(_hwndUndoHistory), (void *)_hwndUndoHistory,
+                    (void *)GetWindow(_hwndUndoHistory, GW_OWNER));
+#endif // 3DMMEx: KAUAI_WIN32
+}
+
+#if defined(KAUAI_WIN32)
+/***************************************************************************
+    Create the external undo history window and its list box.
+***************************************************************************/
+bool DOCB::_FEnsureUndoHistoryWindow(void)
+{
+    if (!_fUndoHistoryEnabled)
+        return fFalse;
+    if (_hwndUndoHistory != hNil && IsWindow(_hwndUndoHistory))
+        return fTrue;
+
+    HINSTANCE hinst = GetModuleHandleA(pvNil);
+    WNDCLASSA wc;
+    ClearPb(&wc, SIZEOF(wc));
+    if (!GetClassInfoA(hinst, kszUndoHistoryWndClass, &wc))
+    {
+        wc.style = CS_HREDRAW | CS_VREDRAW;
+        wc.lpfnWndProc = _LresultUndoHistoryWndProc;
+        wc.hInstance = hinst;
+        wc.hCursor = LoadCursor(pvNil, IDC_ARROW);
+        wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+        wc.lpszClassName = kszUndoHistoryWndClass;
+        if (RegisterClassA(&wc) == 0)
+        {
+            DWORD dwError = GetLastError();
+            if (dwError != ERROR_CLASS_ALREADY_EXISTS)
+            {
+                _LogUndoHistory("RegisterClassA FAILED error=%lu", dwError);
+                return fFalse;
+            }
+        }
+        _LogUndoHistory("Undo history window class registered");
+    }
+
+    RECT rcWork;
+    int32_t xp = CW_USEDEFAULT;
+    int32_t yp = CW_USEDEFAULT;
+    if (SystemParametersInfoA(SPI_GETWORKAREA, 0, &rcWork, 0))
+    {
+        xp = LwMax((int32_t)rcWork.left, (int32_t)rcWork.right - 190);
+        yp = (int32_t)rcWork.top + 40;
+    }
+
+    // Join the same visible application ownership family as the other native
+    // 4DMM tools.  The authored size is half the old 340x520 shell; the shared
+    // 200%-geometry helper then produces a default physical window at roughly
+    // half the width and half the height of the previous Undo History window.
+    HWND hwndOwner = _Hwnd4DMMUndoHistoryOwner();
+
+    SetLastError(ERROR_SUCCESS);
+    _hwndUndoHistory = CreateWindowExA(WS_EX_TOOLWINDOW, kszUndoHistoryWndClass,
+                                       "3DMMEx Undo History", WS_OVERLAPPEDWINDOW, xp, yp, 170, 260,
+                                       hwndOwner, hNil, hinst, this);
+    if (_hwndUndoHistory == hNil)
+    {
+        _LogUndoHistory("CreateWindowExA FAILED error=%lu x=%d y=%d", GetLastError(), xp, yp);
+        return fFalse;
+    }
+
+    Scale4DMMExternalToolWindow200(_hwndUndoHistory);
+    _LogUndoHistory("CreateWindowExA success hwnd=%p owner=%p x=%d y=%d",
+                    (void *)_hwndUndoHistory, (void *)hwndOwner, xp, yp);
+    return fTrue;
+}
+
+/***************************************************************************
+    Move the document to the history state represented by a list row.
+    Row zero is the state before the oldest retained undo record.
+***************************************************************************/
+bool DOCB::_FSetUndoHistoryPosition(int32_t ipundbLimDone)
+{
+    int32_t cundb = pvNil == _pglpundb ? 0 : _pglpundb->IvMac();
+    if (!FIn(ipundbLimDone, 0, cundb + 1))
+        return fFalse;
+
+    bool fOldUpdating = _fUpdatingUndoHistory;
+    _fUpdatingUndoHistory = fTrue;
+    bool fRet = fTrue;
+
+    while (_ipundbLimDone > ipundbLimDone)
+    {
+        if (!FUndo())
+        {
+            fRet = fFalse;
+            break;
+        }
+    }
+    while (fRet && _ipundbLimDone < ipundbLimDone)
+    {
+        if (!FRedo())
+        {
+            fRet = fFalse;
+            break;
+        }
+    }
+
+    _fUpdatingUndoHistory = fOldUpdating;
+    _UpdateUndoHistoryWindow();
+    if (fRet)
+        _Queue4DMMObjectGroupsUndoRefresh();
+    return fRet;
+}
+
+/***************************************************************************
+    Rebuild the external list from the actual undo/redo stack.
+***************************************************************************/
+void DOCB::_UpdateUndoHistoryWindow(void)
+{
+    if (!_fUndoHistoryEnabled || _fUpdatingUndoHistory)
+        return;
+    if (!_FEnsureUndoHistoryWindow() || _hwndUndoList == hNil)
+    {
+        _LogUndoHistory("UpdateUndoHistoryWindow unavailable doc=%p hwnd=%p list=%p error=%lu", (void *)this,
+                        (void *)_hwndUndoHistory, (void *)_hwndUndoList, GetLastError());
+        return;
+    }
+
+    if (!IsWindowVisible(_hwndUndoHistory))
+        ShowWindow(_hwndUndoHistory, SW_SHOWNA);
+
+    _fUpdatingUndoHistory = fTrue;
+    SendMessageA(_hwndUndoList, WM_SETREDRAW, fFalse, 0);
+    SendMessageA(_hwndUndoList, LB_RESETCONTENT, 0, 0);
+    SendMessageA(_hwndUndoList, LB_ADDSTRING, 0, (LPARAM)"History Start");
+
+    if (_pglpundb != pvNil)
+    {
+        int32_t ipundb;
+        PUNDB pundb;
+        STN stnName;
+        STN stnLine;
+        for (ipundb = 0; ipundb < _pglpundb->IvMac(); ipundb++)
+        {
+            _pglpundb->Get(ipundb, &pundb);
+            pundb->GetUndoName(&stnName);
+            stnLine.FFormatSz(PszLit("%d  %s"), ipundb + 1, &stnName);
+            SendMessageA(_hwndUndoList, LB_ADDSTRING, 0, (LPARAM)stnLine.Psz());
+        }
+    }
+
+    SendMessageA(_hwndUndoList, LB_SETCURSEL, _ipundbLimDone, 0);
+    if (_ipundbLimDone > 6)
+        SendMessageA(_hwndUndoList, LB_SETTOPINDEX, _ipundbLimDone - 6, 0);
+    SendMessageA(_hwndUndoList, WM_SETREDRAW, fTrue, 0);
+    InvalidateRect(_hwndUndoList, pvNil, fTrue);
+    _fUpdatingUndoHistory = fFalse;
+    _LogUndoHistory("UpdateUndoHistoryWindow doc=%p rows=%d selected=%d visible=%d", (void *)this,
+                    _pglpundb == pvNil ? 1 : _pglpundb->IvMac() + 1, _ipundbLimDone,
+                    IsWindowVisible(_hwndUndoHistory));
+}
+
+/***************************************************************************
+    Destroy the external undo history window before the document dies.
+***************************************************************************/
+void DOCB::_DestroyUndoHistoryWindow(void)
+{
+    if (_hwndUndoHistory != hNil && IsWindow(_hwndUndoHistory))
+        DestroyWindow(_hwndUndoHistory);
+    _hwndUndoHistory = hNil;
+    _hwndUndoList = hNil;
+}
+
+/***************************************************************************
+    Win32 window procedure for the external undo history window.
+***************************************************************************/
+LRESULT CALLBACK DOCB::_LresultUndoHistoryWndProc(HWND hwnd, UINT wm, WPARAM wParam, LPARAM lParam)
+{
+    DOCB *pdocb = (DOCB *)GetWindowLongPtrA(hwnd, GWLP_USERDATA);
+
+    if (wm == WM_NCCREATE)
+    {
+        CREATESTRUCTA *pcs = (CREATESTRUCTA *)lParam;
+        pdocb = (DOCB *)pcs->lpCreateParams;
+        SetWindowLongPtrA(hwnd, GWLP_USERDATA, (LONG_PTR)pdocb);
+        pdocb->_hwndUndoHistory = hwnd;
+        _LogUndoHistory("WM_NCCREATE doc=%p hwnd=%p", (void *)pdocb, (void *)hwnd);
+    }
+
+    if (pdocb == pvNil)
+        return DefWindowProcA(hwnd, wm, wParam, lParam);
+
+    switch (wm)
+    {
+    case WM_CREATE:
+        pdocb->_hwndUndoList = CreateWindowExA(WS_EX_CLIENTEDGE, "LISTBOX", "",
+                                               WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL |
+                                                   WS_TABSTOP | LBS_NOTIFY | LBS_NOINTEGRALHEIGHT,
+                                               0, 0, 0, 0, hwnd, (HMENU)kidUndoHistoryList,
+                                               GetModuleHandleA(pvNil), pvNil);
+        if (pdocb->_hwndUndoList == hNil)
+        {
+            _LogUndoHistory("WM_CREATE listbox FAILED error=%lu", GetLastError());
+            return -1;
+        }
+        SendMessageA(pdocb->_hwndUndoList, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), fTrue);
+        _LogUndoHistory("WM_CREATE listbox success hwnd=%p", (void *)pdocb->_hwndUndoList);
+        return 0;
+
+    case WM_SIZE:
+        if (pdocb->_hwndUndoList != hNil)
+            MoveWindow(pdocb->_hwndUndoList, 0, 0, LOWORD(lParam), HIWORD(lParam), fTrue);
+        return 0;
+
+    case WM_COMMAND:
+        if (LOWORD(wParam) == kidUndoHistoryList && HIWORD(wParam) == LBN_SELCHANGE &&
+            !pdocb->_fUpdatingUndoHistory)
+        {
+            int32_t iitem = (int32_t)SendMessageA(pdocb->_hwndUndoList, LB_GETCURSEL, 0, 0);
+            if (iitem != LB_ERR)
+                pdocb->_FSetUndoHistoryPosition(iitem);
+        }
+        return 0;
+
+    case WM_CLOSE:
+        _LogUndoHistory("WM_CLOSE hiding hwnd=%p", (void *)hwnd);
+        ShowWindow(hwnd, SW_HIDE);
+        return 0;
+
+    case WM_DESTROY:
+        _LogUndoHistory("WM_DESTROY hwnd=%p", (void *)hwnd);
+        pdocb->_hwndUndoList = hNil;
+        pdocb->_hwndUndoHistory = hNil;
+        SetWindowLongPtrA(hwnd, GWLP_USERDATA, 0);
+        return 0;
+    }
+
+    return DefWindowProcA(hwnd, wm, wParam, lParam);
+}
+#endif // 3DMMEx: KAUAI_WIN32
+
+/** 3DMMv1.0: *************************************************************************
     Export this docb as the external clipboard.
 ***************************************************************************/
 void DOCB::ExportFormats(PCLIP pclip)
@@ -795,7 +1221,7 @@ void DOCB::ExportFormats(PCLIP pclip)
     AssertPo(pclip, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if this document can be coerced to the given format.
 ***************************************************************************/
 bool DOCB::FGetFormat(int32_t cls, PDOCB *ppdocb)
@@ -809,7 +1235,7 @@ bool DOCB::FGetFormat(int32_t cls, PDOCB *ppdocb)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert validity of a DOCB
 ***************************************************************************/
 void DOCB::AssertValid(uint32_t grfdocb)
@@ -851,7 +1277,7 @@ void DOCB::AssertValid(uint32_t grfdocb)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark the memory used by the DOCB
 ***************************************************************************/
 void DOCB::MarkMem(void)
@@ -873,9 +1299,9 @@ void DOCB::MarkMem(void)
         }
     }
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a document tree enumerator.
 ***************************************************************************/
 DTE::DTE(void)
@@ -883,7 +1309,7 @@ DTE::DTE(void)
     _es = esDone;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize a document tree enumerator.
 ***************************************************************************/
 void DTE::Init(PDOCB pdocb)
@@ -893,7 +1319,7 @@ void DTE::Init(PDOCB pdocb)
     _es = pdocb == pvNil ? esDone : esStart;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Goes to the next node in the sub tree being enumerated.  Returns false
     iff the enumeration is done.
 ***************************************************************************/
@@ -919,9 +1345,9 @@ bool DTE::FNextDoc(PDOCB *ppdocb, uint32_t *pgrfdteOut, uint32_t grfdte)
                 goto LCheckForKids;
             }
         }
-        // fall through
+        // 3DMMv1.0: fall through
     case esGoLeft:
-        // go to the sibling (if there is one) or parent
+        // 3DMMv1.0: go to the sibling (if there is one) or parent
         if (_pdocbCur == _pdocbRoot)
         {
             _es = esDone;
@@ -943,7 +1369,7 @@ bool DTE::FNextDoc(PDOCB *ppdocb, uint32_t *pgrfdteOut, uint32_t grfdte)
         }
         else
         {
-            // no more siblings, go to parent
+            // 3DMMv1.0: no more siblings, go to parent
             _pdocbCur = _pdocbCur->_pdocbPar;
             *pgrfdteOut |= fdtePost;
             if (_pdocbCur == _pdocbRoot)
@@ -964,7 +1390,7 @@ bool DTE::FNextDoc(PDOCB *ppdocb, uint32_t *pgrfdteOut, uint32_t grfdte)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DDG.
 ***************************************************************************/
 PDDG DDG::PddgNew(PDOCB pdocb, PGCB pgcb)
@@ -985,7 +1411,7 @@ PDDG DDG::PddgNew(PDOCB pdocb, PGCB pgcb)
     return pddg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for a DDG.  AddRef's the DOCB.
 ***************************************************************************/
 DDG::DDG(PDOCB pdocb, PGCB pgcb) : GOB(pgcb)
@@ -997,7 +1423,7 @@ DDG::DDG(PDOCB pdocb, PGCB pgcb) : GOB(pgcb)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for DDG - remove itself from the DOCB's list.  Releases
     the DOCB.
 ***************************************************************************/
@@ -1012,7 +1438,7 @@ DDG::~DDG(void)
     _pdocb->Release();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Initialize the DDG - including setting its position.
 ***************************************************************************/
 bool DDG::_FInit(void)
@@ -1026,7 +1452,7 @@ bool DDG::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     If this DDG is contained in a DMD, return the DMD.  Otherwise, return
     pvNil.
 ***************************************************************************/
@@ -1035,7 +1461,7 @@ PDMD DDG::Pdmd(void)
     return (PDMD)GOB::PgobParFromCls(kclsDMD);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Make this the active DDG for the docb or deactivate it according to
     fActive.
 ***************************************************************************/
@@ -1050,7 +1476,7 @@ void DDG::Activate(bool fActive)
 
     if (fActive)
     {
-        // deactivate the current active one
+        // 3DMMv1.0: deactivate the current active one
         pddg = _pdocb->PddgActive();
         if (pvNil != pddg)
         {
@@ -1058,10 +1484,10 @@ void DDG::Activate(bool fActive)
             pddg->_fActive = fFalse;
         }
 
-        // activate ourself
+        // 3DMMv1.0: activate ourself
         if (pvNil != (pdmd = Pdmd()))
         {
-            // bring our parent chain to the front
+            // 3DMMv1.0: bring our parent chain to the front
             PGOB pgob;
 
             for (pgob = this; pgob != pdmd; pgob = pgob->PgobPar())
@@ -1074,7 +1500,7 @@ void DDG::Activate(bool fActive)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Default for a DDG - add/remove itself to the command handler list.
 ***************************************************************************/
 void DDG::_Activate(bool fActive)
@@ -1084,7 +1510,7 @@ void DDG::_Activate(bool fActive)
         vpcex->FAddCmh(this, 0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles enabling/disabling of common Ddg commands.
 ***************************************************************************/
 bool DDG::FEnableDdgCmd(PCMD pcmd, uint32_t *pgrfeds)
@@ -1133,7 +1559,7 @@ bool DDG::FEnableDdgCmd(PCMD pcmd, uint32_t *pgrfeds)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles the Cut, Copy, Paste and Clear commands.
 ***************************************************************************/
 bool DDG::FCmdClip(PCMD pcmd)
@@ -1146,7 +1572,7 @@ bool DDG::FCmdClip(PCMD pcmd)
     {
     case cidCut:
     case cidCopy:
-        // copy the selection
+        // 3DMMv1.0: copy the selection
         if (!_FCopySel(&pdocb))
             return fTrue;
         vpclip->Set(pdocb);
@@ -1154,10 +1580,10 @@ bool DDG::FCmdClip(PCMD pcmd)
 
         if (pcmd->cid == cidCopy)
             break;
-        // fall thru
+        // 3DMMv1.0: fall thru
 
     case cidClear:
-        // delete the selection
+        // 3DMMv1.0: delete the selection
         _ClearSel();
         break;
 
@@ -1171,7 +1597,7 @@ bool DDG::FCmdClip(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Default for copying a selection.  Just returns false so the Cut, Copy
     and Clear edit menu items are disabled.
 ***************************************************************************/
@@ -1180,14 +1606,14 @@ bool DDG::_FCopySel(PDOCB *ppdocb)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Default for clearing (deleting) a selection.
 ***************************************************************************/
 void DDG::_ClearSel(void)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Default for pasting over a selection.  Just returns false so the Paste
     edit menu item is disabled.
 ***************************************************************************/
@@ -1196,7 +1622,7 @@ bool DDG::_FPaste(PCLIP pclip, bool fDoIt, int32_t cid)
     return fFalse;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a close command.
 ***************************************************************************/
 bool DDG::FCmdCloseDoc(PCMD pcmd)
@@ -1206,7 +1632,7 @@ bool DDG::FCmdCloseDoc(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a save, save as or save a copy command.
 ***************************************************************************/
 bool DDG::FCmdSave(PCMD pcmd)
@@ -1215,7 +1641,7 @@ bool DDG::FCmdSave(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle a save, save as or save a copy command.
 ***************************************************************************/
 bool DDG::FCmdUndo(PCMD pcmd)
@@ -1227,7 +1653,7 @@ bool DDG::FCmdUndo(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Default for a DDG - for frame testing only.
 ***************************************************************************/
 void DDG::Draw(PGNV pgnv, RC *prcClip)
@@ -1236,7 +1662,7 @@ void DDG::Draw(PGNV pgnv, RC *prcClip)
     pgnv->FillRc(prcClip, _fActive ? kacrBlue : kacrMagenta);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Activate the selection.  Default activates the DDG.
 ***************************************************************************/
 bool DDG::FCmdActivateSel(PCMD pcmd)
@@ -1245,7 +1671,7 @@ bool DDG::FCmdActivateSel(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll the DCD
 ***************************************************************************/
 bool DDG::FCmdScroll(PCMD pcmd)
@@ -1258,7 +1684,7 @@ bool DDG::FCmdScroll(PCMD pcmd)
     {
     case cidDoScroll:
         if (pcmd->rglw[1] == scaToVal)
-            break; // ignore thumb tracking
+            break; // 3DMMv1.0: ignore thumb tracking
 
         if (fVert)
             _Scroll(scaNil, pcmd->rglw[1]);
@@ -1278,7 +1704,7 @@ bool DDG::FCmdScroll(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Scroll with the given scrolling actions.  Sets the scroll bar values
     accordingly.
 ***************************************************************************/
@@ -1287,7 +1713,7 @@ void DDG::_Scroll(int32_t scaHorz, int32_t scaVert, int32_t scvHorz, int32_t scv
     _SetScrollValues();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Set the scroll bar values for the DDG to _scvHorz and _scvVert and
     the Max values.
 ***************************************************************************/
@@ -1305,10 +1731,10 @@ void DDG::_SetScrollValues(void)
         if (pvNil != (pscb = (PSCB)pgob->PgobFromHid(khidHScroll)))
             pscb->SetValMinMax(_scvHorz, 0, _ScvMax(fFalse));
     }
-#endif // KAUAI_WIN32
+#endif // 3DMMEx: KAUAI_WIN32
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Actually move the bits for a scroll.  The _scvVert and _scvHorz
     member variables have already been updated.
 ***************************************************************************/
@@ -1317,7 +1743,7 @@ void DDG::_ScrollDxpDyp(int32_t dxp, int32_t dyp)
     Scroll(pvNil, -dxp, -dyp, kginDraw);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the scroll bound.
 ***************************************************************************/
 int32_t DDG::_ScvMax(bool fVert)
@@ -1325,7 +1751,7 @@ int32_t DDG::_ScvMax(bool fVert)
     return 0;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The DDG has changed sizes, reset the scroll bounds.
 ***************************************************************************/
 void DDG::_NewRc(void)
@@ -1334,7 +1760,7 @@ void DDG::_NewRc(void)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of a DDG.
 ***************************************************************************/
 void DDG::AssertValid(uint32_t grfobj)
@@ -1343,7 +1769,7 @@ void DDG::AssertValid(uint32_t grfobj)
     AssertPo(_pdocb, grfobj & fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory for the DDG.
 ***************************************************************************/
 void DDG::MarkMem(void)
@@ -1352,11 +1778,11 @@ void DDG::MarkMem(void)
     DDG_PAR::MarkMem();
     MarkMemObj(_pdocb);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 #ifndef MAC
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: create a new Document MDI window.  Put a size box in
     it and add a DMW.
 ***************************************************************************/
@@ -1392,7 +1818,7 @@ PDMD DMD::PdmdNew(PDOCB pdocb)
     return pdmd;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method: returns the currently active DMD (if there is one).
 ***************************************************************************/
 PDMD DMD::PdmdTop(void)
@@ -1408,7 +1834,7 @@ PDMD DMD::PdmdTop(void)
     return (PDMD)pgob;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for document mdi window.
 ***************************************************************************/
 DMD::DMD(PDOCB pdocb, PGCB pgcb) : GOB(pgcb)
@@ -1417,7 +1843,7 @@ DMD::DMD(PDOCB pdocb, PGCB pgcb) : GOB(pgcb)
     _pdocb = pdocb;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Activate the next DDG (after the given one).
 ***************************************************************************/
 void DMD::ActivateNext(PDDG pddg)
@@ -1441,7 +1867,7 @@ void DMD::ActivateNext(PDDG pddg)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handle activation/deactivation of the hwnd.
 ***************************************************************************/
 void DMD::_ActivateHwnd(bool fActive)
@@ -1454,12 +1880,12 @@ void DMD::_ActivateHwnd(bool fActive)
         pddg->Activate(fActive);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Handles cidCloseWnd.
 ***************************************************************************/
 bool DMD::FCmdCloseWnd(PCMD pcmd)
 {
-    // ask the user about saving the doc
+    // 3DMMv1.0: ask the user about saving the doc
     if (!_pdocb->FQueryCloseDmd(this))
     {
         pcmd->cid = cidNil;
@@ -1469,7 +1895,7 @@ bool DMD::FCmdCloseWnd(PCMD pcmd)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DMW (document window) based on the given
     document.
 ***************************************************************************/
@@ -1488,7 +1914,7 @@ PDMW DMW::PdmwNew(PDOCB pdocb, PGCB pgcb)
     return pdmw;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for document window class
 ***************************************************************************/
 DMW::DMW(PDOCB pdocb, PGCB pgcb) : GOB(pgcb)
@@ -1500,7 +1926,7 @@ DMW::DMW(PDOCB pdocb, PGCB pgcb) : GOB(pgcb)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Free the DSED tree so we don't bother with the tree manipulations
     during freeing.  Then call GOB::Free.
 ***************************************************************************/
@@ -1517,14 +1943,14 @@ void DMW::Release(void)
     DMW_PAR::Release();
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the actual mdi window, etc.
 ***************************************************************************/
 bool DMW::_FInit(void)
 {
     _fCreating = fTrue;
 
-    // create a lone dsg
+    // 3DMMv1.0: create a lone dsg
     if (pvNil == _pdocb->PdsgNew(this, pvNil, fdsgNil, krelOne))
         return fFalse;
     AssertPo(_paldsed, 0);
@@ -1534,7 +1960,7 @@ bool DMW::_FInit(void)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The DMW has been resized, make sure no DSGs are too small.
 ***************************************************************************/
 void DMW::_NewRc(void)
@@ -1543,7 +1969,7 @@ void DMW::_NewRc(void)
     _Layout(_idsedRoot);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Add the dsg to the dmw (the dsg is already a child gob - we now promote
     it to a full fledged child dsg).
 ***************************************************************************/
@@ -1561,7 +1987,7 @@ bool DMW::FAddDsg(PDSG pdsg, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
     dsed.idsedPar = ivNil;
     if (pvNil == _paldsed || _paldsed->IvMac() == 0)
     {
-        // this is the first one
+        // 3DMMv1.0: this is the first one
         Assert(pvNil == pdsgSplit, "no DSGs yet, so can't split one");
         if (pvNil == _paldsed && pvNil == (_paldsed = AL::PalNew(SIZEOF(DSED), 1)))
             return fFalse;
@@ -1586,13 +2012,13 @@ bool DMW::FAddDsg(PDSG pdsg, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
     AssertDo(_paldsed->FAdd(&dsed, &idsedEdge), 0);
     AssertDo(_paldsed->FAdd(&dsed, &idsedNew), 0);
 
-    // fix the links on the one being split
+    // 3DMMv1.0: fix the links on the one being split
     qdsed = _Qdsed(idsedSplit);
     Assert(qdsed->pdsg == pdsgSplit, "DSED tree bad");
     idsedPar = qdsed->idsedPar;
     qdsed->idsedPar = idsedEdge;
 
-    // fix the links on the parent
+    // 3DMMv1.0: fix the links on the parent
     if (ivNil == idsedPar)
     {
         Assert(idsedSplit == _idsedRoot, "corrupt DSED tree");
@@ -1610,13 +2036,13 @@ bool DMW::FAddDsg(PDSG pdsg, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
         }
     }
 
-    // construct the new node
+    // 3DMMv1.0: construct the new node
     qdsed = _Qdsed(idsedNew);
     qdsed->idsedPar = idsedEdge;
     qdsed->pdsg = pdsg;
     pdsg->_dsno = idsedNew + 1;
 
-    // construct the Edge node
+    // 3DMMv1.0: construct the Edge node
     qdsed = _Qdsed(idsedEdge);
     qdsed->fVert = FPure(grfdsg & fdsgVert);
     qdsed->rel = rel;
@@ -1638,7 +2064,7 @@ LDone:
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove the dsg from the list of active DSGs.
 ***************************************************************************/
 void DMW::RemoveDsg(PDSG pdsg)
@@ -1652,7 +2078,7 @@ void DMW::RemoveDsg(PDSG pdsg)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Remove the DSG from the tree and set its _dsno to nil.
 ***************************************************************************/
 void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
@@ -1672,7 +2098,7 @@ void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
         return;
     }
 
-    // delete the node
+    // 3DMMv1.0: delete the node
     idsedDel = pdsg->_dsno - 1;
     pdsg->_dsno = dsnoNil;
     _paldsed->Get(idsedDel, &dsed);
@@ -1686,7 +2112,7 @@ void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
         return;
     }
 
-    // get info from the parent, then delete it
+    // 3DMMv1.0: get info from the parent, then delete it
     qdsed = _Qdsed(dsed.idsedPar);
     idsedGrandPar = qdsed->idsedPar;
     if (idsedDel == qdsed->idsedLeft)
@@ -1698,7 +2124,7 @@ void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
     }
     _paldsed->Delete(dsed.idsedPar);
 
-    // fix the sibling and grandparent
+    // 3DMMv1.0: fix the sibling and grandparent
     if (ivNil == idsedGrandPar)
     {
         Assert(_idsedRoot == dsed.idsedPar, "DSED root value wrong");
@@ -1716,7 +2142,7 @@ void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
         }
     }
 
-    // fix the sib
+    // 3DMMv1.0: fix the sib
     qdsed = _Qdsed(idsedSib);
     qdsed->idsedPar = idsedGrandPar;
 
@@ -1724,7 +2150,7 @@ void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the edge corresponding to the given leaf restricted to the subtree
     pointed to by idsedRoot.  We get to the edge by going up until we
     either hit the root (return ivNil) or we just went up a left arc (return
@@ -1732,7 +2158,7 @@ void DMW::_RemoveDsg(PDSG pdsg, int32_t *pidsedStartLayout)
 ***************************************************************************/
 int32_t DMW::_IdsedEdge(int32_t idsed, int32_t idsedRoot)
 {
-    // Don't call AssertThis because AssertValid calls this
+    // 3DMMv1.0: Don't call AssertThis because AssertValid calls this
     AssertBaseThis(0);
     DSED *qdsed;
     int32_t idsedPar;
@@ -1752,13 +2178,13 @@ int32_t DMW::_IdsedEdge(int32_t idsed, int32_t idsedRoot)
             return ivNil;
         idsed = idsedPar;
         idsedPar = qdsed->idsedPar;
-        // keep going up until we're on a left branch
+        // 3DMMv1.0: keep going up until we're on a left branch
     }
-    // we went right all the way up, so we're done
+    // 3DMMv1.0: we went right all the way up, so we're done
     return ivNil;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the next dsed to visit in the sub-tree traversal based at
     idsedStart (pre-order traversal).
 ***************************************************************************/
@@ -1778,7 +2204,7 @@ int32_t DMW::_IdsedNext(int32_t idsed, int32_t idsedRoot)
     return _Qdsed(idsed)->idsedRight;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Re-layout the DSGs in the DMW.  If any become too small, delete them.
 ***************************************************************************/
 void DMW::_Layout(int32_t idsedStart)
@@ -1799,16 +2225,16 @@ LRestart:
     dxpDmw = rc.Dxp();
     dypDmw = rc.Dyp();
 
-    // set rcRel for idsedStart
+    // 3DMMv1.0: set rcRel for idsedStart
     if (idsedStart == _idsedRoot)
     {
-        // put full rcRel in the root
+        // 3DMMv1.0: put full rcRel in the root
         rcRel.xpLeft = rcRel.ypTop = 0;
         rcRel.xpRight = rcRel.ypBottom = krelOne;
     }
     else
     {
-        // get the rcRel for this node from its parent
+        // 3DMMv1.0: get the rcRel for this node from its parent
         idsed = _Qdsed(idsedStart)->idsedPar;
         Assert(ivNil != idsed, "nil parent but not the root!");
         _SplitRcRel(idsed, &rcRel, &rc);
@@ -1823,7 +2249,7 @@ LRestart:
         qdsed = _Qdsed(idsed);
         if (ivNil != qdsed->idsedLeft)
         {
-            // internal node - no DSG
+            // 3DMMv1.0: internal node - no DSG
             DSED dsed;
 
             Assert(ivNil != qdsed->idsedRight, "bad node");
@@ -1834,7 +2260,7 @@ LRestart:
             continue;
         }
 
-        // this is a leaf
+        // 3DMMv1.0: this is a leaf
         Assert(ivNil == qdsed->idsedRight, "bad node");
         rcRel = qdsed->rcRel;
         pdsg = qdsed->pdsg;
@@ -1846,24 +2272,24 @@ LRestart:
         rcDsg.ypBottom = LwMulDiv(dypDmw, rcRel.ypBottom, krelOne);
         if ((rcDsg.Dxp() < rc.xpLeft || rcDsg.Dyp() < rc.ypTop) && idsed != _idsedRoot)
         {
-            // DSG is becoming too small and it's not the only one, so nuke it
-            // and restart this routine from the top.
+            // 3DMMv1.0: DSG is becoming too small and it's not the only one, so nuke it
+            // 3DMMv1.0: and restart this routine from the top.
 
-            // Remove the dsg first so we don't recursively enter _Layout
+            // 3DMMv1.0: Remove the dsg first so we don't recursively enter _Layout
             _RemoveDsg(pdsg, &idsedStart);
             ReleasePpo(&pdsg);
             goto LRestart;
         }
     }
 
-    // now go through and actually set the positions
+    // 3DMMv1.0: now go through and actually set the positions
     for (idsed = idsedStart; ivNil != idsed; idsed = _IdsedNext(idsed, idsedStart))
     {
         qdsed = (DSED *)_paldsed->QvGet(idsed);
         if (ivNil != qdsed->idsedLeft)
             continue;
 
-        // this is a leaf
+        // 3DMMv1.0: this is a leaf
         Assert(ivNil == qdsed->idsedRight, "bad node");
         rcRel = qdsed->rcRel;
         pdsg = qdsed->pdsg;
@@ -1876,7 +2302,7 @@ LRestart:
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Find the two child rc's from the DSED's rc.
 ***************************************************************************/
 void DMW::_SplitRcRel(int32_t idsed, RC *prcLeft, RC *prcRight)
@@ -1896,7 +2322,7 @@ void DMW::_SplitRcRel(int32_t idsed, RC *prcLeft, RC *prcRight)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Return the number of DSGs.
 ***************************************************************************/
 int32_t DMW::Cdsg(void)
@@ -1921,7 +2347,7 @@ int32_t DMW::Cdsg(void)
     return cdsg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the rectangles for the split associated with pdsg and for the area
     that the split affects.
 ***************************************************************************/
@@ -1968,7 +2394,7 @@ void DMW::GetRcSplit(PDSG pdsg, RC *prcBounds, RC *prcSplit)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Move the split corresponding to the given DSG.
 ***************************************************************************/
 void DMW::MoveSplit(PDSG pdsg, int32_t relNew)
@@ -1990,15 +2416,15 @@ void DMW::MoveSplit(PDSG pdsg, int32_t relNew)
         return;
     }
 
-    // REVIEW shonk: if relNew is 0 or krelOne, we could nuke the
-    // subtree first.  Then layout would be faster.
+    // 3DMMv1.0: REVIEW shonk: if relNew is 0 or krelOne, we could nuke the
+    // 3DMMv1.0: subtree first.  Then layout would be faster.
     qdsed = _Qdsed(idsedEdge);
     qdsed->rel = relNew;
     _Layout(idsedEdge);
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine whether the split corresponding to pdsg is vertical,
     horizontal or inactive.
 ***************************************************************************/
@@ -2017,7 +2443,7 @@ tribool DMW::TVert(PDSG pdsg)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the DMW.
 ***************************************************************************/
 void DMW::AssertValid(uint32_t grfobj)
@@ -2043,7 +2469,7 @@ void DMW::AssertValid(uint32_t grfobj)
     if (!(grfobj & fobjAssertFull))
         return;
 
-    // count the number of active dseds
+    // 3DMMv1.0: count the number of active dseds
     cdsed = 0;
     for (idsed = _paldsed->IvMac(); idsed-- != 0;)
     {
@@ -2056,7 +2482,7 @@ void DMW::AssertValid(uint32_t grfobj)
         Assert(!_paldsed->FFree(idsed), "free node!");
         dsed = *_Qdsed(idsed);
 
-        // verify the parent pointer
+        // 3DMMv1.0: verify the parent pointer
         Assert(FPure(idsed == _idsedRoot) == FPure(ivNil == dsed.idsedPar), "dsed.idsedPar isn't right");
         if (ivNil != dsed.idsedPar)
             Assert(!_paldsed->FFree(dsed.idsedPar), "free node!");
@@ -2086,7 +2512,7 @@ void DMW::AssertValid(uint32_t grfobj)
             break;
         }
 
-        // find the next node
+        // 3DMMv1.0: find the next node
         if (ivNil != dsed.idsedLeft)
         {
             idsed = dsed.idsedLeft;
@@ -2104,7 +2530,7 @@ void DMW::AssertValid(uint32_t grfobj)
     Assert(cdsed == 0, "node count wrong");
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Mark memory used by the DMW.
 ***************************************************************************/
 void DMW::MarkMem(void)
@@ -2112,14 +2538,14 @@ void DMW::MarkMem(void)
     DMW_PAR::MarkMem();
     MarkMemObj(_paldsed);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
 BEGIN_CMD_MAP(DSG, GOB)
 ON_CID_ME(cidDoScroll, &DSG::FCmdScroll, pvNil)
 ON_CID_ME(cidEndScroll, &DSG::FCmdScroll, pvNil)
 END_CMD_MAP_NIL()
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new DSG.
 ***************************************************************************/
 PDSG DSG::PdsgNew(PDMW pdmw, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
@@ -2141,7 +2567,7 @@ PDSG DSG::PdsgNew(PDMW pdmw, PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
     return pdsg;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for DSG.
 ***************************************************************************/
 DSG::DSG(PGCB pgcb) : GOB(pgcb)
@@ -2150,7 +2576,7 @@ DSG::DSG(PGCB pgcb) : GOB(pgcb)
     AssertThis(fobjAssertFull);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Destructor for DSG - remove ourselves from the DMW.
 ***************************************************************************/
 DSG::~DSG(void)
@@ -2158,7 +2584,7 @@ DSG::~DSG(void)
     Pdmw()->RemoveDsg(this);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Create the scroll bars, the DDG and do any other DSG initialization.
 ***************************************************************************/
 bool DSG::_FInit(PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
@@ -2169,11 +2595,11 @@ bool DSG::_FInit(PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
 
     _fCreating = fTrue;
 
-    // create the split mover
+    // 3DMMv1.0: create the split mover
     if (pvNil == DSSM::PdssmNew(this))
         return fFalse;
 
-    // Create the scroll bars and split boxes
+    // 3DMMv1.0: Create the scroll bars and split boxes
     GCB gcb(khidVScroll, this);
     SCB::GetStandardRc(fscbVert | fscbShowBottom | fscbShowRight, &gcb._rcAbs, &gcb._rcRel);
     gcb._rcAbs.ypTop += DSSP::DypNormal();
@@ -2190,7 +2616,7 @@ bool DSG::_FInit(PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
         return fFalse;
     }
 
-    // create a ddg
+    // 3DMMv1.0: create a ddg
     pdmw = Pdmw();
     AssertBasePo(pdmw, 0);
     pdocb = pdmw->Pdocb();
@@ -2200,7 +2626,7 @@ bool DSG::_FInit(PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
     if (pvNil == (_pddg = pdocb->PddgNew(&gcb)))
         return fFalse;
 
-    // add ourselves to the pdmw
+    // 3DMMv1.0: add ourselves to the pdmw
     if (!pdmw->FAddDsg(this, pdsgSplit, grfdsg, rel))
         return fFalse;
 
@@ -2208,7 +2634,7 @@ bool DSG::_FInit(PDSG pdsgSplit, uint32_t grfdsg, int32_t rel)
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Get the min and max sizes for the DSG.
 ***************************************************************************/
 void DSG::GetMinMax(RC *prcMinMax)
@@ -2220,14 +2646,14 @@ void DSG::GetMinMax(RC *prcMinMax)
     AssertPo(_pddg, 0);
     _pddg->GetMinMax(prcMinMax);
 
-    // impose our own min and add the scroll bar dimensions
+    // 3DMMv1.0: impose our own min and add the scroll bar dimensions
     prcMinMax->xpLeft = dxpScb + LwMax(prcMinMax->xpLeft, DSSP::DxpNormal() + dxpScb);
     prcMinMax->ypTop = dypScb + LwMax(prcMinMax->ypTop, DSSP::DypNormal() + dypScb);
     prcMinMax->xpRight = LwMax(prcMinMax->xpLeft, dxpScb + prcMinMax->xpRight);
     prcMinMax->ypBottom = LwMax(prcMinMax->ypTop, dypScb + prcMinMax->ypBottom);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Split the DSG into two dsg's.
 ***************************************************************************/
 void DSG::Split(uint32_t grfdsg, int32_t rel)
@@ -2242,12 +2668,12 @@ void DSG::Split(uint32_t grfdsg, int32_t rel)
     pdocb->PdsgNew(pdmw, this, grfdsg, rel);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     A scroll bar has been hit.  Do the scroll.
 ***************************************************************************/
 bool DSG::FCmdScroll(PCMD pcmd)
 {
-    // just pass it on to the DDG
+    // 3DMMv1.0: just pass it on to the DDG
     AssertThis(0);
     CMD cmd = *pcmd;
 
@@ -2257,7 +2683,7 @@ bool DSG::FCmdScroll(PCMD pcmd)
 }
 
 #ifdef DEBUG
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Assert the validity of the DSG.
 ***************************************************************************/
 void DSG::AssertValid(uint32_t grfobj)
@@ -2268,9 +2694,9 @@ void DSG::AssertValid(uint32_t grfobj)
     pdmw = (PDMW)PgobPar();
     AssertBasePo(pdmw, 0);
 }
-#endif // DEBUG
+#endif // 3DMMv1.0: DEBUG
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the splitter.
 ***************************************************************************/
 DSSP::DSSP(PGCB pgcb) : GOB(pgcb)
@@ -2278,7 +2704,7 @@ DSSP::DSSP(PGCB pgcb) : GOB(pgcb)
     AssertThis(0);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new split box.
 ***************************************************************************/
 PDSSP DSSP::PdsspNew(PDSG pdsg, uint32_t grfdssp)
@@ -2309,7 +2735,7 @@ PDSSP DSSP::PdsspNew(PDSG pdsg, uint32_t grfdssp)
     return NewObj DSSP(&gcb);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the split box.
 ***************************************************************************/
 void DSSP::Draw(PGNV pgnv, RC *prcClip)
@@ -2321,7 +2747,7 @@ void DSSP::Draw(PGNV pgnv, RC *prcClip)
     pgnv->FillRc(&rc, kacrBlack);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     See if the parent DSG can be split.  If so, track the mouse and draw
     the gray outline until the user releases the mouse.
 ***************************************************************************/
@@ -2367,14 +2793,14 @@ void DSSP::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Constructor for the split mover.
 ***************************************************************************/
 DSSM::DSSM(PGCB pgcb) : GOB(pgcb)
 {
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Static method to create a new split mover.
 ***************************************************************************/
 PDSSM DSSM::PdssmNew(PDSG pdsg)
@@ -2391,7 +2817,7 @@ PDSSM DSSM::PdssmNew(PDSG pdsg)
     return pdssm;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Draw the split mover.
 ***************************************************************************/
 void DSSM::Draw(PGNV pgnv, RC *prcClip)
@@ -2404,14 +2830,14 @@ void DSSM::Draw(PGNV pgnv, RC *prcClip)
     if (tMaybe == tVert)
         return;
 
-    // REVIEW shonk: split mover: need an appropriate icon
+    // 3DMMv1.0: REVIEW shonk: split mover: need an appropriate icon
     GetRc(&rc, cooLocal);
     pgnv->FrameRc(&rc, kacrBlack);
     rc.Inset(1, 1);
     pgnv->FillRc(&rc, tVert == tYes ? kacrGreen : kacrRed);
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Track the mouse and change the split location.
 ***************************************************************************/
 void DSSM::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
@@ -2469,7 +2895,7 @@ void DSSM::MouseDown(int32_t xp, int32_t yp, int32_t cact, uint32_t grfcust)
     }
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Determine if we are disabled (tMaybe) or if not whether we are vertical
     (tYes) or horizontal (tNo).
 ***************************************************************************/
@@ -2483,4 +2909,4 @@ tribool DSSM::TVert(void)
     return pdmw->TVert(pdsg);
 }
 
-#endif // !MAC
+#endif // 3DMMEx: !MAC

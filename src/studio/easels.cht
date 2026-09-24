@@ -34,7 +34,7 @@ CREATE_SCRIPT("Costume changer")
 	CreateChildThis(kidSpltBackground, kidSpltBackground);
 ENDCHUNK
 CHILD_SCRIPT("Glass clicked", CHID(kstDefault, kchidClick))
-	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, 1);
+	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 
 
@@ -57,6 +57,7 @@ CREATE_SCRIPT("Spletters easel created")
 	CreateChildThis(kidSpltCancel, kidSpltCancel);
 	CreateChildThis(kidSpltOk, kidSpltOk);
 	CreateChildThis(kidSpltEditBox, kidSpltEditBox);
+	CreateChildThis(kidSpltColorPickerHotspot, kidSpltColorPickerHotspot);
 	// help balloon
 	If (!::fHelpOn);
 		CreateHelpGob(kidBackground, ktpcEaselHelp33);
@@ -79,6 +80,19 @@ REP_RECT(CHID(kstDefault, krepDefault), "Visible",
 OBJECT("Spletter easel edit box", kidSpltEditBox, 100, kcrsArrow)
 REP_RECT(CHID(kstDefault, krepDefault), "Visible",
 	kxpSpltEditBoxLeft, kypSpltEditBoxTop, kxpSpltEditBoxRight, kypSpltEditBoxBottom)
+
+// Invisible backup for the native Windows colour picker.
+// ROI: 382,322 through 431,369.  This child exists only while the
+// 3-D Text Dress/Color/Naming easel exists.
+GOBCHUNK("Spletter native colour picker hotspot", kidSpltColorPickerHotspot, kgokkRectHit)
+	DEFAULT_POSITION(382, 322, 150)
+	ACTION(fcustNil, fcustNil, fgrfstAll, kcrsArrow, CHID(kstDefault, kchidClick), cidNil, cnoNil)
+ENDCHUNK
+REP_FILL(CHID(kstDefault, krepDefault), "Invisible", 0, 0, 50, 47, Transparent, Transparent)
+ENDCHUNK
+CLICK_SCRIPT("Spletter native colour picker hotspot clicked")
+	EnqueueCid(cidEaselPickColor, kidSpltGlass, 0, 0, 0, 0);
+ENDCHUNK
 
 //
 // Transmogrify button
@@ -197,6 +211,10 @@ CLICK_SCRIPT("Cancel clicked")
 	EnqueueCid(cidEaselCancel, kidSpltGlass, 0, 0, 0, 0);
 ENDCHUNK
 CHILD_SCRIPT("Spletters easel, cancel, key press", kchidScript2)
+	If ((_parm[3] == kvkeyC) && (_parm[4] & fcustOption));
+		EnqueueCid(cidEaselPickColor, kidSpltGlass, 0, 0, 0, 0);
+		Return(fTrue);
+	End;
 	If(_parm[3] == kvkeyEscape);
 		EnqueueCid(cidEaselCancel, kidSpltGlass, 0, 0, 0, 0);
 		Return(fTrue);
@@ -240,7 +258,7 @@ CREATE_SCRIPT("Costume changer")
 	CreateChildThis(kidCostBackground, kidCostBackground);
 ENDCHUNK
 CHILD_SCRIPT("Glass clicked", CHID(kstDefault, kchidClick))
-	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, 1);
+	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 
 
@@ -261,6 +279,7 @@ CREATE_SCRIPT("Costume changer easel created")
 	CreateChildThis(kidCostCancel, kidCostCancel);
 	CreateChildThis(kidCostOk, kidCostOk);
 	CreateChildThis(kidCostEditBox, kidCostEditBox);
+	CreateChildThis(kidCostColorPickerHotspot, kidCostColorPickerHotspot);
 	ChangeStateGob(kidCostCostumes, kstSelected);
 	// help balloon
 	If (!::fHelpOn);
@@ -282,6 +301,19 @@ REP_RECT(CHID(kstDefault, krepDefault), "Visible",
 OBJECT("Costume changer edit box", kidCostEditBox, 100, kcrsArrow)
 REP_RECT(CHID(kstDefault, krepDefault), "Visible",
 	kxpCostEditBoxLeft, kypCostEditBoxTop, kxpCostEditBoxRight, kypCostEditBoxBottom)
+
+// Invisible backup for the native Windows colour picker on prop easels.
+// ROI: 354,356 through 404,403.  ESLA::FCmdPickColor rejects actors, so
+// this hotspot is harmless on an actor costume easel and active for props.
+GOBCHUNK("Costume native colour picker hotspot", kidCostColorPickerHotspot, kgokkRectHit)
+	DEFAULT_POSITION(354, 356, 150)
+	ACTION(fcustNil, fcustNil, fgrfstAll, kcrsArrow, CHID(kstDefault, kchidClick), cidNil, cnoNil)
+ENDCHUNK
+REP_FILL(CHID(kstDefault, krepDefault), "Invisible", 0, 0, 50, 47, Transparent, Transparent)
+ENDCHUNK
+CLICK_SCRIPT("Costume native colour picker hotspot clicked")
+	EnqueueCid(cidEaselPickColor, kidCostGlass, 0, 0, 0, 0);
+ENDCHUNK
 
 //
 // Costumes.
@@ -366,6 +398,10 @@ CLICK_SCRIPT("Cancel clicked")
 	EnqueueCid(cidEaselCancel, kidCostGlass, 0, 0, 0, 0);
 ENDCHUNK
 CHILD_SCRIPT("Costume easel, cancel, key press", kchidScript2)
+	If ((_parm[3] == kvkeyC) && (_parm[4] & fcustOption));
+		EnqueueCid(cidEaselPickColor, kidCostGlass, 0, 0, 0, 0);
+		Return(fTrue);
+	End;
 	If(_parm[3] == kvkeyEscape);
 		EnqueueCid(cidEaselCancel, kidCostGlass, 0, 0, 0, 0);
 		Return(fTrue);
@@ -555,7 +591,7 @@ REP_ANIM(CHID(kstBrowserDragging, kchidUpOff), "Scene sorter, d&d mouse tracking
 
 		dtimCur = 0;
 
-		PlaySoundThis(kcctgWave, kcnoGrabSnWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundThis(kcctgWave, kcnoGrabSnWav, 0, 0x10000, 1, 0, ksclUISound);
 
 		While(GetModifierState() & fcustMouse);
 			Cell(chidNil, 0, 0, kdtimDrag);
@@ -607,7 +643,7 @@ REP_ANIM(CHID(kstBrowserDragging, kchidUpOff), "Scene sorter, d&d mouse tracking
 
 		ChangeStateGob(kidSSorterBar, kstDefault);
 
-		PlaySoundThis(kcctgWave, kcnoDropSnWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundThis(kcctgWave, kcnoDropSnWav, 0, 0x10000, 1, 0, ksclUISound);
 
 		/* Find the target frame */
 		xpNew = XGob(idSelFrame);
@@ -656,7 +692,7 @@ REP_ANIM(CHID(kstBrowserEnabled, krepMouseDnOn), "Pressed")
 	cgokScroll = GidParThis()->nxFrame * -1;
 
 	/* Send first scroll command */
-	PlaySoundThis(kcctgWave, kcnoPageUpWav, 0, 0x10000, 1, 0, 1);
+	PlaySoundThis(kcctgWave, kcnoPageUpWav, 0, 0x10000, 1, 0, ksclUISound);
 	EnqueueCid(cidSceneSortScroll, kidSSorterBackground, cgokScroll, 0, 0, 0);
 	Cell(CHID(kstBrowserEnabled, krepMouseDnOn), 0, 0, lwDelay);
 
@@ -666,7 +702,7 @@ REP_ANIM(CHID(kstBrowserEnabled, krepMouseDnOn), "Pressed")
 	    If(lwDelay > lwSSorterDelayMin);
 			lwDelay -= kdlwSSorterDelay;
 		End;
-		PlaySoundThis(kcctgWave, kcnoPageUpWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundThis(kcctgWave, kcnoPageUpWav, 0, 0x10000, 1, 0, ksclUISound);
 		EnqueueCid(cidSceneSortScroll, kidSSorterBackground, cgokScroll, 0, 0, 0);
 		Cell(chidNil, 0, 0, lwDelay);
 	End;
@@ -692,7 +728,7 @@ REP_ANIM(CHID(kstBrowserEnabled, krepMouseDnOn), "Pressed")
 	cgokScroll = GidParThis()->nxFrame;
 
 	/* Send first scroll command */
-	PlaySoundThis(kcctgWave, kcnoPageDnWav, 0, 0x10000, 1, 0, 1);
+	PlaySoundThis(kcctgWave, kcnoPageDnWav, 0, 0x10000, 1, 0, ksclUISound);
 	EnqueueCid(cidSceneSortScroll, kidSSorterBackground, cgokScroll, 0, 0, 0);
 	Cell(CHID(kstBrowserEnabled, krepMouseDnOn), 0, 0, lwDelay);
 
@@ -702,7 +738,7 @@ REP_ANIM(CHID(kstBrowserEnabled, krepMouseDnOn), "Pressed")
 	    If(lwDelay > lwSSorterDelayMin);
 			lwDelay -= kdlwSSorterDelay;
 		End;
-		PlaySoundThis(kcctgWave, kcnoPageDnWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundThis(kcctgWave, kcnoPageDnWav, 0, 0x10000, 1, 0, ksclUISound);
 		EnqueueCid(cidSceneSortScroll, kidSSorterBackground, cgokScroll, 0, 0, 0);
 		Cell(chidNil, 0, 0, lwDelay);
 	End;
@@ -921,7 +957,7 @@ ENDCHUNK
 /* Handles mouse up after tracking, "no insert" or "nuke" */
 REP_ANIM(CHID(kstBrowserSelected, kchidDownUpOn), "Scene sorter, frame, mouse up on")
 	If(GetModifierState() & fcustNuke);
-		PlaySoundGob(kidSSorterBackground, kcctgWave, kcnoNukeSnWav, 0, 0x10000, 1, 0, 1);
+		PlaySoundGob(kidSSorterBackground, kcctgWave, kcnoNukeSnWav, 0, 0x10000, 1, 0, ksclUISound);
 		EnqueueCid(cidSceneSortNuke, kidSSorterBackground, 0, 0, 0, 0);
 	End;
 ENDCHUNK
@@ -1028,7 +1064,7 @@ CREATE_SCRIPT("Listener easel for actor - create")
 	CreateChildThis(kidListenBackgroundActor, kidListenBackgroundActor);
 ENDCHUNK
 CHILD_SCRIPT("Glass clicked", CHID(kstDefault, kchidClick))
-	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, 1);
+	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 
 //
@@ -1045,7 +1081,7 @@ CREATE_SCRIPT("Listener easel for background - create")
 	CreateChildThis(kidListenBackgroundBkgd, kidListenBackgroundBkgd);
 ENDCHUNK
 CHILD_SCRIPT("Glass clicked", CHID(kstDefault, kchidClick))
-	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, 1);
+	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 
 //
@@ -1769,7 +1805,7 @@ CREATE_SCRIPT("Recorder easel - create")
 	CreateChildThis(kidRecordBackground, kidRecordBackground);
 ENDCHUNK
 CHILD_SCRIPT("Glass clicked", CHID(kstDefault, kchidClick))
-	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, 1);
+	PlaySoundGob(kidBackground, kcctgWave, kwavSplot, 0, 0x10000, 1, 0, ksclUISound);
 ENDCHUNK
 
 //

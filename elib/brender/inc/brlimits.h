@@ -1,4 +1,4 @@
-/*
+/* BRender:
  * Copyright (c) 1993-1995 by Argonaut Technologies Limited. All rights reserved.
  *
  * $Id: brlimits.h 1.5 1995/02/22 21:37:01 sam Exp $
@@ -15,27 +15,27 @@ extern "C"
 {
 #endif
 
-/*
+/* BRender:
  * Maximum length of an item's name
  */
 #define BR_MAX_NAME 256
 
-/*
+/* BRender:
  * Maximum number of active lights
  */
 #define BR_MAX_LIGHTS 16
 
-/*
+/* BRender:
  * Maximum number of active clip planes
  */
 #define BR_MAX_CLIP_PLANES 6
 
-/*
+/* BRender:
  * Maximum number of resource classes
  */
 #define BR_MAX_RESOURCE_CLASSES 256
 
-/*
+/* BRender:
  * Maximum depth of camera in hierachy
  */
 #define MAX_CAMERA_DEPTH 16

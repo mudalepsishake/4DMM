@@ -1,7 +1,7 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -17,7 +17,7 @@ static bool _FWriteHelpChunk(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar);
 static bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar);
 static void _AppendHelpStnLw(PSTN pstn, PGST pgst, int32_t istn, int32_t lw);
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Export the help topics in their textual representation for compilation
     by chomp.
     REVIEW shonk: this code is a major hack and very fragile.
@@ -72,7 +72,7 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
     pgst = pvNil;
     for (icki = 0; pcfl->FGetCkiCtg(kctgHelpTopic, icki, &cki); icki++)
     {
-        // read the string table if it's there
+        // 3DMMv1.0: read the string table if it's there
         if (pcfl->FGetKidChidCtg(cki.ctg, cki.cno, 0, kctgGst, &kid) &&
             (!pcfl->FFind(kid.cki.ctg, kid.cki.cno, &blck) || pvNil == (pgst = GST::PgstRead(&blck)) ||
              pgst->IvMac() != 6 && (pgst->IvMac() != 5 || !pgst->FAddRgch(PszLit(""), 0))))
@@ -80,7 +80,7 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
             goto LFail;
         }
 
-        // read the topic
+        // 3DMMv1.0: read the topic
         if (!pcfl->FFind(cki.ctg, cki.cno, &blck) || !blck.FUnpackData() || blck.Cb() != SIZEOF(HTOPF) ||
             !blck.FRead(&htopf))
         {
@@ -91,13 +91,13 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
         else if (htopf.bo != kboCur)
             goto LFail;
 
-        // dump the htop's cno definition
+        // 3DMMv1.0: dump the htop's cno definition
         chse.DumpSz(PszLit(""));
         stn.FFormatSz(PszLit("SET _help_%x_%x="), cki.ctg, cki.cno);
         _AppendHelpStnLw(&stn, pgst, 1, cki.cno);
         chse.DumpSz(stn.Psz());
 
-        // dump the single chunk prefix
+        // 3DMMv1.0: dump the single chunk prefix
         pcfl->FGetName(cki.ctg, cki.cno, &stnT);
         stnT.FExpandControls();
         chse.DumpSz(PszLit(""));
@@ -109,7 +109,7 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
         chse.DumpSz(PszLit("#endif //HELP_SINGLE_CHUNK"));
         stn.FAppendCh(ChLit('2'));
 
-        // dump the HTOPF
+        // 3DMMv1.0: dump the HTOPF
         chse.DumpSz(PszLit(""));
         chse.DumpSz(stn.Psz());
 
@@ -126,7 +126,7 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
 
         chse.DumpSz(PszLit("ENDCHUNK"));
 
-        // dump child chunks
+        // 3DMMv1.0: dump child chunks
         cge.Init(pcfl, cki.ctg, cki.cno);
         while (cge.FNextKid(&kid, &ckiPar, &grfcge, fcgeNil))
         {
@@ -139,7 +139,7 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
             chse.DumpSz(PszLit(""));
             if (kid.cki.ctg == kctgTxtPropArgs)
             {
-                // special handling of argument AG
+                // 3DMMv1.0: special handling of argument AG
                 if (!_FWriteHelpPropAg(pcfl, &chse, &kid, &ckiPar))
                     goto LFail;
             }
@@ -147,14 +147,14 @@ bool FExportHelpText(PCFL pcfl, PMSNK pmsnk)
             {
                 if (kid.cki.ctg == kctgGst)
                 {
-                    // put "#ifndef NO_HELP_SYMBOLS" before it
+                    // 3DMMv1.0: put "#ifndef NO_HELP_SYMBOLS" before it
                     chse.DumpSz(PszLit("#ifndef NO_HELP_SYMBOLS"));
                 }
                 if (!_FWriteHelpChunk(pcfl, &chse, &kid, &ckiPar))
                     goto LFail;
                 if (kid.cki.ctg == kctgGst)
                 {
-                    // put "#endif //!NO_HELP_SYMBOLS" after it
+                    // 3DMMv1.0: put "#endif //!NO_HELP_SYMBOLS" after it
                     chse.DumpSz(PszLit("#endif //!NO_HELP_SYMBOLS"));
                 }
             }
@@ -176,7 +176,7 @@ LFail:
     return fRet;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Dump a chunk as text to the given chse.
 ***************************************************************************/
 bool _FWriteHelpChunk(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
@@ -193,7 +193,7 @@ bool _FWriteHelpChunk(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
     if (!pcfl->FFind(pkid->cki.ctg, pkid->cki.cno, &blck))
         return fFalse;
 
-    // dump the CHUNK declaration
+    // 3DMMv1.0: dump the CHUNK declaration
     pchse->DumpSz(PszLit("SET _help_cno++"));
     stn.FFormatSz(PszLit("SET _help_%x_%x=_help_cno"), pkid->cki.ctg, pkid->cki.cno);
     pchse->DumpSz(stn.Psz());
@@ -202,7 +202,7 @@ bool _FWriteHelpChunk(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
     stn.FFormatSz(PszLit("CHUNK('%f', _help_cno, __HELP_NAME(\"%s\")) __HELP_PACK2"), pkid->cki.ctg, &stnT);
     pchse->DumpSz(stn.Psz());
 
-    // dump the PARENT declaration
+    // 3DMMv1.0: dump the PARENT declaration
     stn.FFormatSz(PszLit("PARENT('%f', _help_%x_%x, 0x%x)"), pckiPar->ctg, pckiPar->ctg, pckiPar->cno, pkid->chid);
     pchse->DumpSz(stn.Psz());
 
@@ -233,16 +233,16 @@ bool _FWriteHelpChunk(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
     }
     else
     {
-        // dump the data
+        // 3DMMv1.0: dump the data
         pchse->DumpBlck(&blck);
     }
 
-    // dump the ENDCHUNK
+    // 3DMMv1.0: dump the ENDCHUNK
     pchse->DumpSz(PszLit("ENDCHUNK"));
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Write the property AG.  This requires special processing
 ***************************************************************************/
 bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
@@ -268,7 +268,7 @@ bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
         return fFalse;
     }
 
-    // dump the CHUNK declaration
+    // 3DMMv1.0: dump the CHUNK declaration
     pchse->DumpSz(PszLit("SET _help_cno++"));
     stn.FFormatSz(PszLit("SET _help_%x_%x=_help_cno"), pkid->cki.ctg, pkid->cki.cno);
     pchse->DumpSz(stn.Psz());
@@ -277,14 +277,14 @@ bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
     stn.FFormatSz(PszLit("CHUNK('%f', _help_cno, __HELP_NAME(\"%s\")) __HELP_PACK2"), pkid->cki.ctg, &stnT);
     pchse->DumpSz(stn.Psz());
 
-    // dump the PARENT declaration
+    // 3DMMv1.0: dump the PARENT declaration
     stn.FFormatSz(PszLit("PARENT('%f', _help_%x_%x, 0x%x)"), pckiPar->ctg, pckiPar->ctg, pckiPar->cno, pkid->chid);
     pchse->DumpSz(stn.Psz());
 
-    // dump the AG declaration
+    // 3DMMv1.0: dump the AG declaration
     pchse->DumpSz(PszLit("AG(4)"));
 
-    // dump the items
+    // 3DMMv1.0: dump the items
     for (iv = 0; iv < pag->IvMac(); iv++)
     {
         if (pag->FFree(iv))
@@ -303,7 +303,7 @@ bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
 
         switch (B3Lw(lw))
         {
-        case 64: // sprmGroup
+        case 64: // 3DMMv1.0: sprmGroup
             if (cb <= SIZEOF(uint8_t) + SIZEOF(CNO))
                 goto LWriteCore;
             if (cb > SIZEOF(rgb))
@@ -327,11 +327,11 @@ bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
             pchse->DumpSz(stn.Psz());
             break;
 
-        case 192: // sprmObject
+        case 192: // 3DMMv1.0: sprmObject
             if (cb <= SIZEOF(CKI))
                 goto LWriteCore;
 
-            // an object
+            // 3DMMv1.0: an object
             pag->GetRgb(iv, 0, SIZEOF(CKI), &cki);
             switch (cki.ctg)
             {
@@ -423,7 +423,7 @@ bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
 
         default:
         LWriteCore:
-            // just write the data
+            // 3DMMv1.0: just write the data
             pchse->DumpSz(PszLit("\t\tVAR"));
             pchse->DumpRgb(pag->PvLock(iv), cb, 3);
             pag->Unlock();
@@ -431,14 +431,14 @@ bool _FWriteHelpPropAg(PCFL pcfl, PCHSE pchse, KID *pkid, CKI *pckiPar)
         }
     }
 
-    // dump the ENDCHUNK
+    // 3DMMv1.0: dump the ENDCHUNK
     ReleasePpo(&pag);
     pchse->DumpSz(PszLit("ENDCHUNK"));
 
     return fTrue;
 }
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Append a string or number.
 ***************************************************************************/
 void _AppendHelpStnLw(PSTN pstn, PGST pgst, int32_t istn, int32_t lw)

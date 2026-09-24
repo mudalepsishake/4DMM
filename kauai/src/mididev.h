@@ -1,10 +1,10 @@
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/* Copyright (c) Microsoft Corporation.
+/* 3DMMv1.0: Copyright (c) Microsoft Corporation.
    Licensed under the MIT License. */
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     Author: ShonK
     Project: Kauai
     Copyright (c) Microsoft Corporation
@@ -15,7 +15,7 @@
 #ifndef MIDIDEV_H
 #define MIDIDEV_H
 
-/***************************************************************************
+/** 3DMMv1.0: *************************************************************************
     The midi player.
 ***************************************************************************/
 typedef class MIDP *PMIDP;
@@ -35,9 +35,9 @@ class MIDP : public MIDP_PAR
     static PMIDP PmidpNew(void);
     ~MIDP(void);
 
-    // inherited methods
+    // 3DMMv1.0: inherited methods
     virtual void SetVlm(int32_t vlm) override;
     virtual int32_t VlmCur(void) override;
 };
 
-#endif //! MIDIDEV_H
+#endif //! 3DMMv1.0: MIDIDEV_H
