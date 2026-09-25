@@ -22,7 +22,7 @@ The basic idea is simple: **what if 3D Movie Maker had kept developing instead o
 
 ### Modern rendering
 
-- Introducing BLAZE engine--4DMM's proprietary Blazing Render-based engine
+- Introducing BLAZE engine--4DMM's proprietary open-source (Blazing Render-based) engine
 - Modern OpenGL 4.3 renderer integrated throughout the application
 - 24-bit color instead of the original 256-color rendering path
 - Per-pixel lighting/shading
@@ -30,7 +30,7 @@ The basic idea is simple: **what if 3D Movie Maker had kept developing instead o
 - 16x Anisotropic filtering
 - Say goodbye to 3DMM's texture inconsistencies. With BLAZE, textures are a breeze
 - Run the editor's movie view and play back movies--new and old--at any resolution
-- Render support for your monitor's native resolution--or work utilize a dual monitor setup
+- Render support for your monitor's native resolution--or utilize a dual-monitor setup
 - Dynamic light controls including intensity, range/distance, and gradiency
 - Support for up to 48 lights per scene
 - Lights can be positioned using the same tools 3DMM uses for positioning other objects
@@ -59,12 +59,12 @@ The basic idea is simple: **what if 3D Movie Maker had kept developing instead o
 
 ### Actor Studio
 
-Actor Studio has been substantially expanded the capabilities of 3DMM for directors interested in taking their creations to the next level:
+Actor Studio substantially expands the capabilities of 3DMM for directors interested in taking their creations to the next level:
 
-- Import object groups into actor studio and create animations for them which can reused the same way as default actors' animations.
+- Import object groups into actor studio and create animations for them which can be reused the same way as default actors' animations.
 - Or, create new animations for default actors, with the ability to fully pose and manipulate their bodies frame by frame.
     - Portray actions, expressions and emotions which were never possible before
-- Re-use handmade characters and the animations you mnake for them just like default actors. Fill up an entire scene with your characters.
+- Re-use handmade characters and the animations you make for them just like default actors. Fill up an entire scene with your characters.
 - Full editor with the controls of 3DMM:
 - Pose actors as needed to create new Actions (animations)  and stances showing what actors are doing more clearly
 - Reposition, vertical movement, pitch, yaw, and roll
@@ -82,11 +82,11 @@ Actor Studio is still under active development and is expected to continue chang
 
 ### Asset and conversion work
 
-4DMM retains compatibility with classic 3DMM assets while expanding what can be brought into the application. Modern OBJ / GLTF / FBX to VXP2 conversion tooling is under active development, including higher-quality texture handling and compatibility work for modern game-engine assets. 4DMM uses its own file format to store frame-by-frame camera positioning information, object groupings, light properties, shadow properties, and more. We will be implementing a new file format so that all of these new features will be saveable alongside the existing (and improved) features of VMM files.
+4DMM retains compatibility with classic 3DMM assets while expanding what can be brought into the application. Modern OBJ / GLTF / FBX to VXP2 conversion tooling is under active development, including higher-quality texture handling and compatibility work for modern game-engine assets. 4DMM uses its own file format (currently a .3ct sidecar file) to store frame-by-frame camera positioning information, object groupings, light properties, shadow properties, and more. In the release candidate, we'll be implementing a new file format so that all of these new features will be saveable alongside the existing (and improved) features of VMM files.
 
 ## Why 4DMM?
 
-Modern 3D applications are extraordinarily capable, but that capability often comes with a large interaction and workflow burden that can take years to master even the basic. Original 3D Movie Maker approached the problem from the opposite direction: learn while doing--grab something, move it, animate it, add sound, and make a movie. Expanding on this approach is the foundation of 4DMM.
+Modern 3D applications are extraordinarily capable, but that capability often comes with a large interaction and workflow burden that can take years to master even the basics. Original 3D Movie Maker approached the problem from the opposite direction: learn while doing--grab something, move it, animate it, add sound, and make a movie. Expanding on this approach is the foundation of 4DMM.
 
 4DMM is an attempt to continue that design philosophy without freezing the technology in 1995.
 
@@ -123,9 +123,6 @@ Ctrl+Next: duplicate after current and select the new frame.
 Ctrl+Previous: duplicate before current and select the new frame.
 Shift+Ctrl+Next/Previous: same placement, but the inserted frame contains no actors, props, or text boxes for that frame only.
 Ctrl+Alt+Next/Previous: pops up dialog asking how many frames to insert from current frame
-CTRL+S makes an object no longer selectable. double clicking on it in the browser re-enables selection. double clicking toggle selection in browsers. "(X)" before object name means it is not currently selectable
-ALT+CLICK
-ALT+CLICK AND DRAG this allows for applying tools to objects which are otherwise not selectable due to their current size or position in relation to other objects. once the object is currently selected, simply hold the alt key and click or click and drag any where on the screen to use the current tool on the object. 
 CTRL+ALT+D delete frames in bulk from current position. similar to CTRL+ALT+Next frame or CTRL+ALT+Previous frame except deletes the number of frames you enter from the currently displayed frame.
 
 ACTORS + PROPS TAB CONTROLS
@@ -173,31 +170,33 @@ A) Paste any and all actor(s), prop(s) and/or 3DWords contained in the OG you ar
 B) Take each actor/prop/3dword in the OG and translate them into PGs in the same actor/prop (whose PG you are attempting to paste into).
 
 MANUAL CAMERA MODE
-Click: enters manual camera mode [2nd toggle from the middle under scenes]
+Click: enters manual camera mode [2nd toggle from the middle in the SCENE tab]
 Left/Right: saves, then moves to the adjacent frame. A depth-tween frame is refused with the requested message.
 E: saves the live camera and opens the editable manual-camera text window.
 
 Ctrl+click the lit Manual Camera button: opens that same editor.
 light on manual camera mode button: light on = manual camera position is specified for current frame
 
-depth tween controls:
-click on the 1st toggle from the middle under scenes: enters depth tween dialogue, allows for editing distance of tween between two frames, as well as the frame range for the tween, and the yaw angle for the tween
-Invisible button: aligns depth tween yaw with longest edge of object that has long edge going away from the camera, like as if the camera was looking down a street
-toggle on the far right in the OBJECTS tab: allows for synchronizing an actors movement with the camera's motion tween, or not
+#Depth Camera Tween 
+- click on the 1st toggle from the middle under scenes: enters depth tween dialogue, allows for editing distance of tween between two frames, as well as the frame range for the tween, and the yaw angle for the tween
+- Invisible button: aligns depth tween yaw with longest edge of object that has long edge going away from the camera, like as if the camera was looking down a street. To use it, fire select the object so its yellow selection box appears. Then click the SCENE tab and click the invisible button (it is the grey square immediately to the left of the Scissor-icon buttons). (Work in progress: I have an icon for this button but I haven't implemented it yet because there might be significant UI changes and this buttons location might change).
+- toggle on the far right in the ACTORS and PROPS tab: allows for synchronizing an actors movement with the camera's motion tween, or not (this means if you are making an actor run, for instance, that they will run at the same speed in which the camera moves automatically. Eliminates the need for manual frame-by-frame clicking and dragging to have an actor move at the same pace as the camera).
 
-
-MULTI SELECT
+# MULTI SELECT + SELECTION TOOLS
 shift + left click allows for selection of more than 1 object in the viewport (also works in prop browser -- add)
 shift + right click de-selects an object in the viewport (also works in prop browser -- add)
-CTRL+S - pressing these keys together with a single object selected makes the object non-selectable
+CTRL+S makes an object no longer selectable. Once non-selectable, the object will appear with an "(X)" in front of it in the objects browser. Double clicking on it in the browser makes the object selectable again. Alternatively, simply double clicke on the object in the objects browser to toggle the selectability.
+ALT+CLICK AND DRAG this allows for applying tools to objects which are otherwise not selectable due to their current size or position in relation to other objects. once the object is currently selected, simply hold the alt key and click or click and drag any where on the screen to use the current tool on the object. 
 
-
-
-Free Camera mode - for editing a custom scene from different camera angles - available on actors and props tab:
-F: enables/disables free cam mode. pressing F while free cam mode is active returns the cam to its specified position for the current frame
-Esc + Tab: exits free cam mode without resetting camera so editing props is possible from a different camera position. does not save camera position to frame.
-W,A,S,D, mouse x, and mouse y: standard shooter-style movement
+# Free Camera mode - 
+for editing a custom scene from different camera angles - only available with the ACTORS and PROPS tab open.
+F: enables/disables free cam mode. pressing F while free cam mode is active freezes the cam where it currently is and exits free cam mode. This allows for editing props from a different camera position.
+LEFT CLICK or TAB: pressing left click while free cam mode is active freezes the cam where it currently is and exits free cam mode.
+ESC: exits free cam mode, resetting the camera to its current position for the current frame.
+W,A,S,D, mouse x, and mouse y: standard first person game style camera movement
+E and Q: Adjust roll angle (it works but there's room for improvement).
 Shift: enables/disables the ability to change the height of the camera. disabling this after 'flying upwards' results in the free camera then being incapable of changing its y-value at the current altitude 
+Access the free cam settings in the CONSOLE (CTRL + ~) by clicking the ADVANCED SETTINGS button.
 
 
 ARGUMENTS
