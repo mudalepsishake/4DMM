@@ -182,13 +182,13 @@ light on manual camera mode button: light on = manual camera position is specifi
 - Invisible button: aligns depth tween yaw with longest edge of object that has long edge going away from the camera, like as if the camera was looking down a street. To use it, fire select the object so its yellow selection box appears. Then click the SCENE tab and click the invisible button (it is the grey square immediately to the left of the Scissor-icon buttons). (Work in progress: I have an icon for this button but I haven't implemented it yet because there might be significant UI changes and this buttons location might change).
 - toggle on the far right in the ACTORS and PROPS tab: allows for synchronizing an actors movement with the camera's motion tween, or not (this means if you are making an actor run, for instance, that they will run at the same speed in which the camera moves automatically. Eliminates the need for manual frame-by-frame clicking and dragging to have an actor move at the same pace as the camera).
 
-# MULTI SELECT + SELECTION TOOLS
+## MULTI SELECT + SELECTION TOOLS
 shift + left click allows for selection of more than 1 object in the viewport (also works in prop browser -- add)
 shift + right click de-selects an object in the viewport (also works in prop browser -- add)
 CTRL+S makes an object no longer selectable. Once non-selectable, the object will appear with an "(X)" in front of it in the objects browser. Double clicking on it in the browser makes the object selectable again. Alternatively, simply double clicke on the object in the objects browser to toggle the selectability.
 ALT+CLICK AND DRAG this allows for applying tools to objects which are otherwise not selectable due to their current size or position in relation to other objects. once the object is currently selected, simply hold the alt key and click or click and drag any where on the screen to use the current tool on the object. 
 
-# Free Camera mode - 
+## Free Camera mode - 
 for editing a custom scene from different camera angles - only available with the ACTORS and PROPS tab open.
 F: enables/disables free cam mode. pressing F while free cam mode is active freezes the cam where it currently is and exits free cam mode. This allows for editing props from a different camera position.
 LEFT CLICK or TAB: pressing left click while free cam mode is active freezes the cam where it currently is and exits free cam mode.
@@ -198,11 +198,30 @@ E and Q: Adjust roll angle (it works but there's room for improvement).
 Shift: enables/disables the ability to change the height of the camera. disabling this after 'flying upwards' results in the free camera then being incapable of changing its y-value at the current altitude 
 Access the free cam settings in the CONSOLE (CTRL + ~) by clicking the ADVANCED SETTINGS button.
 
+# HOW TO START 4DMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE
+## Here's instructions on how to start 4DMM so that all features are enabled.
+- There's no way to enable, disable or modify some settings after start up. It might take multiple start up attempts to get 4DMM's external windows to look correct depending on your resolution and Windows settings.
+First, create a shortcut to 3dmovie.exe after you have built (compiled) it.
+## IMPORTANT - YOU MUST ADJUST DPI SCALING TO BE COMPLETED BY APPLICATION:
+- ALT+DOUBLE CLICK on the shortcut to 3dmovie.exe (or right click on 3dmovie.exe and then left click on properties in the menu that appears) 
+- Click on the "Compatibility" tab
+- Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start 4DMM, click on "Change settings for all users" then "Change high DPI settings."
+- Check the box next to "Override high DPI scaling behavior."
+- Click the dropdown menu below the checkbox and then click on "Application" in the menu that appears.
+- Click the OK button to close each window, making sure to click the "Apply" button before clicking the OK button if the window has an "Apply" button.
+(Please note that the above DPI setting will apply to all shortcuts you make to 3dmovie.exe so it shouldn't be necessary to do this again).
 
-ARGUMENTS
-To start with all features enabled, use the following arguments:
-3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 900 -cursor_size 1x -gui_scale 2
+## Use the following arguments for starting 4DMM on a 4K (2160p) monitor:
+3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 4.25x -cursor_size 2x -gui_scale 2
 
+Please note that while the following resolution settings should work, some external window interfaces are still a work in progress at the following resolutions(1)*
+Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:
+3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1
+Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:
+3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1
+(1)* It might be necessary to adjust the gui_scale argument due to your Windows DPI scaling settings: Please try replacing the "-gui_scale 1" argument with the "-gui_scale 2" argument to fix problems with external windows not appearing correctly.
+
+## ARGUMENTS
 DETAILED ARGUMENT INFORMATION
 -c - color depth "rgb888"
 -a - actor shading/lighting
