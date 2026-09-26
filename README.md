@@ -264,11 +264,7 @@ etc.
 -modern_br_log enables the exporting of logs specific to the implementation of the modern OpenGL BRender v1.4  
 -gui_scale changes the gui size. 2 is the default, so setting this to 1 will make the gui look more normal on some resolutions/dpi scales/systems. it supports 1 decimal point. so 1.5 is valid, 1.2 is valid. 3.2 is valid, etc.  
 <details>
-<summary>
-
-**`-resolution 1080`**
-
-</summary>
+<summary><b><span style = "font-family:courier">-resolution 1080</span></b></summary>
 
 This argument can use resolution height numbers. Width is calculated automatically. If you use resolution height numbers and are running the app in windowed mode (recommended), subtract 120 from your current resolution's height. So 1920x1080 or 1080p would have a height of 1080 pixels, so that would be `-resolution 960`, 1280x720 AKA 720p would be `-resolution 600`, 2560x1440 AKA 1440p would be `-resolution 1320`, and 4K AKA 2160p would be `-resolution 2040`.
 
