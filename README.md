@@ -92,15 +92,6 @@ Modern 3D applications are extraordinarily capable, but that capability often co
 
 The project embraces what 3DMM already is. It takes the original to the next level in terms of enabling what was previously not possible with the software by implementing a modern renderer, sophisticated editing tools, richer object manipulation, improved asset workflows, and taking advantage of the last 30 years of technology advancement.
 
-## Project lineage
-
-4DMM is derived from **3DMMEx** by Ben Stone and mcayland, which itself descends from Microsoft's open-source release of the original Microsoft 3D Movie Maker source code.
-
-- 3DMMEx: https://github.com/benstone/3dmmex
-- Microsoft 3D Movie Maker source release: https://github.com/microsoft/Microsoft-3D-Movie-Maker
-
-The modern BRender work in 4DMM also builds on the broader open-source BRender preservation and modernization work performed by the BRender community.
-
 ## Building
 
 4DMM is currently developed primarily on Windows and the build system is still changing.
@@ -304,6 +295,7 @@ Minimum:
 - OpenGL 4.3 GPU with 4 GB VRAM  
 - Reasonably modern 4-core CPU  
 - 8 GB RAM  
+  
 Recommended:  
 - Nvidia GTX 1070 or comparable AMD 8 GB GPU  
 - AMD Ryzen 5 5600X or comparable Intel CPU  
@@ -323,11 +315,11 @@ This is a list of functioning, concrete features of this application which alrea
 
 ## Project lineage
 
-- **Microsoft 3D Movie Maker** — original application and source code, released by Microsoft under the MIT License.
+- **Microsoft 3D Movie Maker** — original application and source code, released by Microsoft under the MIT License. [https://github.com/microsoft/Microsoft-3D-Movie-Maker](https://github.com/microsoft/Microsoft-3D-Movie-Maker)
 - **3DMMForever** — Foone Turing's modernization work following Microsoft's source release.
-- **3DMMEx** — Ben Stone's source port and modernization work, which is the direct upstream base of 4DMM.
+- **3DMMEx** — Ben Stone's source port and modernization work, which is the direct upstream base of 4DMM. [https://github.com/benstone/3dmmex](https://github.com/benstone/3dmmex)
 - **BRender** — the original rendering engine developed by Argonaut Software / Argonaut Technologies.
-- **Blazing Renderer (BRender) 1.4** — the modernized BRender fork used by 4DMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases. Here is a working mirror (as of 9-26-2026) of the BRender project's website: [https://bayareaengineers.com/blazingrender.net](https://www.bayareaengineers.com/blazingrender/)
+- **[Blazing Renderer (BRender) 1.4](https://github.com/BlazingRenderer/BRender)** — the modernized BRender fork used by 4DMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases. Here is a working mirror (as of 9-26-2026) of the BRender project's website: [https://bayareaengineers.com/blazingrender.net](https://www.bayareaengineers.com/blazingrender/)
 
 ## Historical tools and compatibility references
 
