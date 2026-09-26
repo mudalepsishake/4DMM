@@ -105,7 +105,7 @@ The current development branch uses:
 
 Build documentation will be expanded as the project approaches a public binary release. Up until that moment, this repository should be treated as an active development tree rather than a polished build-it-yourself distribution.
 
-# KBD Control:
+# Mouse and Keyboard Controls:
 
 ## GENERAL EDITOR CONTROLS:
 
