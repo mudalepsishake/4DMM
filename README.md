@@ -119,13 +119,13 @@ Build documentation will be expanded as the project approaches a public binary r
 ## GENERAL EDITOR CONTROLS:
 
 ### Frame buttons:
-Ctrl+Next: duplicate after current and select the new frame.
-Ctrl+Previous: duplicate before current and select the new frame.
-Shift+Ctrl+Next/Previous: same placement, but the inserted frame contains no actors, props, or text boxes for that frame only.
+Ctrl+Next Frame: duplicate after current and select the new frame.
+Ctrl+Previous Frame: duplicate before current and select the new frame.
+Ctrl+Shift+Next Frame/Previous Frame: same placement, but the inserted frame contains no actors, props, or text boxes for that frame only.
 Ctrl+Alt+Next/Previous: pops up dialog asking how many frames to insert from current frame
 CTRL+ALT+D delete frames in bulk from current position. similar to CTRL+ALT+Next frame or CTRL+ALT+Previous frame except deletes the number of frames you enter from the currently displayed frame.
 
-### ACTORS + PROPS TAB CONTROLS
+## ACTORS + PROPS TAB CONTROLS
 F - enter free camera mode
 ALT+Y toggles selection box color between the default yellow and the new shaded grey which shows how light is hitting the selected object
 CTRL+grow/shrink tool allows for growing object beyond 10x size to 100x size
@@ -134,22 +134,33 @@ CTRL+ALT+L toggles invisible object lights visibility
 CTRL + ~  and CTRL+~ opens settings
 ESC unselect the currently selected object (removes the selection box)
 
+### MULTI SELECT + SELECTION TOOLS
+
+shift + left click allows for selection of more than 1 object in the viewport (also works in prop browser -- add)
+shift + right click de-selects an object in the viewport (also works in prop browser -- add)
+CTRL+S makes an object no longer selectable. Once non-selectable, the object will appear with an "(X)" in front of it in the objects browser. Double clicking on it in the browser makes the object selectable again. Alternatively, simply double clicke on the object in the objects browser to toggle the selectability.
+ALT+CLICK AND DRAG this allows for applying tools to objects which are otherwise not selectable due to their current size or position in relation to other objects. once the object is currently selected, simply hold the alt key and click or click and drag any where on the screen to use the current tool on the object. 
+
 ### ACTION TOOL:
 RIGHT-CLICK 
 Right-clicking on an object (Actor, Prop or 3D Word) with the Action Tool opens Actor Studio and triggers Actor Studio to automatically select the object you right clicked on upon opening.
 
 ### 3D Words Window controls:
+
 ALT+C - opens up color picker
+RIGHT CLICK on TEXTURE SELECT BUTTON - opens up the Texture Browser
 
-Props Dresser Window controls:
-ALT+C - opens up color picker for basic shape props (is this still CTRL+C?)
+### Costume Dresser Window controls:
 
-ACTOR STUDIO:
+ALT+C - opens up color picker for basic shape props (try CTRL+C if ALT+C is not working) 
+
+## ACTOR STUDIO
+
 CTRL+UP ARROW / CTRL+DOWN ARROW selects the next/previous frame of the currently selected animation (action)
-ALT+UP ARROW/ ALT+DOWN ARROW selects the next/previous selection (Everything/OG[s]/Actors,Props,3dwords/PGs/parts) in the body parts list
+ALT+UP ARROW/ ALT+DOWN ARROW selects the next/previous item in the body parts list
 UP ARROW/DOWN ARROW moves the current selection up/down in the last list (Frames/Parts) which was clicked on
 CTRL+1 selects the Position tool
-CTRL+2 toggles the Up/Down checkbox for the Position tool
+CTRL+2 toggles the Up/Down checkbox for the Position tool and selects the Position tool
 CTRL+Q selects the Pitch rotation tool
 CTRL+W selects the Yaw rotation tool
 CTRL+E selects the Roll rotation tool
@@ -157,6 +168,9 @@ CTRL+R selects the Reset rotation tool
 CTRL+A selects the Grow/Shrink tool
 CTRL+S selects the Stretch/Squash tool
 CTRL+D selects the Grow/Shrink/Stretch/Squash Reset tool
+
+### Actor Studio Camera Controls (For use in main Actor Studio window which is called the Actor Studio Viewport [ASV])
+
 CTRL+MOUSE1 hold down in ASV to move the camera around the object or object group(s)
 MOUSEWHEEL UP/DOWN zooms in and out
 MOUSE3 hold down to adjust the height of the camera
@@ -164,31 +178,24 @@ ALT+MOUSE1 hold down in ASV to use the currently selected tool on the contents o
 CTRL+C copies the contents of the selection box
 CTRL+V pastes the contents of the selection box into the currently selected grouping in the parts list, or the nearest (hierarchically speaking) valid grouping. 
 
-CONSIDERATIONS ON COPYING AND PASTING WITHIN ORGANIZATIONAL STRUCTURES: If you attempt to copy an actor's body part and then paste it into the OG that the actor is in, it's going to create a new actor for that part to be inserted into. 
-If you attempt to copy an OG and paste it inside a PG, it will ask you which of the following you want to do:
-A) Paste any and all actor(s), prop(s) and/or 3DWords contained in the OG you are pasting into the OG that the actor/prop (whose PG you are attempting to paste into) exists in
-B) Take each actor/prop/3dword in the OG and translate them into PGs in the same actor/prop (whose PG you are attempting to paste into).
+## Frame by Frame Moving Camera Controls
 
-MANUAL CAMERA MODE
-Click: enters manual camera mode [2nd toggle from the middle in the SCENE tab]
-Left/Right: saves, then moves to the adjacent frame. A depth-tween frame is refused with the requested message.
-E: saves the live camera and opens the editable manual-camera text window.
+### MANUAL CAMERA MODE
 
-Ctrl+click the lit Manual Camera button: opens that same editor.
-light on manual camera mode button: light on = manual camera position is specified for current frame
+Click: enters manual camera mode [Manual Camera Mode is the 2nd red light toggle to the left of the Scissors buttons in the middle of the SCENE tab]
+Left/Right: saves, then moves to the adjacent frame unless the frame has a camera motion tween beginning in it.
+E: saves the live camera and opens the manual camera properties window
+Ctrl+click Manual Camer Mode button when red light is lit opens the manual camera properties window
+*When the red light is on underneath the Manual Camera mode button, this indicates that a Manucal Camera position has been defined for the current frame.*
 
-#Depth Camera Tween 
-- click on the 1st toggle from the middle under scenes: enters depth tween dialogue, allows for editing distance of tween between two frames, as well as the frame range for the tween, and the yaw angle for the tween
-- Invisible button: aligns depth tween yaw with longest edge of object that has long edge going away from the camera, like as if the camera was looking down a street. To use it, fire select the object so its yellow selection box appears. Then click the SCENE tab and click the invisible button (it is the grey square immediately to the left of the Scissor-icon buttons). (Work in progress: I have an icon for this button but I haven't implemented it yet because there might be significant UI changes and this buttons location might change).
-- toggle on the far right in the ACTORS and PROPS tab: allows for synchronizing an actors movement with the camera's motion tween, or not (this means if you are making an actor run, for instance, that they will run at the same speed in which the camera moves automatically. Eliminates the need for manual frame-by-frame clicking and dragging to have an actor move at the same pace as the camera).
+### Depth Camera Tween 
 
-## MULTI SELECT + SELECTION TOOLS
-shift + left click allows for selection of more than 1 object in the viewport (also works in prop browser -- add)
-shift + right click de-selects an object in the viewport (also works in prop browser -- add)
-CTRL+S makes an object no longer selectable. Once non-selectable, the object will appear with an "(X)" in front of it in the objects browser. Double clicking on it in the browser makes the object selectable again. Alternatively, simply double clicke on the object in the objects browser to toggle the selectability.
-ALT+CLICK AND DRAG this allows for applying tools to objects which are otherwise not selectable due to their current size or position in relation to other objects. once the object is currently selected, simply hold the alt key and click or click and drag any where on the screen to use the current tool on the object. 
+- Click on the 1st toggle from the middle under scenes: enters depth tween properties window, allows for editing distance of tween between two frames, as well as the frame range for the tween, and the camera angle that will be used for the entire tween.
+- Semi-Invisible button: aligns depth tween's yaw angle with the longest edge of object that has its long edge going away from the camera, like as if the camera was looking down a street. To use it, first select the object using the Position (Hand) tool in the ACTORS AND PROPS tab so the object's yellow selection box appears. Then click the SCENE tab and click the semi-invisible button: it's the 1st dark grey square ("unused" button slot) the left of the Scissor-icon buttons. (Work in progress: I have an icon for this button but I haven't implemented it yet because there might be significant UI changes and this buttons location might change).
+- Red-light toggle on the far right in the ACTORS AND PROPS tab: allows for synchronizing an actors movement with the camera's motion tween, or not. This means if you're clicking and holding down the mouse button to make an actor run, for instance, the actor will run at the same speed in which the camera moves automatically. Eliminates the need for manual frame-by-frame clicking and dragging to have an actor move at the same pace as the camera).
 
-## Free Camera mode - 
+## Free Camera Mode
+
 for editing a custom scene from different camera angles - only available with the ACTORS and PROPS tab open.
 F: enables/disables free cam mode. pressing F while free cam mode is active freezes the cam where it currently is and exits free cam mode. This allows for editing props from a different camera position.
 LEFT CLICK or TAB: pressing left click while free cam mode is active freezes the cam where it currently is and exits free cam mode.
@@ -199,10 +206,12 @@ Shift: enables/disables the ability to change the height of the camera. disablin
 Access the free cam settings in the CONSOLE (CTRL + ~) by clicking the ADVANCED SETTINGS button.
 
 # HOW TO START 4DMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE
+
 ## Here's instructions on how to start 4DMM so that all features are enabled.
+
 - There's no way to enable, disable or modify some settings after start up. It might take multiple start up attempts to get 4DMM's external windows to look correct depending on your resolution and Windows settings.
 First, create a shortcut to 3dmovie.exe after you have built (compiled) it.
-## IMPORTANT - YOU MUST ADJUST DPI SCALING TO BE COMPLETED BY APPLICATION:
+### IMPORTANT - YOU MUST ADJUST DPI SCALING TO BE COMPLETED BY APPLICATION:
 - ALT+DOUBLE CLICK on the shortcut to 3dmovie.exe (or right click on 3dmovie.exe and then left click on properties in the menu that appears) 
 - Click on the "Compatibility" tab
 - Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start 4DMM, click on "Change settings for all users" then "Change high DPI settings."
@@ -214,16 +223,25 @@ First, create a shortcut to 3dmovie.exe after you have built (compiled) it.
 ## Use the following arguments for starting 4DMM on a 4K (2160p) monitor:
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 4.25x -cursor_size 2x -gui_scale 2
 
-Please note that while the following resolution settings should work, some external window interfaces are still a work in progress at the following resolutions(1)*
-Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:
+Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable.\*\*\*
+**Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:**
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1
-Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:
+**Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1
-(1)* It might be necessary to adjust the gui_scale argument due to your Windows DPI scaling settings: Please try replacing the "-gui_scale 1" argument with the "-gui_scale 2" argument to fix problems with external windows not appearing correctly.
 
-## ARGUMENTS
-DETAILED ARGUMENT INFORMATION
--c - color depth "rgb888"
+\*\*\*  If an external window appears with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:
+-gui_scale 1.5
+-gui_scale 1.2
+-gui_scale 1.1
+-gui_scale 0.5
+-gui_scale 2.5
+etc.
+
+# ARGUMENTS
+
+##DETAILED ARGUMENT INFORMATION
+
+-c - color depth argument runs 4DMM in 24-bit RGB888 color mode
 -a - actor shading/lighting
 -e - goes straight to editor, skips startup screen, menu screen, and mczee
 -u - undo history - enables the undo history window
