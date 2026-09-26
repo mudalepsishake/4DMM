@@ -119,92 +119,92 @@ Build documentation will be expanded as the project approaches a public binary r
 ## GENERAL EDITOR CONTROLS:
 
 ### Frame buttons:
-<kbd>CTRL</kbd>+NEXT FRAME - Duplicates the current frame after it and selects the new frame.
-<kbd>CTRL</kbd>+PREVIOUS FRAME - Duplicates the current frame before it and selects the new frame.
-<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+NEXT FRAME/PREVIOUS FRAME - Uses the same placement behavior, but the inserted frame contains no actors, props, or text boxes for that frame only.
-<kbd>CTRL</kbd>+<kbd>ALT</kbd>+NEXT FRAME/PREVIOUS FRAME - Opens a dialog asking how many frames to insert from the current frame.
-<kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>D</kbd> - Deletes frames in bulk from the current position. Similar to <kbd>CTRL</kbd>+<kbd>ALT</kbd>+NEXT FRAME or <kbd>CTRL</kbd>+<kbd>ALT</kbd>+PREVIOUS FRAME, except it deletes the number of frames you enter starting from the currently displayed frame.
+<kbd>CTRL</kbd>+NEXT FRAME - Duplicates the current frame after it and selects the new frame.  
+<kbd>CTRL</kbd>+PREVIOUS FRAME - Duplicates the current frame before it and selects the new frame.  
+<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+NEXT FRAME/PREVIOUS FRAME - Uses the same placement behavior, but the inserted frame contains no actors, props, or text boxes for that frame only.  
+<kbd>CTRL</kbd>+<kbd>ALT</kbd>+NEXT FRAME/PREVIOUS FRAME - Opens a dialog asking how many frames to insert from the current frame.  
+<kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>D</kbd> - Deletes frames in bulk from the current position. Similar to <kbd>CTRL</kbd>+<kbd>ALT</kbd>+NEXT FRAME or <kbd>CTRL</kbd>+<kbd>ALT</kbd>+PREVIOUS FRAME, except it deletes the number of frames you enter starting from the currently displayed frame.  
 
 ## ACTORS + PROPS TAB CONTROLS
 
-<kbd>F</kbd> - Enters Free Camera Mode.
-<kbd>ALT</kbd>+<kbd>Y</kbd> - Toggles the selection box color between the default yellow and the new shaded grey, which shows how light is hitting the selected object.
-<kbd>CTRL</kbd>+GROW/SHRINK TOOL - Allows an object to be grown beyond 10x size, up to 100x size.
-<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>L</kbd> - Toggles between lights on and the default 3DMM lights.
-<kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>L</kbd> - Toggles the visibility of invisible object lights.
-<kbd>CTRL</kbd>+<kbd>~</kbd> - Opens settings.
-<kbd>ESC</kbd> - Unselects the currently selected object and removes the selection box.
+<kbd>F</kbd> - Enters Free Camera Mode.  
+<kbd>ALT</kbd>+<kbd>Y</kbd> - Toggles the selection box color between the default yellow and the new shaded grey, which shows how light is hitting the selected object.  
+<kbd>CTRL</kbd>+GROW/SHRINK TOOL - Allows an object to be grown beyond 10x size, up to 100x size.  
+<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>L</kbd> - Toggles between lights on and the default 3DMM lights.  
+<kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>L</kbd> - Toggles the visibility of invisible object lights.  
+<kbd>CTRL</kbd>+<kbd>~</kbd> - Opens settings.  
+<kbd>ESC</kbd> - Unselects the currently selected object and removes the selection box.  
 
 ### MULTI SELECT + SELECTION TOOLS
 
-<kbd>SHIFT</kbd>+LEFT CLICK - Allows selection of more than one object in the viewport. This also works in the prop browser.
-<kbd>SHIFT</kbd>+RIGHT CLICK - Deselects an object in the viewport. This also works in the prop browser.
-<kbd>CTRL</kbd>+<kbd>S</kbd> - Makes an object non-selectable. Once non-selectable, the object appears with an "(X)" in front of it in the objects browser. Double-clicking the object in the browser makes it selectable again. Alternatively, double-click the object in the objects browser to toggle its selectability.
-<kbd>ALT</kbd>+CLICK AND DRAG - Allows tools to be applied to objects that are otherwise difficult or impossible to click because of their current size or position relative to other objects. Once the object is selected, hold the <kbd>ALT</kbd> key and click or click and drag anywhere on the screen to use the current tool on the selected object.
+<kbd>SHIFT</kbd>+LEFT CLICK - Allows selection of more than one object in the viewport. This also works in the prop browser.  
+<kbd>SHIFT</kbd>+RIGHT CLICK - Deselects an object in the viewport. This also works in the prop browser.  
+<kbd>CTRL</kbd>+<kbd>S</kbd> - Makes an object non-selectable. Once non-selectable, the object appears with an "(X)" in front of it in the objects browser. Double-clicking the object in the browser makes it selectable again. Alternatively, double-click the object in the objects browser to toggle its selectability.  
+<kbd>ALT</kbd>+CLICK AND DRAG - Allows tools to be applied to objects that are otherwise difficult or impossible to click because of their current size or position relative to other objects. Once the object is selected, hold the <kbd>ALT</kbd> key and click or click and drag anywhere on the screen to use the current tool on the selected object.  
 
 ### ACTION TOOL:
 
-RIGHT CLICK - Right-clicking an object (Actor, Prop, or 3D Word) with the ACTION TOOL selected opens Actor Studio and automatically selects the object you right-clicked.
+RIGHT CLICK - Right-clicking an object (Actor, Prop, or 3D Word) with the ACTION TOOL selected opens Actor Studio and automatically selects the object you right-clicked.  
 
 ### 3D Words Window controls:
 
-<kbd>ALT</kbd>+<kbd>C</kbd> - Opens the color picker.
-RIGHT CLICK on TEXTURE SELECT BUTTON - Opens the Texture Browser.
+<kbd>ALT</kbd>+<kbd>C</kbd> - Opens the color picker.  
+RIGHT CLICK on TEXTURE SELECT BUTTON - Opens the Texture Browser.  
 
 ### Costume Dresser Window controls:
 
-<kbd>ALT</kbd>+<kbd>C</kbd> - Opens the color picker for basic shape props. Try <kbd>CTRL</kbd>+<kbd>C</kbd> if <kbd>ALT</kbd>+<kbd>C</kbd> is not working.
+<kbd>ALT</kbd>+<kbd>C</kbd> - Opens the color picker for basic shape props. Try <kbd>CTRL</kbd>+<kbd>C</kbd> if <kbd>ALT</kbd>+<kbd>C</kbd> is not working.  
 
 ## ACTOR STUDIO
 
-<kbd>CTRL</kbd>+<kbd>UP ARROW</kbd>/<kbd>CTRL</kbd>+<kbd>DOWN ARROW</kbd> - Selects the next or previous frame of the currently selected animation (Action).
-<kbd>ALT</kbd>+<kbd>UP ARROW</kbd>/<kbd>ALT</kbd>+<kbd>DOWN ARROW</kbd> - Selects the next or previous item in the body parts list.
-<kbd>UP ARROW</kbd>/<kbd>DOWN ARROW</kbd> - Moves the current selection up or down in the last list (Frames/Parts) that was clicked.
-<kbd>CTRL</kbd>+<kbd>1</kbd> - Selects the POSITION TOOL.
-<kbd>CTRL</kbd>+<kbd>2</kbd> - Toggles the UP/DOWN checkbox for the POSITION TOOL and selects the POSITION TOOL.
-<kbd>CTRL</kbd>+<kbd>Q</kbd> - Selects the PITCH ROTATION TOOL.
-<kbd>CTRL</kbd>+<kbd>W</kbd> - Selects the YAW ROTATION TOOL.
-<kbd>CTRL</kbd>+<kbd>E</kbd> - Selects the ROLL ROTATION TOOL.
-<kbd>CTRL</kbd>+<kbd>R</kbd> - Selects the RESET ROTATION TOOL.
-<kbd>CTRL</kbd>+<kbd>A</kbd> - Selects the GROW/SHRINK TOOL.
-<kbd>CTRL</kbd>+<kbd>S</kbd> - Selects the STRETCH/SQUASH TOOL.
-<kbd>CTRL</kbd>+<kbd>D</kbd> - Selects the GROW/SHRINK/STRETCH/SQUASH RESET TOOL.
+<kbd>CTRL</kbd>+<kbd>UP ARROW</kbd>/<kbd>CTRL</kbd>+<kbd>DOWN ARROW</kbd> - Selects the next or previous frame of the currently selected animation (Action).  
+<kbd>ALT</kbd>+<kbd>UP ARROW</kbd>/<kbd>ALT</kbd>+<kbd>DOWN ARROW</kbd> - Selects the next or previous item in the body parts list.  
+<kbd>UP ARROW</kbd>/<kbd>DOWN ARROW</kbd> - Moves the current selection up or down in the last list (Frames/Parts) that was clicked.  
+<kbd>CTRL</kbd>+<kbd>1</kbd> - Selects the Position tool.  
+<kbd>CTRL</kbd>+<kbd>2</kbd> - Toggles the Up/Down checkbox for the Position tool and selects the Position tool.  
+<kbd>CTRL</kbd>+<kbd>Q</kbd> - Selects the Pitch Rotation tool.  
+<kbd>CTRL</kbd>+<kbd>W</kbd> - Selects the Yaw Rotation tool.  
+<kbd>CTRL</kbd>+<kbd>E</kbd> - Selects the Roll Rotation tool.  
+<kbd>CTRL</kbd>+<kbd>R</kbd> - Selects the Reset Rotation tool.  
+<kbd>CTRL</kbd>+<kbd>A</kbd> - Selects the Grow/Shrink tool.  
+<kbd>CTRL</kbd>+<kbd>S</kbd> - Selects the Stretch/Squash tool.  
+<kbd>CTRL</kbd>+<kbd>D</kbd> - Selects the Grow/Shrink/Stretch/Squash Reset tool.  
 
 ### Actor Studio Camera Controls (for use in the main Actor Studio window, called the Actor Studio Viewport [ASV])
 
-<kbd>CTRL</kbd>+MOUSE1 - Hold down in the ASV to move the camera around the object or object group(s).
-MOUSEWHEEL UP/DOWN - Zooms in and out.
-MOUSE3 - Hold down to adjust the height of the camera.
-<kbd>ALT</kbd>+MOUSE1 - Hold down in the ASV to use the currently selected tool on the contents of the selection box. This is intended for cases where a selection will not stay selected when clicked.
-<kbd>CTRL</kbd>+<kbd>C</kbd> - Copies the contents of the selection box.
-<kbd>CTRL</kbd>+<kbd>V</kbd> - Pastes the contents of the selection box into the currently selected grouping in the parts list, or the nearest hierarchically valid grouping.
+<kbd>CTRL</kbd>+MOUSE1 - Hold down in the ASV to move the camera around the object or object group(s).  
+MOUSEWHEEL UP/DOWN - Zooms in and out.  
+MOUSE3 - Hold down to adjust the height of the camera.  
+<kbd>ALT</kbd>+MOUSE1 - Hold down in the ASV to use the currently selected tool on the contents of the selection box. This is intended for cases where a selection will not stay selected when clicked.  
+<kbd>CTRL</kbd>+<kbd>C</kbd> - Copies the contents of the selection box.  
+<kbd>CTRL</kbd>+<kbd>V</kbd> - Pastes the contents of the selection box into the currently selected grouping in the parts list, or the nearest hierarchically valid grouping.  
 
 ## Frame by Frame Moving Camera Controls
 
 ### MANUAL CAMERA MODE
 
-MANUAL CAMERA MODE - Enters Manual Camera Mode. The MANUAL CAMERA MODE button is the second red-light toggle to the left of the SCISSORS buttons in the middle of the SCENE tab.
-<kbd>LEFT ARROW</kbd>/<kbd>RIGHT ARROW</kbd> - Saves, then moves to the adjacent frame unless the frame has a camera motion tween beginning in it.
-<kbd>E</kbd> - Saves the live camera and opens the Manual Camera properties window.
-<kbd>CTRL</kbd>+MANUAL CAMERA MODE - When the red light is lit, opens the Manual Camera properties window.
-MANUAL CAMERA MODE red light - Indicates that a Manual Camera position has been defined for the current frame.
+MANUAL CAMERA MODE - Enters Manual Camera Mode. The MANUAL CAMERA MODE button is the second red-light toggle to the left of the SCISSORS buttons in the middle of the SCENE tab.  
+<kbd>LEFT ARROW</kbd>/<kbd>RIGHT ARROW</kbd> - Saves, then moves to the adjacent frame unless the frame has a camera motion tween beginning in it.  
+<kbd>E</kbd> - Saves the live camera and opens the Manual Camera properties window.  
+<kbd>CTRL</kbd>+MANUAL CAMERA MODE - When the red light is lit, opens the Manual Camera properties window.  
+MANUAL CAMERA MODE red light - Indicates that a Manual Camera position has been defined for the current frame.  
 
 ### Depth Camera Tween
 
-FIRST TOGGLE TO THE LEFT OF THE SCISSORS BUTTONS - Opens the Depth Tween properties window. This allows editing the tween distance between two frames, the frame range for the tween, and the camera angle used for the entire tween.
-SEMI-INVISIBLE BUTTON - Aligns the Depth Tween's yaw angle with the longest edge of an object whose long edge extends away from the camera, such as when the camera is looking down a street. To use it, first select the object with the POSITION (HAND) TOOL in the ACTORS AND PROPS tab so the object's yellow selection box appears. Then click the SCENE tab and click the SEMI-INVISIBLE BUTTON. It is the first dark-grey square ("unused" button slot) to the left of the SCISSORS buttons. Work in progress: an icon exists for this button, but it has not been implemented yet because there may still be significant UI changes and the button's location may change.
-RED-LIGHT TOGGLE on the far right of the ACTORS AND PROPS tab - Allows an actor's movement to be synchronized with the camera's motion tween, or not. For example, if you click and hold the mouse button to make an actor run, the actor will run at the same speed as the camera moves automatically. This eliminates the need for manual frame-by-frame clicking and dragging to make an actor move at the same pace as the camera.
+FIRST TOGGLE TO THE LEFT OF THE SCISSORS BUTTONS - Opens the Depth Tween properties window. This allows editing the tween distance between two frames, the frame range for the tween, and the camera angle used for the entire tween.  
+SEMI-INVISIBLE BUTTON - Aligns the Depth Tween's yaw angle with the longest edge of an object whose long edge extends away from the camera, such as when the camera is looking down a street. To use it, first select the object with the POSITION (HAND) TOOL in the ACTORS AND PROPS tab so the object's yellow selection box appears. Then click the SCENE tab and click the SEMI-INVISIBLE BUTTON. It is the first dark-grey square ("unused" button slot) to the left of the SCISSORS buttons. Work in progress: an icon exists for this button, but it has not been implemented yet because there may still be significant UI changes and the button's location may change.  
+RED-LIGHT TOGGLE on the far right of the ACTORS AND PROPS tab - Allows an actor's movement to be synchronized with the camera's motion tween, or not. For example, if you click and hold the mouse button to make an actor run, the actor will run at the same speed as the camera moves automatically. This eliminates the need for manual frame-by-frame clicking and dragging to make an actor move at the same pace as the camera.  
 
 ## Free Camera Mode
 
-Free Camera Mode is for editing a custom scene from different camera angles and is only available while the ACTORS AND PROPS tab is open.
-<kbd>F</kbd> - Enables or disables Free Camera Mode. Pressing <kbd>F</kbd> while Free Camera Mode is active freezes the camera where it currently is and exits Free Camera Mode. This allows props to be edited from a different camera position.
-LEFT CLICK or <kbd>TAB</kbd> - Freezes the camera where it currently is and exits Free Camera Mode.
-<kbd>ESC</kbd> - Exits Free Camera Mode and resets the camera to its current position for the current frame.
-<kbd>W</kbd>/<kbd>A</kbd>/<kbd>S</kbd>/<kbd>D</kbd> + MOUSE X/MOUSE Y - Provides standard first-person-game-style camera movement.
-<kbd>E</kbd>/<kbd>Q</kbd> - Adjusts the roll angle. It works, but there is room for improvement.
-<kbd>SHIFT</kbd> - Enables or disables the ability to change the camera height. Disabling this after flying upward results in the Free Camera being unable to change its Y value at the current altitude.
-CONSOLE (<kbd>CTRL</kbd>+<kbd>~</kbd>) → ADVANCED SETTINGS - Opens the Free Camera settings.
+Free Camera Mode is for editing a custom scene from different camera angles and is only available while the ACTORS AND PROPS tab is open.  
+<kbd>F</kbd> - Enables or disables Free Camera Mode. Pressing <kbd>F</kbd> while Free Camera Mode is active freezes the camera where it currently is and exits Free Camera Mode. This allows props to be edited from a different camera position.  
+LEFT CLICK or <kbd>TAB</kbd> - Freezes the camera where it currently is and exits Free Camera Mode.  
+<kbd>ESC</kbd> - Exits Free Camera Mode and resets the camera to its current position for the current frame.  
+<kbd>W</kbd>/<kbd>A</kbd>/<kbd>S</kbd>/<kbd>D</kbd> + MOUSE X/MOUSE Y - Provides standard first-person-game-style camera movement.  
+<kbd>E</kbd>/<kbd>Q</kbd> - Adjusts the roll angle. It works, but there is room for improvement.  
+<kbd>SHIFT</kbd> - Enables or disables the ability to change the camera height. Disabling this after flying upward results in the Free Camera being unable to change its Y value at the current altitude.  
+Access the free cam settings in the CONSOLE (<kbd>CTRL</kbd> + <kbd>~</kbd>) by clicking the ADVANCED SETTINGS button.  
 
 # HOW TO START 4DMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE
 
