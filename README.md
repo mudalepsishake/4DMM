@@ -243,7 +243,7 @@ etc.
 
 # ARGUMENTS
 
-##DETAILED ARGUMENT INFORMATION
+## DETAILED ARGUMENT INFORMATION
 
 -c - color depth argument runs 4DMM in 24-bit RGB888 color mode
 -a - actor shading/lighting
