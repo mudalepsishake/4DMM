@@ -180,19 +180,23 @@ MOUSE3 - Hold down to adjust the height of the camera.
 
 ## Frame by Frame Moving Camera Controls
 
+**These tools allows for automatically moving the camera across multiple frames so that it can do things like follow an actor, explore a scene, follow a carchase, . Yes, the camera is actually moving. No, the props are not moving. The camera is moving**
+
 ### MANUAL CAMERA MODE
 
-Click - Enters manual camera mode [Manual Camera Mode is the 2nd red light toggle to the left of the SCISSORS buttons in the middle of the SCENE tab].  
-<kbd>LEFT</kbd>/<kbd>RIGHT</kbd> - Saves, then moves to the adjacent frame unless the frame has a camera motion tween beginning in it.  
+**Click on Toggle** - Enters manual camera mode [Manual Camera Mode is the 2nd red light toggle to the left of the Scissors buttons in the middle of the SCENE tab]. Clicking on it will immediately make the cursor disappear and allow you to move the camera with the mouse and the W, A, S, D keys similar to a first person game. The camera can also be rolled using the E and Q keys although this feature is still a work in progress.
+<kbd>LEFT</kbd>/<kbd>RIGHT</kbd> - Saves, then moves to the previous/next frame (respectively).  
 <kbd>E</kbd> - Saves the live camera and opens the manual camera properties window.  
 <kbd>CTRL</kbd>+Click Manual Camer Mode button when red light is lit - Opens the manual camera properties window.  
 *When the red light is on underneath the Manual Camera mode button, this indicates that a Manucal Camera position has been defined for the current frame.*  
 
-### Depth Camera Tween 
+### Depth Camera Tween (Drone / Dolly Camera Movement) 
 
+**You can think of this tool as being sort of like having a camera mounted on a quadcopter flying through your scene. Or another way to think of it would be like putting the camera on rails or on a dolly**
 - Click on the 1st toggle from the middle under scenes: Enters depth tween properties window, allows for editing distance of tween between two frames, as well as the frame range for the tween, and the camera angle that will be used for the entire tween.  
-- Semi-Invisible button: Aligns depth tween's yaw angle with the longest edge of object that has its long edge going away from the camera, like as if the camera was looking down a street. To use it, first select the object using the Position (Hand) tool in the ACTORS AND PROPS tab so the object's yellow selection box appears. Then click the SCENE tab and click the Semi-Invisible button: it's the 1st dark grey square ("unused" button slot) the left of the Scissor-icon buttons. (Work in progress: I have an icon for this button but I haven't implemented it yet because there might be significant UI changes and this buttons location might change).  
-- Red-light toggle on the far right in the ACTORS AND PROPS tab: Allows for synchronizing an actors movement with the camera's motion tween, or not. This means if you're clicking and holding down the mouse button to make an actor run, for instance, the actor will run at the same speed in which the camera moves automatically. Eliminates the need for manual frame-by-frame clicking and dragging to have an actor move at the same pace as the camera).  
+- Semi-Invisible button: Aligns depth tween's yaw angle with the longest edge of object that has its long edge going away from the camera, like as if the camera was looking down a street. To use it, first select the object using the Position (Hand) tool in the ACTORS AND PROPS tab so the object's yellow selection box appears. Then click the SCENE tab and click the Semi-Invisible button: it's the 1st dark grey square ("unused" button slot) to the left of the Scissor-icon buttons. 
+- The red light toggle which is the farthest to the right of all of the red light toggles in the ACTORS AND PROPS tab: Allows for synchronizing an actors movement with the camera's motion tween, or not. Adjusts the way that an animation can be clicked and dragged This means if you're clicking and holding down the mouse button to make an actor run, for instance, the actor will run at the same speed in which the camera moves automatically. Eliminates the need for manual frame-by-frame clicking and dragging to have an actor move at the same pace as the camera).  
+**(Work in progress: I have an icon completed for the invisible button as well as for one of the toggles but these haven't been implemented yet as there might be significant UI changes so I'm going to wait until I have a finalized plan for how the new main app window UI changes will be laid out before giving the buttons their final apperance)).**
 
 ## Free Camera Mode
 
