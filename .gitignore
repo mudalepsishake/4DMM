@@ -12,3 +12,17 @@ elib/wind/bren.lib
 elib/wins/bren.lib
 kauai/src/kcd2_386.h
 kauai/src/kcdc_386.h
+
+# --- 4DMM local/generated output ---
+/build/
+/dist/
+/logs/
+/versions_w_logs/
+/.vs/
+**/__pycache__/
+*.pyc
+*.pyo
+*.log
+*.dmp
+*.pdb
+# --- end 4DMM local/generated output ---
