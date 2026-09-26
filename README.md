@@ -245,27 +245,27 @@ etc.
 
 ## DETAILED ARGUMENT INFORMATION
 
--c - color depth argument runs 4DMM in 24-bit RGB888 color mode
--a - actor shading/lighting
--e - goes straight to editor, skips startup screen, menu screen, and mczee
--u - undo history - enables the undo history window
--w - windowed mode
--v - viewport - duplicates the viewport in an external window. viewport remains visible even when menus are open.
--t theater - goes straight to the theater (unfinished)
--o "C:\path\to\movie.3mm" - opens specified movie immediately (skips open screen) - currently configured to work for "-t" theater mode primarily but may also work for "-e" editor mode, although working with "-e" editor mode may require rewiring the old code for that pathway first
--l - light - creates a spotlight which shines directly at objects in the same direction as the camera (only affects objects with shading like 3d words and 3d shape props)
--multi - multiselect mode for objects allows for holding the shift key and selecting more than one object at a time
--logs takes logs relevant to various things and saves them in the folder that 3dmovie.exe is inside of
--uvdump creates logs specific to texture geometry for fixing texture bugs such as the taxi, cop car glitches that appear on the door lines as the prop rotates (U, V dump diagnostic - dumps specific U, V texture info about certain textures of the first loaded object to uvdump folder (creates folder in same folder as 3dmovie.exe)
--perf lightweight logs for various purposes intended to create logs with a focus on performance (less verbose logs to test performance improvements)
--precache unused precaching loader utility that was created before we started running 3dmm with optimization
--3dfix attempts to fix a y-axis issue in which objects that are significantly higher than the ground will move below the ground when the camera goes high enough
--logs_light_ed enabled the exporting of logs specific to the light labs or light editor window, and/or light properties in the 3CT files
--modern_br_log enables the exporting of logs specific to the implementation of the modern OpenGL BRender v1.4
--gui_scale changes the gui size. 2 is the default, so setting this to 1 will make the gui look more normal on some resolutions/dpi scales/systems. it supports 1 decimal point. so 1.5 is valid, 1.2 is valid. 3.2 is valid, etc.
-**`-resolution 1080`**  - This argument can use resolution height numbers. Width is calculated automatically. If you use resolution height numbers and are running the app in windowed mode (recommended), subtract 120 from your current resolution's height. So 1920x1080 or 1080p would have a height of 1080 pixels, so that would be `-resolution 960`, 1280x720 AKA 720p would be `-resolution 600`, 2560x1440 AKA 1440p would be `-resolution 1320`, and 4K AKA 2160p would be `-resolution 2040`.
--resolution 4.24x - This argument can **also** use multiples of 480 to calculate the height. Multiples are numbers ending in `x`. For example: `-resolution 1.1x`, `-resolution 1.25x`, `-resolution 2x`, `-resolution 2.5x`, `-resolution 4.25x`, etc. This option gives you another way to resize the app if you want to run it at a resolution which doesn't take up your entire screen in windowed mode (although you can of course specify your full-size app resolutions with this as well). If you're familiar with how big a 640x480 window is on your monitor, then you can decide if you want to have the app run at 1.5 times that size, or 2.25 times that size, etc.
--cursor_size 2x scales the cursor size up by a factor of 2. So this argument allows for adjusting the size of the cursor using scaling similar to the resolution argument
+-c - color depth argument runs 4DMM in 24-bit RGB888 color mode  
+-a - actor shading/lighting  
+-e - goes straight to editor, skips startup screen, menu screen, and mczee  
+-u - undo history - enables the undo history window  
+-w - windowed mode  
+-v - viewport - duplicates the viewport in an external window. viewport remains visible even when menus are open.  
+-t theater - goes straight to the theater (unfinished)  
+-o "C:\path\to\movie.3mm" - opens specified movie immediately (skips open screen) - currently configured to work for "-t" theater mode primarily but may also work for "-e" editor mode, although working with "-e" editor mode may require rewiring the old code for that pathway first  
+-l - light - creates a spotlight which shines directly at objects in the same direction as the camera (only affects objects with shading like 3d words and 3d shape props)  
+-multi - multiselect mode for objects allows for holding the shift key and selecting more than one object at a time  
+-logs takes logs relevant to various things and saves them in the folder that 3dmovie.exe is inside of  
+-uvdump creates logs specific to texture geometry for fixing texture bugs such as the taxi, cop car glitches that appear on the door lines as the prop rotates (U, V dump diagnostic - dumps specific U, V texture info about certain textures of the first loaded object to uvdump folder (creates folder in same folder as 3dmovie.exe)  
+-perf lightweight logs for various purposes intended to create logs with a focus on performance (less verbose logs to test performance improvements)  
+-precache unused precaching loader utility that was created before we started running 3dmm with optimization  
+-3dfix attempts to fix a y-axis issue in which objects that are significantly higher than the ground will move below the ground when the camera goes high enough  
+-logs_light_ed enabled the exporting of logs specific to the light labs or light editor window, and/or light properties in the 3CT files  
+-modern_br_log enables the exporting of logs specific to the implementation of the modern OpenGL BRender v1.4  
+-gui_scale changes the gui size. 2 is the default, so setting this to 1 will make the gui look more normal on some resolutions/dpi scales/systems. it supports 1 decimal point. so 1.5 is valid, 1.2 is valid. 3.2 is valid, etc.  
+**`-resolution 1080`**  - This argument can use resolution height numbers. Width is calculated automatically. If you use resolution height numbers and are running the app in windowed mode (recommended), subtract 120 from your current resolution's height. So 1920x1080 or 1080p would have a height of 1080 pixels, so that would be `-resolution 960`, 1280x720 AKA 720p would be `-resolution 600`, 2560x1440 AKA 1440p would be `-resolution 1320`, and 4K AKA 2160p would be `-resolution 2040`.  
+-resolution 4.24x - This argument can **also** use multiples of 480 to calculate the height. Multiples are numbers ending in `x`. For example: `-resolution 1.1x`, `-resolution 1.25x`, `-resolution 2x`, `-resolution 2.5x`, `-resolution 4.25x`, etc. This option gives you another way to resize the app if you want to run it at a resolution which doesn't take up your entire screen in windowed mode (although you can of course specify your full-size app resolutions with this as well). If you're familiar with how big a 640x480 window is on your monitor, then you can decide if you want to have the app run at 1.5 times that size, or 2.25 times that size, etc.  
+-cursor_size 2x scales the cursor size up by a factor of 2. So this argument allows for adjusting the size of the cursor using scaling similar to the resolution argument  
 
 ## Compatibility
 
