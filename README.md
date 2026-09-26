@@ -118,6 +118,14 @@ Build documentation will be expanded as the project approaches a public binary r
 
 ## GENERAL EDITOR CONTROLS:
 
+Please note that it is necessary to have the proper window or state active in order for certain hotkeys and buttons to function:
+- The Actor Studio window must be open and selected for Actor Studio hotkeys to work.  
+- Manual Camera Mode must be active for its hotkeys to work. Same with Free Camera Mode. 
+- One or more object(s) must be selected for several other hotkeys and buttons to work.
+- Manual Camera Mode must be enabled for Manual Camera Mode hotkeys to work.
+
+Also, CTRL+S (old 3DMM save hotkey) only works when the main app is selected and when there is no actively selected object (no yellow selection box) in the main app. Press ESC to de-select the current selection in the main app window.
+
 ### Frame buttons:
 <kbd>CTRL</kbd>+NEXT FRAME - Duplicate after current and select the new frame.  
 <kbd>CTRL</kbd>+PREVIOUS FRAME - Duplicate before current and select the new frame.  
@@ -140,6 +148,7 @@ Build documentation will be expanded as the project approaches a public binary r
 <kbd>SHIFT</kbd> + RIGHT CLICK - De-selects an object in the viewport (also works in prop browser -- add).  
 <kbd>CTRL</kbd>+<kbd>S</kbd> - Makes an object no longer selectable. Once non-selectable, the object will appear with an "(X)" in front of it in the objects browser. Double clicking on it in the browser makes the object selectable again. Alternatively, simply double clicke on the object in the objects browser to toggle the selectability.  
 <kbd>ALT</kbd>+CLICK AND DRAG - This allows for applying tools to objects which are otherwise not selectable due to their current size or position in relation to other objects. Once the object is currently selected, simply hold the <kbd>ALT</kbd> key and click or click and drag any where on the screen to use the current tool on the object.  
+- Reposition (Hand) Tool - RIGHT CLICK on an object with the Hand tool to bring up that object's properties window.
 
 ### ACTION TOOL:
 RIGHT-CLICK.  
@@ -153,6 +162,10 @@ RIGHT CLICK on TEXTURE SELECT BUTTON - Opens up the Texture Browser.
 ### Costume Dresser Window controls:
 
 <kbd>ALT</kbd>+<kbd>C</kbd> - Opens up color picker for basic shape props (try <kbd>CTRL</kbd>+<kbd>C</kbd> if <kbd>ALT</kbd>+<kbd>C</kbd> is not working).  
+
+## VXP2 CONVERTER 
+
+<kbd>CTRL</kbd>+<kbd>7</kbd> 
 
 ## ACTOR STUDIO
 
@@ -233,7 +246,7 @@ Please note that it might be necessary to change the "-gui_scale 1" argument to 
 **Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1
 
-\*\*\*  If an external window appears with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:
+\*\*\*  If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:
 -gui_scale 1.5
 -gui_scale 1.2
 -gui_scale 1.1
@@ -250,58 +263,67 @@ color depth argument runs 4DMM in 24-bit RGB888 color mode
 ***`-a`***  
 actor shading/lighting  
 ***`-e`***  
-goes straight to editor, skips startup screen, menu screen, and mczee  
+goes straight to editor, skips startup screen, menu screen, and mczee
 ***`-u`***  
 undo history - enables the undo history window  
 ***`-w`***  
 windowed mode  
 ***`-v`***  
-viewport - duplicates the viewport in an external window. viewport remains visible even when menus are open (might be deprecated).  
-***`-o "C:\path\to\movie.3mm"`***  
-opens specified movie immediately (skips open screen) - currently configured to work for "-t" theater mode primarily but may also work for "-e" editor mode, although working with "-e" editor mode may require rewiring the old code for that pathway first  
+viewport - duplicates the viewport in an external window. viewport remains visible even when menus are open (deprecated--likely non-functional).  
 ***`-l`***  
-light - creates a spotlight which shines directly at objects in the same direction as the camera (only affects objects with shading like 3d words and 3d shape props)  
+enables lighting and light lab (light objects). 
 ***`-multi`***  
 multiselect mode for objects allows for holding the shift key and selecting more than one object at a time  
 ***`-logs`***  
-takes logs relevant to various things and saves them in the folder that 3dmovie.exe is inside of  
-***`-uvdump`***  
-creates logs specific to texture geometry for fixing texture bugs such as the taxi, cop car glitches that appear on the door lines as the prop rotates (U, V dump diagnostic - dumps specific U, V texture info about certain textures of the first loaded object to uvdump folder (creates folder in same folder as 3dmovie.exe)  
+takes logs relevant to various things and saves them in the folder that 3dmovie.exe is inside of (warning these logs are massive and will affect application performance and quickly occupy large file sizes)   
 ***`-perf`***  
 lightweight logs for various purposes intended to create logs with a focus on performance (less verbose logs to test performance improvements)  
 ***`-precache`***  
-unused precaching loader utility that was created before we started running 3dmm with optimization  
-***`-3dfix`***  
-attempts to fix a y-axis issue in which objects that are significantly higher than the ground will move below the ground when the camera goes high enough  
+unused precaching loader utility that was created before we started running 3dmm with optimization
 ***`-logs_light_ed`***  
 enabled the exporting of logs specific to the light labs or light editor window, and/or light properties in the 3CT files  
 ***`-modern_br_log`***  
 enables the exporting of logs specific to the implementation of the modern OpenGL BRender v1.4  
 ***`-gui_scale`***  
-changes the gui size. 2 is the default, so setting this to 1 will make the gui look more normal on some resolutions/dpi scales/systems. it supports 1 decimal point. so 1.5 is valid, 1.2 is valid. 3.2 is valid, etc.  
+changes the gui size. 2 is the default, so setting this to 1 will make the gui look more normal on some resolutions/DPI scales/systems. it supports 1 decimal point. so 1.5 is valid, 1.2 is valid. 3.2 is valid, etc.  
 ***`-resolution 960`***  
 This argument can use resolution height numbers. Width is calculated automatically. If you use resolution height numbers and are running the app in windowed mode (recommended), subtract 120 from your current resolution's height. So 1920x1080 or 1080p would have a height of 1080 pixels, so that would be `-resolution 960`, 1280x720 AKA 720p would be `-resolution 600`, 2560x1440 AKA 1440p would be `-resolution 1320`, and 4K AKA 2160p would be `-resolution 2040`.  
 ***`-resolution 4.25x`***  
 This argument can **also** use multiples of 480 to calculate the height. Multiples are numbers ending in `x`. For example: `-resolution 1.1x`, `-resolution 1.25x`, `-resolution 2x`, `-resolution 2.5x`, `-resolution 4.25x`, etc. This option gives you another way to resize the app if you want to run it at a resolution which doesn't take up your entire screen in windowed mode (although you can of course specify your full-size app resolutions with this as well). If you're familiar with how big a 640x480 window is on your monitor, then you can decide if you want to have the app run at 1.5 times that size, or 2.25 times that size, etc.  
 ***`-cursor_size 2x`***  
-scales the cursor size up by a factor of 2. So this argument allows for adjusting the size of the cursor using scaling similar to the resolution argument.
-
-***`-resolution 960`*** 
-This argument can use resolution height numbers. Width is calculated automatically. If you use resolution height numbers and are running the app in windowed mode (recommended), subtract 120 from your current resolution's height. So 1920x1080 or 1080p would have a height of 1080 pixels, so that would be `-resolution 960`, 1280x720 AKA 720p would be `-resolution 600`, 2560x1440 AKA 1440p would be `-resolution 1320`, and 4K AKA 2160p would be `-resolution 2040`. 
-***`-resolution 4.25x`*** 
-This argument can **also** use multiples of 480 to calculate the height. Multiples are numbers ending in `x`. For example: `-resolution 1.1x`, `-resolution 1.25x`, `-resolution 2x`, `-resolution 2.5x`, `-resolution 4.25x`, etc. This option gives you another way to resize the app if you want to run it at a resolution which doesn't take up your entire screen in windowed mode (although you can of course specify your full-size app resolutions with this as well). If you're familiar with how big a 640x480 window is on your monitor, then you can decide if you want to have the app run at 1.5 times that size, or 2.25 times that size, etc.  
--cursor_size 2x scales the cursor size up by a factor of 2. So this argument allows for adjusting the size of the cursor using scaling similar to the resolution argument. 
+scales the cursor size up by a factor of 2. So this argument allows for adjusting the size of the cursor using scaling similar to the resolution argument (can use decimal points). 
+***`-shadow_log`*** 
+Logs pertaining to shadows. These logs may affect performance and generate large file sizes quickly. 
+***`-multi_log`*** 
+Logs pertaining to multi-selection related tools as well as other purposes. 
 
 ## Compatibility
 
+4DMM currently allows for playback of existing .3MM movie files from the original 3D Movie Maker as well as watching .VMM movie files (v3DMM movies). Opening each file type is supported natively (no external software or mods are required for opening a .VMM movie file). 
+4DMM currently supports saving to .3MM files and .VMM files. Please note that depending on what is being saved, 4DMM may decide to limit the file type saving options to .VMM files. Also please keep in mind that generally, 4DMM will save a .3CT file alongside .VMM files as well as .3MM files. These files are all going to be packaged as one file type in the first release candidate (likely .VMM2 or .VM2 files).
 Preserving the original 3DMM experience and its existing movie/asset ecosystem is an important design goal. New functionality should extend the program without unnecessarily destroying compatibility with existing 3DMM content or the directness of the original workflow.
 
 ## Current state
 
 A large amount of 4DMM is already functional, but the project is moving quickly. Expect features in varying degrees of completeness, debugging instrumentation, changing UI, experimental renderer work, and the occasional piece of 1995 code discovering a new and creative way to object to the year 2026.
 
-## License and trademarks
+# Credits and project lineage
 
-4DMM inherits code from upstream open-source projects. **Keep the repository's existing `LICENSE`, `THIRD_PARTY_LICENSES.txt`, attribution, and other upstream legal files intact.** Individual bundled dependencies may have their own license terms.
+4DMM is a continuation and major expansion of Microsoft 3D Movie Maker built from the 3DMMEx codebase.
 
-Microsoft, 3D Movie Maker, and related names/logos are trademarks of their respective owners. 4DMM is an independent community project and is not an official Microsoft product or endorsed by Microsoft.
+## Project lineage
+
+- **Microsoft 3D Movie Maker** — original application and source code, released by Microsoft under the MIT License.
+- **3DMMForever** — Foone Turing's modernization work following Microsoft's source release.
+- **3DMMEx** — Ben Stone's source port and modernization work, which is the direct upstream base of 4DMM.
+- **BRender** — the original rendering engine developed by Argonaut Software / Argonaut Technologies.
+- **Blazing Renderer (BRender) 1.4** — the modernized BRender fork used by 4DMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases.
+
+## Historical tools and compatibility references
+
+- **Holmstrom's 3DMM camera-control utility** — an external 3DMM camera-navigation tool distributed as `MPR.dll`. The DLL was reverse-engineered as a technical reference during the initial 4DMM camera-track work. No Holmstrom source code was available to the 4DMM project, and 4DMM does not bundle `MPR.dll`.
+- **7gen / OBJ2VXP** by Foone Turing — part of the historical 3DMM expansion-tool ecosystem and useful as a compatibility/reference point for 3DMM expansion formats. 7gen is not bundled with 4DMM.
+
+See `LICENSE`, `THIRD_PARTY_LICENSES.txt`, and the `LICENSES/` directory for license notices covering code distributed with the project.
+
+4DMM is an independent community project and is not an official Microsoft product or endorsed by Microsoft.
