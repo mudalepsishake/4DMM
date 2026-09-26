@@ -113,19 +113,19 @@ The current development branch uses:
 - a vendored modern BRender 1.4 tree under `brender14/`
 
 Build documentation will be expanded as the project approaches a public binary release. Up until that moment, this repository should be treated as an active development tree rather than a polished build-it-yourself distribution.
-KBD Control:
 
+# KBD Control:
 
-GENERAL EDITOR CONTROLS:
+## GENERAL EDITOR CONTROLS:
 
-Frame buttons:
+### Frame buttons:
 Ctrl+Next: duplicate after current and select the new frame.
 Ctrl+Previous: duplicate before current and select the new frame.
 Shift+Ctrl+Next/Previous: same placement, but the inserted frame contains no actors, props, or text boxes for that frame only.
 Ctrl+Alt+Next/Previous: pops up dialog asking how many frames to insert from current frame
 CTRL+ALT+D delete frames in bulk from current position. similar to CTRL+ALT+Next frame or CTRL+ALT+Previous frame except deletes the number of frames you enter from the currently displayed frame.
 
-ACTORS + PROPS TAB CONTROLS
+### ACTORS + PROPS TAB CONTROLS
 F - enter free camera mode
 ALT+Y toggles selection box color between the default yellow and the new shaded grey which shows how light is hitting the selected object
 CTRL+grow/shrink tool allows for growing object beyond 10x size to 100x size
@@ -134,11 +134,11 @@ CTRL+ALT+L toggles invisible object lights visibility
 CTRL + ~  and CTRL+~ opens settings
 ESC unselect the currently selected object (removes the selection box)
 
-ACTION TOOL:
-RIGHT-CLICK on an actor with the Action Tool selected opens the Actor Studio Window and Actor Studio Viewport
+### ACTION TOOL:
+RIGHT-CLICK 
+Right-clicking on an object (Actor, Prop or 3D Word) with the Action Tool opens Actor Studio and triggers Actor Studio to automatically select the object you right clicked on upon opening.
 
-
-3D Words Window controls:
+### 3D Words Window controls:
 ALT+C - opens up color picker
 
 Props Dresser Window controls:
