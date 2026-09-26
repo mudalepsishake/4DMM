@@ -317,7 +317,8 @@ A large amount of 4DMM is already functional, but the project is moving quickly.
 - **3DMMForever** — Foone Turing's modernization work following Microsoft's source release.
 - **3DMMEx** — Ben Stone's source port and modernization work, which is the direct upstream base of 4DMM.
 - **BRender** — the original rendering engine developed by Argonaut Software / Argonaut Technologies.
-- **Blazing Renderer (BRender) 1.4** — the modernized BRender fork used by 4DMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases.
+- **Blazing Renderer (BRender) 1.4** — the modernized BRender fork used by 4DMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases. Here is a working mirror (as of 9-26-2026) of the BRender project's website: [https://bayareaengineers.com/blazingrender.net](https://www.bayareaengineers.com/blazingrender/)
+- **Croc: Legend of the Gobbos (2025 Edition)** - The modern remaster was used as an important technical reference during 4DMM’s transition to modern BRender 1.4, particularly for studying the relationship between legacy BRender assets and a modern rendering pipeline. No Croc game assets or source code are distributed with 4DMM.
 
 ## Historical tools and compatibility references
 
