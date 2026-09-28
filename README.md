@@ -20,7 +20,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Improved timeline and frame insertion workflows
 - Still to come: shaping camera movement in any axes as well as additional more sophisticated shaped-based camera movements
 
-### Modern rendering [Modern rendering](#modern-rendering)
+### Modern rendering [](#modern-rendering)
 
 - Introducing Blaze Engine--the new fully customized open-source rendering engine actively being developed alongside 4DMM for its unique rendering requirements (Blazing Render-based)
 - Modern OpenGL 4.3 renderer integrated throughout the application
