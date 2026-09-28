@@ -103,7 +103,7 @@ The current development branch uses:
 - CMake
 - MSVC
 - the `x86-msvc-modern-relwithdebinfo` preset
-- [Blaze Engine, currently stored under `brender14/`](#modern-rendering)
+- [Blaze Engine, currently stored in the "brender14" folder](#modern-rendering)
 
 Build documentation will be expanded as the project approaches a public binary release. Up until that moment, this repository should be treated as an active development tree rather than a polished build-it-yourself distribution.
 
