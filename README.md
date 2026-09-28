@@ -22,7 +22,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 
 ### Modern rendering
 
-- Introducing BLAZE engine--4DMM's proprietary open-source (Blazing Render-based) engine
+- Introducing Blaze Engine--the new fully customized open-source rendering engine actively being developed alongside 4DMM for its unique rendering requirements (Blazing Render-based)
 - Modern OpenGL 4.3 renderer integrated throughout the application
 - 24-bit color instead of the original 256-color rendering path
 - Per-pixel lighting/shading
@@ -96,12 +96,14 @@ The project embraces what 3DMM already is. It takes the original to the next lev
 
 4DMM is currently developed primarily on Windows and the build system is still changing.
 
+For convenience, I'm including a "Build 4DMM.cmd" batch file with the source to assist with successfully buliding the source in a Windows environment. This batch file is kept up to date so that it works with the current source.
+
 The current development branch uses:
 
 - CMake
 - MSVC
 - the `x86-msvc-modern-relwithdebinfo` preset
-- a vendored modern BRender 1.4 tree under `brender14/`
+- Blaze Engine, a custom version of modern BRender 1.4 currently stored under `brender14/`
 
 Build documentation will be expanded as the project approaches a public binary release. Up until that moment, this repository should be treated as an active development tree rather than a polished build-it-yourself distribution.
 
