@@ -240,12 +240,12 @@ Please note that it might be necessary to change the "-gui_scale 1" argument to 
 **Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**  
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1  
 
-†<sub>If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:  
--gui_scale 1.5  
--gui_scale 1.2  
--gui_scale 1.1  
--gui_scale 0.5  
--gui_scale 2.5  
+†<sub>If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. To fix, try both the `-gui_scale 1` argument and the `-gui_scale 2` argument. These should be the only two GUI scaling options which can appear correctly based on my limited testing of multiple resolutions. However, other GUI scaling options are technically valid:
+`-gui_scale 1.5`  
+`-gui_scale 1.2`  
+`-gui_scale 1.1`  
+`-gui_scale 0.5`  
+`-gui_scale 2.5`  
 etc.  
 </sub>
 # ARGUMENTS
