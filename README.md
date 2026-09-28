@@ -6,7 +6,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 
 4DMM keeps the direct, accessible workflow of the original program while extending the actual application rather than replacing it with a conventional modern DCC interface. The goal is to make substantially more capable 3D filmmaking possible without turning 3DMM into Blender, Maya, or a game engine editor.
 
-> **Status:** active development. The features below are as described but still require further integration for example with Scene Organizer capabilities as well as more stability testing. Many features are in place and ready to be finalized, other features are in development and still others are on the drawing board. File formats and UI behavior are functional but still changing so files saved with in-development versions may not be compatible with later versions. 4DMM is for 64-bit Windows operating systems.
+> **Status:** active development. The features below are as described but still require further integration for example with Scene Organizer capabilities as well as more stability testing. Many features are in place and ready to be finalized, other features are in development and still others are on the drawing board. File formats and UI behavior are functional but still changing so files saved with in-development versions may not be compatible with later versions.
 
 ## Highlights
 
@@ -20,7 +20,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Improved timeline and frame insertion workflows
 - Still to come: shaping camera movement in any axes as well as additional more sophisticated shaped-based camera movements
 
-### Modern rendering [](#modern-rendering)
+### Modern rendering
 
 - Introducing Blaze Engine--the new fully customized open-source rendering engine actively being developed alongside 4DMM for its unique rendering requirements (Blazing Render-based)
 - Modern OpenGL 4.3 renderer integrated throughout the application
@@ -96,14 +96,14 @@ The project embraces what 3DMM already is. It takes the original to the next lev
 
 4DMM is currently developed primarily on Windows and the build system is still changing.
 
-For convenience, I'm including a "Build 4DMM.cmd" batch file with the source to assist with successfully buliding the source in a Windows environment. This batch file is kept up to date so that it works with the current source.
+For convenience, I've included a "Build 4DMM.cmd" batch file with the source to assist with successfully buliding the source in a Windows environment. This batch file is kept up to date so that it works with the currently available source.
 
 The current development branch uses:
 
 - CMake
 - MSVC
 - the `x86-msvc-modern-relwithdebinfo` preset
-- Blaze Engine, a custom version of modern BRender 1.4 currently stored under `brender14/`
+- [Blaze Engine, currently stored under `brender14/`](#modern-rendering)
 
 Build documentation will be expanded as the project approaches a public binary release. Up until that moment, this repository should be treated as an active development tree rather than a polished build-it-yourself distribution.
 
@@ -219,34 +219,35 @@ Access the free cam settings in the CONSOLE (<kbd>CTRL</kbd> + <kbd>~</kbd>) by 
 
 ## Here's instructions on how to start 4DMM so that all features are enabled.
 
-- There's no way to enable, disable or modify some settings after start up. It might take multiple start up attempts to get 4DMM's external windows to look correct depending on your resolution and Windows settings.
+- There's no way to enable, disable or modify some settings after start up. It might take multiple tries starting the app and adjusting the `-gui_scale` and `-resolution` arguments as needed to get 4DMM's main app window and external windows to look correct depending on your resolution and Windows settings.
 First, create a shortcut to 3dmovie.exe after you have built (compiled) it.
-### IMPORTANT - YOU MUST ADJUST DPI SCALING TO BE COMPLETED BY APPLICATION:
+
+### If you did not use the included "Build 4DMM.cmd" batch file to build 4DMM, you must adjust 4DMM's DPI settings prior to running the app (otherwise you should be able to skip this process):
 - ALT+DOUBLE CLICK on the shortcut to 3dmovie.exe (or right click on 3dmovie.exe and then left click on properties in the menu that appears) 
 - Click on the "Compatibility" tab
 - Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start 4DMM, click on "Change settings for all users" then "Change high DPI settings."
 - Check the box next to "Override high DPI scaling behavior."
 - Click the dropdown menu below the checkbox and then click on "Application" in the menu that appears.
 - Click the OK button to close each window, making sure to click the "Apply" button before clicking the OK button if the window has an "Apply" button.
-(Please note that the above DPI setting will apply to all shortcuts you make to 3dmovie.exe so it shouldn't be necessary to do this again).
+(Please note that the above DPI setting will apply to all shortcuts you make to 3dmovie.exe in its current location so it shouldn't be necessary to do this again).
 
 ## Use the following arguments for starting 4DMM on a 4K (2160p) monitor:
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 4.25x -cursor_size 2x -gui_scale 2
 
-Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable.\*\*\*
+Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable.\†
 **Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:**
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1
 **Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1
 
-\*\*\*  If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:
+<big>\†</big> <small><small>If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:
 -gui_scale 1.5
 -gui_scale 1.2
 -gui_scale 1.1
 -gui_scale 0.5
 -gui_scale 2.5
 etc.
-
+</small></small>
 # ARGUMENTS
 
 ## DETAILED ARGUMENT INFORMATION
@@ -292,7 +293,7 @@ Logs pertaining to multi-selection related tools as well as other purposes.
 
 ## Compatibility 
 
-### 4DMM is for 64-bit Windows operating systems.  
+### 4DMM is for Windows operating systems.  
 Minimum:  
 - OpenGL 4.3 GPU with 4 GB VRAM  
 - Reasonably modern 4-core CPU  
