@@ -236,9 +236,12 @@ First, create a shortcut to 3dmovie.exe after you have built (compiled) it.
   
 Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable†
 **Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:**  
-3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1  
+`3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1`  
 **Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**  
-3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1  
+`3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1`
+**Use the following arguments for starting 4DMM using another resolution:**  
+*First, take your resolution's height and subtract 120 from it, then replace `<resolution height - 120>` with that number below:*
+`3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution <resolution height - 120> -cursor_size 1x -gui_scale 1`
 
 †<sub>If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. To fix, try both the `-gui_scale 1` argument and the `-gui_scale 2` argument. These should be the only two GUI scaling options which can appear correctly based on my limited testing of multiple resolutions. However, other GUI scaling options are technically valid:
 `-gui_scale 1.5`  
