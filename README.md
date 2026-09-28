@@ -214,40 +214,40 @@ LEFT CLICK or <kbd>TAB</kbd> - Pressing left click while free cam mode is active
 <kbd>E</kbd> and <kbd>Q</kbd> - Adjust roll angle (it works but there's room for improvement).  
 <kbd>SHIFT</kbd> - Enables/disables the ability to change the height of the camera. Disabling this after 'flying upwards' results in the free camera then being incapable of changing its y-value at the current altitude.  
 Access the free cam settings in the CONSOLE (<kbd>CTRL</kbd> + <kbd>~</kbd>) by clicking the ADVANCED SETTINGS button.  
-
-# HOW TO START 4DMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE
-
-## Here's instructions on how to start 4DMM so that all features are enabled.
-
-- There's no way to enable, disable or modify some settings after start up. It might take multiple tries starting the app and adjusting the `-gui_scale` and `-resolution` arguments as needed to get 4DMM's main app window and external windows to look correct depending on your resolution and Windows settings.
-First, create a shortcut to 3dmovie.exe after you have built (compiled) it.
-
-### If you did not use the included "Build 4DMM.cmd" batch file to build 4DMM, you must adjust 4DMM's DPI settings prior to running the app (otherwise you should be able to skip this process):
+  
+# HOW TO START 4DMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE  
+  
+## Here's instructions on how to start 4DMM so that all features are enabled.  
+  
+- There's no way to enable, disable or modify some settings after start up. It might take multiple tries starting the app and adjusting the `-gui_scale` and `-resolution` arguments as needed to get 4DMM's main app window and external windows to look correct depending on your resolution and Windows settings.  
+First, create a shortcut to 3dmovie.exe after you have built (compiled) it.  
+  
+### If you did not use the included "Build 4DMM.cmd" batch file to build 4DMM, you must adjust 4DMM's DPI settings prior to running the app (otherwise you should be able to skip this process):  
 - ALT+DOUBLE CLICK on the shortcut to 3dmovie.exe (or right click on 3dmovie.exe and then left click on properties in the menu that appears) 
-- Click on the "Compatibility" tab
-- Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start 4DMM, click on "Change settings for all users" then "Change high DPI settings."
-- Check the box next to "Override high DPI scaling behavior."
-- Click the dropdown menu below the checkbox and then click on "Application" in the menu that appears.
-- Click the OK button to close each window, making sure to click the "Apply" button before clicking the OK button if the window has an "Apply" button.
-(Please note that the above DPI setting will apply to all shortcuts you make to 3dmovie.exe in its current location so it shouldn't be necessary to do this again).
+- Click on the "Compatibility" tab  
+- Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start 4DMM, click on "Change settings for all users" then "Change high DPI settings."  
+- Check the box next to "Override high DPI scaling behavior."  
+- Click the dropdown menu below the checkbox and then click on "Application" in the menu that appears.  
+- Click the OK button to close each window, making sure to click the "Apply" button before clicking the OK button if the window has an "Apply" button.  
+(Please note that the above DPI setting will apply to all shortcuts you make to 3dmovie.exe in its current location so it shouldn't be necessary to do this again).  
+  
+## Use the following arguments for starting 4DMM on a 4K (2160p) monitor:  
+3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 4.25x -cursor_size 2x -gui_scale 2  
+  
+Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable.<span style="font-size=14pt;">†</span>  
+**Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:**  
+3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1  
+**Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**  
+3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1  
 
-## Use the following arguments for starting 4DMM on a 4K (2160p) monitor:
-3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 4.25x -cursor_size 2x -gui_scale 2
-
-Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable.\†
-**Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:**
-3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1
-**Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**
-3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1
-
-<big>\†</big> <small><small>If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:
--gui_scale 1.5
--gui_scale 1.2
--gui_scale 1.1
--gui_scale 0.5
--gui_scale 2.5
-etc.
-</small></small>
+<span style="font-size=14pt;">†</span><span style="font-size=9pt;">If an external window appears (actors browser, console window, depth camera tween window, properties window, etc.) with missing/cut-off text or missing/cut-off buttons, please try adjusting the gui_scale argument. This setting might require using different values due to your Windows DPI scaling settings. Generally the first step is to try both the "-gui_scale 1" argument and the "-gui_scale 2" argument. Other forms of this argument are also valid, for example:  
+-gui_scale 1.5  
+-gui_scale 1.2  
+-gui_scale 1.1  
+-gui_scale 0.5  
+-gui_scale 2.5  
+etc.  
+</span>
 # ARGUMENTS
 
 ## DETAILED ARGUMENT INFORMATION
