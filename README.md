@@ -283,10 +283,10 @@ enabled the exporting of logs specific to the light labs or light editor window,
 enables the exporting of logs specific to the implementation of the modern OpenGL BRender v1.4  
 ***`-gui_scale`***  
 changes the gui size. 2 is the default, so setting this to 1 will make the gui look more normal on some resolutions/DPI scales/systems. it supports 1 decimal point. so 1.5 is valid, 1.2 is valid. 3.2 is valid, etc.  
-***`-resolution 960`***  
+***`-resolution <WINDOW OR FULLSCREEN HEIGHT>`***  
 This argument can use resolution height numbers. Width is calculated automatically. If you use resolution height numbers and are running the app in windowed mode (recommended), subtract 120 from your current resolution's height. So 1920x1080 or 1080p would have a height of 1080 pixels, so that would be `-resolution 960`, 1280x720 AKA 720p would be `-resolution 600`, 2560x1440 AKA 1440p would be `-resolution 1320`, and 4K AKA 2160p would be `-resolution 2040`.  
-***`-resolution 4.25x`***  
-This argument can **also** use multiples of 480 to calculate the height. Multiples are numbers ending in `x`. For example: `-resolution 1.1x`, `-resolution 1.25x`, `-resolution 2x`, `-resolution 2.5x`, `-resolution 4.25x`, etc. This option gives you another way to resize the app if you want to run it at a resolution which doesn't take up your entire screen in windowed mode (although you can of course specify your full-size app resolutions with this as well). If you're familiar with how big a 640x480 window is on your monitor, then you can decide if you want to have the app run at 1.5 times that size, or 2.25 times that size, etc.  
+***`-resolution <WINDOW HEIGHT EXPRESSED AS A MULTIPLE OF 480 PIXELS>x`***  
+The `-resolution` argument can also use multiples of 480 to calculate the height. To use the `-resolution` argument in this way, put an `x` after the number. For example: `-resolution 1.1x`, `-resolution 1.95x`, `-resolution 2x`, `-resolution 2.5x`, `-resolution 4.25x`, etc. This option gives you another way to resize the app. 3DMM originally ran at 640x480 so for those of us who are familiar with how big a window of that size is on a monitor, this can be useful for running the app at 1.5 times that size, or 2.25 times that size, etc.  
 ***`-cursor_size 2x`***  
 scales the cursor size up by a factor of 2. So this argument allows for adjusting the size of the cursor using scaling similar to the resolution argument (can use decimal points). 
 ***`-shadow_log`*** 
