@@ -12,6 +12,12 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 
 ### Camera and animation
 
+- Shadows
+- Texture filtering
+- Any resolution
+- Native VMM support for loading and saving
+- Built-in OBJ, FBX, and GLB import paths
+- Animation editor for actors/props where you can move their individual parts to create brand new animations
 - Fully free movable camera
 - WASD + mouse free-camera control
 - Camera movement recording
@@ -19,6 +25,9 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Motion-tweened camera movement across arbitrary frame ranges
 - Improved timeline and frame insertion workflows
 - Still to come: shaping camera movement in any axes as well as additional more sophisticated shaped-based camera movements
+
+![4DMM screenshot](https://bayareaengineers.com/i/4dmm-lol.png)
+- Quick demo screenshot showing shadows, custom resolution, lighting (single light source), shader, texture filtering, 24-bit color, and natively imported textures
 
 ### Modern rendering
 
