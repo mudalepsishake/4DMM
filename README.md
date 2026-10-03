@@ -17,7 +17,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Any resolution
 - Native VMM support for loading and saving
 - Built-in OBJ, FBX, and GLB import paths
-- Animation editor for actors/props where you can move their individual parts to create brand new animations
+- Actor Studio is the name of the new action editor for actors, props and more where you can move their individual parts frame by frame to create brand new (and fully usable through native "Action tool/window" pathway) animations
 - Fully free movable camera
 - WASD + mouse free-camera control
 - Camera movement recording
