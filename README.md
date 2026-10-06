@@ -27,10 +27,15 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Still to come: shaping camera movement in any axes as well as additional more sophisticated shaped-based camera movements  
   
 ![4DMM sci-fi landscape](https://bayareaengineers.com/i/4dmm_20261006-081425.png)  
+  
 - Experimenting with expanding possibilities of 3D Words (using custom depth mod on per-letter basis, using new symbols/fonts, and utilizing superscripting setting for 3D Words to make any symbol usable like an asterisk) -- this feature will be coming in the next patch.  
+  
 ![4DMM sci-fi landscape 2](https://bayareaengineers.com/i/4dmm_20261006-081649.png)  
+  
 - These screenshots also show shadow casting, high resolution native 4DMM rendering, shader, per-pixel lighting, lights attached to objects with light settings, bilinear texture filtering, anisotropic filtering, and more.  
+  
 ![4DMM texture filtering actors screenshot](https://bayareaengineers.com/i/4dmm_20261002.png)  
+  
 - Quick demo screenshot showing shadows, custom resolution, lighting (single light source), shader, texture filtering, 24-bit color, and natively imported textures  
   
 ### Modern rendering
