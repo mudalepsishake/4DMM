@@ -32,7 +32,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
   
 ![4DMM sci-fi landscape 2](https://bayareaengineers.com/i/4dmm_20261006-081649.png)  
   
-- These screenshots also show shadow casting, high resolution native 4DMM rendering, shader, per-pixel lighting, lights attached to objects with light settings, bilinear texture filtering, anisotropic filtering, and more.  
+- These screenshots also show shadow casting from a single light source, 24-bit color, native high resolution rendering, per-pixel shader and lighting, multiple light objects with differing light properties, bilinear texture filtering, anisotropic filtering, and more.  
   
 ### Modern rendering
 
