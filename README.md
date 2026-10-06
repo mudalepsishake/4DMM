@@ -28,7 +28,7 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
   
 ![4DMM sci-fi landscape](https://bayareaengineers.com/i/4dmm_20261006-081425.png)  
   
-- Experimenting with expanding possibilities of 3D Words (using custom depth mod on per-letter basis, using new symbols/fonts, and utilizing superscripting setting for 3D Words to make any symbol usable like an asterisk) -- this feature will be coming in the next patch.  
+- Developing expanded possibilities of 3D Words (modifiable depth on a per-character basis, testing new superscripting property which allows any symbol/character to be used similarly to the asterisks-based props, as well as adding tons of new symbols) -- these features will be available in an upcoming update the source code
   
 ![4DMM sci-fi landscape 2](https://bayareaengineers.com/i/4dmm_20261006-081649.png)  
   
