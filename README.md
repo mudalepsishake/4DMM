@@ -34,10 +34,6 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
   
 - These screenshots also show shadow casting, high resolution native 4DMM rendering, shader, per-pixel lighting, lights attached to objects with light settings, bilinear texture filtering, anisotropic filtering, and more.  
   
-![4DMM texture filtering actors screenshot](https://bayareaengineers.com/i/4dmm_20261002.png)  
-  
-- Quick demo screenshot showing shadows, custom resolution, lighting (single light source), shader, texture filtering, 24-bit color, and natively imported textures  
-  
 ### Modern rendering
 
 - Introducing Blaze Engine--the new fully customized open-source rendering engine actively being developed alongside 4DMM for its unique rendering requirements (Blazing Render-based)
