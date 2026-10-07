@@ -26,7 +26,8 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Improved timeline and frame insertion workflows
 - Still to come: shaping camera movement in any axes as well as additional more sophisticated shaped-based camera movements  
   
-![4DMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_082046.png)  
+
+![4DMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_0059.png)  
   
 - The building prop on the left was converted (to VXP2) and imported natively with full 24-bit color textures. The undo history, objects browser, light editor, object group editor, the console (settings) window, and console window show the expanded work environment.  
   
@@ -34,13 +35,13 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
   
 - These screenshots also show shadow casting from a single light source, 24-bit color, native high resolution rendering, per-pixel shader and lighting, multiple light objects with differing light properties, bilinear texture filtering, anisotropic filtering, and more.  
   
-![4DMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_0059.png)  
+![4DMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_082046.png)  
   
 - Actor Studio allows users to create animations inside of 4DMM using familiar tools. These animations can then be used in the standard Action tool animation selection workflow. User interface is fully functional. Layout is not yet finalized.  
   
 ![4DMM sci-fi landscape 2](https://bayareaengineers.com/i/4dmm_20261006-081649.png)  
   
-- Developing expanded possibilities of 3D Words (modifiable depth on a per-character basis, testing new superscripting property which allows any symbol/character to be used similarly to the asterisks-based props, as well as adding tons of new symbols) -- these features will be available in an upcoming update the source code  
+- Developing expanded possibilities of 3D Words (modifiable depth on a per-character basis, testing new superscripting property which allows any symbol/character to be used similarly to the asterisks-based props, as well as adding tons of new symbols) -- these features will be available in an upcoming source update.  
   
 ### Modern rendering
 
