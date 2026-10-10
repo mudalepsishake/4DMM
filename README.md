@@ -1,10 +1,10 @@
-# 4DMM
+# XDMM
 
-**3DMM Renaissance, or 4DMM as I like to call it, is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
+**3DMM Renaissance, or XDMM as I like to call it, is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
 
 The basic idea is **what if 3D Movie Maker had continued developing to suit the evolving needs of its users instead of stopping in 1995?**
 
-4DMM keeps the direct, accessible workflow of the original program while extending the actual application rather than replacing it with a conventional modern DCC interface. The goal is to make substantially more capable 3D filmmaking possible without turning 3DMM into Blender, Maya, or a game engine editor.
+XDMM keeps the direct, accessible workflow of the original program while extending the actual application rather than replacing it with a conventional modern DCC interface. The goal is to make substantially more capable 3D filmmaking possible without turning 3DMM into Blender, Maya, or a game engine editor.
 
 > **Status:** active development. The features below are as described but still require further integration for example with Scene Organizer capabilities as well as more stability testing. Many features are in place and ready to be finalized, other features are in development and still others are on the drawing board. File formats and UI behavior are functional but still changing so files saved with in-development versions may not be compatible with later versions.
 
@@ -27,25 +27,25 @@ The basic idea is **what if 3D Movie Maker had continued developing to suit the 
 - Still to come: shaping camera movement in any axes as well as additional more sophisticated shaped-based camera movements  
   
 
-![4DMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_0059.png)  
+![XDMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_0059.png)  
   
 - The building prop on the left was converted (to VXP2) and imported natively with full 24-bit color textures. The undo history, objects browser, light editor, object group editor, the console (settings) window, and console window show the expanded work environment running at 4K (2160p) resolution.
   
-![4DMM sci-fi landscape 2](https://bayareaengineers.com/i/4dmm_20261006-081649.png)  
+![XDMM sci-fi landscape 2](https://bayareaengineers.com/i/XDMM_20261006-081649.png)  
   
 - These screenshots also show shadow casting from a single light source, 24-bit color, native high resolution rendering, per-pixel shader and lighting, multiple light objects with differing light properties, bilinear texture filtering, anisotropic filtering, and more.  
   
-![4DMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_082046.png)  
+![XDMM sci-fi landscape](https://bayareaengineers.com/i/image_20261007_082046.png)  
   
-- Actor Studio allows users to create animations inside of 4DMM using familiar tools. These animations can then be used in the standard Action tool animation selection workflow. User interfaces shown in screenshots are fully functional. Layouts are ongoing development.
+- Actor Studio allows users to create animations inside of XDMM using familiar tools. These animations can then be used in the standard Action tool animation selection workflow. User interfaces shown in screenshots are fully functional. Layouts are ongoing development.
   
-![4DMM sci-fi landscape](https://bayareaengineers.com/i/4dmm_20261006-081425.png)  
+![XDMM sci-fi landscape](https://bayareaengineers.com/i/XDMM_20261006-081425.png)  
   
 - Developing expanded possibilities of 3D Words (modifiable depth on a per-character basis, testing new superscripting property which allows any symbol/character to be used similarly to the asterisks-based props, as well as adding tons of new symbols) -- these features will be available in an upcoming source update.  
   
 ### Modern rendering
 
-- Introducing Blaze Engine--the new fully customized open-source rendering engine actively being developed alongside 4DMM for its unique rendering requirements (Blazing Render-based)
+- Introducing Blaze Engine--the new fully customized open-source rendering engine actively being developed alongside XDMM for its unique rendering requirements (Blazing Render-based)
 - Modern OpenGL 4.3 renderer integrated throughout the application
 - 24-bit color instead of the original 256-color rendering path
 - Per-pixel lighting/shading
@@ -105,21 +105,21 @@ Actor Studio is still under active development and is expected to continue chang
 
 ### Asset and conversion work
 
-4DMM retains compatibility with classic 3DMM assets while expanding what can be brought into the application. Modern OBJ / GLTF / FBX to VXP2 conversion tooling is under active development, including higher-quality texture handling and compatibility work for modern game-engine assets. 4DMM uses its own file format (currently a .3ct sidecar file) to store frame-by-frame camera positioning information, object groupings, light properties, shadow properties, and more. In the release candidate, we'll be implementing a new file format so that all of these new features will be saveable alongside the existing (and improved) features of VMM files.
+XDMM retains compatibility with classic 3DMM assets while expanding what can be brought into the application. Modern OBJ / GLTF / FBX to VXP2 conversion tooling is under active development, including higher-quality texture handling and compatibility work for modern game-engine assets. XDMM uses its own file format (currently a .3ct sidecar file) to store frame-by-frame camera positioning information, object groupings, light properties, shadow properties, and more. In the release candidate, we'll be implementing a new file format so that all of these new features will be saveable alongside the existing (and improved) features of VMM files.
 
-## Why 4DMM?
+## Why XDMM?
 
-Modern 3D applications are extraordinarily capable, but that capability often comes with a large interaction and workflow burden that can take years to master even the basics. Original 3D Movie Maker approached the problem from the opposite direction: learn while doing--grab something, move it, animate it, add sound, and make a movie. Expanding on this approach is the foundation of 4DMM.
+Modern 3D applications are extraordinarily capable, but that capability often comes with a large interaction and workflow burden that can take years to master even the basics. Original 3D Movie Maker approached the problem from the opposite direction: learn while doing--grab something, move it, animate it, add sound, and make a movie. Expanding on this approach is the foundation of XDMM.
 
-4DMM is an attempt to continue that design philosophy without freezing the technology in 1995.
+XDMM is an attempt to continue that design philosophy without freezing the technology in 1995.
 
 The project embraces what 3DMM already is. It takes the original to the next level in terms of enabling what was previously not possible with the software by implementing a modern renderer, sophisticated editing tools, richer object manipulation, improved asset workflows, and taking advantage of the last 30 years of technology advancement.
 
 ## Building
 
-4DMM is currently developed primarily on Windows and the build system is still changing.
+XDMM is currently developed primarily on Windows and the build system is still changing.
 
-For convenience, I've included a "Build 4DMM.cmd" batch file with the source to assist with successfully buliding the source in a Windows environment. This batch file is kept up to date so that it works with the currently available source.
+For convenience, I've included a "Build XDMM.cmd" batch file with the source to assist with successfully buliding the source in a Windows environment. This batch file is kept up to date so that it works with the currently available source.
 
 The current development branch uses:
 
@@ -238,31 +238,31 @@ LEFT CLICK or <kbd>TAB</kbd> - Pressing left click while free cam mode is active
 <kbd>SHIFT</kbd> - Enables/disables the ability to change the height of the camera. Disabling this after 'flying upwards' results in the free camera then being incapable of changing its y-value at the current altitude.  
 Access the free cam settings in the CONSOLE (<kbd>CTRL</kbd> + <kbd>~</kbd>) by clicking the ADVANCED SETTINGS button.  
   
-# HOW TO START 4DMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE  
+# HOW TO START XDMM AFTER YOU HAVE BUILT (COMPILED) THE SOFTWARE  
   
-## Here's instructions on how to start 4DMM so that all features are enabled.  
+## Here's instructions on how to start XDMM so that all features are enabled.  
   
-- There's no way to enable, disable or modify some settings after start up. It might take multiple tries starting the app and adjusting the `-gui_scale` and `-resolution` arguments as needed to get 4DMM's main app window and external windows to look correct depending on your resolution and Windows settings.  
+- There's no way to enable, disable or modify some settings after start up. It might take multiple tries starting the app and adjusting the `-gui_scale` and `-resolution` arguments as needed to get XDMM's main app window and external windows to look correct depending on your resolution and Windows settings.  
 First, create a shortcut to 3dmovie.exe after you have built (compiled) it.  
   
-### If you did not use the included "Build 4DMM.cmd" batch file to build 4DMM, you must adjust 4DMM's DPI settings prior to running the app (otherwise you should be able to skip this process):  
+### If you did not use the included "Build XDMM.cmd" batch file to build XDMM, you must adjust XDMM's DPI settings prior to running the app (otherwise you should be able to skip this process):  
 - ALT+DOUBLE CLICK on the shortcut to 3dmovie.exe (or right click on 3dmovie.exe and then left click on properties in the menu that appears) 
 - Click on the "Compatibility" tab  
-- Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start 4DMM, click on "Change settings for all users" then "Change high DPI settings."  
+- Click on "Change high DPI settings." If multiple Windows user accounts will be using this shortcut to start XDMM, click on "Change settings for all users" then "Change high DPI settings."  
 - Check the box next to "Override high DPI scaling behavior."  
 - Click the dropdown menu below the checkbox and then click on "Application" in the menu that appears.  
 - Click the OK button to close each window, making sure to click the "Apply" button before clicking the OK button if the window has an "Apply" button.  
 (Please note that the above DPI setting will apply to all shortcuts you make to 3dmovie.exe in its current location so it shouldn't be necessary to do this again).  
   
-## Use the following arguments for starting 4DMM on a 4K (2160p) monitor:  
+## Use the following arguments for starting XDMM on a 4K (2160p) monitor:  
 3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 4.25x -cursor_size 2x -gui_scale 2  
   
 Please note that it might be necessary to change the "-gui_scale 1" argument to "-gui_scale 2" for certain external windows to be fully usable†
-**Use the following arguments for starting 4DMM on a 2560x1440 (1440p) resolution monitor:**  
+**Use the following arguments for starting XDMM on a 2560x1440 (1440p) resolution monitor:**  
 `3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 1320 -cursor_size 1.5x -gui_scale 1`  
-**Use the following arguments for starting 4DMM on a 1920x1080 (1080p) resolution monitor:**  
+**Use the following arguments for starting XDMM on a 1920x1080 (1080p) resolution monitor:**  
 `3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution 960 -cursor_size 1x -gui_scale 1`
-**Use the following arguments for starting 4DMM using another resolution:**  
+**Use the following arguments for starting XDMM using another resolution:**  
 *First, take your resolution's height and subtract 120 from it, then replace `<resolution height - 120>` with that number below:*
 `3dmovie.exe -w -e -c -a -l -u -sh -multi -resolution <resolution height - 120> -cursor_size 1x -gui_scale 1`
 
@@ -279,7 +279,7 @@ etc.
 ## DETAILED ARGUMENT INFORMATION
 
 ***`-c`***  
-color depth argument runs 4DMM in 24-bit RGB888 color mode  
+color depth argument runs XDMM in 24-bit RGB888 color mode  
 ***`-a`***  
 actor shading/lighting  
 ***`-e`***  
@@ -319,7 +319,7 @@ Logs pertaining to multi-selection related tools as well as other purposes.
 
 ## Compatibility 
 
-### 4DMM is for Windows operating systems.  
+### XDMM is for Windows operating systems.  
 Minimum:  
 - OpenGL 4.3 GPU with 4 GB VRAM  
 - Reasonably modern 4-core CPU  
@@ -330,8 +330,8 @@ Recommended:
 - AMD Ryzen 5 5600X or comparable Intel CPU  
 - 16 GB RAM  
 
-4DMM currently allows for playback of existing .3MM movie files from the original 3D Movie Maker as well as watching .VMM movie files (v3DMM movies). Opening each file type is supported natively (no external software or mods are required for opening a .VMM movie file). 
-4DMM currently supports saving to .3MM files and .VMM files. Please note that depending on what is being saved, 4DMM may decide to limit the file type saving options to .VMM files. Also please keep in mind that generally, 4DMM will save a .3CT file alongside .VMM files as well as .3MM files. These files are all going to be packaged as one file type in the first release candidate (likely .VMM2 or .VM2 files).
+XDMM currently allows for playback of existing .3MM movie files from the original 3D Movie Maker as well as watching .VMM movie files (v3DMM movies). Opening each file type is supported natively (no external software or mods are required for opening a .VMM movie file). 
+XDMM currently supports saving to .3MM files and .VMM files. Please note that depending on what is being saved, XDMM may decide to limit the file type saving options to .VMM files. Also please keep in mind that generally, XDMM will save a .3CT file alongside .VMM files as well as .3MM files. These files are all going to be packaged as one file type in the first release candidate (likely .VMM2 or .VM2 files).
 Preserving the original 3DMM experience and its existing movie/asset ecosystem is an important design goal. New functionality should extend the program without unnecessarily destroying compatibility with existing 3DMM content or the directness of the original workflow.
 
 ## Current Status: Active Development
@@ -340,22 +340,22 @@ This is a list of functioning, concrete features of this application which alrea
 
 # Credits and project lineage
 
-4DMM is a continuation and major expansion of Microsoft 3D Movie Maker built from the 3DMMEx codebase.
+XDMM is a continuation and major expansion of Microsoft 3D Movie Maker built from the 3DMMEx codebase.
 
 ## Project lineage
 
 - **Microsoft 3D Movie Maker** — original application and source code, released by Microsoft under the MIT License. [https://github.com/microsoft/Microsoft-3D-Movie-Maker](https://github.com/microsoft/Microsoft-3D-Movie-Maker)
 - **3DMMForever** — Foone Turing's modernization work following Microsoft's source release.
-- **3DMMEx** — Ben Stone's source port and modernization work, which is the direct upstream base of 4DMM. [https://github.com/benstone/3dmmex](https://github.com/benstone/3dmmex)
+- **3DMMEx** — Ben Stone's source port and modernization work, which is the direct upstream base of XDMM. [https://github.com/benstone/3dmmex](https://github.com/benstone/3dmmex)
 - **BRender** — the original rendering engine developed by Argonaut Software / Argonaut Technologies.
-- **[Blazing Renderer (BRender) 1.4](https://github.com/BlazingRenderer/BRender)** — the modernized BRender fork used by 4DMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases. Here is a working mirror (as of 9-26-2026) of the BRender project's website: [https://bayareaengineers.com/blazingrender.net](https://www.bayareaengineers.com/blazingrender/)
+- **[Blazing Renderer (BRender) 1.4](https://github.com/BlazingRenderer/BRender)** — the modernized BRender fork used by XDMM's modern OpenGL renderer, maintained by the BlazingRenderer project and based on the open-source BRender releases. Here is a working mirror (as of 9-26-2026) of the BRender project's website: [https://bayareaengineers.com/blazingrender.net](https://www.bayareaengineers.com/blazingrender/)
 
 ## Historical tools and compatibility references
 
-- **Croc: Legend of the Gobbos (2025 Edition)** - The modern remaster was used as an important technical reference during 4DMM’s transition to modern BRender 1.4, particularly for studying the relationship between legacy BRender assets and a modern rendering pipeline. No Croc game assets or source code are distributed with 4DMM.
-- **Holmstrom's 3DMM camera-control utility** — an external 3DMM camera-navigation tool distributed as `MPR.dll`. The DLL was reverse-engineered as a technical reference during the initial 4DMM camera-track work. No Holmstrom source code was available to the 4DMM project, and 4DMM does not bundle `MPR.dll`.
-- **7gen / OBJ2VXP** by Foone Turing — part of the historical 3DMM expansion-tool ecosystem and useful as a compatibility/reference point for 3DMM expansion formats. 7gen is not bundled with 4DMM.
+- **Croc: Legend of the Gobbos (2025 Edition)** - The modern remaster was used as an important technical reference during XDMM’s transition to modern BRender 1.4, particularly for studying the relationship between legacy BRender assets and a modern rendering pipeline. No Croc game assets or source code are distributed with XDMM.
+- **Holmstrom's 3DMM camera-control utility** — an external 3DMM camera-navigation tool distributed as `MPR.dll`. The DLL was reverse-engineered as a technical reference during the initial XDMM camera-track work. No Holmstrom source code was available to the XDMM project, and XDMM does not bundle `MPR.dll`.
+- **7gen / OBJ2VXP** by Foone Turing — part of the historical 3DMM expansion-tool ecosystem and useful as a compatibility/reference point for 3DMM expansion formats. 7gen is not bundled with XDMM.
 
 See `LICENSE`, `THIRD_PARTY_LICENSES.txt`, and the `LICENSES/` directory for license notices covering code distributed with the project.
 
-4DMM is an independent community project and is not an official Microsoft product or endorsed by Microsoft.
+XDMM is an independent community project and is not an official Microsoft product or endorsed by Microsoft.
