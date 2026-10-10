@@ -1,6 +1,6 @@
 # XDMM
 
-**3DMM Renaissance, or XDMM as I like to call it, is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
+**Extended Definition Movie Maker, or XDMM as I like to call it, is an experimental continuation and major expansion of Microsoft 3D Movie Maker, built from the 3DMMEx codebase.**
 
 The basic idea is **what if 3D Movie Maker had continued developing to suit the evolving needs of its users instead of stopping in 1995?**
 
